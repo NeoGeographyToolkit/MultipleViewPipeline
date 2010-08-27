@@ -1,0 +1,2646 @@
+#LyX 1.6.7 created this file. For more info see http://www.lyx.org/
+\lyxformat 345
+\begin_document
+\begin_header
+\textclass elsarticle
+\begin_preamble
+% specify here the journal
+\journal{Example: Nuclear Physics B}
+\end_preamble
+\use_default_options false
+\language english
+\inputencoding auto
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\paperfontsize default
+\spacing double
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 0
+\use_esint 1
+\cite_engine natbib_authoryear
+\use_bibtopic false
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 2
+\paperpagestyle headings
+\tracking_changes false
+\output_changes false
+\author "" 
+\author "" 
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+The Journal is specified in the document preamble! For the right document
+ class options to get the page format for your journal, have a look at the
+ elsarticle documentation: 
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://www.ctan.org/get/macros/latex/contrib/elsarticle/elsdoc.pdf
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frontmatter}
+\end_layout
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+starts the front matter
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+Multiple View Correlator for Lunar Orbital Imagery 
+\begin_inset Flex Titlenotemark
+status open
+
+\begin_layout Plain Layout
+t1,t2
+\end_layout
+
+\end_inset
+
+
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+
+\size normal
+With 
+\series bold
+\size default
+
+\backslash
+tnoteref
+\series default
+\size normal
+ you refer to the title footnotes.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title footnote
+This document is a collaborative effort.
+\begin_inset OptArg
+status open
+
+\begin_layout Plain Layout
+t1
+\end_layout
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+The short title is the label you refer to in the title.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title footnote
+The second title footnote which is a longer longer than the first one and
+ with an intention to fill in up more than one line while formatting.
+\begin_inset OptArg
+status open
+
+\begin_layout Plain Layout
+t2
+\end_layout
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+There are two author styles possible:
+\end_layout
+
+\begin_layout Plain Layout
+1.
+ Authors side by side
+\begin_inset space \hfill{}
+\end_inset
+
+2.
+ Authors below each other
+\begin_inset space \hfill{}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Author
+\begin_inset space \hfill{}
+\end_inset
+
+Author
+\begin_inset space \hfill{}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Email
+\begin_inset space \hfill{}
+\end_inset
+
+Email
+\begin_inset space \hfill{}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Author
+\begin_inset space \hfill{}
+\end_inset
+
+Address
+\begin_inset space \hfill{}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Email
+\begin_inset space \hfill{}
+\end_inset
+
+Author
+\begin_inset space \hfill{}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+Addresses
+\begin_inset space \hfill{}
+\end_inset
+
+Email
+\begin_inset space \hfill{}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+-------
+\begin_inset space \hfill{}
+\end_inset
+
+Address
+\begin_inset space \hfill{}
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+Taemin Kim
+\begin_inset Flex Authormark
+status collapsed
+
+\begin_layout Plain Layout
+fn1
+\end_layout
+
+\end_inset
+
+
+\begin_inset Flex CorAuthormark
+status open
+
+\begin_layout Plain Layout
+cor1
+\end_layout
+
+\end_inset
+
+
+\begin_inset Flex CorAuthormark
+status collapsed
+
+\begin_layout Plain Layout
+cor2
+\end_layout
+
+\end_inset
+
+
+\begin_inset OptArg
+status open
+
+\begin_layout Plain Layout
+rvt
+\end_layout
+
+\end_inset
+
+
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+The short title is the reference of the address.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Email
+taemin.kim@nasa.gov
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+At least one Email address is required.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+Kyle Husmann
+\begin_inset Flex Authormark
+status open
+
+\begin_layout Plain Layout
+fn2
+\end_layout
+
+\end_inset
+
+
+\begin_inset OptArg
+status open
+
+\begin_layout Plain Layout
+rvt,focal
+\end_layout
+
+\end_inset
+
+
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+
+\size normal
+With 
+\series bold
+\size default
+
+\backslash
+fnref
+\series default
+\size normal
+ and you refer to the author footnotes.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Email
+http://www.elsevier.com
+\begin_inset OptArg
+status open
+
+\begin_layout Plain Layout
+url
+\end_layout
+
+\end_inset
+
+
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+When the short title is 
+\begin_inset Quotes eld
+\end_inset
+
+url
+\begin_inset Quotes erd
+\end_inset
+
+, the email becomes an Internet address.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author footnote
+He is a NASA postdoctoral fellow at Ames Research Center.
+\begin_inset OptArg
+status open
+
+\begin_layout Plain Layout
+fn1
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author footnote
+He is a undergraduate student and a summer intern at NASA Ames Research
+ Center.
+\begin_inset OptArg
+status open
+
+\begin_layout Plain Layout
+fn2
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Corresponding author
+Corresponding author
+\begin_inset OptArg
+status open
+
+\begin_layout Plain Layout
+cor1
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Corresponding author
+Principal corresponding author
+\begin_inset OptArg
+status open
+
+\begin_layout Plain Layout
+cor2
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Address
+Ames Research Center, MS 269-3, Moffett Field, CA 94035, USA
+\begin_inset OptArg
+status open
+
+\begin_layout Plain Layout
+rvt
+\end_layout
+
+\end_inset
+
+
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+The short title is the label you refer to in the authors.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Address
+California Polytechnic State University, San Luis Obispo, CA, USA
+\begin_inset OptArg
+status open
+
+\begin_layout Plain Layout
+focal
+\end_layout
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+This is an example of the second author style:
+\end_layout
+
+\begin_layout Author
+Taemin Kim
+\end_layout
+
+\begin_layout Email
+taemin.kim@nasa.gov
+\end_layout
+
+\begin_layout Address
+Ames Research Center, MS 269-3, Moffett Field, CA, 94035
+\end_layout
+
+\begin_layout Author
+K.
+\begin_inset space ~
+\end_inset
+
+Bazargan
+\end_layout
+
+\begin_layout Email
+http://www.elsevier.com
+\begin_inset OptArg
+status collapsed
+
+\begin_layout Plain Layout
+url
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Address
+River Valley Technologies, 9, Browns Court, Kennford, Exeter, United Kingdom
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Abstract
+I propose to research and develop a Multiple View Correlator (MVC) to create
+ consistent, accurate, dense Digital Elevation Models (DEMs) from lunar
+ orbital imagery.
+ This correlator will enable the NASA Ames Intelligent Robotics Group (IRG)
+ to produce higher-quality terrain reconstructions of the Moon from Apollo
+ Metric Camera (AMC) data than is currently possible.
+ In particular, IRG makes use of a stereo vision process, the Ames Stereo
+ Pipeline (ASP), to automatically generate DEMs from consecutive AMC image
+ pairs.
+ However, the DEMs currently produced by the ASP often contain errors and
+ inconsistencies due to image noise, shadows, etc.
+ The MVC will address this problem by making use of multiple wide baseline
+ observations and by considering their goodness of fit to improve both the
+ accuracy and robustness of finding correspondences between images.
+ The reprojection error of all associated patches will be derived from the
+ statistical behavior of photon noise, including a lunar reflectance model.
+ For this project, Terry Fong will serve as advisor.
+ Michael Broxton1 and Ara Nefian1 will collaborate to interpret and publish
+ the results.
+ In addition, this project will make use of the Pleiades supercomputer and
+ Nebula cloud-computer at NASA Ames.
+ This proposal directly addresses the “Perception, Interaction, and Software
+ Architecture for Exploration Robotics” research opportunity (#18213).
+\end_layout
+
+\begin_layout Keywords
+Gaussian point clouds
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+sep
+\end_layout
+
+\end_inset
+
+ matching 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+sep
+\end_layout
+
+\end_inset
+
+ registration 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+PACS
+\end_layout
+
+\end_inset
+
+ 71.35.-y 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+sep
+\end_layout
+
+\end_inset
+
+ 71.35.Lk 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+sep
+\end_layout
+
+\end_inset
+
+ 71.36.+c 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+MSC[2008]
+\end_layout
+
+\end_inset
+
+23-557
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Keywords must be separated by 
+\series bold
+
+\backslash
+sep
+\series default
+.
+ 
+\series bold
+
+\backslash
+PACS
+\series default
+ and 
+\series bold
+
+\backslash
+MSC
+\series default
+ are optional classifications.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frontmatter}
+\end_layout
+
+\end_inset
+
+
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+ends the front matter
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing double
+The goal of this proposal is to research and develop a Multiple View Correlator
+ (MVC) that generates consistent, accurate, dense Digital Elevation Models
+ (DEMs) by finding multiple view correspondences from lunar orbital imagery.
+ (a) Stereo Correspondences (b) DEMs Errors (c) Multiple View Correspondences
+ Figure 1: Stereo and Multiple View Correspondences.
+ (a) Two stereo correspondences have different elevation values (two crosses).
+ (b) DEMs created by stereo can have substantially large errors.
+ (c) The multiple view correspondence determine the unique elevation value
+ (circle).
+ The NASA Ames Intelligent Robotics Group (IRG) currently uses a stereo
+ vision process to automatically generate DEMs from image pairs.
+ However, two DEMs generated from different image pairs have different values
+ for the same point due to noise, shadows, etc.
+ in the images (Figure 1a).
+ Consequently, IRG’s current topographical reconstruction of the Moon contains
+ fairly substantial random errors (Figure 1b).
+ The MVC will address this problem by finding multiple view correspondences
+ between images that minimize the reprojection error of all associated image
+ patches.
+ The MVC will determine the unique 3D position by treating all image patches
+ at once (Figure 1c).
+ The accuracy and robustness of DEMs produced by IRG will thus be improved
+ by making use of multiple wide baseline observations and by considering
+ their goodness of fit.
+ This proposal tackles one of the most challenging problems of planetary
+ mapping from orbital imagery.
+ The MVC has several strengths: (1) it treats all images together at once,
+ instead of just pair-wise; (2) it incorporates photometric information,
+ which leads to better resolution; (3) it is grounded in a rigorous statistical
+ approach; and (4) it is highly scalable and well suited for use on super
+ and cloud computing platforms.
+ 
+\end_layout
+
+\begin_layout Section
+Background and Relevance 
+\end_layout
+
+\begin_layout Standard
+(a) The Mapping Cameras System (b) Apollo 15 Orbit 33 Figure 2: AMC Data
+ System.
+ (a) The AMC captures a series of pictures of the Moon's surface.
+ (b) Satellite station positions for Apollo Orbit 33 visualized in Google
+ Moon.
+ Since 2007, the NASA Lunar Mapping and Modeling Project (LMMP) has been
+ actively developing maps and tools to improve lunar exploration and mission
+ planning [1].
+ One of the requirements for LMMP is to construct geo-registered DEMs from
+ historic imagery.
+ To meet this need, IRG has developed the Ames Stereo Pipeline (ASP), a
+ collection of cartographic and stereogrammetric tools for automatically
+ producing DEMs from images acquired with the Apollo Metric Camera (AMC)
+ during Apollo 15-17 (Figure 2).
+ Although modern photogrammetric scans of AMC films have provided high quality
+ and high resolution digital images, there remains noise inherent to the
+ scanning process: the presence of ﬁlm grain, dust and lint particles.
+ To compensate for this noise, the ASP makes use of multiple algorithms
+ to detect and reject these scanning artifacts.
+ However, this approach has limitations, particularly in terms of robustness,
+ error minimization and reconstruction accuracy.
+ Multiple view geometry and photometry will directly address these limitations
+ and enable reconstruction of the topographical and photometric properties
+ of the lunar surface in a more systematic manner.
+ Numerous researchers have addressed multiple view correlation by representation
+, computational frameworks, or the combination of computer vision techniques
+ [2-4].
+ Recent efforts have focused on multiple view configurations [5] and concepts
+ for integrating photogrammetric techniques [6].
+ Although these approaches provide a starting point for improving lunar
+ mapping, there are additional factors that must be considered.
+ Figure 3: Orbital Image Formation.
+ The color of lunar surface is characterized by its reflectance which involves
+ incident (
+\begin_inset Formula $\iota$
+\end_inset
+
+), emission (
+\begin_inset Formula $\varepsilon$
+\end_inset
+
+) and phase (
+\begin_inset Formula $\theta$
+\end_inset
+
+) angles.
+ For example, an appropriate reflectance model is crucial for accurately
+ estimating photometric properties from lunar images.
+ In general, the intensity value in an image is proportional to lunar reflectanc
+e which involves a topographical configuration of viewpoint and light defined
+ by incident, emission and phase angles (Figure 3).
+ An approximate analytic solution to the radiative transfer equation was
+ derived to describe the scattering of light from particulate surfaces [7].
+ For the Moon, we need to consider an anisotropic bidirectional reflectance
+ [8], as well as specific reflectance models that have been proposed for
+ lunar surface photometry [9].
+ There are many applications of lunar maps, including outreach and education,
+ mission planning, and lunar science.
+ The maps and imagery that IRG released in 2009 for “Moon in Google Earth”
+ have engendered great public interest in lunar exploration.
+ The cartographic products that IRG is currently producing (DEMs, ortho-projecte
+d imagery, etc.) will be used to plan future missions, to assess landing
+ sites, and to model geophysical processes.
+ Consequently, by improving these maps, we directly benefit a wide community.
+ Figure 4: Dataflow of the Ames Stereo Pipeline.
+ Preprocessing includes the registration and filtering of the image pair.
+ A stereo correlator (disparity initialization and sub-pixel refinement)
+ constructs the disparity map based on normalized cross correlation.
+ DEMs are generated by a triangulation method in which corrected camera
+ poses are used by bundle adjustment.
+ 
+\end_layout
+
+\begin_layout Section
+Ames Stereo Pipeline 
+\end_layout
+
+\begin_layout Standard
+In this section, I will describe the Ames Stereo Pipeline (ASP), which is
+ the stereogrammetric platform currently being used by IRG.
+ The ASP was designed to process stereo imagery captured by NASA spacecraft
+ and produce cartographic products since the majority of the AMC images
+ have stereo companions [10].
+ The entire stereo correlation process, from an image pair to DEM, can be
+ viewed as a multistage pipeline (Figure 4).
+ At the first step, preprocessing includes the registration to align image
+ pairs and filtering to enhance the images for better matching.
+ Triangulation is used at the last step to generate a DEM from the correspondenc
+es.
+ 
+\end_layout
+
+\begin_layout Subsection
+Disparity Initialization 
+\end_layout
+
+\begin_layout Standard
+(a) Left Image (b) Right Image (c) Initialized Disparity Map (d) Parabola
+ Refined Map (e) Cauchy Refined Map (f) Bayesian Refined Map Figure 5: Stereo
+ Correlation.
+ (a-b) An image pair.
+ (c-f) Horizontal disparity maps.
+ (c) The fast discrete correlator constructs the coarse disparity map.
+ (d-f) Refined disparity maps from the initialized map.
+ (f) Bayesian sub-pixel correlator generates a smoother map than the others.
+ Stereo correlation, which is the process at the heart of ASP, computes
+ pixel correspondences of the image pair (Figure 5).
+ The map of these correspondences is called a disparity map.
+ The best match is determined by applying a cost function that compares
+ the two windows in the image pair.
+ The normalized cross correlation is robust to slight lighting and contrast
+ variation in between a pair of images [11].
+ For large images, this is computationally very expensive, so the correlation
+ process is split into two stages.
+ (1) The disparity map initialization step computes coarse correspondences
+ using a multi-scale search that is highly optimized for speed (Figure 5c).
+ (2) Correlation itself is carried out by sliding a small, square template
+ window from the left image over the specified search region of the right
+ image (Figure 5d-f).
+ Several optimizations are employed to accelerate disparity map initialization
+ [12]: (1) a box-filter-like accumulator that reduces duplicate operations
+ during correlation; (2) a coarse-to-fine multi-scale approach where disparities
+ are estimated using low resolution images, and then successively refined
+ at higher resolutions; and (3) partitioning of the disparity search space
+ into rectangular sub-regions with similar values of disparity determined
+ in the previous lower resolution level of the pyramid.
+ 
+\end_layout
+
+\begin_layout Subsection
+Sub-pixel Refinement
+\end_layout
+
+\begin_layout Standard
+Refining the initialized disparity map to sub-pixel accuracy is crucial
+ and necessary for processing real-world data sets [13].
+ The Bayesian expectation maximization (EM) weighted affine adaptive window
+ correlator was developed to produce high quality stereo matches that exhibit
+ a high degree of immunity to image noise (Figure 5f).
+ The Bayesian EM sub-pixel correlator also features a deformable template
+ window that can be rotated, scaled, and translated as it zeros in on the
+ correct match.
+ This affine-adaptive window is essential for computing accurate matches
+ on crater or canyon walls, and on other areas with significant perspective
+ distortion due to foreshortening.
+ A Bayesian model that treats the parameters as random variables was developed
+ in an EM framework.
+ This statistical model includes a Gaussian mixture component to model image
+ noise that is the basis for the robustness of the algorithm.
+ The resulting DEM is obtained by triangulation method (Figure 6).
+ 
+\end_layout
+
+\begin_layout Subsection
+Bundle Adjustment 
+\end_layout
+
+\begin_layout Standard
+After stereo correlation is performed, Bundle Adjustment (BA) corrects the
+ three-dimensional postures of cameras and the locations of the objects
+ simultaneously to minimize the error between the estimated location of
+ the objects and their actual location in the images.
+ Camera position and orientation errors have a direct effect on the accuracy
+ of DEMs produced by the ASP.
+ If they are not corrected, these uncertainties will result in systematic
+ errors in the overall position and slope of the DEMs (Figure 7a).
+ BA ensures that observations in multiple different images of a single ground
+ feature are self-consistent (Figure 7b).
+ (a) Left Image (b) Right Image (c) Rendered DEM Figure 6: Generation of
+ DEM.
+ (a) and (b) Apollo Metric Camera image pair of Apollo 15 site.
+ (c) A DEM of Hadley Rille is rendered from an image pair.
+ In BA the position and orientation of each camera station are determined
+ jointly with the 3D position of a set of image tie-points points chosen
+ in the overlapping regions between images.
+ This optimization is carried out along with thousands (or more) of similar
+ constraints involving many different features observed in other images.
+ Tie-points are automatically extracted using the SURF robust feature extraction
+ algorithm [14].
+ Outliers are rejected using the random sample consensus (RANSAC) method
+ [15].
+ The BA in ASP determines the best camera parameters that minimize the reproject
+ion error [16].
+ The optimization of the cost function uses the Levenberg-Marquardt algorithm
+ [17].
+ 
+\end_layout
+
+\begin_layout Section
+Lunar Multiple View Correlator 
+\end_layout
+
+\begin_layout Standard
+(a) Initial 3D Mesh (b) After Bundle Adjustment Figure 7: Bundle Adjustment.
+ Color-mapped, hill-shaded DEM mosaics from Apollo 15 Orbit 33 imagery illustrat
+e the power of BA.
+ (a) Prior to BA, large discontinuities exist between overlapping DEMs.
+ (b) After BA, DEM alignment errors are minimized, and no longer visible.
+ To improve the DEMs produced by IRG, I proposed to use multiple view geometry
+ and photometry for lunar orbital images.
+ Although multiple view geometry has been well-established in computer vision
+ for several decades, many applications still use only stereo vision techniques
+ due to the complexity of multiple views.
+ For MVC, I propose to use a planar approximation of lunar terrain, which
+ simplifies the tensor representation of multiple views into a homography
+ representation.
+ To model lunar reflectance, I propose to use a linear reflectance approximation.
+ The statistical behavior of the photons is model by the Poisson distribution
+ to derive the cost function that compares the multiple view windows.
+ Once development of the MVC is completed, it will replace the pair-wise
+ sub-pixel refinement and triangulation currently used in ASP.
+ 
+\end_layout
+
+\begin_layout Subsection
+Lunar Multiple View Correlation 
+\end_layout
+
+\begin_layout Standard
+A linear approximation of the lunar terrain and reflectance simplifies the
+ multiple view correlation function.
+ The lunar surface is smooth, but not flat (Figure 8a) and has its own reflectan
+ce (Figure 8c).
+ The terrain is assumed to be locally planar because the correlation patches
+ are determined to be small enough to cover the planar region (Figure 8b).
+ Similarly, the lunar reflectance is assumed to be locally linear because
+ geometric and photometric changes are small enough to form a linear relationshi
+p (Figure 8d).
+ Figure 8: Linear Approximation of Lunar Terrain and Reflectance.
+ (a) Smooth local terrain in a small field of view is approximated by (b)
+ planar one.
+ (c) The lunar reflectance model is approximated by a linear function.
+ (d) The linear reflectance is a linear function of surface albedo (A).
+ (a) Smooth Terrain (b) Planar Terrain 
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing double
+(c) Lunar reflectance (d) Linear reflectance 
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing double
+A planar approximation of the terrain provides a homography representation
+ of multiple view correspondences.
+ Suppose we have a textured plane that approximates the local terrain (Figure
+ 9).
+ Let be the surface plane with the normal vector and distance from the origin,
+ i.e., .
+ Let be the orbital image, be the orthographic image of onto , and be the
+ surface albedo having linear relationship with , i.e., for all .
+ Suppose we have n cameras viewing the same scene on with projection matrices
+ for .
+ Let be the ith orbital image taken by .
+ To determine the geometric and reflectance parameters, I propose to minimize
+ the information entropy of all corresponding patches.
+ From the fact that the quantity of incident photons from the scene follows
+ the continuous Poisson distribution, the negative log-likelihood of scene
+ radiance is derived to be the information entropy: .
+ (1) Figure 9: Homography Representation of Multiple View Correspondences.
+ Homographies of the image planes induced by the local plane 
+\begin_inset Formula $\pi$
+\end_inset
+
+, for , determine correspondences of all images.
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing double
+Figure 10: Lunar Multiple View Correlation Cycle.
+ One parameter is optimized by fixing the other parameters and alternated
+ in the numbered order.
+ Data points are weighted by their goodness of fit to the model during the
+ iterations.
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing double
+where , is the weight of , and are coefficient vectors of linear reflectance,
+ and is the local Gaussian convolution operator.
+ The optimizer of (1) may not exist in a closed form, but some parameters
+ are simply optimized from the other parameters.
+ By fixing the other parameters constant and taking the derivative of (1)
+ to be zero, surface albedo is obtained as a simple form: (2) Plugging (3)
+ into (1), the objective function becomes the weighted Kullback–Leibler
+ divergence: .
+ (3) This KL divergence is positive and convex with respect to reflectance
+ parameters if orthographic images and weight are positive.
+ The numerical optimization would be inevitable for geometric and reflectance
+ parameters.
+ 
+\end_layout
+
+\begin_layout Subsection
+Multiple View Correlation Cycle 
+\end_layout
+
+\begin_layout Standard
+To minimize the information entropy, I propose to employ an alternating
+ parameter scheme (Figure 10).
+ First, I propose to minimize the information entropy with respect to ,
+ and .
+ To do this, I will solve for in (1), while keeping surface albedo constant
+ with the solutions from (2).
+ The initialized disparity maps from ASP can be used to calculate the initial
+ value of .
+ Then, I will determine the weights of all pixel values by their goodness
+ of fit to the model.
+ The residual of each pixel value will be compared to the estimated standard
+ error; the larger the ratio of the residual to the standard error, the
+ smaller weight will be.
+ 
+\end_layout
+
+\begin_layout Section
+Expected Results and Their Significance 
+\end_layout
+
+\begin_layout Standard
+The proposed research will enable IRG to produce higher-quality topographical
+ and photometric reconstructions of the Moon that is currently possible.
+ In particular, the MVC will enable high-quality DEMs to be generated at
+ their highest resolution and with optimal accuracy and consistency.
+ This research will be one of the few studies that applies complete multiple
+ view geometry and photometry to reconstruct the cartographic information
+ of the Moon.
+ DEMs generated by the proposed method will be geodetically controlled to
+ the most current lunar geodetic frame.
+ They will ensure consistency with other maps such as the Clementine mosaic.
+ Figure 11: One-year Work Plan for Developing the Multiple View Correlator
+ Several challenges are considered: (1) The goodness of fit for the pixel
+ is estimated based on the noise model.
+ Outliers including scanning noise and shadows will be effectively excluded.
+ (2) The lunar reflectance model is refined to fit the Apollo metric imagery.
+ (3) The hierarchical scheme is adopted to scale up the data processing.
+ (4) Parallel computing is incorporated to speed up the computation.
+ The research work consists of four main tasks (Figure 11): • Data Preparation.
+ This task will collect the Apollo metric imagery and metadata and organize
+ it into a hierarchical structure.
+ Hierarchical data structuring will be used to scale down geo-registered
+ images and construct image pyramids.
+ • Developing MVC.
+ The representation and computational framework of the lunar MVC will be
+ presented to acquire the consistency of DEMs by theoretical derivations.
+ The lunar reflectance model and the statistical behavior of the photons
+ will be considered to improve accuracy.
+ The MVC will be implemented in two stages: small-scale and large-scale.
+ In small-scale, the prototype of the MVC will be verified and validated.
+ All the parameters will be tuned for use with the large-scale MVC.
+ For the large-scale MVC, the most efficient computational scheme will be
+ implemented for parallel computation.
+ • Generating DEMs.
+ Large-scale DEMs will be generated using the MVC.
+ Data processing will be performed on the NASA Ames Pleiades supercomputer
+ or the Nebula cloud computing system.
+ • Documentation.
+ The results of this research will be summarized and presented in a final
+ report, as well as in conference and journal papers.
+ The improved DEMs produced with the MVC will enable us to extract significant,
+ new knowledge from historical lunar imagery.
+ These enhanced DEMs will help planetary scientists to better understand
+ lunar topography, to assess future landing sites, and to plan future missions.
+ Moreover, generation of separated DAMs and DEMs, together with a well-calibrate
+d lunar reflectance model, will lay the foundation for rendering accurate
+ artificial views.
+ Automatic mosaicking and geodetically aligning with other lunar mosaics
+ (e.g., Clementine mosaics) will pave the way for eventually processing all
+ lunar datasets.
+ In short, research and development of the MVC will provide significant,
+ long-lasting benefits to planetary mapping and exploration.
+ 
+\end_layout
+
+\begin_layout Section
+\start_of_appendix
+Implementation Details of MVC 
+\end_layout
+
+\begin_layout Subsection
+Data Structure and Flowchart for MVC
+\end_layout
+
+\begin_layout Standard
+\paragraph_spacing double
+The MVC refines geometric and reflectance parameters in orthographic images.
+ Geometric parameters are is initialized with rough DEMs from ASP.
+ First, reflectance parameters are optimized to the extent that geometric
+ parameters provide initially.
+ Then geometric and reflectance parameters are optimized simultaneously
+ in the main loop.
+ 
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename High-level Flowchart for MVC.pdf
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Patch-wise Parameter Estimation
+\end_layout
+
+\begin_layout Standard
+The objective function to be minimized is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+L(A,\mathbf{b},\mathbf{c},\boldsymbol{\pi})=\sum_{k=1}^{n}\int g_{c}(\mathbf{z})\tilde{l}_{k}(\mathbf{z})d\mathbf{z}\end{equation}
+
+\end_inset
+
+where 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset Formula $g_{c}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+ is the correlation window and 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset Formula $\tilde{l}_{k}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+ is the 
+\begin_inset Formula $k$
+\end_inset
+
+th negative log-likelihood function wih the smoothing window 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset Formula $g_{s}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+.
+ The the smoothed log-likelihood function 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset Formula $\tilde{l}_{k}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+ are involved with the smoothed observations and parameters:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\tilde{A}(\mathbf{z})=g_{s}(\mathbf{z})*A(\mathbf{z})\:\mathrm{and\:}\tilde{I}_{k}(\mathbf{z})=g_{s}(\mathbf{z})*\bar{I}_{k}(\mathbf{z})\label{eq:Smoothed Albedo and Intensity}\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $\bar{I}_{k}(\mathbf{z})=I_{k}(\mathbf{z})w_{k}(\mathbf{z})+\hat{I}_{k}(\mathbf{z})\left\{ 1-w_{k}(\mathbf{z})\right\} $
+\end_inset
+
+ and 
+\begin_inset Formula $\hat{I}_{k}(\mathbf{z})=b_{k}+c_{k}A_{k}(\mathbf{z})$
+\end_inset
+
+ are the robutsly estimated and estimated intensity, respectively.
+ Their gradients in spatial domain are 
+\begin_inset Formula \begin{equation}
+\nabla\tilde{A}(\mathbf{z})=\nabla g_{s}(\mathbf{z})*A(\mathbf{z})\:\mathrm{and\:}\nabla\tilde{I}_{k}(\mathbf{z})=\nabla g_{s}(\mathbf{z})*\bar{I}_{k}(\mathbf{z})\end{equation}
+
+\end_inset
+
+Photometric gradients of 
+\begin_inset Formula $L$
+\end_inset
+
+ with respect to 
+\begin_inset Formula $A,\mathbf{b},\mathbf{c}$
+\end_inset
+
+ are 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\frac{\partial L}{\partial A(\mathbf{\mathbf{z}})}=g_{s}(\mathbf{z})*g_{c}(\mathbf{z})\sum_{k=1}^{n}\frac{\partial\tilde{l}_{k}(\mathbf{z})}{\partial\tilde{A}(\mathbf{z})},\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula \begin{equation}
+\frac{\partial L}{\partial b_{k}}=\int g_{c}(\mathbf{z})\frac{\partial\tilde{l}_{k}(\mathbf{z})}{\partial b_{k}}d\mathbf{z},\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula \begin{equation}
+\frac{\partial L}{\partial c_{k}}=\int g_{c}(\mathbf{z})\frac{\partial\tilde{l}_{k}(\mathbf{z})}{\partial c_{k}}d\mathbf{z},\end{equation}
+
+\end_inset
+
+Geometric gradient of 
+\begin_inset Formula $L$
+\end_inset
+
+ with respect to 
+\begin_inset Formula $\boldsymbol{\pi}$
+\end_inset
+
+ is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\frac{\partial L}{\partial\boldsymbol{\pi}}=\sum_{k=1}^{n}\left[\int g_{c}(\mathbf{z})\frac{\partial\mathbf{z}_{k}^{T}}{\partial\boldsymbol{\pi}}\nabla\tilde{l}_{k}(\mathbf{z})d\mathbf{z}\right],\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $\frac{\partial\mathbf{z}_{k}}{\partial\boldsymbol{\pi}}$
+\end_inset
+
+ is the Jacobian matrix of the planar terrain with respect to the 
+\begin_inset Formula $k$
+\end_inset
+
+th image patch.
+ For Poisson and Guassian noise, the gradient of 
+\begin_inset Formula $\tilde{l}_{k}(\mathbf{z})$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\nabla\tilde{l}_{k}(\mathbf{z})=\nabla\tilde{A}(\mathbf{z})\frac{\partial\tilde{l}_{k}(\mathbf{z})}{\partial\tilde{A}(\mathbf{z})}-\nabla\tilde{I}_{k}(\mathbf{z})\frac{\partial\tilde{l}_{k}(\mathbf{z})}{\partial b_{k}}.\label{eq:Gradient of Log-likelihood}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Poisson Noise
+\end_layout
+
+\begin_layout Standard
+The continuous Poisson distribution is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+P(x;\lambda)=\frac{\lambda^{x}e^{-\lambda}}{\Gamma(x+1)}.\end{equation}
+
+\end_inset
+
+By Stirling's approximation of the Gamma function, the log-likelihood of
+ the Poisson distribution is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+l(x;\lambda)=x\ln\lambda-\lambda-(x\ln x-x).\end{equation}
+
+\end_inset
+
+The negative log-likelihood function to be minimized is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\tilde{l}_{k}(\mathbf{z})=\tilde{J}_{k}(\mathbf{z})\ln\frac{\tilde{J}_{k}(\mathbf{z})}{c_{k}\tilde{A}(\mathbf{z})}+c_{k}\tilde{A}(\mathbf{z})-\tilde{J}_{k}(\mathbf{z}),\end{equation}
+
+\end_inset
+
+where 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset Formula $\tilde{J}_{k}(\mathbf{z})=\tilde{I}_{k}(\mathbf{z})-b_{k}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+ is the 
+\begin_inset Formula $k$
+\end_inset
+
+th unbiased image.
+ The derivatives of 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset Formula $\tilde{l}_{k}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+ are 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\frac{\partial\tilde{l}_{k}(\mathbf{z})}{\partial\tilde{A}(\mathbf{z})}=c_{k}-\frac{\tilde{J}_{k}(\mathbf{z})}{\tilde{A}(\mathbf{z})}\label{eq:dLk_dA for Poisson}\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula \begin{equation}
+\frac{\partial\tilde{l}_{k}(\mathbf{z})}{\partial b_{k}}=\ln c_{k}-\ln\frac{\tilde{J}_{k}(\mathbf{z})}{\tilde{A}(\mathbf{z})}\label{eq:dLk_db for Poisson}\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula \begin{equation}
+\frac{\partial\tilde{l}_{k}(\mathbf{z})}{\partial c_{k}}=\frac{\tilde{J}_{k}(\mathbf{z})}{c_{k}}-\tilde{A}(\mathbf{z})\label{eq:dLk_dc for Poisson}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Gaussian Noise
+\end_layout
+
+\begin_layout Standard
+The negative log-likelihood function is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\tilde{l}_{k}(\mathbf{z})=-\frac{1}{2}\tilde{e}_{k}^{2}(\mathbf{z}),\end{equation}
+
+\end_inset
+
+where 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset Formula $\tilde{e}_{k}(\mathbf{z})=\tilde{I}_{k}(\mathbf{z})-c_{k}\tilde{A}(\mathbf{z})-b_{k}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+ is smoothed version of residual
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+ 
+\begin_inset Formula $e_{k}(\mathbf{z})=I_{k}(\mathbf{z})-\hat{I}_{k}(\mathbf{z})$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+.
+ The derivatives of 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset Formula $\tilde{l}_{k}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+ are 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\frac{\partial\tilde{l}_{k}(\mathbf{z})}{\partial\tilde{A}(\mathbf{z})}=c_{k}\tilde{e}_{k}(\mathbf{z})\label{eq:dLk_dA for Gaussian}\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula \begin{equation}
+\frac{\partial\tilde{l}_{k}(\mathbf{z})}{\partial b_{k}}=\tilde{e}_{k}(\mathbf{z})\label{eq:dLk_db for Gaussian}\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula \begin{equation}
+\frac{\partial\tilde{l}_{k}(\mathbf{z})}{\partial c_{k}}=\tilde{A}(\mathbf{z})\tilde{e}_{k}(\mathbf{z})\label{eq:dLk_dc for Gaussian}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Jacobian of Mapping from Orbital Image to Orthographic Image 
+\end_layout
+
+\begin_layout Standard
+For a fixed pixel point on an orbital image, the Jacobian of the corresponding
+ pixel point on the orthographic image plane is derived with respect to
+ the local planar terrain by taking an implicit differentiation of the mapping
+ functions since the direct way is complicated.
+ Let 
+\begin_inset Formula $\boldsymbol{\theta}=(\theta,\varphi)$
+\end_inset
+
+ denote the spherical coordinates by longitude (
+\begin_inset Formula $\theta$
+\end_inset
+
+) and latitude (
+\begin_inset Formula $\varphi$
+\end_inset
+
+).
+ The pixel point 
+\begin_inset Formula $\mathbf{z}$
+\end_inset
+
+ in orthographic image is encoded in an affine relationship with 
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+, i.e., 
+\begin_inset Formula $\boldsymbol{\theta}=\mathbf{Sz}+\mathbf{t}$
+\end_inset
+
+.
+ A point 
+\begin_inset Formula $\mathbf{x}$
+\end_inset
+
+ directing 
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+ with the radius 
+\begin_inset Formula $r$
+\end_inset
+
+ is written by 
+\begin_inset Formula $\mathbf{x}=r\mathbf{e}$
+\end_inset
+
+, where 
+\begin_inset Formula $\mathbf{e}=(\cos\varphi\cos\theta,\cos\varphi\sin\theta,\sin\varphi)$
+\end_inset
+
+.
+ Suppose a planar terrain orthogonal to the normal vector 
+\begin_inset Formula $\mathbf{n}$
+\end_inset
+
+ (
+\begin_inset Formula $||\mathbf{n}||=1$
+\end_inset
+
+) passes through 
+\begin_inset Formula $\mathbf{x}=r\mathbf{e}$
+\end_inset
+
+ , i.e., 
+\begin_inset Formula $\pi:\mathbf{n}^{T}(\mathbf{x}^{\prime}-\mathbf{x})=0$
+\end_inset
+
+.
+ The point 
+\begin_inset Formula $\mathbf{x}^{\prime}$
+\end_inset
+
+ directing 
+\begin_inset Formula $\boldsymbol{\theta}^{\prime}=(\theta^{\prime},\varphi^{\prime})$
+\end_inset
+
+ on 
+\begin_inset Formula $\pi$
+\end_inset
+
+ is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\mathbf{x}^{\prime}=\frac{{\displaystyle \mathbf{n}^{T}\mathbf{x}}}{{\displaystyle \mathbf{n}^{T}\mathbf{e}^{\prime}}}\mathbf{e}^{\prime}=r\frac{{\displaystyle \mathbf{n}^{T}\mathbf{e}}}{{\displaystyle \mathbf{n}^{T}\mathbf{e}^{\prime}}}\mathbf{e}^{\prime}=\frac{{\displaystyle d}}{{\displaystyle \mathbf{n}^{T}\mathbf{e}^{\prime}}}\mathbf{e}^{\prime}.\end{equation}
+
+\end_inset
+
+The corresponding points 
+\begin_inset Formula $\mathbf{u}(u_{1},u_{2},u_{3})$
+\end_inset
+
+ and 
+\begin_inset Formula $\mathbf{u^{\prime}}(u_{1}^{\prime},u_{2}^{\prime},u_{3}^{\prime})$
+\end_inset
+
+ of 
+\begin_inset Formula $\mathbf{x}$
+\end_inset
+
+ and 
+\begin_inset Formula $\mathbf{x}^{\prime}$
+\end_inset
+
+, repectively, onto the orbital image in homogeneous coordinates are 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\mathbf{u}=\mathbf{H}^{\prime}\mathbf{e}\:\mathrm{and}\:\mathbf{u^{\prime}}=\mathbf{H}^{\prime}\mathbf{e}^{\prime},\label{eq:MappingFromOrthographicToOrbitalCoordinates}\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $\mathbf{H^{\prime}}=(\mathbf{n}^{T}\mathbf{x})\mathbf{P}^{\prime}+\mathbf{p}_{4}\mathbf{n}^{T}$
+\end_inset
+
+ with a projection matrix 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\mathbf{P}=\left[\begin{array}{ccc}
+\mathbf{p}_{1} & \mathbf{p}_{2} & \mathbf{p}_{3}\\
+p_{14} & p_{24} & p_{34}\end{array}\right]^{T}=\left[\begin{array}{cc}
+\mathbf{P}^{\prime} & \mathbf{p}_{4}\end{array}\right].\end{equation}
+
+\end_inset
+
+The components of 
+\begin_inset Formula $\mathbf{u^{\prime}}$
+\end_inset
+
+ can be rewritten by
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+u_{i}^{\prime}=\mathbf{n}^{T}\mathbf{Q}_{i}\mathbf{e}^{\prime}{\textstyle \mathrm{\: for\:}}i=1,2,3,\label{eq:ConicInnerProduct}\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $\mathbf{Q}_{i}=\mathbf{x}\mathbf{p}_{i}^{T}+p_{i4}\mathbf{I}$
+\end_inset
+
+.
+ Inhomonizing the coordinates two equatioins are derived
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+{\displaystyle \mathbf{n}^{T}\mathbf{Q}_{i3}\mathbf{e}^{\prime}}=0{\textstyle \mathrm{\: for\:}}i=1,2,\label{eq:ConicOrthogonality}\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula ${\displaystyle \mathbf{Q}_{i3}}=u_{3}^{\prime}\mathbf{Q}_{i}-u_{i}^{\prime}\mathbf{Q}_{3}$
+\end_inset
+
+ is the cross difference matrix of 
+\begin_inset Formula $\mathbf{Q}_{i}$
+\end_inset
+
+.
+ Similarly, let 
+\begin_inset Formula ${\displaystyle \mathbf{B}_{i3}}=u_{3}^{\prime}\mathbf{B}_{i}-u_{i}^{\prime}\mathbf{B}_{3}$
+\end_inset
+
+ for 
+\begin_inset Formula $i=1,2$
+\end_inset
+
+ be the cross difference matrix with the augmeted matrix 
+\begin_inset Formula $\mathbf{B}_{i}=[\begin{array}{cc}
+\mathbf{Q}_{i} & \mathbf{p}_{i}\end{array}]$
+\end_inset
+
+ for 
+\begin_inset Formula $i=1,2,3$
+\end_inset
+
+.
+ Taking implicit differentiation of (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:ConicOrthogonality"
+
+\end_inset
+
+) with respect to 
+\begin_inset Formula $\boldsymbol{\theta}^{\prime}$
+\end_inset
+
+ at 
+\begin_inset Formula $\boldsymbol{\theta}$
+\end_inset
+
+ thanks to the implicit function theorem, we obtain the Jacobian:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+{\displaystyle \mathbf{e}^{\prime T}\mathbf{Q}_{i3}+\mathbf{n}^{T}{\displaystyle \mathbf{Q}_{i3}}\frac{\partial\mathbf{e^{\prime}}}{\partial\boldsymbol{\theta}^{\prime}}\frac{\partial\boldsymbol{\theta}^{\prime}}{\partial\mathbf{n}}}=0{\textstyle \mathrm{\: for\;}}{\displaystyle i=1,2}.\end{equation}
+
+\end_inset
+
+Similarly for the Jacobian with respect to 
+\begin_inset Formula $d$
+\end_inset
+
+, 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\mathbf{e}^{\prime T}{\displaystyle (u_{3}^{\prime}\mathbf{p}_{i}-u_{i}^{\prime}\mathbf{p}_{3})+\mathbf{n}^{T}{\displaystyle \mathbf{Q}_{i3}}\frac{\partial\mathbf{e^{\prime}}}{\partial\boldsymbol{\theta}^{\prime}}\frac{\partial\boldsymbol{\theta}^{\prime}}{\partial d}}=0{\textstyle \mathrm{\: for\;}}{\displaystyle i=1,2}.\label{eq:dz_dr implicit}\end{equation}
+
+\end_inset
+
+Arranging the all equations, the Jacobians of 
+\begin_inset Formula $\boldsymbol{\theta}^{\prime}$
+\end_inset
+
+ with respect to 
+\begin_inset Formula $\boldsymbol{\pi}$
+\end_inset
+
+ is obtained by solving a system of linear equations: 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\mathbf{C}{\displaystyle \frac{\partial\boldsymbol{\theta}^{\prime}}{\partial\boldsymbol{\pi}}}=-\mathbf{B},\end{equation}
+
+\end_inset
+
+where constant and coefficient matrices, 
+\begin_inset Formula $\mathbf{B}$
+\end_inset
+
+ and 
+\begin_inset Formula $\mathbf{C}$
+\end_inset
+
+, are 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\mathbf{B}=\left[\begin{array}{c}
+\mathbf{e}^{\prime T}\mathbf{B}_{13}\\
+\mathbf{e}^{\prime T}\mathbf{B}_{23}\end{array}\right]\:\mathrm{and}\:\mathbf{C}=\left[\begin{array}{c}
+{\displaystyle \mathbf{n}^{T}{\displaystyle \mathbf{Q}_{13}}}\\
+{\displaystyle \mathbf{n}^{T}{\displaystyle \mathbf{Q}_{23}}}\end{array}\right]\frac{\partial\mathbf{e^{\prime}}}{\partial\boldsymbol{\theta}^{\prime}}\label{eq:constant and coefficient matrices}\end{equation}
+
+\end_inset
+
+with
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\frac{\partial\mathbf{e^{\prime}}}{\partial\boldsymbol{\theta}^{\prime}}=\left[\begin{array}{ccc}
+-\cos\varphi^{\prime}\sin\theta^{\prime} & \cos\varphi^{\prime}\cos\theta^{\prime} & 0\\
+-\sin\varphi^{\prime}\cos\theta^{\prime} & -\sin\varphi^{\prime}\sin\theta^{\prime} & \cos\varphi^{\prime}\end{array}\right]^{T}.\label{eq:DirectionalJacobian}\end{equation}
+
+\end_inset
+
+The final Jacobians at 
+\begin_inset Formula $\mathbf{x^{\prime}}$
+\end_inset
+
+ to be used are
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+{\displaystyle \frac{\partial\mathbf{z}^{\prime}}{\partial\boldsymbol{\pi}}}=-\mathbf{S}^{-1}\mathbf{C}^{-1}\mathbf{B}.\label{eq:final Jacobian}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The homography induced by the local plane 
+\begin_inset Formula $\pi$
+\end_inset
+
+ between orbital and orthographic images is derived.
+ Taylor expansion of (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:MappingFromOrthographicToOrbitalCoordinates"
+
+\end_inset
+
+) at 
+\begin_inset Formula $\mathbf{x}$
+\end_inset
+
+ is derived in homogeneous coordinates of orbital image:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\mathbf{u}^{\prime}=\mathbf{u}+\mathbf{S}^{\prime}(\mathbf{z}^{\prime}-\mathbf{z}),\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $\mathbf{z}^{\prime}$
+\end_inset
+
+ is the pixel point in the orthographic image corresponding to 
+\begin_inset Formula $\mathbf{x}^{\prime}$
+\end_inset
+
+ and
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\mathbf{S}^{\prime}=\mathbf{H}^{\prime}{\displaystyle \frac{\partial\mathbf{e}}{\partial\boldsymbol{\theta}}}\mathbf{S}.\end{equation}
+
+\end_inset
+
+Therefore, the homography is 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\mathbf{u}^{\prime}=\left[\begin{array}{cc}
+\mathbf{S}^{\prime} & \mathbf{u}-\mathbf{S}^{\prime}\mathbf{z}\end{array}\right]\left[\begin{array}{c}
+\mathbf{z}^{\prime}\\
+1\end{array}\right]=\mathbf{H}\left[\begin{array}{c}
+\mathbf{z}^{\prime}\\
+1\end{array}\right].\end{equation}
+
+\end_inset
+
+Figure 12: Local Planar Terrain.
+ Longitude (
+\begin_inset Formula $\theta$
+\end_inset
+
+) and latitude(
+\begin_inset Formula $\varphi$
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Subsection
+Image-wise Parameter Estimation
+\end_layout
+
+\begin_layout Standard
+Now the surface albedo is assumed to be unique.
+ The objective function to be maximized is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+L(a,\mathbf{b},\mathbf{c},r)=\sum_{k=1}^{n}\iint g(\mathbf{z}-\boldsymbol{\tau})w_{k}(\mathbf{z})l_{k}(\mathbf{z};\boldsymbol{\tau})d\mathbf{z}d\boldsymbol{\tau}\end{equation}
+
+\end_inset
+
+where 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset Formula $l_{k}(\mathbf{z};\boldsymbol{\tau})$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+ is the 
+\begin_inset Formula $k$
+\end_inset
+
+th log-likelihood function at 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset Formula $\mathbf{z}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+ for the 
+\begin_inset Formula $k$
+\end_inset
+
+th patch centered at 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset Formula $\boldsymbol{\tau}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+.
+ Taking the derivative of 
+\begin_inset Formula $L$
+\end_inset
+
+ with respect to 
+\begin_inset Formula $\boldsymbol{\pi}$
+\end_inset
+
+ , we have
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\frac{\partial L}{\partial\boldsymbol{\pi}}=\sum_{k=1}^{n}\int\left\{ \int\frac{\partial g}{\partial\mathbf{z}}(\mathbf{z-\boldsymbol{\tau}})w_{k}(\mathbf{z})l_{k}(\mathbf{z})d\mathbf{z}\right\} \frac{\partial\mathbf{z}_{k}}{\partial\boldsymbol{\pi}}d\boldsymbol{\tau},\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $\frac{\partial\mathbf{z}_{k}}{\partial\boldsymbol{\pi}}$
+\end_inset
+
+ is the Jacobian matrix of the planar terrain with respect to the 
+\begin_inset Formula $k$
+\end_inset
+
+th image patch.
+\end_layout
+
+\begin_layout Subsubsection
+Poisson Noise
+\end_layout
+
+\begin_layout Standard
+The log-likelihood function to be maximized is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+l_{k}(\mathbf{z};\boldsymbol{\tau})=J_{k}(\mathbf{z};\boldsymbol{\tau})\ln\frac{c_{k}(\boldsymbol{\tau})A(\mathbf{z})}{J_{k}(\mathbf{z};\boldsymbol{\tau})}+J_{k}(\mathbf{z};\boldsymbol{\tau})-c_{k}(\boldsymbol{\tau})A(\mathbf{z}),\end{equation}
+
+\end_inset
+
+where 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset Formula $J_{k}(\mathbf{z};\boldsymbol{\tau})=I_{k}(\mathbf{z})-b_{k}(\boldsymbol{\tau})$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+ is the 
+\begin_inset Formula $k$
+\end_inset
+
+th unbiased image.
+ The derivatives of 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset Formula $l_{k}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+ are 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\frac{\partial l_{k}(\mathbf{z};\boldsymbol{\tau})}{\partial A(\mathbf{z})}=\frac{J_{k}(\mathbf{z};\boldsymbol{\tau})}{A(\mathbf{z})}-c_{k}(\boldsymbol{\tau})\label{eq:dLk_dA for Poisson-1}\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula \begin{equation}
+\frac{\partial l_{k}(\mathbf{z};\boldsymbol{\tau})}{\partial b_{k}(\boldsymbol{\tau})}=\ln\frac{J_{k}(\mathbf{z};\boldsymbol{\tau})}{c_{k}(\boldsymbol{\tau})A(\mathbf{z})}\label{eq:dLk_db for Poisson-1}\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula \begin{equation}
+\frac{\partial l_{k}(\mathbf{z};\boldsymbol{\tau})}{\partial c_{k}(\boldsymbol{\tau})}=\frac{J_{k}(\mathbf{z};\boldsymbol{\tau})}{c_{k}(\boldsymbol{\tau})}-A(\mathbf{z})\label{eq:dLk_dc for Poisson-1}\end{equation}
+
+\end_inset
+
+From Equations 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:dLk_dA for Poisson-1"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:dLk_dc for Poisson-1"
+
+\end_inset
+
+, the closed-form solutions of 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset Formula $A(\mathbf{z})$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+ and 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset Formula $c_{k}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+ are 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+A(\mathbf{z})=\frac{{\displaystyle \sum_{k=1}^{n}}w_{k}(\mathbf{z})\left\{ I_{k}(\mathbf{z})-\left\langle b_{k}(\mathbf{z})\right\rangle \right\} }{{\displaystyle \sum_{k=1}^{n}}\left\langle c_{k}(\mathbf{z})\right\rangle w_{k}(\mathbf{z})}\label{eq:Albedo for Poisson-1}\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula \begin{equation}
+c_{k}(\mathbf{z})=\frac{{\displaystyle \left\langle w_{k}(\mathbf{z})I_{k}(\mathbf{z})\right\rangle -b_{k}(\mathbf{z})\left\langle w_{k}(\mathbf{z})\right\rangle }}{{\displaystyle \left\langle w_{k}(\mathbf{z})A(\mathbf{z})\right\rangle }}.\label{eq:ck for Poisson-1-1}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Assumed that 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset Formula $b_{k}(\mathbf{z})$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+ and 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset Formula $b_{k}(\boldsymbol{\tau})$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+ have small difference, the Taylor expansion of 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset Formula $l_{k}(\mathbf{z};\boldsymbol{\tau})$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+ with respect to 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset Formula $b_{k}(\boldsymbol{\tau})$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+l_{k}(\mathbf{z};\boldsymbol{\tau})=J_{k}(\mathbf{z};\boldsymbol{\tau})\ln c_{k}(\boldsymbol{\tau})A(\mathbf{z})-\frac{b_{k}(\mathbf{z})-b_{k}(\boldsymbol{\tau})}{J_{k}(\mathbf{z})}+J_{k}(\mathbf{z};\boldsymbol{\tau})-c_{k}(\boldsymbol{\tau})A(\mathbf{z}),\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula \begin{equation}
+\triangle b_{k}=\frac{{\displaystyle \int g(\mathbf{z})w_{k}(\mathbf{z})\ln\frac{J_{k}(\mathbf{z})}{c_{k}A(\mathbf{z})}d\mathbf{z}}}{{\displaystyle \int\frac{g(\mathbf{z})w_{k}(\mathbf{z})}{J_{k}(\mathbf{z})}d\mathbf{z}}}.\label{eq:bk for Poisson-1}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Gaussian Noise
+\end_layout
+
+\begin_layout Standard
+The objective function to be maximized is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+l_{k}(\mathbf{z};\boldsymbol{\tau})=\frac{1}{2}\left\{ b_{k}(\boldsymbol{\tau})+c_{k}(\boldsymbol{\tau})A(\mathbf{z})-I_{k}(\mathbf{z})\right\} ^{2},\end{equation}
+
+\end_inset
+
+The derivatives of 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset Formula $l_{k}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+ are 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\frac{\partial l_{k}(\mathbf{z};\boldsymbol{\tau})}{\partial A(\mathbf{z})}=c_{k}(\boldsymbol{\tau})\left\{ b_{k}(\boldsymbol{\tau})+c_{k}(\boldsymbol{\tau})A(\mathbf{z})-I_{k}(\mathbf{z})\right\} \label{eq:dLk_dA for Gaussian-1}\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula \begin{equation}
+\frac{\partial l_{k}(\mathbf{z};\boldsymbol{\tau})}{\partial b_{k}(\boldsymbol{\tau})}=\left\{ b_{k}(\boldsymbol{\tau})+c_{k}(\boldsymbol{\tau})A(\mathbf{z})-I_{k}(\mathbf{z})\right\} \label{eq:dLk_db for Gaussian-1}\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula \begin{equation}
+\frac{\partial l_{k}(\mathbf{z};\boldsymbol{\tau})}{\partial c_{k}(\boldsymbol{\tau})}=A(\mathbf{z})\left\{ b_{k}(\boldsymbol{\tau})+c_{k}(\boldsymbol{\tau})A(\mathbf{z})-I_{k}(\mathbf{z})\right\} \label{eq:dLk_dc for Gaussian-1}\end{equation}
+
+\end_inset
+
+From Equations 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:dLk_dA for Gaussian-1"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:dLk_db for Gaussian-1"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:dLk_dc for Gaussian-1"
+
+\end_inset
+
+, the closed-form solution for 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+A(\mathbf{z})=\frac{{\displaystyle \sum_{k=1}^{n}}\{\left\langle c_{k}(\mathbf{z})\right\rangle I_{k}(\mathbf{z})-\left\langle b_{k}(\mathbf{z})c_{k}(\mathbf{z})\right\rangle \}w_{k}(\mathbf{z})}{{\displaystyle \sum_{k=1}^{n}}\left\langle c_{k}^{2}(\mathbf{z})\right\rangle w_{k}(\mathbf{z})}\label{eq:Albedo for Gaussian-1}\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula \begin{equation}
+b_{k}(\mathbf{z})={\displaystyle \frac{\left\langle I_{k}(\mathbf{z})w_{k}(\mathbf{z})\right\rangle -c_{k}(\mathbf{z})\left\langle A(\mathbf{z})w_{k}(\mathbf{z})\right\rangle }{\left\langle w_{k}(\mathbf{z})\right\rangle }}\label{eq:Constant for Gaussian-1}\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula \begin{equation}
+c_{k}(\mathbf{z})=\frac{\left\langle A(\mathbf{z})I_{k}(\mathbf{z})w_{k}(\mathbf{z})\right\rangle -b_{k}(\mathbf{z})\left\langle A(\mathbf{z})w_{k}(\mathbf{z})\right\rangle }{\left\langle A(\mathbf{z})w_{k}(\mathbf{z})\right\rangle }.\label{eq:ck for Gaussian-2}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Bundle Refinement
+\end_layout
+
+\begin_layout Standard
+Now the surface albedo is assumed to be unique.
+ The objective function to be maximized is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+L(\mathbf{P}_{k})=\iint g(\mathbf{z}-\boldsymbol{\tau})\tilde{l}_{k}(\mathbf{z};\boldsymbol{\tau})d\mathbf{z}d\boldsymbol{\tau}\end{equation}
+
+\end_inset
+
+where 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset Formula $l_{k}(\mathbf{z};\boldsymbol{\tau})$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+ is the 
+\begin_inset Formula $k$
+\end_inset
+
+th log-likelihood function at 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset Formula $\mathbf{z}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+ for the 
+\begin_inset Formula $k$
+\end_inset
+
+th patch centered at 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+
+\begin_inset Formula $\boldsymbol{\tau}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\noun default
+\color inherit
+.
+ Taking the derivative of 
+\begin_inset Formula $L$
+\end_inset
+
+ with respect to 
+\begin_inset Formula $\boldsymbol{\pi}$
+\end_inset
+
+ , we have
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\frac{\partial L}{\partial\mathbf{P}_{k}}=\int\left\{ \int\frac{\partial g}{\partial\mathbf{z}}(\mathbf{z-\boldsymbol{\tau}})w_{k}(\mathbf{z})l_{k}(\mathbf{z})d\mathbf{z}\right\} \frac{\partial\mathbf{z}}{\partial\mathbf{P}_{k}}d\boldsymbol{\tau},\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $\frac{\partial\mathbf{z}_{k}}{\partial\boldsymbol{\pi}}$
+\end_inset
+
+ is the Jacobian matrix of the planar terrain with respect to the 
+\begin_inset Formula $k$
+\end_inset
+
+th image patch.
+\end_layout
+
+\begin_layout Standard
+Taking implicit differentiation of above equations, we obtain the Jacobian:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+{\displaystyle \mathbf{n}^{T}\mathbf{x}_{0}\mathbf{e}^{T}+\mathbf{n}^{T}\mathbf{A}_{i}\frac{\partial\mathbf{e}}{\partial\boldsymbol{\theta}}\frac{\partial\boldsymbol{\theta}}{\partial\mathbf{p}_{i}}}=0{\textstyle \mathrm{\: for\;}}{\displaystyle i=1,2}.\label{eq:ck for Gaussian-1-1-2-1-3}\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula \begin{equation}
+\mathbf{n}^{T}{\displaystyle \mathbf{e}+\mathbf{n}^{T}\mathbf{A}_{i}\frac{\partial\mathbf{e}}{\partial\boldsymbol{\theta}}\frac{\partial\boldsymbol{\theta}}{\partial p_{i4}}}=0{\textstyle \mathrm{\: for\;}}{\displaystyle i=1,2}.\label{eq:ck for Gaussian-1-1-2-1-3-1}\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula \begin{equation}
+-u_{i}\mathbf{n}^{T}\mathbf{x}_{0}{\displaystyle \mathbf{e}^{T}+\mathbf{n}^{T}\mathbf{A}_{i}\frac{\partial\mathbf{e}}{\partial\boldsymbol{\theta}}\frac{\partial\boldsymbol{\theta}}{\partial\mathbf{p}_{3}}}=0.\label{eq:ck for Gaussian-1-1-2-1-3-1-1}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+-u_{i}\mathbf{n}^{T}{\displaystyle \mathbf{e}+\mathbf{n}^{T}\mathbf{A}_{i}\frac{\partial\mathbf{e}}{\partial\boldsymbol{\theta}}\frac{\partial\boldsymbol{\theta}}{\partial p_{34}}}=0.\label{eq:ck for Gaussian-1-1-2-1-3-1-1-1}\end{equation}
+
+\end_inset
+
+The two linear equations is solved by 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+{\displaystyle \frac{\partial\mathbf{z}}{\partial\mathbf{p}_{i}}}=-\mathbf{n}^{T}\mathbf{x}_{0}\mathbf{S}^{-1}\mathbf{C}^{-1}\mathbf{1}\mathbf{e}^{T}{\textstyle \mathrm{\: for\;}}i=1,2.\label{eq:ck for Gaussian-1-1-2-1-1-4}\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula \begin{equation}
+{\displaystyle \frac{\partial\mathbf{z}}{\partial\mathbf{p}_{3}}}=-\mathbf{n}^{T}\mathbf{x}_{0}\mathbf{S}^{-1}\mathbf{C}^{-1}\mathbf{u}\mathbf{e}^{T}.\label{eq:ck for Gaussian-1-1-2-1-1-4-2}\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula \begin{equation}
+{\displaystyle \frac{\partial\mathbf{z}}{\partial p_{i4}}}=-\mathbf{n}^{T}\mathbf{e}\mathbf{S}^{-1}\mathbf{C}^{-1}\mathbf{1}{\textstyle \mathrm{\: for\;}}i=1,2.\label{eq:ck for Gaussian-1-1-2-1-1-4-1}\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula \begin{equation}
+{\displaystyle \frac{\partial\mathbf{z}}{\partial p_{34}}}=-\mathbf{n}^{T}\mathbf{e}\mathbf{S}^{-1}\mathbf{C}^{-1}\mathbf{u}.\label{eq:ck for Gaussian-1-1-2-1-1-4-1-1}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+-----------------
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+The following bibliography styles are allowed: 
+\family sans
+elsarticle-harv
+\family default
+, 
+\family sans
+elsarticle-num-names
+\family default
+, or 
+\family sans
+elsarticle-num
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "Gaussian Point Clouds"
+options "bibtotoc,elsarticle-harv"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

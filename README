@@ -1,0 +1,7 @@
+The Ames Multiple-View Pipeline
+
+The Ames Multiple-View Pipeline (AMVP) will model the entire image 
+formation process and find the optimal height for each DEM post given 
+every available orbital image. Complex terrain and reflectance models 
+are simplified by assuming planar terrain and a linear reflectance model 
+on a small patch around a given DEM post. 
