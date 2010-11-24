@@ -3,3 +3,9 @@
 papers/proposal/amvp_proposal.pdf
 papers/brainstorm/amvp_brainstorm.pdf
 *.asv
+
+src/CMakeCache.txt
+src/CMakeFiles
+src/Makefile
+src/cmake_install.cmake
+src/gen_synth_scene
