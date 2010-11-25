@@ -14,6 +14,10 @@ using namespace vw;
 using namespace vw::camera;
 using namespace vw::cartography;
 
+// TODO: Rather than saving normalized images by having to go and
+// recalculate everyting, it would be better to load the floating
+// pt data and normalize that.
+
 int main( int argc, char *argv[] ) {
   boost::rand48 gen;
   const int dem_width = 1024, dem_height = 1024;
@@ -30,11 +34,9 @@ int main( int argc, char *argv[] ) {
   {
     ImageViewRef<float32> out = pixel_cast<float32>(plane_dem_view(georef,
                                 dem_initial_plane, dem_width, dem_height));
-    DiskImageResourceGDAL rsrc(output_folder + "/initial-DEM.tif", out.format(),
-                               Vector2i(256, 256));
-    write_georeference(rsrc, georef);
-    block_write_image(rsrc, out,
-      TerminalProgressCallback("vw", "initial-DEM.tif: "));
+    write_georef_image(output_folder + "/initial-DEM.tif", out, georef);
+    write_georef_image(output_folder + "/initial-DEM.norm.tif", 
+                       pixel_cast_rescale<uint8>(out), georef);
   }
 
   // Create ground-DEM.tif
@@ -42,24 +44,20 @@ int main( int argc, char *argv[] ) {
   {
     ImageViewRef<float32> out = pixel_cast<float32>(plane_dem_view(georef,
                                 dem_ground_plane, dem_width, dem_height));
-    DiskImageResourceGDAL rsrc(output_folder + "/ground-DEM.tif", out.format(),
-                               Vector2i(256, 256));
-    write_georeference(rsrc, georef);
-    block_write_image(rsrc, out,
-      TerminalProgressCallback("vw", "ground-DEM.tif: "));
+    write_georef_image(output_folder + "/ground-DEM.tif", out, georef);
+    write_georef_image(output_folder + "/ground-DEM.norm.tif", 
+                       pixel_cast_rescale<uint8>(out), georef);
   }
 
   // Create ground-DRG.tif
   {
     ImageViewRef<float32> out = pixel_cast<float32>(gaussian_filter(uniform_noise_view(
                                 gen, dem_width, dem_height), 1.5));
-    DiskImageResourceGDAL rsrc(output_folder + "/ground-DRG.tif", out.format(),
-                               Vector2i(256, 256));
-    write_georeference(rsrc, georef);
     // Don't block write. If we block write, threading
     // will make the texture different every runtime
-    write_image(rsrc, out,
-      TerminalProgressCallback("vw", "ground-DRG.tif: "));
+    write_georef_image(output_folder + "/ground-DRG.tif", out, georef, false);
+    write_georef_image(output_folder + "/ground-DRG.norm.tif",
+                       pixel_cast_rescale<uint8>(out), georef, false);
   }
 
   // Create Orbital Images
@@ -71,9 +69,10 @@ int main( int argc, char *argv[] ) {
       ImageViewRef<float32> out = backproject_plane(interpolate(drg_ground, 
         BilinearInterpolation(), ZeroEdgeExtension()) , georef, camera_list[i],
         dem_ground_plane, 1800, 1800);
-      DiskImageResourceGDAL rsrc(output_folder + "/" + ss.str() + ".tif", out.format(),
-                                 Vector2i(256, 256));
-      block_write_image(rsrc, out, TerminalProgressCallback("vw", ss.str() + ".tif: "));
+     
+      write_orbit_image(output_folder + "/" + ss.str() + ".tif", out);
+      write_orbit_image(output_folder + "/" + ss.str() + ".norm.tif",
+                        pixel_cast_rescale<uint8>(out));
     }
     camera_list[i].write(output_folder + "/" + ss.str() + ".pinhole");
   }

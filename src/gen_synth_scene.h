@@ -212,4 +212,28 @@ vw::Vector4 gen_plane(vw::cartography::GeoReference const& georef,
   return Vector4(normal[0], normal[1], normal[2], dot_prod(normal, dem_cntr_xyz));
 }
 
+template <class ImageT>
+void write_georef_image(std::string const& filename, 
+                        vw::ImageViewBase<ImageT> const& img, 
+                        vw::cartography::GeoReference const& georef, 
+                        bool bwrite = true) {
+  // TODO: We really need a helper function in vw to do something like this...
+  using namespace vw;
+  DiskImageResourceGDAL rsrc(filename, img.impl().format(), Vector2i(256, 256));
+  write_georeference(rsrc, georef);
+  if (bwrite) {
+    block_write_image(rsrc, img, TerminalProgressCallback("vw", filename + ": "));
+  } else {
+    write_image(rsrc, img, TerminalProgressCallback("vw", filename + ": "));
+  }
+}
+
+template <class ImageT>
+void write_orbit_image(std::string const& filename, 
+                       vw::ImageViewBase<ImageT> const& img) {
+  using namespace vw;
+  DiskImageResourceGDAL rsrc(filename, img.format(), Vector2i(256, 256));
+  block_write_image(rsrc, img, TerminalProgressCallback("vw", filename + ": "));
+}
+
 #endif
