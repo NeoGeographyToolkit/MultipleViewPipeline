@@ -20,10 +20,12 @@ using namespace vw::cartography;
 
 int main( int argc, char *argv[] ) {
   boost::rand48 gen;
-  const int dem_width = 200, dem_height = 200;
-  const int orbit_width = 256, orbit_height = 256;
+  const int dem_width = 256, dem_height = 256;
+  const int orbit_width = int(dem_width * 1.8), orbit_height = int(dem_height * 1.8);
+
   const double dem_cntr_alt = -2605;
   const double dem_corner_delta = 888 / 1024 * dem_width;
+
 
   string output_folder = ".";
   GeoReference georef = gen_dem_georef(dem_width, dem_height);

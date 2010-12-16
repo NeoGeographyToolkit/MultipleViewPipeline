@@ -153,14 +153,14 @@ std::vector<vw::camera::PinholeModel> gen_camera_list(int orbit_width, int orbit
   camera_list.push_back(PinholeModel(
     Vector3(1025532.88151, 1512446.05054, 315515.076309),
     Quat(-0.0588100780917, 0.371592737959, 0.667265027691, -0.642820032849).rotation_matrix(),
-    3802.7, 3802.7, -536.125 + orbit_width / 2, -36.125 + orbit_height / 2,
+    3802.7, 3802.7, -575 + orbit_width / 2, -55 + orbit_height / 2,
     Vector3(1, 0, 0), Vector3(0, 1, 0), Vector3(0, 0, 1), NullLensDistortion()
     ));
 
   camera_list.push_back(PinholeModel(
     Vector3(1054501.51827, 1488593.63697, 331834.757985),
     Quat(-0.0639146875174, 0.378441350432, 0.667943479689, -0.637611609793).rotation_matrix(),
-    3802.7, 3802.7, -1736.125 + orbit_width / 2, -36.125 + orbit_height / 2,
+    3802.7, 3802.7, -1790 + orbit_width / 2, -36.125 + orbit_height / 2,
     Vector3(1, 0, 0), Vector3(0, 1, 0), Vector3(0, 0, 1), NullLensDistortion()
     ));
 
