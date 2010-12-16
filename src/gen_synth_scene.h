@@ -139,28 +139,28 @@ std::vector<vw::camera::PinholeModel> gen_camera_list(int orbit_width, int orbit
   camera_list.push_back(PinholeModel(
     Vector3(966089.223462, 1557938.52831, 282405.060851),
     Quat(-0.0470851319085,0.358002222657,0.665010992829,-0.653741369612).rotation_matrix(),
-    3802.7, 3802.7, 1857.875 + orbit_width / 2, -85.125 + orbit_height / 2,
+    3802.7, 3802.7, 1851.375 + orbit_width / 2, -90.5 + orbit_height / 2,
     Vector3(1, 0, 0), Vector3(0, 1, 0), Vector3(0, 0, 1), NullLensDistortion()
     ));
 
   camera_list.push_back(PinholeModel(
     Vector3(996045.240112, 1535573.08189, 299032.543447),
     Quat(-0.0540368023579, 0.364928919676, 0.665264280335, -0.649099641723).rotation_matrix(),
-    3802.7, 3802.7, 643.875 + orbit_width / 2, -76.124 + orbit_height / 2,
+    3802.7, 3802.7, 649.875 + orbit_width / 2, -86.124 + orbit_height / 2,
     Vector3(1, 0, 0), Vector3(0, 1, 0), Vector3(0, 0, 1), NullLensDistortion()
     ));
 
   camera_list.push_back(PinholeModel(
     Vector3(1025532.88151, 1512446.05054, 315515.076309),
     Quat(-0.0588100780917, 0.371592737959, 0.667265027691, -0.642820032849).rotation_matrix(),
-    3802.7, 3802.7, -575 + orbit_width / 2, -55 + orbit_height / 2,
+    3802.7, 3802.7, -577.5 + orbit_width / 2, -59 + orbit_height / 2,
     Vector3(1, 0, 0), Vector3(0, 1, 0), Vector3(0, 0, 1), NullLensDistortion()
     ));
 
   camera_list.push_back(PinholeModel(
     Vector3(1054501.51827, 1488593.63697, 331834.757985),
     Quat(-0.0639146875174, 0.378441350432, 0.667943479689, -0.637611609793).rotation_matrix(),
-    3802.7, 3802.7, -1790 + orbit_width / 2, -36.125 + orbit_height / 2,
+    3802.7, 3802.7, -1795 + orbit_width / 2, -40.5 + orbit_height / 2,
     Vector3(1, 0, 0), Vector3(0, 1, 0), Vector3(0, 0, 1), NullLensDistortion()
     ));
 
