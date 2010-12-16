@@ -14,15 +14,14 @@ find_package(Octave REQUIRED)
 include_directories(${OCTAVE_INCLUDE_DIRS})
 link_directories(${OCTAVE_LINK_DIRS})
 
-add_library(imread_vw SHARED imread_vw.cc)
-target_link_libraries(imread_vw vw vwCartography)
+add_library(imread_vw MODULE imread_vw.cc)
+target_link_libraries(imread_vw vw vwCartography ${OCTAVE_LIBRARY})
 
-add_library(loadcam_vw SHARED loadcam_vw.cc)
-target_link_libraries(loadcam_vw vw vwCamera)
+add_library(loadcam_vw MODULE loadcam_vw.cc)
+target_link_libraries(loadcam_vw vw vwCamera ${OCTAVE_LIBRARY})
 
 set(OCTFILE_LIST imread_vw loadcam_vw)
 
-target_link_libraries(${OCTFILE_LIST} ${OCTAVE_LIBRARY})
 set_target_properties(${OCTFILE_LIST} PROPERTIES
                       LINK_FLAGS ${OCTAVE_LINK_FLAGS}
                       COMPILE_FLAGS ${OCTAVE_CXXFLAGS}
