@@ -1,8 +1,3 @@
-cmake_minimum_required (VERSION 2.6)
-project (AMVP)
-
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/modules")
-
 include_directories(~/projects/VisionWorkbench/build/include)
 link_directories(~/projects/VisionWorkbench/build/lib)
 
