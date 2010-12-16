@@ -15,6 +15,7 @@ include_directories(${OCTAVE_INCLUDE_DIRS})
 link_directories(${OCTAVE_LINK_DIRS})
 
 add_library(imread_vw SHARED imread_vw.cc)
+target_link_libraries(imread_vw vw)
 
 set(OCTFILE_LIST imread_vw)
 
