@@ -2,8 +2,9 @@
 
 #include <vw/Image.h>
 #include <vw/FileIO.h>
+#include <vw/Cartography.h>
  
-DEFUN_DLD(imread_vw, args, ,
+DEFUN_DLD(imread_vw, args, nargout,
          "Load an image using VW")
 {
    octave_value_list retval;
@@ -45,5 +46,28 @@ DEFUN_DLD(imread_vw, args, ,
      racc.next_row();
    }
 
-   return octave_value(oct_img);
+   if (nargout == 1) {
+     return octave_value(oct_img);
+   }
+
+   vw::cartography::GeoReference vw_geo;
+   try {
+     read_georeference(vw_geo, filename);
+   } catch (vw::Exception& e) {
+     error(e.what());
+     return retval;
+   }
+
+   vw::Matrix3x3 vw_geo_trans = vw_geo.transform();
+   Matrix oct_geo(3, 3);
+
+   for (int r = 0; r < 3; r++) {
+     for (int c = 0; c < 3; c++) {
+       oct_geo(r, c) = vw_geo_trans(r, c);
+     }
+   }
+
+   retval.append(oct_img);
+   retval.append(oct_geo);
+   return retval;
 }
