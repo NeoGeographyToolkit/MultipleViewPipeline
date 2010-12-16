@@ -67,6 +67,10 @@ DEFUN_DLD(imread_vw, args, nargout,
      }
    }
 
+   Matrix rebase = identity_matrix(3, 3);
+   rebase(0, 2) = rebase(1, 2) = 1;
+   oct_geo = oct_geo * rebase.inverse(); 
+
    retval.append(oct_img);
    retval.append(oct_geo);
    return retval;

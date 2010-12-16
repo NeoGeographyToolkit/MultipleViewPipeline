@@ -39,5 +39,9 @@ DEFUN_DLD(loadcam_vw, args, ,
      }
    }
 
+   Matrix rebase = identity_matrix(3, 3);
+   rebase(0, 2) = rebase(1, 2) = 1;
+   oct_cam_mat = rebase * oct_cam_mat;
+
    return octave_value(oct_cam_mat);
 }
