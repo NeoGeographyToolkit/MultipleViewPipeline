@@ -10,3 +10,4 @@ src/Makefile
 src/cmake_install.cmake
 src/gen_synth_scene
 src/imread_vw.oct
+src/loadcam_vw.oct

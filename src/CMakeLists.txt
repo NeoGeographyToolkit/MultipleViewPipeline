@@ -17,7 +17,10 @@ link_directories(${OCTAVE_LINK_DIRS})
 add_library(imread_vw SHARED imread_vw.cc)
 target_link_libraries(imread_vw vw vwCartography)
 
-set(OCTFILE_LIST imread_vw)
+add_library(loadcam_vw SHARED loadcam_vw.cc)
+target_link_libraries(loadcam_vw vw vwCamera)
+
+set(OCTFILE_LIST imread_vw loadcam_vw)
 
 target_link_libraries(${OCTFILE_LIST} ${OCTAVE_LIBRARY})
 set_target_properties(${OCTFILE_LIST} PROPERTIES
