@@ -115,18 +115,23 @@ backproject_plane(ImageViewBase<ImageT> const& image, GeoReference const& georef
 
 }} // namespace cartography namespace vw
 
-vw::cartography::GeoReference gen_dem_georef() {
+vw::cartography::GeoReference gen_dem_georef(int dem_width, int dem_height) {
   using namespace vw;
   using namespace vw::cartography;
   // 1024x1024 DEM georef
   // Original DEM mean: -2604.93 stddev:888.459
-  double georef_affine_data[] = { 0.00133653359715, 0.00000000000000, 55.7209107019,
-                                  0.00000000000000,-0.00133653359715, 10.1949968063,
-                                  0.00000000000000, 0.00000000000000, 1.00000000000 };
+  double cntr_lon = 56.4052159036408;
+  double cntr_lat = 9.51069160455920;
+  double deg_per_px = 0.00133653359715;
+
+  double georef_affine_data[] = { deg_per_px,         0.0, cntr_lon - deg_per_px * (dem_width / 2.0),
+                                         0.0, -deg_per_px, cntr_lat + deg_per_px * (dem_height / 2.0),
+                                         0.0,         0.0, 1.0 };
+
   return GeoReference(Datum("D_MOON"), MatrixProxy<double>(georef_affine_data, 3, 3));
 }
 
-std::vector<vw::camera::PinholeModel> gen_camera_list() {
+std::vector<vw::camera::PinholeModel> gen_camera_list(int orbit_width, int orbit_height) {
   using namespace vw;
   using namespace vw::camera;
   std::vector<PinholeModel> camera_list;
@@ -134,28 +139,28 @@ std::vector<vw::camera::PinholeModel> gen_camera_list() {
   camera_list.push_back(PinholeModel(
     Vector3(966089.223462, 1557938.52831, 282405.060851),
     Quat(-0.0470851319085,0.358002222657,0.665010992829,-0.653741369612).rotation_matrix(),
-    3802.7, 3802.7, 2757.875, 814.875,
+    3802.7, 3802.7, 1857.875 + orbit_width / 2, -85.125 + orbit_height / 2,
     Vector3(1, 0, 0), Vector3(0, 1, 0), Vector3(0, 0, 1), NullLensDistortion()
     ));
 
   camera_list.push_back(PinholeModel(
     Vector3(996045.240112, 1535573.08189, 299032.543447),
     Quat(-0.0540368023579, 0.364928919676, 0.665264280335, -0.649099641723).rotation_matrix(),
-    3802.7, 3802.7, 1543.875, 823.875,
+    3802.7, 3802.7, 643.875 + orbit_width / 2, -76.124 + orbit_height / 2,
     Vector3(1, 0, 0), Vector3(0, 1, 0), Vector3(0, 0, 1), NullLensDistortion()
     ));
 
   camera_list.push_back(PinholeModel(
     Vector3(1025532.88151, 1512446.05054, 315515.076309),
     Quat(-0.0588100780917, 0.371592737959, 0.667265027691, -0.642820032849).rotation_matrix(),
-    3802.7, 3802.7, 363.875, 863.875,
+    3802.7, 3802.7, -536.125 + orbit_width / 2, -36.125 + orbit_height / 2,
     Vector3(1, 0, 0), Vector3(0, 1, 0), Vector3(0, 0, 1), NullLensDistortion()
     ));
 
   camera_list.push_back(PinholeModel(
     Vector3(1054501.51827, 1488593.63697, 331834.757985),
     Quat(-0.0639146875174, 0.378441350432, 0.667943479689, -0.637611609793).rotation_matrix(),
-    3802.7, 3802.7, -836.125, 863.875,
+    3802.7, 3802.7, -1736.125 + orbit_width / 2, -36.125 + orbit_height / 2,
     Vector3(1, 0, 0), Vector3(0, 1, 0), Vector3(0, 0, 1), NullLensDistortion()
     ));
 

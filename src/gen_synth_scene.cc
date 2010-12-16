@@ -20,33 +20,33 @@ using namespace vw::cartography;
 
 int main( int argc, char *argv[] ) {
   boost::rand48 gen;
-  const int dem_width = 1024, dem_height = 1024;
+  const int dem_width = 200, dem_height = 200;
+  const int orbit_width = 256, orbit_height = 256;
+  const double dem_cntr_alt = -2605;
+  const double dem_corner_delta = 888 / 1024 * dem_width;
+
   string output_folder = ".";
-  GeoReference georef = gen_dem_georef();
-  std::vector<PinholeModel> camera_list = gen_camera_list();
+  GeoReference georef = gen_dem_georef(dem_width, dem_height);
+  std::vector<PinholeModel> camera_list = gen_camera_list(orbit_width, orbit_height);
 
   if (argc > 1) {
     output_folder = argv[1];
   }
 
   // Create initial-DEM.tif
-  Vector4 dem_initial_plane = gen_plane(georef, -2605, dem_width, dem_height);
+  Vector4 dem_initial_plane = gen_plane(georef, dem_cntr_alt, dem_width, dem_height);
   {
     ImageViewRef<float32> out = pixel_cast<float32>(plane_dem_view(georef,
                                 dem_initial_plane, dem_width, dem_height));
     write_georef_image(output_folder + "/initial-DEM.tif", out, georef);
-    write_georef_image(output_folder + "/initial-DEM.norm.tif", 
-                       pixel_cast_rescale<uint8>(out), georef);
   }
 
   // Create ground-DEM.tif
-  Vector4 dem_ground_plane = gen_plane(georef, -2605, 888, dem_width, dem_height);
+  Vector4 dem_ground_plane = gen_plane(georef, dem_cntr_alt, dem_corner_delta, dem_width, dem_height);
   {
     ImageViewRef<float32> out = pixel_cast<float32>(plane_dem_view(georef,
                                 dem_ground_plane, dem_width, dem_height));
     write_georef_image(output_folder + "/ground-DEM.tif", out, georef);
-    write_georef_image(output_folder + "/ground-DEM.norm.tif", 
-                       pixel_cast_rescale<uint8>(out), georef);
   }
 
   // Create ground-DRG.tif
@@ -56,8 +56,6 @@ int main( int argc, char *argv[] ) {
     // Don't block write. If we block write, threading
     // will make the texture different every runtime
     write_georef_image(output_folder + "/ground-DRG.tif", out, georef, false);
-    write_georef_image(output_folder + "/ground-DRG.norm.tif",
-                       pixel_cast_rescale<uint8>(out), georef, false);
   }
 
   // Create Orbital Images
@@ -68,11 +66,9 @@ int main( int argc, char *argv[] ) {
     {
       ImageViewRef<float32> out = backproject_plane(interpolate(drg_ground, 
         BilinearInterpolation(), ZeroEdgeExtension()) , georef, camera_list[i],
-        dem_ground_plane, 1800, 1800);
+        dem_ground_plane, orbit_width, orbit_height);
      
       write_orbit_image(output_folder + "/" + ss.str() + ".tif", out);
-      write_orbit_image(output_folder + "/" + ss.str() + ".norm.tif",
-                        pixel_cast_rescale<uint8>(out));
     }
     camera_list[i].write(output_folder + "/" + ss.str() + ".pinhole");
   }
