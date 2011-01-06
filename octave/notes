@@ -1,0 +1,46 @@
+[xx yy zz] = lonlatrad2xyz(lon, lat, rad)
+
+[lon lat] = lonlatgrid(georef, size)
+rad = planedem(plane, lon, lat)
+
+p = ccrop(im, cntrPt, halfKern);
+
+im = orthoproj(xx, yy, zz, orbit)
+
+---------------------------------------------------------------
+
+orthoproject whole DEM:
+ given d = DEM, g = georef, o = orbit
+
+ [lon lat] = lonlatgrid(g, size(d));
+ [xx yy zz] = lonlatrad2xyz(lon, lat, d);
+ im = orthoproj(xx, yy, zz, o);
+
+
+orthoproject patch of DEM:
+  given d = DEM, g = georef, o = orbit, cntrPt, halfKern
+
+  [lon lat] = lonlatgrid(g, size(d));
+  plon = ccrop(lon, cntrPt, halfKern);
+  plat = ccrop(lat, cntrPt, halfKern);
+  prad = ccrop(d, cntrPt, halfKern);
+  [xx yy zz] = lonlatrad2xyz(plon, plat, prad);
+  im = orthoproject(xx, yy, zz, o);
+  
+orthoproject plane dem:
+  
+  [lon lat] = lonlatgrid(g, size(d));
+  rad = planedem(plane, lon, lat);
+  [xx yy zz] = lonlatrad2xyz(lon lat rad);
+  im = orthoproject(xx, yy, zz, o);
+
+orthoproject plane dem patch:
+  [lon lat] = lonlatgrid(g, size(d));
+
+  plon = ccrop(lon, cntrPt, halfKern);
+  plat = ccrop(lat, cntrPt, halfKern);
+  prad = planedem(plane, lon, lat);
+  
+  [xx yy zz] = lonlatrad2xyz(lon, lat, rad);
+  im = orthoproject(xx, yy, zz, o)
+
