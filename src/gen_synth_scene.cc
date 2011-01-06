@@ -37,6 +37,7 @@ int main( int argc, char *argv[] ) {
 
   // Create initial-DEM.tif
   Vector4 dem_initial_plane = gen_plane(georef, dem_cntr_alt, dem_width, dem_height);
+  cout << std::setprecision(12);
   cout << "Plane for initial-DEM.tif: " << dem_initial_plane << endl;
   {
     ImageViewRef<float32> out = pixel_cast<float32>(plane_dem_view(georef,
