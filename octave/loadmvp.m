@@ -5,6 +5,7 @@ DATUM_RADIUS = 1737400; % Moon
 % Load DEMs
 [demGround georef] = imread_vw([synthSceneDir "ground-DEM.tif"]);
 demInitial = imread_vw([synthSceneDir "initial-DEM.tif"]);
+drgGround = imread_vw([synthSceneDir "ground-DRG.tif"]);
 
 % Add radius into DEMs
 demGround += DATUM_RADIUS;

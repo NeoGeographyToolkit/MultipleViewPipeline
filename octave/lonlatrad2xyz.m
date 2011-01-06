@@ -7,12 +7,11 @@ function [xx yy zz] = lonlatrad2xyz(lon, lat, rad)
 
   for r = 1:dim(1)
     for c = 1:dim(2)
-      % east positive
-      normxy = rad(r,c) * cos(lat(r,c));
+      xyz = rad(r,c) * lonlat2normal([lon(r,c); lat(r,c)]);
 
-      xx(r,c) = normxy * cos(lon(r,c));
-      yy(r,c) = normxy * sin(lon(r,c));
-      zz(r,c) = rad(r,c) * sin(lat(r,c));
+      xx(r,c) = xyz(1);
+      yy(r,c) = xyz(2);
+      zz(r,c) = xyz(3);
     endfor
   endfor
 
