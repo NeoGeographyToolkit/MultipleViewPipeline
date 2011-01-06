@@ -69,7 +69,11 @@ DEFUN_DLD(imread_vw, args, nargout,
 
    Matrix rebase = identity_matrix(3, 3);
    rebase(0, 2) = rebase(1, 2) = 1;
-   oct_geo = oct_geo * rebase.inverse(); 
+   oct_geo = oct_geo * rebase.inverse();
+
+   Matrix deg2rad = identity_matrix(3, 3);
+   deg2rad(0, 0) = deg2rad(1, 1) = M_PI / 180.0;
+   oct_geo = deg2rad * oct_geo;
 
    retval.append(oct_img);
    retval.append(oct_geo);

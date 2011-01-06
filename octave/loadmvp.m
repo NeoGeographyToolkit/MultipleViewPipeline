@@ -2,15 +2,19 @@ synthSceneDir = "/home/khusmann/projects/MultipleViewPipeline/synth_scene/";
 
 DATUM_RADIUS = 1737400; % Moon
 
+% Load DEMs
 [demGround georef] = imread_vw([synthSceneDir "ground-DEM.tif"]);
-% Add radius into DEM
+demInitial = imread_vw([synthSceneDir "initial-DEM.tif"]);
+
+% Add radius into DEMs
 demGround += DATUM_RADIUS;
-% Degrees to radians
-georef = diag([pi/180 pi/180 1]) * georef;
+demInitial += DATUM_RADIUS;
 
-[demLon demLat] = lonlatgrid(georef, size(groundDEM));
-
+% Load orbits
 for n = 0:3
   orbits{n+1}.img = imread_vw([synthSceneDir num2str(n) ".tif"]);
   orbits{n+1}.cam = loadcam_vw([synthSceneDir num2str(n) ".pinhole"]);
 end
+
+% Build lonlat grid
+[demLon demLat] = lonlatgrid(georef, size(demGround));
