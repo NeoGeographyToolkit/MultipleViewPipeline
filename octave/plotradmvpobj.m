@@ -9,7 +9,7 @@ planeLonlat = [0.98447 0.16892];
 patchLon = ccrop(demLon, pt, halfKern);
 patchLat = ccrop(demLat, pt, halfKern);
 
-planeRads = linspace(1734790, 1734800, n);
+planeRads = linspace(1734790, 1734797, n);
 
 o = zeros([n 1]);
 for k = 1:n
