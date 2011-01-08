@@ -1,0 +1,4 @@
+First run loadmvp to init all the variables
+
+Then run plotlonlatmvpobj to plot the obj function over various lon lats
+Then run plotradmvpobj to plot the obj function over various rads
