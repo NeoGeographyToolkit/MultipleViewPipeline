@@ -1,17 +1,15 @@
 % Plane for initial-DEM.tif: Vector4(0.545701763592,0.821530211924,0.16522014438,1734795)
 % Plane for ground-DEM.tif: Vector4(0.545430300437,0.821121535979,0.168122605606,1734787.48401)
 
+% Radius at 20, 20 on dem: 1734793.07299805
+% planeLat, planeLon = [0.98447 0.16892]
 
-pt = [20 20]';
-plane = [0.545430300437 0.821121535979 0.168122605606 1734787.48401];
+pt = [20; 20];
 halfKern = 7;
 
-plon = ccrop(demLon, pt, halfKern);
-plat = ccrop(demLat, pt, halfKern);
+plane = [0.98447 0.16892 1734793.07299805];
 
-prad = ccrop(demGround, pt, halfKern);
-prad2 = planedem(plane, plon, plat);
+patchLon = ccrop(demLon, pt, halfKern);
+patchLat = ccrop(demLat, pt, halfKern);
 
-[xx yy zz] = lonlatrad2xyz(plon, plat, prad);
-
-patches = cellfun(@(orbit) orthoproj(xx, yy, zz, orbit), orbits, "UniformOutput", false);
+mvpobj_gauss(plane, patchLon, patchLat, orbits)
