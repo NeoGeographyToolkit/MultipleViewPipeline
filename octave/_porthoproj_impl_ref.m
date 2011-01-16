@@ -6,7 +6,7 @@ function [xw yw] = _porthoproj_impl_ref(planeNormal, planeD, demPt, georef, orbi
  
   patchRad = planedem(planeNormal, planeD, patchLon, patchLat);
 
-  [xx yy zz] = lonlatrad2xyz(patchLons, patchLats, patchRads);
+  [xx yy zz] = lonlatrad2xyz(patchLon, patchLat, patchRad);
 
   [xw yw] = _orthoproj_impl(xx, yy, zz, orbit);
 
