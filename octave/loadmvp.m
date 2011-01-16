@@ -16,6 +16,3 @@ for n = 0:3
   orbits{n+1}.img = imread_vw([synthSceneDir num2str(n) ".tif"]);
   orbits{n+1}.cam = loadcam_vw([synthSceneDir num2str(n) ".pinhole"]);
 end
-
-% Build lonlat grid
-[demLon demLat] = lonlatgrid(georef, size(demGround));

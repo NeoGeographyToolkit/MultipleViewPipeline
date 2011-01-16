@@ -1,8 +1,8 @@
-function [lon lat] = lonlatgrid(georef, sz)
+function [lon lat] = lonlatgrid(georef, sz, off = [1 1])
   lon = zeros(sz);
   lat = zeros(sz);
-  for r = 1:sz(1)
-    for c = 1:sz(2)
+  for r = off(1):sz(1)
+    for c = off(2):sz(2)
       % px -> lonlat
       ll = georef * [c;r;1];
 
