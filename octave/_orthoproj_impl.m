@@ -3,17 +3,9 @@
 function [xw yw] = _orthoproj_impl(xx, yy, zz, orbit)
   dim = size(xx);
 
-  xw = zeros(dim);
-  yw = zeros(dim);
+  D = [xx(:), yy(:), zz(:), ones(dim(1) * dim(2), 1)]';
+  PD = orbit.cam * D;
+  xw = reshape(PD(1,:) ./ PD(3,:), dim);
+  yw = reshape(PD(2,:) ./ PD(3,:), dim);
 
-  for r = 1:dim(1)
-    for c = 1:dim(2)
-      % pt -> px
-      px = orbit.cam * [xx(r,c); yy(r,c); zz(r,c); 1];
-
-      % store in map (and normalize homog coords)
-      xw(r, c) = px(1) / px(3);
-      yw(r, c) = px(2) / px(3);
-    endfor
-  endfor
 endfunction
