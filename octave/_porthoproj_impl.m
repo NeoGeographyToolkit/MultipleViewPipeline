@@ -10,19 +10,15 @@ function [xw yw] = _porthoproj_impl(planeNormal, planeD, demPt, georef, orbit, h
   
   cntrPtOrbH = H1 * e;
   cntrPtOrb = cntrPtOrbH(1:2) / cntrPtOrbH(3);
+  ulPtOrb = cntrPtOrb - S * [hWin + 1; hWin + 1];
 
-  for r = 1:dim
-    for c = 1:dim
-       off = S * ([c; r] - hWin - 1);
+  P = [[S, ulPtOrb]; [0, 0, 1]];
 
-       pt = cntrPtOrb + off;
-       xw(r, c) = pt(1);
-       yw(r, c) = pt(2);
-%      ptH = H * [c; r; 1];
-%      xw(r, c) = ptH(1) / ptH(3);
-%      yw(r, c) = ptH(2) / ptH(3);
-    endfor
-  endfor
+  [X, Y] = meshgrid(1:dim);
+  D = [X(:), Y(:), ones(dim * dim, 1)]';
+  PD = P * D;
+  xw = reshape(PD(1,:), dim, dim);
+  yw = reshape(PD(2,:), dim, dim);
 endfunction
 
 
@@ -42,13 +38,3 @@ endfunction
 %! errY = norm(yw1(:) - yw(:));
 %! assert(errX, 0, 0.1);
 %! assert(errY, 0, 0.1);
-
-  %[X, Y] = meshgrid(1:dim);
-  %D = [X(:), Y(:), ones(dim * dim, 1)]';
-  %PD = H * D;
-  %XW = PD(1,:)./PD(3,:);
-  %YW = PD(2,:)./PD(3,:);
-  %xw = reshape(XW, dim, dim);
-  %yw = reshape(XW, dim, dim);
-
-
