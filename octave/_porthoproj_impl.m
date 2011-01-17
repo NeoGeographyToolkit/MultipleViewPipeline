@@ -17,8 +17,8 @@ function [xw yw] = _porthoproj_impl(planeNormal, planeD, demPt, georef, orbit, h
   [X, Y] = meshgrid(1:dim);
   D = [X(:), Y(:), ones(dim * dim, 1)]';
   PD = P * D;
-  xw = reshape(PD(1,:), dim, dim);
-  yw = reshape(PD(2,:), dim, dim);
+  xw = reshape(PD(1,:), dim, dim); % Don't need ./ PD(3,:) because is affine
+  yw = reshape(PD(2,:), dim, dim); % Don't need ./ PD(3,:) because is affine
 endfunction
 
 
