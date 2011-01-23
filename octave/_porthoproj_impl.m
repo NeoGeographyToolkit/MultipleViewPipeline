@@ -20,7 +20,7 @@ endfunction
 %!test
 %! planeNormal = [0.54543; 0.82112; 0.16812];
 %! planeD = 1.7348e6;
-%! demPt = [25; 20];
+%! demPt = [100; 10000];
 %! georef = [0.00002,  0.00000, 0.98145;
 %!           0.00000, -0.00002, 0.16900;
 %!           0.00000,  0.00000, 1.00000];
@@ -31,5 +31,5 @@ endfunction
 %! [xw1 yw1] = _porthoproj_impl_ref(planeNormal, planeD, demPt, georef, orbit, 7);
 %! errX = norm(xw1(:) - xw(:));
 %! errY = norm(yw1(:) - yw(:));
-%! assert(errX, 0, 0.1);
-%! assert(errY, 0, 0.1);
+%! assert(errX, 0, 0.001);
+%! assert(errY, 0, 0.001);
