@@ -7,15 +7,9 @@ function [xw yw] = _porthoproj_impl(planeNormal, planeD, demPt, georef, orbit, h
 
   deltaE = e - de_d0 * cntrPtLonLat;
 
-  ulPtH = georef * ([demPt(1); demPt(2); 1] - [hWin + 1; hWin + 1; 0]);
-  ulPtLonLat = lonlat2normal(ulPtH(1:2) / ulPtH(3))
-
-  ulPtLonLat2 = [de_d0 deltaE] * georef * ([demPt(1); demPt(2); 1] - [hWin + 1; hWin + 1; 0])
-
-
   P = orbit.cam * [eye(3,3);planeNormal'/planeD] * [de_d0 deltaE] * georef;
 
-  [X, Y] = meshgrid(1:dim);
+  [X, Y] = meshgrid((0:dim - 1) + (demPt(1) - hWin), (0:dim - 1) + (demPt(2) - hWin));
   D = [X(:), Y(:), ones(dim * dim, 1)]';
   PD = P * D;
   xw = reshape(PD(1,:) ./ PD(3,:), dim, dim); 
@@ -26,7 +20,7 @@ endfunction
 %!test
 %! planeNormal = [0.54543; 0.82112; 0.16812];
 %! planeD = 1.7348e6;
-%! demPt = [20; 20];
+%! demPt = [25; 20];
 %! georef = [0.00002,  0.00000, 0.98145;
 %!           0.00000, -0.00002, 0.16900;
 %!           0.00000,  0.00000, 1.00000];

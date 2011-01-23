@@ -3,7 +3,7 @@ function [lon lat] = lonlatgrid(georef, sz, off = [1 1])
     sz = [sz sz];
   endif
 
-  [X, Y] = meshgrid(off(1):sz(2)+off(1)-1,off(2):sz(1)+off(2)-1);
+  [X, Y] = meshgrid((0:sz(2) - 1) + off(1), (0:sz(1) - 1) + off(2));
   D = [X(:), Y(:), ones(sz(1) * sz(2), 1)]';
   PD = georef * D;
 
