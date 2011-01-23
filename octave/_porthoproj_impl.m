@@ -2,23 +2,24 @@ function [xw yw] = _porthoproj_impl(planeNormal, planeD, demPt, georef, orbit, h
   dim = 2 * hWin + 1;
 
   cntrPtLonLatH = georef * [demPt(1); demPt(2); 1];
-  [e de_d0] = lonlat2normal(cntrPtLonLatH(1:2) / cntrPtLonLatH(3));
+  cntrPtLonLat = cntrPtLonLatH(1:2) / cntrPtLonLatH(3);
+  [e de_d0] = lonlat2normal(cntrPtLonLat);
 
-  H1 = orbit.cam * [eye(3,3);planeNormal'/planeD];
-  dH1_de = (H1(1:2,:) - [H1(1,:)*e;H1(2,:)*e]*H1(3,:)) / (H1(3,:) * e);
-  S = dH1_de * de_d0 * georef(1:2, 1:2);
-  
-  cntrPtOrbH = H1 * e;
-  cntrPtOrb = cntrPtOrbH(1:2) / cntrPtOrbH(3);
-  ulPtOrb = cntrPtOrb - S * [hWin + 1; hWin + 1];
+  deltaE = e - de_d0 * cntrPtLonLat;
 
-  P = [[S, ulPtOrb]; [0, 0, 1]];
+  ulPtH = georef * ([demPt(1); demPt(2); 1] - [hWin + 1; hWin + 1; 0]);
+  ulPtLonLat = lonlat2normal(ulPtH(1:2) / ulPtH(3))
+
+  ulPtLonLat2 = [de_d0 deltaE] * georef * ([demPt(1); demPt(2); 1] - [hWin + 1; hWin + 1; 0])
+
+
+  P = orbit.cam * [eye(3,3);planeNormal'/planeD] * [de_d0 deltaE] * georef;
 
   [X, Y] = meshgrid(1:dim);
   D = [X(:), Y(:), ones(dim * dim, 1)]';
   PD = P * D;
-  xw = reshape(PD(1,:), dim, dim); % Don't need ./ PD(3,:) because is affine
-  yw = reshape(PD(2,:), dim, dim); % Don't need ./ PD(3,:) because is affine
+  xw = reshape(PD(1,:) ./ PD(3,:), dim, dim); 
+  yw = reshape(PD(2,:) ./ PD(3,:), dim, dim);
 endfunction
 
 
