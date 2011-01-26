@@ -27,6 +27,7 @@ for k = 1:numOrbs
 endfor
 
 % Load data
+printf("Loading images... ");
 [dem georef] = imread_vw(demFile);
 dem += DATUM_RADIUS;
 
@@ -34,6 +35,7 @@ for k = 1:numOrbs
   orbs{k}.img = imread_vw(imgFiles{k});
   orbs{k}.cam = loadcam_vw(camFiles{k});
 endfor
+printf("Done!\n");
 
 % Show command prompt
 while 1
