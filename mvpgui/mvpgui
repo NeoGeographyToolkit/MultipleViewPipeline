@@ -1,6 +1,6 @@
 #!/bin/bash
 
 MVP_ROOT=$(readlink -f $(dirname $0)/..)
-OCTAVE_PATHS=$MVPROOT/build/src:$MVPROOT/octave:$MVPROOT/mvpgui
+OCTAVE_PATHS=$MVP_ROOT/build/src:$MVP_ROOT/octave:$MVP_ROOT/mvpgui
 
-octave -q --exec-path $OCTAVE_PATHS $MVP_ROOT/mvpgui/mvpgui.m $@
+octave -qf --path $OCTAVE_PATHS $MVP_ROOT/mvpgui/mvpgui.m $@
