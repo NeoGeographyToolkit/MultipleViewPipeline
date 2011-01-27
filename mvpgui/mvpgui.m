@@ -1,13 +1,15 @@
 DATUM_RADIUS = 1737400; %Moon
 
 % Parse command args
-[args err] = mvpgui_parseArgs(argv(), nargin);
-
-if (err)
-  printf("Error: %s\n", err);
-  printf("Usage: mvpgui dem.tif orbit1.tif orbit1.pinhole orbit2.tif orbit2.pinhole [orbit3.tif orbit3.pinhole ...]");
+try
+  args = mvpgui_parseArgs(argv(), nargin);
+catch
+  printf("Error: %s\n\n", lasterror.message);
+  printf("Usage: mvpgui dem.tif orbit1.tif orbit1.pinhole\n");
+  printf("                      orbit2.tif orbit2.pinhole\n"); 
+  printf("                     [orbit3.tif orbit3.pinhole ...]");
   exit(1);
-endif
+end_try_catch
 
 % Load data
 printf("Loading images... ");

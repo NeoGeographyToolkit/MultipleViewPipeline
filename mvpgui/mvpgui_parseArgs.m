@@ -3,8 +3,7 @@ args = {};
 err = "";
 
 if pnargin < 5
-  err = "Too few arguments";
-  return;
+  error("Too few arguments");
 endif
 
 args.demFile = pargv{1};
@@ -12,8 +11,7 @@ args.demFile = pargv{1};
 args.numOrbs = (numel(pargv) - 1) / 2;
 
 if floor(args.numOrbs) != args.numOrbs
-  err = "Supply a camera model for each orbital image!";
-  return;
+  error("Supply a camera model for each orbital image!");
 endif 
 
 for k = 1:args.numOrbs
