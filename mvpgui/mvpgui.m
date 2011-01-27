@@ -7,7 +7,7 @@ catch
   printf("Error: %s\n\n", lasterror.message);
   printf("Usage: mvpgui dem.tif orbit1.tif orbit1.pinhole\n");
   printf("                      orbit2.tif orbit2.pinhole\n"); 
-  printf("                     [orbit3.tif orbit3.pinhole ...]");
+  printf("                     [orbit3.tif orbit3.pinhole ...]\n");
   exit(1);
 end_try_catch
 
@@ -23,7 +23,7 @@ try
   endfor
   printf("Done!\n");
 catch
-  printf("\nError loading images: %s", lasterror.message);
+  printf("\nError loading images: %s\n", lasterror.message);
   exit(1);
 end_try_catch
 
@@ -33,6 +33,7 @@ while 1
     cmd = strsplit(tolower(input("mvp> ", "s")), " ", true);
   catch
     % Ctrl-D exits
+    printf("\n");
     exit(0);
   end_try_catch
 
@@ -40,6 +41,30 @@ while 1
     continue;
   endif
 
+  fn = @() error("Logic error");
+  switch (cmd{1})
+    case "help"
+      fn = @mvpgui_cmd_help;
+    case "poi"
+      fn = @mvpgui_cmd_poi;
+    case "hwin"
+      fn = @mvpgui_cmd_hwin;
+    case "cp"
+      fn = @mvpgui_cmd_cp;
+    case "radplot"
+      fn = @mvpgui_cmd_radplot;
+    case "exit"
+      fn = @mvpgui_cmd_exit;
+    otherwise
+      printf("Unrecognized command: %s\n", cmd{1});
+      continue;
+  endswitch
+
+  try
+    ws = fn(ws, cmd{2:end});
+  catch
+    printf("Error: %s\n", lasterror.message);
+  end_try_catch
 endwhile
 
 % vim:set syntax=octave:
