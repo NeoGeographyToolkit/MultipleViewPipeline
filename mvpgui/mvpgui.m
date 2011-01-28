@@ -27,6 +27,11 @@ catch
   exit(1);
 end_try_catch
 
+% Initialize the workspace
+ws.poi = floor(size(ws.orbs{1}.img) / 2);
+% ws = mvpgui_cmd_cp(ws, {"initial"});
+ws.hwin = 10;
+
 % Enter interactive shell
 while 1
   try
@@ -61,7 +66,7 @@ while 1
   endswitch
 
   try
-    ws = fn(ws, cmd{2:end});
+    ws = fn(ws, {cmd{2:end}});
   catch
     printf("Error: %s\n", lasterror.message);
   end_try_catch
