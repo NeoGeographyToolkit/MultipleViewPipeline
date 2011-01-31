@@ -9,6 +9,7 @@ function rws = mvpgui_cmd_cpi(ws, args)
   oldcp = ws.cp;
 
   printf("\nSelect a point (right click to cancel)\n\n");
+  ws = mvpgui_cmd_replot(ws, {});
   [locX locY btn] = ginput(1);
   if (btn == 1)
     switch(ws.plot)
