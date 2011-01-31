@@ -29,8 +29,9 @@ end_try_catch
 
 % Initialize the workspace
 ws.poi = floor(size(ws.orbs{1}.img) / 2);
-ws = mvpgui_cmd_cp(ws, {"i"});
+ws = mvpgui_cmd_cp(ws, {"init"});
 ws.hwin = 10;
+ws.plot = "none";
 
 % Enter interactive shell
 while 1
@@ -56,8 +57,12 @@ while 1
       fn = @mvpgui_cmd_hwin;
     case "cp"
       fn = @mvpgui_cmd_cp;
+    case "cpi"
+      fn = @mvpgui_cmd_cpi;
     case "radplot"
       fn = @mvpgui_cmd_radplot;
+    case "replot"
+      fn = @mvpgui_cmd_replot;
     case "exit"
       fn = @mvpgui_cmd_exit;
     otherwise
