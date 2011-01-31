@@ -29,7 +29,7 @@ end_try_catch
 
 % Initialize the workspace
 ws.poi = floor(size(ws.orbs{1}.img) / 2);
-% ws = mvpgui_cmd_cp(ws, {"initial"});
+ws = mvpgui_cmd_cp(ws, {"i"});
 ws.hwin = 10;
 
 % Enter interactive shell
