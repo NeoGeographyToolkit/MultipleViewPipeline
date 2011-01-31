@@ -16,18 +16,20 @@ function rws = mvpgui_cmd_radplot(ws, args)
       error("radplot: invalid number of arguments");    
   endswitch
 
-  rads = linspace(radbegin, radend, npts);
+  ws.radplot.poi = ws.poi;
+  ws.radplot.lonlat = ws.cp(1:2);
+  ws.radplot.rads = linspace(radbegin, radend, npts);
 
   printf("\n");
 
-  obj = zeros(npts, 1);
+  ws.radplot.obj = zeros(npts, 1);
   for k = 1:npts
-    obj(k) = mvpobj([ws.cp(1:2) rads(k)], ws.poi, ws.georef, ws.orbs, ws.hwin, 10);
+    ws.radplot.obj(k) = mvpobj([ws.radplot.lonlat ws.radplot.rads(k)], ws.poi, ws.georef, ws.orbs, ws.hwin, 10);
     printf("%d / %d\r", k, npts);
   endfor
   printf("\n\n");
 
-  ws.fig = plot(rads, obj, "*-");
+  ws.fig = plot(ws.radplot.rads, ws.radplot.obj, "*-");
   ws.plot = "radplot";
   pause(0);
 
