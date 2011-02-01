@@ -63,6 +63,8 @@ while 1
       fn = @mvpgui_cmd_radplot;
     case "replot"
       fn = @mvpgui_cmd_replot;
+    case "save"
+      fn = @mvpgui_cmd_save;
     case "exit"
       fn = @mvpgui_cmd_exit;
     otherwise

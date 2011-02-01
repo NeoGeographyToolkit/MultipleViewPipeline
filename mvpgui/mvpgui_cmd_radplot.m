@@ -17,14 +17,15 @@ function rws = mvpgui_cmd_radplot(ws, args)
   endswitch
 
   ws.radplot.poi = ws.poi;
-  ws.radplot.lonlat = ws.cp(1:2);
+  ws.radplot.georef = ws.georef;
+  ws.radplot.cp = ws.cp;
   ws.radplot.rads = linspace(radbegin, radend, npts);
 
   printf("\n");
 
   ws.radplot.obj = zeros(npts, 1);
   for k = 1:npts
-    ws.radplot.obj(k) = mvpobj([ws.radplot.lonlat ws.radplot.rads(k)], ws.poi, ws.georef, ws.orbs, ws.hwin, 10);
+    ws.radplot.obj(k) = mvpobj([ws.radplot.cp(1:2) ws.radplot.rads(k)], ws.poi, ws.georef, ws.orbs, ws.hwin, -1);
     printf("%d / %d\r", k, npts);
   endfor
   printf("\n\n");
