@@ -5,3 +5,16 @@ formation process and find the optimal height for each DEM post given
 every available orbital image. Complex terrain and reflectance models 
 are simplified by assuming planar terrain and a linear reflectance model 
 on a small patch around a given DEM post. 
+
+Building Instructions:
+----------------------
+
+cd MultipleViewPipeline
+mkdir build
+cmake ../
+make
+
+Running Instructions:
+---------------------
+build/src/gen_synth_scene - generate a synthetic scene
+mvpgui/mvpgui - an objective function explorer
