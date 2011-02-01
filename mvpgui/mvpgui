@@ -2,6 +2,6 @@
 
 MVP_ROOT=$(readlink -f $(dirname $0)/..)
 OCTAVE_PATHS=$MVP_ROOT/build/src:$MVP_ROOT/octave:$MVP_ROOT/mvpgui
-OCTAVE_PATHS=$OCTAVE_PATHS:/usr/share/octave/packages/3.2/image-1.0.12
+#OCTAVE_PATHS=$OCTAVE_PATHS:/usr/share/octave/packages/3.2/image-1.0.12
 
-octave -qf --path $OCTAVE_PATHS $MVP_ROOT/mvpgui/mvpgui.m $@
+octave -q --path $OCTAVE_PATHS $MVP_ROOT/mvpgui/mvpgui.m $@
