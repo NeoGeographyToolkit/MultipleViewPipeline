@@ -1,4 +1,4 @@
-function rws = mvpgui_cmd_radplot(ws, args)
+function rws = mvpgui_cmd_rplot(ws, args)
   radbegin = -1;
   radend = -1;
   npts = -1;
@@ -13,7 +13,7 @@ function rws = mvpgui_cmd_radplot(ws, args)
       radend = ws.cp(3) + str2num(args{1});
       npts = floor(str2num(args{2}));
     otherwise
-      error("radplot: invalid number of arguments");    
+      error("rplot: invalid number of arguments");    
   endswitch
 
   ws.radplot.poi = ws.poi;

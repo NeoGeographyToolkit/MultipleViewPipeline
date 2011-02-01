@@ -1,4 +1,4 @@
-function rws = mvpgui_cmd_lonlatplot(ws, args)
+function rws = mvpgui_cmd_llplot(ws, args)
   lonbegin = -1;
   lonend = -1;
   latbegin = -1;
@@ -23,7 +23,7 @@ function rws = mvpgui_cmd_lonlatplot(ws, args)
 
       npts = floor(str2num(args{2}));
     otherwise
-      error("radplot: invalid number of arguments");    
+      error("llplot: invalid number of arguments");    
   endswitch
 
   ws.lonlatplot.poi = ws.poi;

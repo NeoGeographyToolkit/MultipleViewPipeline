@@ -59,10 +59,10 @@ while 1
       fn = @mvpgui_cmd_cp;
     case "cpi"
       fn = @mvpgui_cmd_cpi;
-    case "radplot"
-      fn = @mvpgui_cmd_radplot;
-    case "lonlatplot"
-      fn = @mvpgui_cmd_lonlatplot;
+    case "rplot"
+      fn = @mvpgui_cmd_rplot;
+    case "llplot"
+      fn = @mvpgui_cmd_llplot;
     case "replot"
       fn = @mvpgui_cmd_replot;
     case "save"
