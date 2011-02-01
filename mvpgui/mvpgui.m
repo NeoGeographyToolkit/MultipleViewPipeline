@@ -61,6 +61,8 @@ while 1
       fn = @mvpgui_cmd_cpi;
     case "radplot"
       fn = @mvpgui_cmd_radplot;
+    case "lonlatplot"
+      fn = @mvpgui_cmd_lonlatplot;
     case "replot"
       fn = @mvpgui_cmd_replot;
     case "save"

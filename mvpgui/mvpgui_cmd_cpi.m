@@ -16,7 +16,8 @@ function rws = mvpgui_cmd_cpi(ws, args)
       case "radplot"
         ws.cp(3) = locX;
       case "lonlatplot"
-        ws.cp(1:2) = [locX locY];
+        ws.cp(1) = locX;
+        ws.cp(2) = locY;
       otherwise
         error("cpi: logic error");    
     endswitch

@@ -4,8 +4,11 @@ function rws = mvpgui_cmd_replot(ws, args)
   endif
 
   switch (ws.plot)
-    case {"radplot" "lonlatplot"}
-      axis([1 2 3 4], "auto");
+    case "radplot"
+      axis("auto");
+      replot;
+    case "lonlatplot"
+      axis("auto", "image");
       replot;
     otherwise
       error("replot: no current plot!");
