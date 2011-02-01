@@ -3,7 +3,11 @@ function err = mvperr(patches, hKern, errfun)
   dim = size(patches{1});
 
   % TODO: dispatch _mvperr_impl_gauss
-  % TODO: normalize in each step
+
+  % Normalize patches
+  for k = 1:n
+    patches{k} = (patches{k} - mean(patches{k}(:))) / std(patches{k}(:));
+  endfor
 
   % Find the albedo
   meanpatch = zeros(dim);
