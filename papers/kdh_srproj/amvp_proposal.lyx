@@ -1,0 +1,726 @@
+#LyX 1.6.7 created this file. For more info see http://www.lyx.org/
+\lyxformat 345
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\language english
+\inputencoding auto
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\author "" 
+\author "" 
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Evaluating The Objective Function For A New Multiple-View Photogrammetry
+ Algorithm
+\end_layout
+
+\begin_layout Author
+Kyle D.
+ Husmann
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+kyle.husmann@gmail.com
+\end_layout
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\shape italic
+\size normal
+California Polytechnic State University, San Luis Obispo, CA, USA
+\shape default
+\size default
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Taemin Kim
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+taemin.kim@nasa.gov
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Newline newline
+\end_inset
+
+
+\shape italic
+\size normal
+Intelligent Robotics Group, NASA Ames Research Center, CA, USA
+\end_layout
+
+\begin_layout Date
+February 19, 2011
+\end_layout
+
+\begin_layout Abstract
+The abstract goes here...
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+Topographical maps are an essential tool for scientists interested in exploring
+ and learning more about planetary bodies like the moon or mars.
+ These maps allow scientists do everything from identifying geological phenomena
+ to identifying potential landing sites for probes or spacecraft.
+\end_layout
+
+\begin_layout Standard
+Satellites and other spacecraft that visit planetary bodies of interest
+ are usually equipped with a variety of sensors, which can be used to recover
+ the topography of the planetary surface.
+ LiDAR (Light Detection And Ranging) sensors give sparse (but highly accurate)
+ measurements at periodic points called 
+\begin_inset Quotes eld
+\end_inset
+
+posts
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Raw images that are captured as the satellite orbits the planetary body
+ can also be processed to create highly detailed topographical maps.
+ By registering and aligning these two data sets, maps can be created that
+ are both dense accurate.
+ The methods of processing orbital images into topographical maps are the
+ topic of this paper.
+\end_layout
+
+\begin_layout Standard
+Given two images of the same scene taken from slightly different perspectives,
+ the relative shift of objects from frame to frame (known as 
+\begin_inset Quotes eld
+\end_inset
+
+disparity
+\begin_inset Quotes erd
+\end_inset
+
+) is related to distance of the object: far objects appear to move less
+ than close objects.
+ This phenomena should be familiar, since the human brain uses this relationship
+ to create depth perception from the differences in perspective seen by
+ both eyes.
+ Similarly, depth information from orbital imagery can be recovered in areas
+ where the images overlap by matching points in the images that correspond
+ to the same 3D location and measuring their disparity.
+ By using the disparity along with the location and orientation of the spacecraf
+t as well as a mathematical model for the lens of the camera, the precise
+ location of the 3D point can be calculated.
+ This technique of using matching points between images to calculate 3D
+ locations is known as 
+\begin_inset Quotes eld
+\end_inset
+
+stereophotogrammetry
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Before computers automated this task, points in orbital images were manually
+ matched using mechanical stereoplotters like the one shown in figure [FIG].
+ Now, computers can perform this once long and arduous process with minimal
+ human interaction.
+ Software suites like the Ames Stereo Pipeline (ASP) can be fed orbital
+ images and will simply output the topography in the form of digital elevation
+ maps (DEMs).
+\end_layout
+
+\begin_layout Standard
+While stereophotogrammetry produces good results, we are interested in going
+ beyond the usual two views used in the stereo reconstruction process and
+ generalizing the process to use all views available in the scene being
+ reconstructed.
+ By moving to a multiple-view approach, we will be able to increase the
+ accuracy of the DEMs produced while at the same time robustly rejecting
+ outliers in the source imagery.
+\end_layout
+
+\begin_layout Standard
+During the summer of 2011, Taemin Kim and I jointly developed a novel multiple
+ view algorithm.
+ It works by approximating very small sections of the planetary surface
+ as planar patches and adjusting the height and orientation of the patches
+ to minimize the alignment error when the orbital images are projected on
+ to them.
+ As with any minimization process, local minima and stability are concerns.
+ Therefore, to evaluate and debug the objective function, (the alignment
+ error funtion being minimized), I have created a small program called 
+\begin_inset Quotes eld
+\end_inset
+
+
+\emph on
+mvpgui
+\emph default
+
+\begin_inset Quotes erd
+\end_inset
+
+ to help visualize its landscape and navigate its parameters.
+\end_layout
+
+\begin_layout Standard
+Before going into detail about this new multiple view algorithm and presenting
+ some results obtained with 
+\emph on
+mvpgui
+\emph default
+, this paper will give some background on cartography (needed to understand
+ how DEMs are stored and manipulated), followed by an overview of stereophotogra
+mmetry to give context for the multiple view algorithm.
+\end_layout
+
+\begin_layout Section
+Background
+\end_layout
+
+\begin_layout Standard
+Before discussing the algorithms in this paper, some basic concepts in cartograp
+hy must be introduced.
+\end_layout
+
+\begin_layout Subsection
+Coordinate Systems
+\end_layout
+
+\begin_layout Standard
+Location on a celestial body is usually given as a longitude (
+\begin_inset Formula $\theta$
+\end_inset
+
+), lattitude (
+\begin_inset Formula $\varphi$
+\end_inset
+
+), and radius (
+\begin_inset Formula $r$
+\end_inset
+
+).
+ for a visual representation of these quantities, see figure FIG.
+ To obtain an XYZ location from these units, the following conversions are
+ used:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+x=r\cos\theta\cos\varphi\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+y=r\sin\theta\cos\varphi\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+z=r\sin\varphi\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Map Projections
+\end_layout
+
+\begin_layout Standard
+It is well known that it is impossible to project the curved surface of
+ a globe onto a plane without some kind of distortion, and different map
+ projections preserve and distort different aspects of the map like distances,
+ directions, areas and shapes.
+ For example, the Mollweide projection preserves area but heavily distorts
+ shapes, while the Mercator projection preserves small shapes but distorts
+ areas.
+\end_layout
+
+\begin_layout Standard
+Commonly in digital processing, the equirectangular projection (plate carrée)
+ is used.
+ While it is neither equal area nor conformal, its advantage is that it
+ maps longitude and latitude to x and y coordinates on the map with a simple
+ affine relationship:
+\end_layout
+
+\begin_layout Standard
+EQ
+\end_layout
+
+\begin_layout Standard
+This makes it very simple to use from a computer processing standpoint.
+ We use this projection for our DEMs.
+\end_layout
+
+\begin_layout Subsection
+Digital Elevation Maps
+\end_layout
+
+\begin_layout Standard
+Digital elevation maps (DEMs) are the main goal of the algorithms presented
+ in this paper.
+ 
+\end_layout
+
+\begin_layout Subsection
+Orthoimages
+\end_layout
+
+\begin_layout Standard
+Another data product that is produced are orthoimages (orthographic images).
+ These are the orbital image textures that are mapped on top of the DEM.
+\end_layout
+
+\begin_layout Standard
+Given a DEM with height values H(x, y) and an orbital image with intensity
+ I(x, y), it is relatively simple to create an orthoimage.
+ Each point of the orthoimage is found as follows:
+\end_layout
+
+\begin_layout Standard
+EQ
+\end_layout
+
+\begin_layout Standard
+Where F is the orbital camera’s fundamental matrix (mapping world coordinates
+ to orbital image coordinates), S is the mapping between DEM coordinates
+ and lat lon.
+\end_layout
+
+\begin_layout Section
+The Stereogrammetry Process
+\end_layout
+
+\begin_layout Standard
+Matching points from different perspectives of a 3D scene in this way is
+ known in computer as “the correspondence problem”.
+ The goal of the correspondence problem is to match each pixel in one image
+ to its pair in the other image.
+ This matching process is sometimes referred to as “correlation”.
+ 
+\end_layout
+
+\begin_layout Standard
+The ASP was first officially released in late October 2009 and is still
+ the only free, open-source, automated stereogrammetry software suite available
+ to the public.
+ It is an entire end-to-end system for producing DEMs from stereo pairs.
+ It correlates images in two steps: first, a Disparity Map Initialization
+ step and then a subpixel refinement step.
+\end_layout
+
+\begin_layout Subsection
+Disparity Map Initialization
+\end_layout
+
+\begin_layout Standard
+Disparity offsets for an image are stored in a two channel image (one channel
+ for horizontal disparity, one channel for vertical disparity), called a
+ 
+\begin_inset Quotes eld
+\end_inset
+
+disparity map
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+After the disparity map has been created, the camera models from the two
+ source images are used to determine the 3D locations corresponding to each
+ point in the source imagery.
+ The 3D location for a given pixel the left image and is corresponding pixel
+ in the right image (as defined by the disparity map) is found by intersecting
+ the two rays that pass through each pixel and their respective camera center.
+\end_layout
+
+\begin_layout Standard
+The final product of this stage is a point cloud: XYZ locations that define
+ the surface of the planetary surface being reconstructed.
+\end_layout
+
+\begin_layout Standard
+The object of the Disparity Map Initialization step is to quickly create
+ a rough estimate of the disparity map that will be later refined to sub-pixel
+ accuracy in the subsequent Sub-Pixel Refinement stage.
+\end_layout
+
+\begin_layout Standard
+The ASP uses a template matching approach for this step.
+ Given a pixel in the left image, to find its corresponding pixel in the
+ right image, a small window around the left pixel is taken and compared
+ to areas of the right image as depicted in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:template-matching"
+
+\end_inset
+
+.
+ Usually, normalized cross correlation is used to define similarity.
+ The integer offset that finds the most similar patch of pixels in the right
+ image is recorded as the disparity for that left pixel.
+ In the ASP, the process of searching through each possible disparity is
+ optimized by using a box filter along with adaptive subregions in a pyramid-bas
+ed approach 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "subregion-sun2002"
+
+\end_inset
+
+.
+ 
+\begin_inset Wrap figure
+lines 0
+placement O
+overhang 0in
+width "50col%"
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename template_matching.tiff
+	lyxscale 20
+	width 7cm
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Determining disparity using a template matching approach 
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:template-matching"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Sub-Pixel Refinement
+\end_layout
+
+\begin_layout Standard
+This next stage refines the integer disparity estimates found in the disparity
+ map initialization step to sub-pixel accuracy.
+ The Bayes EM weight adaptive window correlation algorithm was developed
+ at Ames to obtain very high quality sub-pixel results that are robust to
+ image noise.
+ The algorithm uses template windows that are be warped with affine transformati
+ons to accommodate perspective changes.
+ The parameters for these template windows are treated as random variables
+ in an expectation maximization (EM) framework with a Gaussian mixture model.
+ For an in-depth description and discussion of this technique, see 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "bayessub-nefian2009"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Triangulation
+\end_layout
+
+\begin_layout Standard
+After the sub-pixel disparity map has been completed, the camera models
+ from the two source images are used to determine the 3D locations corresponding
+ to each point in the source imagery.
+ The 3D location for a given pixel the left image and is corresponding pixel
+ in the right image (as defined by the disparity map) is found by intersecting
+ the two rays that pass through each pixel and their respective camera center.
+ The final product of this stage is a point cloud: XYZ locations that define
+ the surface of the planetary surface being reconstructed.
+\end_layout
+
+\begin_layout Subsection
+Mesh / DEM Generation
+\end_layout
+
+\begin_layout Standard
+The last step in the process is to take the point cloud generated by the
+ triangulation step and build a mesh to interpolate between the points.
+ The mesh can either be viewed with a 3D viewer or be sampled at regular
+ intervals to create a DEM.
+ After many of these DEMs are created (one from each orbital image pair),
+ they can be stitched together to form a mosaic.
+\end_layout
+
+\begin_layout Section
+A Multiple View Approach
+\end_layout
+
+\begin_layout Standard
+Here we propose our concept for the AMVP.
+ As stated before, unlike the ASP the AMVP would be designed from the ground
+ up to handle multiple views.
+ In addition, instead of correlating many image pairs and later having to
+ mosaic them into the final DEM, the AMVP will completely remove this step
+ by working in map projected space.
+\end_layout
+
+\begin_layout Subsection
+Pipeline Overview
+\end_layout
+
+\begin_layout Standard
+Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:amvp-flowchart"
+
+\end_inset
+
+ shows how data will flow through the AMVP.
+ The three stages are as follows: bundle adjustment, disparity map initializatio
+n and multiple-view refinement.
+ While some of these stages are similar to ones found in the ASP, the fundamenta
+l difference is that the pipeline will ingest the entirety of the orbital
+ imagery available and then build a giant DEM tile by tile, rather than
+ creating many smaller DEMs from stereo pairs and then having to mosaic
+ them in a separate step.
+\end_layout
+
+\begin_layout Standard
+The AMVP has a much simpler data-flow model than the ASP.
+ The Registration / Preprocessing is no longer needed as the AMVP is able
+ to operate directly on the source imagery.
+ The Disparity Map Initialization and Sub-Pixel Refinement stages are replaced
+ by Multiple-View Initialization and Multiple-View Refinement stages.
+ And finally, the Mesh / DEM Generation stage is no longer needed, since
+ the optimal location of every DEM post is solved for in the Multiple-View
+ Refinement stage.
+\begin_inset Wrap figure
+lines 0
+placement O
+overhang 0in
+width "50col%"
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename amvp_flowchart.pdf
+	lyxscale 30
+	height 7cm
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Flow of data through the AMVP
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:amvp-flowchart"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Multiple-View Initialization
+\end_layout
+
+\begin_layout Standard
+The purpose of this stage is to create a low-resolution DEM that will be
+ used to seed the Multiple-View Refinement stage.
+ The algorithm that will be used here is still in heavy development.
+ It works by assuming the small patch around a given DEM post is locally
+ planar with a linear reflectance model.
+ The parameters for this plane (surface normal and height), as well as the
+ parameters for the linear reflectance model are solved in an expectation
+ maximization (EM) framework, designed to minimize the differences between
+ the orbital images projected onto the patch in question.
+ We plan to use tie-points found by the Bundle Adjustment stage as an initial
+ guess for the heights of these patches.
+ We have already created a small scale proof of concept that shows the promising
+ direction of this research, and expect to have a final version of the algorithm
+ ready in the next six months (see Development Time Line, below).
+\end_layout
+
+\begin_layout Standard
+It is important to note here the power of our approach compared to the one
+ taken by the ASP.
+ The ASP solves for the disparity between two orbital images, uses that
+ disparity to triangulate the corresponding 3D point, builds a mesh and
+ finally interpolates on that mesh to find the height of a particular DEM
+ post.
+ In contrast, our algorithm directly finds the 
+\emph on
+optimal
+\emph default
+ height for a particular DEM post given 
+\emph on
+all
+\emph default
+ the orbital imagery that overlaps on that point, no mesh interpolation
+ (or averaging between DEMs generated with different stereo pairs) required.
+\end_layout
+
+\begin_layout Section
+
+\emph on
+mvpgui
+\end_layout
+
+\begin_layout Standard
+I created 
+\emph on
+mvpgui
+\emph default
+ to evaluate the algorithm that we developed
+\end_layout
+
+\begin_layout Subsection
+Program Requirements
+\end_layout
+
+\begin_layout Subsection
+Basic Commands
+\end_layout
+
+\begin_layout Subsection
+Results With Synthetic Data
+\end_layout
+
+\begin_layout Subsection
+Results With Real Data
+\end_layout
+
+\begin_layout Section
+Conclusion
+\end_layout
+
+\begin_layout Standard
+The development of the AMVP will be an exciting next step in the field of
+ automated DEM construction processes.
+ We expect that the final version will run at least as fast as the ASP,
+ but provide better results and be much easier to use.
+ Furthermore, with a good software infrastructure, we will be able to use
+ it to further other areas of research like the photometric refinement of
+ DEMs.
+ In the meantime, we will focus on developing and characterizing the core
+ multiple-view algorithm while we continue to build and refine the software
+ technologies required for its large-scale implementation.
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "../amvp"
+options "plain"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
