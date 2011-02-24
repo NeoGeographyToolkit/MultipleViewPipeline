@@ -54,15 +54,15 @@ Evaluating The Objective Function For A New Multiple-View Photogrammetry
 \begin_layout Author
 Kyle D.
  Husmann
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-kyle.husmann@gmail.com
-\end_layout
-
+\begin_inset Newline newline
 \end_inset
 
+
+\shape italic
+\size normal
+khusmann@calpoly.edu
+\shape default
+\size default
 
 \begin_inset Newline newline
 \end_inset
@@ -71,34 +71,6 @@ kyle.husmann@gmail.com
 \shape italic
 \size normal
 California Polytechnic State University, San Luis Obispo, CA, USA
-\shape default
-\size default
-
-\begin_inset Newline newline
-\end_inset
-
-
-\begin_inset Newline newline
-\end_inset
-
-Taemin Kim
-\begin_inset Foot
-status collapsed
-
-\begin_layout Plain Layout
-taemin.kim@nasa.gov
-\end_layout
-
-\end_inset
-
- 
-\begin_inset Newline newline
-\end_inset
-
-
-\shape italic
-\size normal
-Intelligent Robotics Group, NASA Ames Research Center, CA, USA
 \end_layout
 
 \begin_layout Date
@@ -196,8 +168,18 @@ While stereophotogrammetry produces good results, we are interested in going
 \end_layout
 
 \begin_layout Standard
-During the summer of 2011, Taemin Kim and I jointly developed a novel multiple
- view algorithm.
+During the summer of 2011, Dr.
+ Taemin Kim
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+Intelligent Robotics Group, NASA Ames Research Center, CA, USA
+\end_layout
+
+\end_inset
+
+ and I jointly developed a novel multiple-view algorithm.
  It works by approximating very small sections of the planetary surface
  as planar patches and adjusting the height and orientation of the patches
  to minimize the alignment error when the orbital images are projected on
@@ -225,9 +207,8 @@ Before going into detail about this new multiple view algorithm and presenting
 \family typewriter
 mvpgui
 \family default
-, this paper will give some background on cartography (needed to understand
- how DEMs are stored and manipulated), followed by an overview of stereophotogra
-mmetry to give context for the multiple-view algorithm.
+, this paper will give some background on cartography to give context for
+ the multiple-view algorithm.
 \end_layout
 
 \begin_layout Section
@@ -235,58 +216,8 @@ Background
 \end_layout
 
 \begin_layout Standard
-Before discussing the algorithms in this paper, some basic concepts in cartograp
-hy must be introduced.
-\end_layout
-
-\begin_layout Subsection
-Coordinate Systems
-\end_layout
-
-\begin_layout Standard
-Location on a celestial body is usually given as a longitude (
-\begin_inset Formula $\theta$
-\end_inset
-
-), lattitude (
-\begin_inset Formula $\varphi$
-\end_inset
-
-), and radius (
-\begin_inset Formula $r$
-\end_inset
-
-).
- for a visual representation of these quantities, see figure FIG.
- To obtain an XYZ location from these units, the following conversions are
- used:
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula \begin{equation}
-x=r\cos\theta\cos\varphi\end{equation}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula \begin{equation}
-y=r\sin\theta\cos\varphi\end{equation}
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula \begin{equation}
-z=r\sin\varphi\end{equation}
-
-\end_inset
-
-
+Before discussing the multiple-view algorithm in this paper, some basic
+ concepts in cartography must be introduced.
 \end_layout
 
 \begin_layout Subsection
@@ -294,40 +225,276 @@ Map Projections
 \end_layout
 
 \begin_layout Standard
-It is well known that it is impossible to project the curved surface of
- a globe onto a plane without some kind of distortion, and different map
- projections preserve and distort different aspects of the map like distances,
- directions, areas and shapes.
+Topographical maps are typically stored and distributed as DEMs (Digital
+ Elevation Maps).
+ DEMs are two-dimensional, single-channel digital images of the planetary
+ surface.
+ Rather than each pixel representing an illumination value, as with typical
+ images, in a DEM each pixel represents a height at that location or 
+\begin_inset Quotes eld
+\end_inset
+
+post
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+In order to store a curved, three-dimensional surface of a planetary body
+ as a two-dimensional plane, one must develop some sort of relationship
+ between points on the surface and points on the plane.
+ In cartography, this is known as a 
+\begin_inset Quotes eld
+\end_inset
+
+map projection
+\begin_inset Quotes erd
+\end_inset
+
+: a function that maps locations on a planet's surface to locations on the
+ planar map.
+\end_layout
+
+\begin_layout Standard
+It is a well known fact that it is impossible to project the curved surface
+ of a spheroid onto a plane without some kind of distortion.
+ Depending on the map projection being used, the perceived distance, direction,
+ area or the shape of features on the map may be distorted or preserved.
  For example, the Mollweide projection preserves area but heavily distorts
  shapes, while the Mercator projection preserves small shapes but distorts
- areas.
+ areas [FIG].
+\end_layout
+
+\begin_layout Subsubsection
+The Equirectangular Projection
 \end_layout
 
 \begin_layout Standard
-Commonly in digital processing, the equirectangular projection (plate carrée)
- is used.
- While it is neither equal area nor conformal, its advantage is that it
- maps longitude and latitude to x and y coordinates on the map with a simple
- affine relationship:
+The equirectangular projection (plate carrée) is a common representation
+ used in digital cartography.
+ Although it preserves neither distance, direction, area nor the shape of
+ features in the map, it has a computational advantage: the longitude and
+ lattitude 
+\begin_inset Formula $\left(\theta,\varphi\right)$
+\end_inset
+
+ of a location
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+Typically in cartography, coordinates are represented as (lattitude, longitude)
+ rather than (longitude, lattitude).
+ However, we choose the latter because it mirrors the representation of
+ pixels in an image: (u, v).
+\end_layout
+
+\end_inset
+
+ on the map is related to the coordinates 
+\begin_inset Formula $\left(u,v\right)$
+\end_inset
+
+ of the pixel representing that location in a simple affine relationship:
 \end_layout
 
 \begin_layout Standard
-EQ
+\begin_inset Formula \begin{equation}
+\left[\begin{array}{c}
+\theta\\
+\varphi\\
+1\end{array}\right]=\left[\begin{array}{ccc}
+s_{u} & 0 & t_{u}\\
+0 & -s_{v} & t_{v}\\
+0 & 0 & 1\end{array}\right]\left[\begin{array}{c}
+u\\
+v\\
+1\end{array}\right]\label{eq:lonlat}\end{equation}
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-This makes it very simple to use from a computer processing standpoint.
- We use this projection for our DEMs.
-\end_layout
+\begin_inset Formula $s_{u}$
+\end_inset
 
-\begin_layout Subsection
-Digital Elevation Maps
+ and 
+\begin_inset Formula $s_{v}$
+\end_inset
+
+ are the 
+\begin_inset Formula $u$
+\end_inset
+
+ and 
+\begin_inset Formula $v$
+\end_inset
+
+ scale of the map in degrees per pixel, and 
+\begin_inset Formula $t_{u}$
+\end_inset
+
+ and 
+\begin_inset Formula $t_{v}$
+\end_inset
+
+ are the longitude and lattitude of the upper-left corner of the map.
 \end_layout
 
 \begin_layout Standard
-Digital elevation maps (DEMs) are the main goal of the algorithms presented
- in this paper.
- 
+This projection has the highest amount of distortion when used near the
+ poles of the planetary surface.
+ In situations where maps of the poles are needed, a different projection
+ should be used.
+\end_layout
+
+\begin_layout Subsubsection
+Moving From Map To Cartesian Coordinates
+\end_layout
+
+\begin_layout Standard
+It is a simple procedure to calculate cartesian 
+\begin_inset Formula $xyz$
+\end_inset
+
+ locations on a planetary surface given a DEM 
+\begin_inset Formula $D\left(u,v\right)$
+\end_inset
+
+ and its map projection (stored in a datastructure called a 
+\begin_inset Quotes eld
+\end_inset
+
+georeference
+\begin_inset Quotes erd
+\end_inset
+
+).
+ For a given pixel on the DEM 
+\begin_inset Formula $\mathbf{u}=\left(u,v\right)$
+\end_inset
+
+, the longitude and lattitude 
+\begin_inset Formula $\mathbf{\theta}=\left(\theta,\varphi\right)$
+\end_inset
+
+ at that point are calculated using equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:lonlat"
+
+\end_inset
+
+.
+ Then, let
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\mathbf{e}=\left[\begin{array}{c}
+\cos\theta\cos\varphi\\
+\sin\theta\cos\varphi\\
+\sin\varphi\end{array}\right]\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+be the direction vector in cartesian coordinates pointing from the origin
+ longitude and lattitude in question.
+ Now, using the radius of the planetary body's surface at this point, 
+\begin_inset Formula $D\left(u,v\right)$
+\end_inset
+
+, the cartesian coordinate 
+\begin_inset Formula $\mathbf{x}=(x,y,z)$
+\end_inset
+
+ can be calculated:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\mathbf{x}=D\left(u,v\right)\mathbf{e}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+When calculating the cartesian coordinates of points in a DEM around a small
+ patch of pixels centered around 
+\begin_inset Formula $\mathbf{u'}=\left(u',v'\right)$
+\end_inset
+
+, the above trigonometric functions can be approximated by their first order
+ taylor approximations.
+ First, let 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\frac{\partial\mathbf{e}}{\partial\mathbf{x}}=\left[\begin{array}{cc}
+-\sin\theta'\cos\varphi' & \cos\theta'\sin\varphi'\\
+\cos\theta'\cos\varphi' & -\sin\theta'\sin\varphi'\\
+0 & \cos\varphi'\end{array}\right]\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $\mathbf{\theta'}=\left(\theta',\varphi'\right)$
+\end_inset
+
+ is the longitude and lattitude for 
+\begin_inset Formula $\mathbf{u'}$
+\end_inset
+
+ found using equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:lonlat"
+
+\end_inset
+
+.
+ Using this result, an affine relationship between cartesian and image coordinat
+es is found:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\left[\begin{array}{c}
+x\\
+y\\
+z\\
+1\end{array}\right]=D(u,v)\left[\begin{array}{cc}
+\frac{\partial\mathbf{e}}{\partial\mathbf{x}} & \mathbf{e}'-\frac{\partial\mathbf{e}}{\partial\mathbf{x}}\mathbf{u'}\\
+\mathbf{0} & 1\end{array}\right]\left[\begin{array}{c}
+u\\
+v\\
+1\end{array}\right]\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This relationship very is important performance-wise when using small patches
+ of the DEM to create orthoimages (defined in the next section).
+ This performance gain is essential for the multiple-view algorithm described
+ later in this paper becuse generates many orthoimages at each iteration.
 \end_layout
 
 \begin_layout Subsection
@@ -356,188 +523,7 @@ Where F is the orbital camera’s fundamental matrix (mapping world coordinates
 \end_layout
 
 \begin_layout Section
-The Stereogrammetry Process
-\end_layout
-
-\begin_layout Standard
-Matching points from different perspectives of a 3D scene in this way is
- known in computer as “the correspondence problem”.
- The goal of the correspondence problem is to match each pixel in one image
- to its pair in the other image.
- This matching process is sometimes referred to as “correlation”.
- 
-\end_layout
-
-\begin_layout Standard
-The ASP was first officially released in late October 2009 and is still
- the only free, open-source, automated stereogrammetry software suite available
- to the public.
- It is an entire end-to-end system for producing DEMs from stereo pairs.
- It correlates images in two steps: first, a Disparity Map Initialization
- step and then a subpixel refinement step.
-\end_layout
-
-\begin_layout Subsection
-Disparity Map Initialization
-\end_layout
-
-\begin_layout Standard
-Disparity offsets for an image are stored in a two channel image (one channel
- for horizontal disparity, one channel for vertical disparity), called a
- 
-\begin_inset Quotes eld
-\end_inset
-
-disparity map
-\begin_inset Quotes erd
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-After the disparity map has been created, the camera models from the two
- source images are used to determine the 3D locations corresponding to each
- point in the source imagery.
- The 3D location for a given pixel the left image and is corresponding pixel
- in the right image (as defined by the disparity map) is found by intersecting
- the two rays that pass through each pixel and their respective camera center.
-\end_layout
-
-\begin_layout Standard
-The final product of this stage is a point cloud: XYZ locations that define
- the surface of the planetary surface being reconstructed.
-\end_layout
-
-\begin_layout Standard
-The object of the Disparity Map Initialization step is to quickly create
- a rough estimate of the disparity map that will be later refined to sub-pixel
- accuracy in the subsequent Sub-Pixel Refinement stage.
-\end_layout
-
-\begin_layout Standard
-The ASP uses a template matching approach for this step.
- Given a pixel in the left image, to find its corresponding pixel in the
- right image, a small window around the left pixel is taken and compared
- to areas of the right image as depicted in figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:template-matching"
-
-\end_inset
-
-.
- Usually, normalized cross correlation is used to define similarity.
- The integer offset that finds the most similar patch of pixels in the right
- image is recorded as the disparity for that left pixel.
- In the ASP, the process of searching through each possible disparity is
- optimized by using a box filter along with adaptive subregions in a pyramid-bas
-ed approach 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "subregion-sun2002"
-
-\end_inset
-
-.
- 
-\begin_inset Wrap figure
-lines 0
-placement O
-overhang 0in
-width "50col%"
-status collapsed
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename template_matching.tiff
-	lyxscale 20
-	width 7cm
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Determining disparity using a template matching approach 
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:template-matching"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Sub-Pixel Refinement
-\end_layout
-
-\begin_layout Standard
-This next stage refines the integer disparity estimates found in the disparity
- map initialization step to sub-pixel accuracy.
- The Bayes EM weight adaptive window correlation algorithm was developed
- at Ames to obtain very high quality sub-pixel results that are robust to
- image noise.
- The algorithm uses template windows that are be warped with affine transformati
-ons to accommodate perspective changes.
- The parameters for these template windows are treated as random variables
- in an expectation maximization (EM) framework with a Gaussian mixture model.
- For an in-depth description and discussion of this technique, see 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "bayessub-nefian2009"
-
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Subsection
-Triangulation
-\end_layout
-
-\begin_layout Standard
-After the sub-pixel disparity map has been completed, the camera models
- from the two source images are used to determine the 3D locations corresponding
- to each point in the source imagery.
- The 3D location for a given pixel the left image and is corresponding pixel
- in the right image (as defined by the disparity map) is found by intersecting
- the two rays that pass through each pixel and their respective camera center.
- The final product of this stage is a point cloud: XYZ locations that define
- the surface of the planetary surface being reconstructed.
-\end_layout
-
-\begin_layout Subsection
-Mesh / DEM Generation
-\end_layout
-
-\begin_layout Standard
-The last step in the process is to take the point cloud generated by the
- triangulation step and build a mesh to interpolate between the points.
- The mesh can either be viewed with a 3D viewer or be sampled at regular
- intervals to create a DEM.
- After many of these DEMs are created (one from each orbital image pair),
- they can be stitched together to form a mosaic.
-\end_layout
-
-\begin_layout Section
-A Multiple View Approach
+Multiple-View Photogrammetry
 \end_layout
 
 \begin_layout Standard
@@ -668,25 +654,25 @@ all
 \end_layout
 
 \begin_layout Section
-
-\emph on
-mvpgui
+Evaluating The Objective Function Using
+\family typewriter
+ mvpgui
 \end_layout
 
 \begin_layout Standard
 I created 
-\emph on
+\family typewriter
 mvpgui
-\emph default
+\family default
  to evaluate the algorithm that we developed
 \end_layout
 
 \begin_layout Subsection
-Program Requirements
+Implementation Details
 \end_layout
 
 \begin_layout Subsection
-Basic Commands
+Basic Commands And Usage
 \end_layout
 
 \begin_layout Subsection
@@ -712,6 +698,194 @@ The development of the AMVP will be an exciting next step in the field of
  In the meantime, we will focus on developing and characterizing the core
  multiple-view algorithm while we continue to build and refine the software
  technologies required for its large-scale implementation.
+\end_layout
+
+\begin_layout Standard
+Kernel size will be an issue
+\end_layout
+
+\begin_layout Subsection
+The Stereogrammetry Process
+\end_layout
+
+\begin_layout Standard
+Matching points from different perspectives of a 3D scene in this way is
+ known in computer as “the correspondence problem”.
+ The goal of the correspondence problem is to match each pixel in one image
+ to its pair in the other image.
+ This matching process is sometimes referred to as “correlation”.
+ 
+\end_layout
+
+\begin_layout Standard
+The ASP was first officially released in late October 2009 and is still
+ the only free, open-source, automated stereogrammetry software suite available
+ to the public.
+ It is an entire end-to-end system for producing DEMs from stereo pairs.
+ It correlates images in two steps: first, a Disparity Map Initialization
+ step and then a subpixel refinement step.
+\end_layout
+
+\begin_layout Subsubsection
+Disparity Map Initialization
+\end_layout
+
+\begin_layout Standard
+Disparity offsets for an image are stored in a two channel image (one channel
+ for horizontal disparity, one channel for vertical disparity), called a
+ 
+\begin_inset Quotes eld
+\end_inset
+
+disparity map
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+After the disparity map has been created, the camera models from the two
+ source images are used to determine the 3D locations corresponding to each
+ point in the source imagery.
+ The 3D location for a given pixel the left image and is corresponding pixel
+ in the right image (as defined by the disparity map) is found by intersecting
+ the two rays that pass through each pixel and their respective camera center.
+\end_layout
+
+\begin_layout Standard
+The final product of this stage is a point cloud: XYZ locations that define
+ the surface of the planetary surface being reconstructed.
+\end_layout
+
+\begin_layout Standard
+The object of the Disparity Map Initialization step is to quickly create
+ a rough estimate of the disparity map that will be later refined to sub-pixel
+ accuracy in the subsequent Sub-Pixel Refinement stage.
+\end_layout
+
+\begin_layout Standard
+The ASP uses a template matching approach for this step.
+ Given a pixel in the left image, to find its corresponding pixel in the
+ right image, a small window around the left pixel is taken and compared
+ to areas of the right image as depicted in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:template-matching"
+
+\end_inset
+
+.
+ Usually, normalized cross correlation is used to define similarity.
+ The integer offset that finds the most similar patch of pixels in the right
+ image is recorded as the disparity for that left pixel.
+ In the ASP, the process of searching through each possible disparity is
+ optimized by using a box filter along with adaptive subregions in a pyramid-bas
+ed approach 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "subregion-sun2002"
+
+\end_inset
+
+.
+ 
+\begin_inset Wrap figure
+lines 0
+placement O
+overhang 0in
+width "50col%"
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename template_matching.tiff
+	lyxscale 20
+	width 7cm
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Determining disparity using a template matching approach 
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:template-matching"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Sub-Pixel Refinement
+\end_layout
+
+\begin_layout Standard
+This next stage refines the integer disparity estimates found in the disparity
+ map initialization step to sub-pixel accuracy.
+ The Bayes EM weight adaptive window correlation algorithm was developed
+ at Ames to obtain very high quality sub-pixel results that are robust to
+ image noise.
+ The algorithm uses template windows that are be warped with affine transformati
+ons to accommodate perspective changes.
+ The parameters for these template windows are treated as random variables
+ in an expectation maximization (EM) framework with a Gaussian mixture model.
+ For an in-depth description and discussion of this technique, see 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "bayessub-nefian2009"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection
+Triangulation
+\end_layout
+
+\begin_layout Standard
+After the sub-pixel disparity map has been completed, the camera models
+ from the two source images are used to determine the 3D locations corresponding
+ to each point in the source imagery.
+ The 3D location for a given pixel the left image and is corresponding pixel
+ in the right image (as defined by the disparity map) is found by intersecting
+ the two rays that pass through each pixel and their respective camera center.
+ The final product of this stage is a point cloud: XYZ locations that define
+ the surface of the planetary surface being reconstructed.
+\end_layout
+
+\begin_layout Subsubsection
+Mesh / DEM Generation
+\end_layout
+
+\begin_layout Standard
+The last step in the process is to take the point cloud generated by the
+ triangulation step and build a mesh to interpolate between the points.
+ The mesh can either be viewed with a 3D viewer or be sampled at regular
+ intervals to create a DEM.
+ After many of these DEMs are created (one from each orbital image pair),
+ they can be stitched together to form a mosaic.
+\end_layout
+
+\begin_layout Standard
 \begin_inset CommandInset bibtex
 LatexCommand bibtex
 bibfiles "../amvp"
