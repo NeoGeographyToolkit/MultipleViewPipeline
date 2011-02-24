@@ -275,9 +275,9 @@ The Equirectangular Projection
 The equirectangular projection (plate carrée) is a common representation
  used in digital cartography.
  Although it preserves neither distance, direction, area nor the shape of
- features in the map, it has a computational advantage: the longitude and
- lattitude 
-\begin_inset Formula $\left(\theta,\varphi\right)$
+ features in the map, it has a computational advantage: In homogeneous coordinat
+es, (see [REF]), the longitude and lattitude 
+\begin_inset Formula $\mathbf{\theta}=\left(\theta,\varphi,1\right)$
 \end_inset
 
  of a location
@@ -288,30 +288,37 @@ status collapsed
 Typically in cartography, coordinates are represented as (lattitude, longitude)
  rather than (longitude, lattitude).
  However, we choose the latter because it mirrors the representation of
- pixels in an image: (u, v).
+ pixels in an image: (c, r).
 \end_layout
 
 \end_inset
 
  on the map is related to the coordinates 
-\begin_inset Formula $\left(u,v\right)$
+\begin_inset Formula $\mathbf{z}=\left(c,r,1\right)$
 \end_inset
 
- of the pixel representing that location in a simple affine relationship:
+ of the pixel representing that location by a simple affine relationship:
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula \begin{equation}
-\left[\begin{array}{c}
-\theta\\
-\varphi\\
-1\end{array}\right]=\left[\begin{array}{ccc}
-s_{u} & 0 & t_{u}\\
-0 & -s_{v} & t_{v}\\
-0 & 0 & 1\end{array}\right]\left[\begin{array}{c}
-u\\
-v\\
-1\end{array}\right]\label{eq:lonlat}\end{equation}
+\mathbf{\theta}=\mathbf{S}\mathbf{u}\label{eq:lonlat}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\mathbf{S}=\left[\begin{array}{ccc}
+s_{c} & 0 & t_{c}\\
+0 & -s_{r} & t_{r}\\
+0 & 0 & 1\end{array}\right]\label{eq:S}\end{equation}
 
 \end_inset
 
@@ -327,19 +334,19 @@ v\\
 \end_inset
 
  are the 
-\begin_inset Formula $u$
+\begin_inset Formula $c$
 \end_inset
 
  and 
-\begin_inset Formula $v$
+\begin_inset Formula $r$
 \end_inset
 
  scale of the map in degrees per pixel, and 
-\begin_inset Formula $t_{u}$
+\begin_inset Formula $t_{c}$
 \end_inset
 
  and 
-\begin_inset Formula $t_{v}$
+\begin_inset Formula $t_{r}$
 \end_inset
 
  are the longitude and lattitude of the upper-left corner of the map.
@@ -361,11 +368,11 @@ It is a simple procedure to calculate cartesian
 \begin_inset Formula $xyz$
 \end_inset
 
- locations on a planetary surface given a DEM 
-\begin_inset Formula $D\left(u,v\right)$
+ locations on a planetary surface given 
+\begin_inset Formula $D\left(\mathbf{z}\right)$
 \end_inset
 
- and its map projection (stored in a datastructure called a 
+, a DEM, and its map projection (stored in a datastructure called a 
 \begin_inset Quotes eld
 \end_inset
 
@@ -374,12 +381,12 @@ georeference
 \end_inset
 
 ).
- For a given pixel on the DEM 
-\begin_inset Formula $\mathbf{u}=\left(u,v\right)$
+ For a pixel on the DEM 
+\begin_inset Formula $\mathbf{z}=\left(c,r,1\right)$
 \end_inset
 
 , the longitude and lattitude 
-\begin_inset Formula $\mathbf{\theta}=\left(\theta,\varphi\right)$
+\begin_inset Formula $\mathbf{\theta}=\left(\theta,\varphi,1\right)$
 \end_inset
 
  at that point are calculated using equation 
@@ -398,7 +405,8 @@ reference "eq:lonlat"
 \mathbf{e}=\left[\begin{array}{c}
 \cos\theta\cos\varphi\\
 \sin\theta\cos\varphi\\
-\sin\varphi\end{array}\right]\end{equation}
+\sin\varphi\\
+1\end{array}\right]\label{eq:e}\end{equation}
 
 \end_inset
 
@@ -409,11 +417,11 @@ reference "eq:lonlat"
 be the direction vector in cartesian coordinates pointing from the origin
  longitude and lattitude in question.
  Now, using the radius of the planetary body's surface at this point, 
-\begin_inset Formula $D\left(u,v\right)$
+\begin_inset Formula $D\left(\mathbf{z}\right)$
 \end_inset
 
 , the cartesian coordinate 
-\begin_inset Formula $\mathbf{x}=(x,y,z)$
+\begin_inset Formula $\mathbf{x}=(x,y,z,1)$
 \end_inset
 
  can be calculated:
@@ -421,7 +429,9 @@ be the direction vector in cartesian coordinates pointing from the origin
 
 \begin_layout Standard
 \begin_inset Formula \begin{equation}
-\mathbf{x}=D\left(u,v\right)\mathbf{e}\end{equation}
+\mathbf{x}=D\left(\mathbf{z}\right)\left[\begin{array}{cc}
+\mathbf{I} & \mathbf{0}\\
+\mathbf{0} & 1\end{array}\right]\mathbf{e}\end{equation}
 
 \end_inset
 
@@ -430,8 +440,8 @@ be the direction vector in cartesian coordinates pointing from the origin
 
 \begin_layout Standard
 When calculating the cartesian coordinates of points in a DEM around a small
- patch of pixels centered around 
-\begin_inset Formula $\mathbf{u'}=\left(u',v'\right)$
+ patch of pixels centered around a given pixel 
+\begin_inset Formula $\mathbf{z'}$
 \end_inset
 
 , the above trigonometric functions can be approximated by their first order
@@ -457,7 +467,7 @@ where
 \end_inset
 
  is the longitude and lattitude for 
-\begin_inset Formula $\mathbf{u'}$
+\begin_inset Formula $\mathbf{z'}$
 \end_inset
 
  found using equation 
@@ -468,22 +478,69 @@ reference "eq:lonlat"
 \end_inset
 
 .
- Using this result, an affine relationship between cartesian and image coordinat
-es is found:
+ Then, using the taylor approximation of equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:e"
+
+\end_inset
+
+ centered at 
+\begin_inset Formula $\mathbf{\theta'}$
+\end_inset
+
+, we have an affine mapping between 
+\begin_inset Formula $\mathbf{e}$
+\end_inset
+
+ and 
+\begin_inset Formula $\mathbf{\theta}$
+\end_inset
+
+:
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula \begin{equation}
-\left[\begin{array}{c}
-x\\
-y\\
-z\\
-1\end{array}\right]=D(u,v)\left[\begin{array}{cc}
-\frac{\partial\mathbf{e}}{\partial\mathbf{x}} & \mathbf{e}'-\frac{\partial\mathbf{e}}{\partial\mathbf{x}}\mathbf{u'}\\
-\mathbf{0} & 1\end{array}\right]\left[\begin{array}{c}
-u\\
-v\\
-1\end{array}\right]\end{equation}
+\mathbf{e}=\mathbf{L}\mathbf{\theta}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\mathbf{L}=\left[\begin{array}{cc}
+\frac{\partial\mathbf{e}}{\partial\mathbf{x}} & \mathbf{e}'-\frac{\partial\mathbf{e}}{\partial\mathbf{x}}\mathbf{\theta'}\\
+\mathbf{0} & 1\end{array}\right]\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Using this result, can now easily map a pixel 
+\begin_inset Formula $\mathbf{z}$
+\end_inset
+
+ to its cartesian location 
+\begin_inset Formula $\mathbf{x}$
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\mathbf{x}=D(\mathbf{z})\left[\begin{array}{cc}
+\mathbf{I} & \mathbf{0}\\
+\mathbf{0} & 1\end{array}\right]\mathbf{L}\mathbf{S}\mathbf{z}\end{equation}
 
 \end_inset
 
@@ -494,7 +551,8 @@ v\\
 This relationship very is important performance-wise when using small patches
  of the DEM to create orthoimages (defined in the next section).
  This performance gain is essential for the multiple-view algorithm described
- later in this paper becuse generates many orthoimages at each iteration.
+ later in this paper becuse the algorithm generates many orthoimage patches
+ at each iteration.
 \end_layout
 
 \begin_layout Subsection
@@ -502,24 +560,66 @@ Orthoimages
 \end_layout
 
 \begin_layout Standard
-Another data product that is produced are orthoimages (orthographic images).
- These are the orbital image textures that are mapped on top of the DEM.
+After a DEM is generated, it is possible to project the source imagery onto
+ the DEM to give it a texture.
+ This resulting image is called an orthoimage, because the resulting image
+ appears as if the camera that took the image was orthographic to the planetary
+ body's surface (see figure [FIG]).
 \end_layout
 
 \begin_layout Standard
-Given a DEM with height values H(x, y) and an orbital image with intensity
- I(x, y), it is relatively simple to create an orthoimage.
- Each point of the orthoimage is found as follows:
+To do this, a mapping between the orbital image coordinates 
+\begin_inset Formula $\mathbf{u}=\left(u,v,1\right)$
+\end_inset
+
+ and world coordinates 
+\begin_inset Formula $\mathbf{x}=\left(x,y,z,1\right)$
+\end_inset
+
+ is needed.
+ For a pinhole camera, this mapping is given by its fundimental matrix (see
+ [REF]):
 \end_layout
 
 \begin_layout Standard
-EQ
+\begin_inset Formula \begin{equation}
+\mathbf{u}=\mathbf{F}\mathbf{x}\end{equation}
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-Where F is the orbital camera’s fundamental matrix (mapping world coordinates
- to orbital image coordinates), S is the mapping between DEM coordinates
- and lat lon.
+Then, using the approximation from the last section, a orbital image 
+\begin_inset Formula $I\left(\mathbf{u}\right)$
+\end_inset
+
+ can be mapped onto a small pach centered at 
+\begin_inset Formula $\mathbf{z'}$
+\end_inset
+
+ on the DEM given by 
+\begin_inset Formula $D\left(\mathbf{z}\right)$
+\end_inset
+
+.
+ The resulting orthoimage patch 
+\begin_inset Formula $O\left(\mathbf{z}\right)$
+\end_inset
+
+, is given by:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+O(\mathbf{z})=I\left(\mathbf{F}D(\mathbf{z})\left[\begin{array}{cc}
+\mathbf{I} & \mathbf{0}\\
+\mathbf{0} & 1\end{array}\right]\mathbf{L}\mathbf{S}\mathbf{z}\right)\end{equation}
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
