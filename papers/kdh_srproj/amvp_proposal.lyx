@@ -560,8 +560,8 @@ Orthoimages
 \end_layout
 
 \begin_layout Standard
-After a DEM is generated, it is possible to project the source imagery onto
- the DEM to give it a texture.
+After a DEM is generated, the source imagery can be projected onto the DEM
+ to give it texture.
  This resulting image is called an orthoimage, because the resulting image
  appears as if the camera that took the image was orthographic to the planetary
  body's surface (see figure [FIG]).
