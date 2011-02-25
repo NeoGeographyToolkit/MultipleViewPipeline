@@ -275,9 +275,9 @@ The Equirectangular Projection
 The equirectangular projection (plate carrée) is a common representation
  used in digital cartography.
  Although it preserves neither distance, direction, area nor the shape of
- features in the map, it has a computational advantage: In homogeneous coordinat
-es, (see [REF]), the longitude and lattitude 
-\begin_inset Formula $\mathbf{\theta}=\left(\theta,\varphi,1\right)$
+ features in the map, it has a computational advantage: The longitude and
+ lattitude 
+\begin_inset Formula $\mathbf{\theta}=\left(\theta,\varphi\right)$
 \end_inset
 
  of a location
@@ -294,7 +294,7 @@ Typically in cartography, coordinates are represented as (lattitude, longitude)
 \end_inset
 
  on the map is related to the coordinates 
-\begin_inset Formula $\mathbf{z}=\left(c,r,1\right)$
+\begin_inset Formula $\mathbf{z}=\left(c,r\right)$
 \end_inset
 
  of the pixel representing that location by a simple affine relationship:
@@ -302,7 +302,11 @@ Typically in cartography, coordinates are represented as (lattitude, longitude)
 
 \begin_layout Standard
 \begin_inset Formula \begin{equation}
-\mathbf{\theta}=\mathbf{S}\mathbf{u}\label{eq:lonlat}\end{equation}
+\left[\begin{array}{c}
+\mathbf{\theta}\\
+1\end{array}\right]=\mathbf{S}\left[\begin{array}{c}
+\mathbf{z}\\
+1\end{array}\right]\label{eq:lonlat}\end{equation}
 
 \end_inset
 
@@ -350,6 +354,14 @@ s_{c} & 0 & t_{c}\\
 \end_inset
 
  are the longitude and lattitude of the upper-left corner of the map.
+ Note that equation 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:lonlat"
+
+\end_inset
+
+ is a homogeneous equation, as described in [REF].
 \end_layout
 
 \begin_layout Standard
@@ -382,11 +394,11 @@ georeference
 
 ).
  For a pixel on the DEM 
-\begin_inset Formula $\mathbf{z}=\left(c,r,1\right)$
+\begin_inset Formula $\mathbf{z}=\left(c,r\right)$
 \end_inset
 
 , the longitude and lattitude 
-\begin_inset Formula $\mathbf{\theta}=\left(\theta,\varphi,1\right)$
+\begin_inset Formula $\mathbf{\theta}=\left(\theta,\varphi\right)$
 \end_inset
 
  at that point are calculated using equation 
@@ -402,11 +414,10 @@ reference "eq:lonlat"
 
 \begin_layout Standard
 \begin_inset Formula \begin{equation}
-\mathbf{e}=\left[\begin{array}{c}
+\hat{\mathbf{e}}=\left[\begin{array}{c}
 \cos\theta\cos\varphi\\
 \sin\theta\cos\varphi\\
-\sin\varphi\\
-1\end{array}\right]\label{eq:e}\end{equation}
+\sin\varphi\end{array}\right]\label{eq:e}\end{equation}
 
 \end_inset
 
@@ -421,7 +432,7 @@ be the direction vector in cartesian coordinates pointing from the origin
 \end_inset
 
 , the cartesian coordinate 
-\begin_inset Formula $\mathbf{x}=(x,y,z,1)$
+\begin_inset Formula $\mathbf{x}=(x,y,z)$
 \end_inset
 
  can be calculated:
@@ -429,9 +440,7 @@ be the direction vector in cartesian coordinates pointing from the origin
 
 \begin_layout Standard
 \begin_inset Formula \begin{equation}
-\mathbf{x}=D\left(\mathbf{z}\right)\left[\begin{array}{cc}
-\mathbf{I} & \mathbf{0}\\
-\mathbf{0} & 1\end{array}\right]\mathbf{e}\end{equation}
+\mathbf{x}=D\left(\mathbf{z}\right)\hat{\mathbf{e}}\end{equation}
 
 \end_inset
 
@@ -489,8 +498,12 @@ reference "eq:e"
 \begin_inset Formula $\mathbf{\theta'}$
 \end_inset
 
-, we have an affine mapping between 
-\begin_inset Formula $\mathbf{e}$
+ (equivalently 
+\begin_inset Formula $\mathbf{\hat{e}'}$
+\end_inset
+
+), we have an affine mapping between 
+\begin_inset Formula $\hat{\mathbf{e}}$
 \end_inset
 
  and 
@@ -502,7 +515,11 @@ reference "eq:e"
 
 \begin_layout Standard
 \begin_inset Formula \begin{equation}
-\mathbf{e}=\mathbf{L}\mathbf{\theta}\end{equation}
+\left[\begin{array}{c}
+\hat{\mathbf{e}}\\
+1\end{array}\right]=\mathbf{L}\left[\begin{array}{c}
+\mathbf{\theta}\\
+1\end{array}\right]\end{equation}
 
 \end_inset
 
@@ -516,8 +533,8 @@ where
 \begin_layout Standard
 \begin_inset Formula \begin{equation}
 \mathbf{L}=\left[\begin{array}{cc}
-\frac{\partial\mathbf{e}}{\partial\mathbf{x}} & \mathbf{e}'-\frac{\partial\mathbf{e}}{\partial\mathbf{x}}\mathbf{\theta'}\\
-\mathbf{0} & 1\end{array}\right]\end{equation}
+\frac{\partial\mathbf{e}}{\partial\mathbf{x}} & \hat{\mathbf{e}}'-\frac{\partial\mathbf{e}}{\partial\mathbf{x}}\mathbf{\theta'}\\
+\mathbf{0} & 1\end{array}\right]\label{eq:L}\end{equation}
 
 \end_inset
 
@@ -538,9 +555,13 @@ Using this result, can now easily map a pixel
 
 \begin_layout Standard
 \begin_inset Formula \begin{equation}
-\mathbf{x}=D(\mathbf{z})\left[\begin{array}{cc}
+\left[\begin{array}{c}
+\mathbf{x}\\
+1\end{array}\right]=D(\mathbf{z})\left[\begin{array}{cc}
 \mathbf{I} & \mathbf{0}\\
-\mathbf{0} & 1\end{array}\right]\mathbf{L}\mathbf{S}\mathbf{z}\end{equation}
+\mathbf{0} & 1\end{array}\right]\mathbf{L}\mathbf{S}\left[\begin{array}{c}
+\mathbf{z}\\
+1\end{array}\right]\end{equation}
 
 \end_inset
 
@@ -562,18 +583,18 @@ Orthoimages
 \begin_layout Standard
 After a DEM is generated, the source imagery can be projected onto the DEM
  to give it texture.
- This resulting image is called an orthoimage, because the resulting image
- appears as if the camera that took the image was orthographic to the planetary
- body's surface (see figure [FIG]).
+ This resulting image is called an orthoimage, because it appears as if
+ the camera that took the image was orthographic to the planetary body's
+ surface (see figure [FIG]).
 \end_layout
 
 \begin_layout Standard
 To do this, a mapping between the orbital image coordinates 
-\begin_inset Formula $\mathbf{u}=\left(u,v,1\right)$
+\begin_inset Formula $\mathbf{u}=\left(u,v\right)$
 \end_inset
 
  and world coordinates 
-\begin_inset Formula $\mathbf{x}=\left(x,y,z,1\right)$
+\begin_inset Formula $\mathbf{x}=\left(x,y,z\right)$
 \end_inset
 
  is needed.
@@ -583,7 +604,11 @@ To do this, a mapping between the orbital image coordinates
 
 \begin_layout Standard
 \begin_inset Formula \begin{equation}
-\mathbf{u}=\mathbf{F}\mathbf{x}\end{equation}
+\left[\begin{array}{c}
+\mathbf{u}\\
+1\end{array}\right]=\mathbf{F}\left[\begin{array}{c}
+\mathbf{x}\\
+1\end{array}\right]\label{eq:F}\end{equation}
 
 \end_inset
 
@@ -592,7 +617,7 @@ To do this, a mapping between the orbital image coordinates
 
 \begin_layout Standard
 Then, using the approximation from the last section, a orbital image 
-\begin_inset Formula $I\left(\mathbf{u}\right)$
+\begin_inset Formula $O\left(\mathbf{u}\right)$
 \end_inset
 
  can be mapped onto a small pach centered at 
@@ -605,7 +630,7 @@ Then, using the approximation from the last section, a orbital image
 
 .
  The resulting orthoimage patch 
-\begin_inset Formula $O\left(\mathbf{z}\right)$
+\begin_inset Formula $I\left(\mathbf{z}\right)$
 \end_inset
 
 , is given by:
@@ -613,9 +638,11 @@ Then, using the approximation from the last section, a orbital image
 
 \begin_layout Standard
 \begin_inset Formula \begin{equation}
-O(\mathbf{z})=I\left(\mathbf{F}D(\mathbf{z})\left[\begin{array}{cc}
+I(\mathbf{z})=O\left(\mathbf{F}D(\mathbf{z})\left[\begin{array}{cc}
 \mathbf{I} & \mathbf{0}\\
-\mathbf{0} & 1\end{array}\right]\mathbf{L}\mathbf{S}\mathbf{z}\right)\end{equation}
+\mathbf{0} & 1\end{array}\right]\mathbf{L}\mathbf{S}\left[\begin{array}{c}
+\mathbf{z}\\
+1\end{array}\right]\right)\end{equation}
 
 \end_inset
 
@@ -627,130 +654,324 @@ Multiple-View Photogrammetry
 \end_layout
 
 \begin_layout Standard
-Here we propose our concept for the AMVP.
- As stated before, unlike the ASP the AMVP would be designed from the ground
- up to handle multiple views.
- In addition, instead of correlating many image pairs and later having to
- mosaic them into the final DEM, the AMVP will completely remove this step
- by working in map projected space.
+The multiple-view photogrammetry method jointly developed by Dr.
+ Taemin Kim and I is described in this section.
 \end_layout
 
 \begin_layout Subsection
-Pipeline Overview
+Overview
 \end_layout
 
 \begin_layout Standard
-Figure 
+Say the terrain of the planetary body is represented as the DEM 
+\begin_inset Formula $D\left(\mathbf{z}\right)$
+\end_inset
+
+.
+ Projecting all the available orbital imagery on a small patch of this DEM
+ yields orthoimages 
+\begin_inset Formula $\tilde{I}_{1}\left(\mathbf{z}\right),\tilde{I}_{2}\left(\mathbf{z}\right),\ldots,\tilde{I}_{n}\left(\mathbf{z}\right)$
+\end_inset
+
+.
+ If the DEM exactly represents the planetary surface, the orthoimages should
+ line up exactly (neglecting occlusions, shadows and other artifacts), as
+ seen in figure [FIG].
+ Error in the DEM will manifest as misalignment in the orthoimage patches.
+\end_layout
+
+\begin_layout Standard
+If the DEM patches are small, we can approximate the curved planetary surface
+ that the patch represents with a plane tangent to the surface at the center
+ point of the patch (see figure [FIG]).
+ Our algorithm attempts to find this plane for each DEM post by adjusting
+ the plane's position and orientation until the alignment error is minimized.
+ The plane's height at the DEM post in question becomes the value for that
+ DEM post.
+ 
+\end_layout
+
+\begin_layout Subsection
+Efficiently Generating Orthoimages
+\end_layout
+
+\begin_layout Standard
+For a given DEM post 
+\begin_inset Formula $\mathbf{z'}$
+\end_inset
+
+, we parameterize the plane passing through it in terms of its height 
+\begin_inset Formula $h$
+\end_inset
+
+ at the DEM post and its normal in spherical coordinates 
+\begin_inset Formula $\left(n_{\theta},n_{\varphi}\right)$
+\end_inset
+
+.
+ With the surface defined with these parameters, it is easy to create the
+ orthoimages 
+\begin_inset Formula $\tilde{I}_{1}\left(\mathbf{z}\right),\tilde{I}_{2}\left(\mathbf{z}\right),\ldots,\tilde{I}_{n}\left(\mathbf{z}\right)$
+\end_inset
+
+ from their the orbital imagery by creating a planar DEM patch and then
+ projecting onto it.
+ However, with a little manipulation it is possible to find a homography
+ between the orbital images and their orthoimages, which is derived here.
+\end_layout
+
+\begin_layout Standard
+First, to form an equation for the plane, the normal must be converted into
+ cartesian coordinates:
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\noun off
+\color none
+\begin_inset Formula \begin{equation}
+\hat{\mathbf{n}}=\left[\begin{array}{c}
+\cos n_{\theta}\cos n_{\varphi}\\
+\sin n_{\theta}\cos n_{\varphi}\\
+\sin n_{\varphi}\end{array}\right]\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The equation for a plane using these parameters is:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\hat{\mathbf{n}}^{T}\left(\mathbf{x}-\mathbf{x'}\right)=0\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $\mathbf{x'}$
+\end_inset
+
+ is the cartesian 
+\begin_inset Formula $xyz$
+\end_inset
+
+ location of the surface at the DEM post:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\mathbf{x'}=h\mathbf{\hat{e}'}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+(
+\begin_inset Formula $\mathbf{\hat{e}'}$
+\end_inset
+
+is found using equation 
 \begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:amvp-flowchart"
+LatexCommand eqref
+reference "eq:e"
 
 \end_inset
 
- shows how data will flow through the AMVP.
- The three stages are as follows: bundle adjustment, disparity map initializatio
-n and multiple-view refinement.
- While some of these stages are similar to ones found in the ASP, the fundamenta
-l difference is that the pipeline will ingest the entirety of the orbital
- imagery available and then build a giant DEM tile by tile, rather than
- creating many smaller DEMs from stereo pairs and then having to mosaic
- them in a separate step.
+).
+ Solving the plane equation for 
+\begin_inset Formula $\mathbf{x}$
+\end_inset
+
+ gives:
 \end_layout
 
 \begin_layout Standard
-The AMVP has a much simpler data-flow model than the ASP.
- The Registration / Preprocessing is no longer needed as the AMVP is able
- to operate directly on the source imagery.
- The Disparity Map Initialization and Sub-Pixel Refinement stages are replaced
- by Multiple-View Initialization and Multiple-View Refinement stages.
- And finally, the Mesh / DEM Generation stage is no longer needed, since
- the optimal location of every DEM post is solved for in the Multiple-View
- Refinement stage.
-\begin_inset Wrap figure
-lines 0
-placement O
-overhang 0in
-width "50col%"
-status collapsed
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename amvp_flowchart.pdf
-	lyxscale 30
-	height 7cm
+\begin_inset Formula \begin{equation}
+\mathbf{x}=\frac{\mathbf{n}^{T}\mathbf{x'}}{\mathbf{n}^{T}\mathbf{e}}\mathbf{e}\end{equation}
 
 \end_inset
 
 
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Flow of data through the AMVP
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:amvp-flowchart"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsubsection
-Multiple-View Initialization
 \end_layout
 
 \begin_layout Standard
-The purpose of this stage is to create a low-resolution DEM that will be
- used to seed the Multiple-View Refinement stage.
- The algorithm that will be used here is still in heavy development.
- It works by assuming the small patch around a given DEM post is locally
- planar with a linear reflectance model.
- The parameters for this plane (surface normal and height), as well as the
- parameters for the linear reflectance model are solved in an expectation
- maximization (EM) framework, designed to minimize the differences between
- the orbital images projected onto the patch in question.
- We plan to use tie-points found by the Bundle Adjustment stage as an initial
- guess for the heights of these patches.
- We have already created a small scale proof of concept that shows the promising
- direction of this research, and expect to have a final version of the algorithm
- ready in the next six months (see Development Time Line, below).
+or, in matrix form:
 \end_layout
 
 \begin_layout Standard
-It is important to note here the power of our approach compared to the one
- taken by the ASP.
- The ASP solves for the disparity between two orbital images, uses that
- disparity to triangulate the corresponding 3D point, builds a mesh and
- finally interpolates on that mesh to find the height of a particular DEM
- post.
- In contrast, our algorithm directly finds the 
-\emph on
-optimal
-\emph default
- height for a particular DEM post given 
-\emph on
-all
-\emph default
- the orbital imagery that overlaps on that point, no mesh interpolation
- (or averaging between DEMs generated with different stereo pairs) required.
+\begin_inset Formula \begin{equation}
+\left[\begin{array}{c}
+\mathbf{x}\\
+1\end{array}\right]=\mathbf{P}\left[\begin{array}{c}
+\mathbf{e}\\
+1\end{array}\right]\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\mathbf{P}=\left[\begin{array}{cc}
+\mathbf{I} & \mathbf{0}\\
+\frac{1}{\mathbf{n}^{T}\mathbf{x'}}\mathbf{n}^{T} & 0\end{array}\right]\label{eq:P}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Using equations 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:S"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:L"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:F"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:P"
+
+\end_inset
+
+, the homography 
+\begin_inset Formula $\mathbf{H_{k}}$
+\end_inset
+
+ between the orbital image 
+\begin_inset Formula $O_{k}\left(\mathbf{u}\right)$
+\end_inset
+
+ and its corresponding orthoimage 
+\begin_inset Formula $\tilde{I}_{k}\left(\mathbf{z}\right)$
+\end_inset
+
+ is found:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\left[\begin{array}{c}
+\mathbf{u}\\
+1\end{array}\right]=\mathbf{H_{k}}\left[\begin{array}{c}
+\mathbf{z}\\
+1\end{array}\right]\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+\mathbf{H_{k}}=\mathbf{F_{k}}\mathbf{P}\mathbf{L}\mathbf{S}\label{eq:H}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+The Objective Function
+\end_layout
+
+\begin_layout Standard
+After 
+\begin_inset Formula $\tilde{I}_{1}\left(\mathbf{z}\right),\tilde{I}_{2}\left(\mathbf{z}\right),\ldots,\tilde{I}_{n}\left(\mathbf{z}\right)$
+\end_inset
+
+ have all been found using their homographies, they must be normalized to
+ remove any illumination changes before any alignment measure can be developed.
+ To this end, they are normalized by their mean and standard deviation:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+I_{k}\left(\mathbf{z}\right)=\frac{\tilde{I}_{k}\left(\mathbf{z}\right)-\overline{\tilde{I}_{k}\left(\mathbf{z}\right)}}{\textrm{std}\left(\tilde{I}_{k}\left(\mathbf{z}\right)\right)}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Once the normalized orthoimage patches 
+\begin_inset Formula $I_{1}\left(\mathbf{z}\right),I_{2}\left(\mathbf{z}\right),\ldots,I_{n}\left(\mathbf{z}\right)$
+\end_inset
+
+ are found, the objective function can be defined as the measure of alignment
+ error as a function of plane position and orientation:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+f\left(h,n_{\theta},n_{\varphi}\right)=\sum_{k=1}^{n}\int g_{c}\left(\mathbf{z}\right)\left(A\left(\mathbf{z}\right)-I_{k}\left(\mathbf{z}\right)\right)^{2}\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula \begin{equation}
+A\left(\mathbf{z}\right)=\frac{1}{n}\sum_{k=1}^{n}I_{k}\left(\mathbf{z}\right)\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+is the estimated normalized albedo for the patch, and 
+\begin_inset Formula $g_{c}\left(\mathbf{z}\right)$
+\end_inset
+
+ is a gaussian correlation window centered around the DEM point being solved
+ for.
 \end_layout
 
 \begin_layout Section
@@ -760,11 +981,12 @@ Evaluating The Objective Function Using
 \end_layout
 
 \begin_layout Standard
-I created 
+To evaluate and explore the parameters of the multiple-view objective function,
+ I developed the program 
 \family typewriter
 mvpgui
 \family default
- to evaluate the algorithm that we developed
+.
 \end_layout
 
 \begin_layout Subsection
@@ -802,187 +1024,6 @@ The development of the AMVP will be an exciting next step in the field of
 
 \begin_layout Standard
 Kernel size will be an issue
-\end_layout
-
-\begin_layout Subsection
-The Stereogrammetry Process
-\end_layout
-
-\begin_layout Standard
-Matching points from different perspectives of a 3D scene in this way is
- known in computer as “the correspondence problem”.
- The goal of the correspondence problem is to match each pixel in one image
- to its pair in the other image.
- This matching process is sometimes referred to as “correlation”.
- 
-\end_layout
-
-\begin_layout Standard
-The ASP was first officially released in late October 2009 and is still
- the only free, open-source, automated stereogrammetry software suite available
- to the public.
- It is an entire end-to-end system for producing DEMs from stereo pairs.
- It correlates images in two steps: first, a Disparity Map Initialization
- step and then a subpixel refinement step.
-\end_layout
-
-\begin_layout Subsubsection
-Disparity Map Initialization
-\end_layout
-
-\begin_layout Standard
-Disparity offsets for an image are stored in a two channel image (one channel
- for horizontal disparity, one channel for vertical disparity), called a
- 
-\begin_inset Quotes eld
-\end_inset
-
-disparity map
-\begin_inset Quotes erd
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-After the disparity map has been created, the camera models from the two
- source images are used to determine the 3D locations corresponding to each
- point in the source imagery.
- The 3D location for a given pixel the left image and is corresponding pixel
- in the right image (as defined by the disparity map) is found by intersecting
- the two rays that pass through each pixel and their respective camera center.
-\end_layout
-
-\begin_layout Standard
-The final product of this stage is a point cloud: XYZ locations that define
- the surface of the planetary surface being reconstructed.
-\end_layout
-
-\begin_layout Standard
-The object of the Disparity Map Initialization step is to quickly create
- a rough estimate of the disparity map that will be later refined to sub-pixel
- accuracy in the subsequent Sub-Pixel Refinement stage.
-\end_layout
-
-\begin_layout Standard
-The ASP uses a template matching approach for this step.
- Given a pixel in the left image, to find its corresponding pixel in the
- right image, a small window around the left pixel is taken and compared
- to areas of the right image as depicted in figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:template-matching"
-
-\end_inset
-
-.
- Usually, normalized cross correlation is used to define similarity.
- The integer offset that finds the most similar patch of pixels in the right
- image is recorded as the disparity for that left pixel.
- In the ASP, the process of searching through each possible disparity is
- optimized by using a box filter along with adaptive subregions in a pyramid-bas
-ed approach 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "subregion-sun2002"
-
-\end_inset
-
-.
- 
-\begin_inset Wrap figure
-lines 0
-placement O
-overhang 0in
-width "50col%"
-status collapsed
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename template_matching.tiff
-	lyxscale 20
-	width 7cm
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Determining disparity using a template matching approach 
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:template-matching"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsubsection
-Sub-Pixel Refinement
-\end_layout
-
-\begin_layout Standard
-This next stage refines the integer disparity estimates found in the disparity
- map initialization step to sub-pixel accuracy.
- The Bayes EM weight adaptive window correlation algorithm was developed
- at Ames to obtain very high quality sub-pixel results that are robust to
- image noise.
- The algorithm uses template windows that are be warped with affine transformati
-ons to accommodate perspective changes.
- The parameters for these template windows are treated as random variables
- in an expectation maximization (EM) framework with a Gaussian mixture model.
- For an in-depth description and discussion of this technique, see 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "bayessub-nefian2009"
-
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Subsubsection
-Triangulation
-\end_layout
-
-\begin_layout Standard
-After the sub-pixel disparity map has been completed, the camera models
- from the two source images are used to determine the 3D locations corresponding
- to each point in the source imagery.
- The 3D location for a given pixel the left image and is corresponding pixel
- in the right image (as defined by the disparity map) is found by intersecting
- the two rays that pass through each pixel and their respective camera center.
- The final product of this stage is a point cloud: XYZ locations that define
- the surface of the planetary surface being reconstructed.
-\end_layout
-
-\begin_layout Subsubsection
-Mesh / DEM Generation
-\end_layout
-
-\begin_layout Standard
-The last step in the process is to take the point cloud generated by the
- triangulation step and build a mesh to interpolate between the points.
- The mesh can either be viewed with a 3D viewer or be sampled at regular
- intervals to create a DEM.
- After many of these DEMs are created (one from each orbital image pair),
- they can be stitched together to form a mosaic.
 \end_layout
 
 \begin_layout Standard
