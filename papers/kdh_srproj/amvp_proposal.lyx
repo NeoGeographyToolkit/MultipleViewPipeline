@@ -802,7 +802,7 @@ reference "eq:e"
 
 \begin_layout Standard
 \begin_inset Formula \begin{equation}
-\mathbf{x}=\frac{\mathbf{n}^{T}\mathbf{x'}}{\mathbf{n}^{T}\mathbf{e}}\mathbf{e}\end{equation}
+\mathbf{x}=\frac{\mathbf{n}^{T}\mathbf{x'}}{\mathbf{n}^{T}\mathbf{e}}\mathbf{\hat{e}}\end{equation}
 
 \end_inset
 
@@ -818,7 +818,7 @@ or, in matrix form:
 \left[\begin{array}{c}
 \mathbf{x}\\
 1\end{array}\right]=\mathbf{P}\left[\begin{array}{c}
-\mathbf{e}\\
+\mathbf{\hat{e}}\\
 1\end{array}\right]\end{equation}
 
 \end_inset
