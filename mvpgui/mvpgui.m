@@ -34,17 +34,7 @@ ws.hwin = 10;
 ws.plot = "none";
 
 % Initialize the commands
-ws.cmddb = struct(
-  "help", @mvpgui_cmd_help,
-  "poi", @mvpgui_cmd_poi,
-  "hwin", @mvpgui_cmd_hwin,
-  "cp", @mvpgui_cmd_cp,
-  "cpi", @mvpgui_cmd_cpi,
-  "rplot", @mvpgui_cmd_rplot,
-  "llplot", @mvpgui_cmd_llplot,
-  "replot", @mvpgui_cmd_replot,
-  "save", @mvpgui_cmd_save,
-  "exit", @mvpgui_cmd_exit);
+ws.cmddb = mvpgui_gencmddb();
 
 % Enter interactive shell
 while 1
@@ -61,7 +51,7 @@ while 1
   endif
 
   try
-    fn = getfield(ws.cmddb, cmd{1});
+    fn = getfield(ws.cmddb, cmd{1}).fun;
   catch
       printf("Unrecognized command: %s\n", cmd{1});
       continue;
