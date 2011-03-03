@@ -27,3 +27,5 @@ function err = mvperr(patches, hKern, errfun)
   endfor
 
 endfunction
+
+% vim:set syntax=octave:

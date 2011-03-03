@@ -19,3 +19,5 @@ endfunction
 %! dn_actual = n2 - n1;
 %! pct_diff = norm((dn - dn_actual) ./ dn_actual);
 %! assert(pct_diff, 0, 1e-3);
+
+% vim:set syntax=octave:

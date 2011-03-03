@@ -51,3 +51,5 @@ function rws = mvpgui_cmd_llplot(ws, args)
 
   rws = ws;  
 endfunction
+
+% vim:set syntax=octave:

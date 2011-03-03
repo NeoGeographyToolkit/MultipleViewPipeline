@@ -16,3 +16,5 @@ for n = 0:3
   orbits{n+1}.img = imread_vw([synthSceneDir num2str(n) ".tif"]);
   orbits{n+1}.cam = loadcam_vw([synthSceneDir num2str(n) ".pinhole"]);
 end
+
+% vim:set syntax=octave:

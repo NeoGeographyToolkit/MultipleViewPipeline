@@ -9,3 +9,5 @@ function rws = mvpgui_cmd_hwin(ws, args)
   endswitch
   rws = ws;  
 endfunction
+
+% vim:set syntax=octave:

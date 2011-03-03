@@ -22,3 +22,5 @@ function rws = mvpgui_cmd_cp(ws, args)
   endswitch
   rws = ws;  
 endfunction
+
+% vim:set syntax=octave:

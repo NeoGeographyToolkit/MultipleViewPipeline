@@ -2,3 +2,5 @@ function result = mvpobj(plane, demPt, georef, orbits, hWin, hKern, errfun = "ga
   patches = mvpproj(plane, demPt, georef, orbits, hWin);
   result = mvperr(patches, hKern, errfun);
 endfunction
+
+% vim:set syntax=octave:

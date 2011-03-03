@@ -30,3 +30,5 @@ function rws = mvpgui_cmd_cpi(ws, args)
 
   rws = ws;  
 endfunction
+
+% vim:set syntax=octave:

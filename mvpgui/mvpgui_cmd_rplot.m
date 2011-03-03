@@ -36,3 +36,5 @@ function rws = mvpgui_cmd_rplot(ws, args)
 
   rws = ws;  
 endfunction
+
+% vim:set syntax=octave:

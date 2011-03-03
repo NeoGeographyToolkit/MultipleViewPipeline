@@ -9,3 +9,5 @@ function [xw yw] = _orthoproj_impl(xx, yy, zz, orbit)
   yw = reshape(PD(2,:) ./ PD(3,:), dim);
 
 endfunction
+
+% vim:set syntax=octave:

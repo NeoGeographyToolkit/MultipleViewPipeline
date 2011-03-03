@@ -4,3 +4,5 @@ function [planeNormal planeD] = plane2normd(plane, demPt, georef)
   planeNormal = lonlat2normal(plane(1:2));
   planeD = dot(planeNormal, cntrPtXYZ);
 endfunction
+
+% vim:set syntax=octave:

@@ -16,3 +16,5 @@ function rws = mvpgui_cmd_save(ws, args)
 
   rws = ws;  
 endfunction
+
+% vim:set syntax=octave:

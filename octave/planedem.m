@@ -13,3 +13,5 @@ function rad = planedem(normal, d, lon, lat)
     endfor
   endfor 
 endfunction
+
+% vim:set syntax=octave:

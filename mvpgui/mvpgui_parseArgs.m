@@ -20,3 +20,5 @@ for k = 1:args.numOrbs
 endfor
 
 endfunction
+
+% vim:set syntax=octave:

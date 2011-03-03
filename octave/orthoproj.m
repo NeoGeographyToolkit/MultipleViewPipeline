@@ -10,3 +10,5 @@ function patch = orthoproj(xx, yy, zz, orbit)
   patch = imremap(orbit.img, xw, yw, "bilinear");
 
 endfunction
+
+% vim:set syntax=octave:

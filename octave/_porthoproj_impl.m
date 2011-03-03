@@ -33,3 +33,5 @@ endfunction
 %! errY = norm(yw1(:) - yw(:));
 %! assert(errX, 0, 0.001);
 %! assert(errY, 0, 0.001);
+
+% vim:set syntax=octave:

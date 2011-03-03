@@ -32,3 +32,5 @@ endfunction
 %! errLat = norm(lat_imp(:) - lat(:));
 %! assert(errLon, 0, 1e-6);
 %! assert(errLat, 0, 1e-6);
+
+% vim:set syntax=octave:

@@ -16,3 +16,5 @@ function [xx yy zz] = lonlatrad2xyz(lon, lat, rad)
   endfor
 
 endfunction
+
+% vim:set syntax=octave:

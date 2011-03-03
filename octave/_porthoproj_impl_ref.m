@@ -11,3 +11,5 @@ function [xw yw] = _porthoproj_impl_ref(planeNormal, planeD, demPt, georef, orbi
   [xw yw] = _orthoproj_impl(xx, yy, zz, orbit);
 
 endfunction
+
+% vim:set syntax=octave:
