@@ -16,10 +16,14 @@ function err = mvperr(patches, hKern, errfun)
   endfor
   meanpatch /= n;
 
-  % Find the sum of square error
+  % Find the sum of square error, in a gaussian window
+  persistent gaussrow = normpdf(1:dim(1), dim(1) / 2, dim(1) / 6);
+  persistent gausscol = normpdf(1:dim(2), dim(2) / 2, dim(2) / 6)';
+  persistent gausswin = gausscol*gaussrow;
+
   err = 0;
   for k = 1:n
-    err += sum(((meanpatch - patches{k}).^2)(:));
+    err += sum((((meanpatch - patches{k}).^2)*gausswin)(:));
   endfor
 
 endfunction
