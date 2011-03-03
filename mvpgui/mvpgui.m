@@ -33,6 +33,19 @@ ws = mvpgui_cmd_cp(ws, {"init"});
 ws.hwin = 10;
 ws.plot = "none";
 
+% Initialize the commands
+ws.cmddb = struct(
+  "help", @mvpgui_cmd_help,
+  "poi", @mvpgui_cmd_poi,
+  "hwin", @mvpgui_cmd_hwin,
+  "cp", @mvpgui_cmd_cp,
+  "cpi", @mvpgui_cmd_cpi,
+  "rplot", @mvpgui_cmd_rplot,
+  "llplot", @mvpgui_cmd_llplot,
+  "replot", @mvpgui_cmd_replot,
+  "save", @mvpgui_cmd_save,
+  "exit", @mvpgui_cmd_exit);
+
 % Enter interactive shell
 while 1
   try
@@ -47,32 +60,12 @@ while 1
     continue;
   endif
 
-  fn = @() error("Logic error");
-  switch (cmd{1})
-    case "help"
-      fn = @mvpgui_cmd_help;
-    case "poi"
-      fn = @mvpgui_cmd_poi;
-    case "hwin"
-      fn = @mvpgui_cmd_hwin;
-    case "cp"
-      fn = @mvpgui_cmd_cp;
-    case "cpi"
-      fn = @mvpgui_cmd_cpi;
-    case "rplot"
-      fn = @mvpgui_cmd_rplot;
-    case "llplot"
-      fn = @mvpgui_cmd_llplot;
-    case "replot"
-      fn = @mvpgui_cmd_replot;
-    case "save"
-      fn = @mvpgui_cmd_save;
-    case "exit"
-      fn = @mvpgui_cmd_exit;
-    otherwise
+  try
+    fn = getfield(ws.cmddb, cmd{1});
+  catch
       printf("Unrecognized command: %s\n", cmd{1});
       continue;
-  endswitch
+  end_try_catch
 
   try
     ws = fn(ws, {cmd{2:end}});
