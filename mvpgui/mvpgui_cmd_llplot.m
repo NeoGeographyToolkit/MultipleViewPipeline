@@ -38,7 +38,7 @@ function rws = mvpgui_cmd_llplot(ws, args)
   for x = 1:npts
     for y = 1:npts
       plane = [ws.lonlatplot.lons(x) ws.lonlatplot.lats(y) ws.lonlatplot.cp(3)];
-      ws.lonlatplot.obj(x, y) = mvpobj(plane, ws.poi, ws.georef, ws.orbs, ws.hwin, -1);
+      ws.lonlatplot.obj(y, x) = mvpobj(plane, ws.poi, ws.georef, ws.orbs, ws.hwin, -1);
       printf("%d / %d\r", (x - 1) * npts + y, npts * npts);
     endfor
   endfor
