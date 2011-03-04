@@ -4,6 +4,9 @@ link_directories(~/projects/VisionWorkbench/build/lib)
 add_executable(gen_synth_scene gen_synth_scene.cc)
 target_link_libraries(gen_synth_scene vw vwCartography vwCamera)
 
+add_executable(vwconvert vwconvert.cc)
+target_link_libraries(vwconvert vw)
+
 find_package(Octave REQUIRED)
 
 include_directories(${OCTAVE_INCLUDE_DIRS})
