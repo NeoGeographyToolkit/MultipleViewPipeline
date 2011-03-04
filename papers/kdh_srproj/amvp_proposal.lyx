@@ -1,4 +1,4 @@
-#LyX 1.6.8 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.7 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -47,7 +47,7 @@
 \begin_body
 
 \begin_layout Title
-Lunar Multi-photogrammetry and Its Visualization
+Planetary Multi-photogrammetry and Its Visualization
 \end_layout
 
 \begin_layout Author
@@ -77,7 +77,23 @@ February 19, 2011
 \end_layout
 
 \begin_layout Abstract
-The abstract goes here...
+During the summer of 2011, Dr.
+ Taemin Kim and Kyle Husmann jointly developed a novel new algorithm to
+ generate topographical maps of planetary surfaces using a multiple-view
+ photogrammetry approach.
+ To evaluate and debug the algorithm, a program called 
+\family typewriter
+mvpgui
+\family default
+ was developed to visualize and examine the objective function.
+ After verifying the correct operation of the algorithm and 
+\family typewriter
+mvpgui
+\family default
+ with synthetic data, it is run with real orbital data from the Apollo 15
+ mission.
+ The results confirm the validity of the multiple-view algorithm as well
+ as demonstrate the value of objective function visualization.
 \end_layout
 
 \begin_layout Section
@@ -185,7 +201,8 @@ Intelligent Robotics Group, NASA Ames Research Center, CA, USA
  to them.
  As with any minimization process, local minima and stability are concerns.
  Therefore, to evaluate and debug the objective function, (the alignment
- error funtion being minimized), I have created a small program called 
+ error function being minimized), I have created a small program called
+ 
 \begin_inset Quotes eld
 \end_inset
 
@@ -275,7 +292,7 @@ The equirectangular projection (plate carrée) is a common representation
  used in digital cartography.
  Although it preserves neither distance, direction, area nor the shape of
  features in the map, it has a computational advantage: The longitude and
- lattitude 
+ latitude 
 \begin_inset Formula $\boldsymbol{\mathbf{\theta}}=\left(\theta,\varphi\right)$
 \end_inset
 
@@ -284,8 +301,8 @@ The equirectangular projection (plate carrée) is a common representation
 status collapsed
 
 \begin_layout Plain Layout
-Typically in cartography, coordinates are represented as (lattitude, longitude)
- rather than (longitude, lattitude).
+Typically in cartography, coordinates are represented as (latitude, longitude)
+ rather than (longitude, latitude).
  However, we choose the latter because it mirrors the representation of
  pixels in an image: (c, r).
 \end_layout
@@ -345,7 +362,7 @@ s_{c} & 0 & t_{c}\\
 \begin_inset Formula $t_{r}$
 \end_inset
 
- are the longitude and lattitude of the upper-left corner of the map.
+ are the longitude and latitude of the upper-left corner of the map.
  Note that equation 
 \begin_inset CommandInset ref
 LatexCommand eqref
@@ -368,7 +385,7 @@ Moving From Map To Cartesian Coordinates
 \end_layout
 
 \begin_layout Standard
-It is a simple procedure to calculate cartesian 
+It is a simple procedure to calculate Cartesian 
 \begin_inset Formula $xyz$
 \end_inset
 
@@ -376,7 +393,7 @@ It is a simple procedure to calculate cartesian
 \begin_inset Formula $D\left(\mathbf{z}\right)$
 \end_inset
 
-, a DEM, and its map projection (stored in a datastructure called a 
+, a DEM, and its map projection (stored in a data structure called a 
 \begin_inset Quotes eld
 \end_inset
 
@@ -389,7 +406,7 @@ georeference
 \begin_inset Formula $\mathbf{z}=\left(c,r\right)$
 \end_inset
 
-, the longitude and lattitude 
+, the longitude and latitude 
 \begin_inset Formula $\mathbf{\boldsymbol{\mathbf{\theta}}}=\left(\theta,\varphi\right)$
 \end_inset
 
@@ -417,13 +434,13 @@ reference "eq:lonlat"
 \end_layout
 
 \begin_layout Standard
-be the direction vector in cartesian coordinates pointing from the origin
- longitude and lattitude in question.
+be the direction vector in Cartesian coordinates pointing from the origin
+ longitude and latitude in question.
  Now, using the radius of the planetary body's surface at this point, 
 \begin_inset Formula $D\left(\mathbf{z}\right)$
 \end_inset
 
-, the cartesian coordinate 
+, the Cartesian coordinate 
 \begin_inset Formula $\mathbf{x}=(x,y,z)$
 \end_inset
 
@@ -440,13 +457,13 @@ be the direction vector in cartesian coordinates pointing from the origin
 \end_layout
 
 \begin_layout Standard
-When calculating the cartesian coordinates of points in a DEM around a small
+When calculating the Cartesian coordinates of points in a DEM around a small
  patch of pixels centered around a given pixel 
 \begin_inset Formula $\mathbf{z'}$
 \end_inset
 
 , the above trigonometric functions can be approximated by their first order
- taylor approximations.
+ Taylor approximations.
  First, let 
 \end_layout
 
@@ -467,7 +484,7 @@ where
 \begin_inset Formula $\mathbf{\boldsymbol{\theta}'}=\left(\theta',\varphi'\right)$
 \end_inset
 
- is the longitude and lattitude for 
+ is the longitude and latitude for 
 \begin_inset Formula $\mathbf{z'}$
 \end_inset
 
@@ -479,7 +496,7 @@ reference "eq:lonlat"
 \end_inset
 
 .
- Then, using the taylor approximation of equation 
+ Then, using the Taylor approximation of equation 
 \begin_inset CommandInset ref
 LatexCommand eqref
 reference "eq:e"
@@ -538,7 +555,7 @@ Using this result, can now easily map a pixel
 \begin_inset Formula $\mathbf{z}$
 \end_inset
 
- to its cartesian location 
+ to its Cartesian location 
 \begin_inset Formula $\mathbf{x}$
 \end_inset
 
@@ -564,7 +581,7 @@ Using this result, can now easily map a pixel
 This relationship very is important performance-wise when using small patches
  of the DEM to create orthoimages (defined in the next section).
  This performance gain is essential for the multiple-view algorithm described
- later in this paper becuse the algorithm generates many orthoimage patches
+ later in this paper because the algorithm generates many orthoimage patches
  at each iteration.
 \end_layout
 
@@ -590,7 +607,7 @@ To do this, a mapping between the orbital image coordinates
 \end_inset
 
  is needed.
- For a pinhole camera, this mapping is given by its fundimental matrix (see
+ For a pinhole camera, this mapping is given by its fundamental matrix (see
  [REF]):
 \end_layout
 
@@ -612,7 +629,7 @@ Then, using the approximation from the last section, a orbital image
 \begin_inset Formula $O\left(\mathbf{u}\right)$
 \end_inset
 
- can be mapped onto a small pach centered at 
+ can be mapped onto a small patch centered at 
 \begin_inset Formula $\mathbf{z'}$
 \end_inset
 
@@ -714,7 +731,7 @@ For a given DEM post
 
 \begin_layout Standard
 First, to form an equation for the plane, the normal must be converted into
- cartesian coordinates:
+ Cartesian coordinates:
 \end_layout
 
 \begin_layout Standard
@@ -756,7 +773,7 @@ where
 \begin_inset Formula $\mathbf{x'}$
 \end_inset
 
- is the cartesian 
+ is the Cartesian 
 \begin_inset Formula $xyz$
 \end_inset
 
@@ -962,7 +979,7 @@ is the estimated normalized albedo for the patch, and
 \begin_inset Formula $g_{c}\left(\mathbf{z}\right)$
 \end_inset
 
- is a gaussian correlation window centered around the DEM point being solved
+ is a Gaussian correlation window centered around the DEM point being solved
  for.
 \end_layout
 
@@ -1161,7 +1178,7 @@ mvp>
 \end_layout
 
 \begin_layout Standard
-When the program starts, it selectes the current 
+When the program starts, it selects the current 
 \begin_inset Quotes eld
 \end_inset
 
@@ -1271,7 +1288,14 @@ mvpgui
 \family default
 .
  The synthetic scene is simply DEM representing a planar surface with a
- uniform noise texture, as seen in figure [FIG].
+ uniform noise texture, as seen in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:synthdem"
+
+\end_inset
+
+.
  Notice how the planar geometry appears curved due to the equirectangular
  projection.
  Four 
@@ -1290,13 +1314,340 @@ taken
 \begin_inset Quotes erd
 \end_inset
 
- of the scene and are shown in figure [FIG].
+ of the scene and are shown in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:synthorbits"
+
+\end_inset
+
+.
  The camera models and locations as well as the location of the surface
  were chosen to be the same as the real orbital data used in the next section.
 \end_layout
 
 \begin_layout Standard
-Figure [FIG] of the objective function was created using the 
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename synthDEM.png
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Synthetic DEM
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset space \qquad{}
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename synthDRG.png
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Synthetic Orthoimage
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Synthetic planar DEM and orthoimage
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:synthdem"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename synthorbit0.png
+	lyxscale 50
+	scale 25
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Image 1
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset space \qquad{}
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+5
+\begin_inset Graphics
+	filename synthorbit1.png
+	lyxscale 50
+	scale 25
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Image 2
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename synthorbit2.png
+	lyxscale 50
+	scale 25
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Image 3
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset space \qquad{}
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename synthorbit3.png
+	lyxscale 50
+	scale 25
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Image 4
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+\begin_inset Quotes eld
+\end_inset
+
+Orbital images
+\begin_inset Quotes erd
+\end_inset
+
+ that were 
+\begin_inset Quotes eld
+\end_inset
+
+taken
+\begin_inset Quotes erd
+\end_inset
+
+ of the synthetic scene
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:synthorbits"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:synthrplot"
+
+\end_inset
+
+ of the objective function was created using the 
 \begin_inset Quotes eld
 \end_inset
 
@@ -1315,7 +1666,72 @@ rplot
 \end_layout
 
 \begin_layout Standard
-Figure [FIG] of the objective function was created using the 
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename synthrplot.svg
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+The objective function landscape as created by the 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+rplot
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+ command with a synthetic scene.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:synthrplot"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:synthllplot"
+
+\end_inset
+
+ of the objective function was created using the 
 \begin_inset Quotes eld
 \end_inset
 
@@ -1333,6 +1749,65 @@ llplot
 \end_layout
 
 \begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename synthllplot.svg
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+The objective function landscape as created by the 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+llplot
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+ command with a synthetic scene.
+ The darker the data point, the lower the cost.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:synthllplot"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 Both plots of the objective function show that it behaves quadratically
  as expected, and doesn't suffer from local minima.
  This good behavior can be attributed to the synthetic data being free of
@@ -1346,15 +1821,408 @@ Results With Real Data
 \end_layout
 
 \begin_layout Standard
-Orbital data from the Apollo 15 mission [REF] was also used to examine the
- performance of the multiple-view algorithm under real conditions.
+Orbital data from the Apollo 15 mission was also used to examine the performance
+ of the multiple-view algorithm under real conditions.
  Crops of frames AS15-M-1090 through AS15-M-1093 were used, shown in figure
- [FIG].
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:realorbs"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
-Figure [FIG] shows the objective funciton as a function of DEM post radius.
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename orbit0.png
+	lyxscale 25
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+AS15-M-1090
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset space \qquad{}
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename orbit1.png
+	lyxscale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+AS15-M-1090
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename orbit2.png
+	lyxscale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+AS15-M-1092
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset space \qquad{}
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename orbit3.png
+	lyxscale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+AS15-M-1093
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Orbital imagery from the Apollo 15 mission
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:realorbs"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:realrplot"
+
+\end_inset
+
+ shows the objective function as a function of DEM post radius, while figure
  
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:realllplot"
+
+\end_inset
+
+ varies the plane orientation.
+ Both minima are well defined, so it is safe to assume that they reflect
+ the position and orientation of the actual lunar surface at that post.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename realrplot.svg
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+The objective function landscape as created by the 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+rplot
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+ command with orbital imagery from Apollo 15.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:realrplot"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename realllplot.svg
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+The objective function landscape as created by the 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+llplot
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+ command with orbital imagery from Apollo 15.
+ The darker the data point, the lower the cost.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:realllplot"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The previous results were obtained using a Gaussian window with a standard
+ deviation of 8 pixels.
+ It is useful to see how the objective function begins to become noisy when
+ a smaller window size is used.
+ Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:realrplotsmwin"
+
+\end_inset
+
+ shows the objective function as a function of DEM post radius using a Gaussian
+ window with a standard deviation of 4.
+ Notice how the objective function begins to develop a local minimum.
+ Clearly, window size will be an important parameter for this algorithm.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename realrplotsmwin.svg
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+The objective function landscape as created by the 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+rplot
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+ command with orbital imagery from Apollo 15, with a Gaussian window of
+ standard deviation 4.
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:realrplotsmwin"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -1362,20 +2230,34 @@ Conclusion
 \end_layout
 
 \begin_layout Standard
-The development of the AMVP will be an exciting next step in the field of
- automated DEM construction processes.
- We expect that the final version will run at least as fast as the ASP,
- but provide better results and be much easier to use.
- Furthermore, with a good software infrastructure, we will be able to use
- it to further other areas of research like the photometric refinement of
- DEMs.
- In the meantime, we will focus on developing and characterizing the core
- multiple-view algorithm while we continue to build and refine the software
- technologies required for its large-scale implementation.
+Through the use of the 
+\family typewriter
+mvpgui
+\family default
+ program, it is apparent the cost function for the new multiple-view photogramme
+try algorithm satisfies the needs of the algorithm: it has well-defined
+ minima, is stable, and (if a sufficiently sized window is chosen), does
+ not suffer from local minima.
 \end_layout
 
 \begin_layout Standard
-Kernel size will be an issue
+As the multiple-view photogrammetry algorithm is continued to be developed,
+ mvpgui should be maintained in parallel as a debugging and visualization
+ tool for the algorithm.
+ It's visualization capabilities will be invaluable as the complexity of
+ the algorithm increases.
+\end_layout
+
+\begin_layout Standard
+The next step in the development of the multiple-view photogrammetry algorithm
+ will be to implement an optimization algorithm to find the minimum of the
+ objective function automatically.
+ 
+\family typewriter
+mvpgui
+\family default
+ will be invaluable for debugging because it will allow us to visualize
+ the objective function at every iteration.
 \end_layout
 
 \begin_layout Standard
