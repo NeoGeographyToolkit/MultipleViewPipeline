@@ -1,4 +1,4 @@
-#LyX 1.6.7 created this file. For more info see http://www.lyx.org/
+#LyX 1.6.8 created this file. For more info see http://www.lyx.org/
 \lyxformat 345
 \begin_document
 \begin_header
@@ -47,8 +47,7 @@
 \begin_body
 
 \begin_layout Title
-Evaluating The Objective Function For A New Multiple-View Photogrammetry
- Algorithm
+Lunar Multi-photogrammetry and Its Visualization
 \end_layout
 
 \begin_layout Author
@@ -277,7 +276,7 @@ The equirectangular projection (plate carrée) is a common representation
  Although it preserves neither distance, direction, area nor the shape of
  features in the map, it has a computational advantage: The longitude and
  lattitude 
-\begin_inset Formula $\mathbf{\theta}=\left(\theta,\varphi\right)$
+\begin_inset Formula $\boldsymbol{\mathbf{\theta}}=\left(\theta,\varphi\right)$
 \end_inset
 
  of a location
@@ -303,17 +302,13 @@ Typically in cartography, coordinates are represented as (lattitude, longitude)
 \begin_layout Standard
 \begin_inset Formula \begin{equation}
 \left[\begin{array}{c}
-\mathbf{\theta}\\
+\boldsymbol{\mathbf{\theta}}\\
 1\end{array}\right]=\mathbf{S}\left[\begin{array}{c}
 \mathbf{z}\\
 1\end{array}\right]\label{eq:lonlat}\end{equation}
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
 where
 \end_layout
 
@@ -327,9 +322,6 @@ s_{c} & 0 & t_{c}\\
 \end_inset
 
 
-\end_layout
-
-\begin_layout Standard
 \begin_inset Formula $s_{u}$
 \end_inset
 
@@ -398,7 +390,7 @@ georeference
 \end_inset
 
 , the longitude and lattitude 
-\begin_inset Formula $\mathbf{\theta}=\left(\theta,\varphi\right)$
+\begin_inset Formula $\mathbf{\boldsymbol{\mathbf{\theta}}}=\left(\theta,\varphi\right)$
 \end_inset
 
  at that point are calculated using equation 
@@ -472,7 +464,7 @@ When calculating the cartesian coordinates of points in a DEM around a small
 
 \begin_layout Standard
 where 
-\begin_inset Formula $\mathbf{\theta'}=\left(\theta',\varphi'\right)$
+\begin_inset Formula $\mathbf{\boldsymbol{\theta}'}=\left(\theta',\varphi'\right)$
 \end_inset
 
  is the longitude and lattitude for 
@@ -507,7 +499,7 @@ reference "eq:e"
 \end_inset
 
  and 
-\begin_inset Formula $\mathbf{\theta}$
+\begin_inset Formula $\boldsymbol{\mathbf{\theta}}$
 \end_inset
 
 :
