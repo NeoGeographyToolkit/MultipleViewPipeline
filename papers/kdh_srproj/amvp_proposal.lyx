@@ -985,16 +985,376 @@ mvpgui
 Implementation Details
 \end_layout
 
+\begin_layout Standard
+
+\family typewriter
+mvpgui
+\family default
+ was written in 
+\family typewriter
+octave
+\family default
+, an open source 
+\family typewriter
+MATLAB
+\family default
+ clone (REF).
+ Since 
+\family typewriter
+octave
+\family default
+ does not natively support loading 32-bit images, georeferences, or their
+ camera models, the interpreter was extended using oct-files: bridges between
+ 
+\family typewriter
+octave
+\family default
+ and custom C++ code (REF).
+ In the oct-files, loading the images, georeferences and camera models was
+ accomplished using the NASA Ames Vision Workbench, an open-source computer
+ vision library (REF).
+\end_layout
+
 \begin_layout Subsection
 Basic Commands And Usage
+\end_layout
+
+\begin_layout Standard
+mvpgui is invoked by passing it a georeferenced DEM (to use for initial
+ post values) followed by orbital images and their camera models:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+./mvpgui dem.tif orbit1.tif orbit1.pinhole
+\end_layout
+
+\begin_layout Plain Layout
+
+                 orbit2.tif orbit2.pinhole
+\end_layout
+
+\begin_layout Plain Layout
+
+                [orbit3.tif orbit3.pinhole...]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+After loading the images, it gives a simple prompt.
+ Entering 
+\begin_inset Quotes eld
+\end_inset
+
+help
+\begin_inset Quotes erd
+\end_inset
+
+ will give you the list of commands:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Loading images...
+ Done!
+\end_layout
+
+\begin_layout Plain Layout
+
+mvp> help
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+Usage: help [command]
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+Available commands:
+\end_layout
+
+\begin_layout Plain Layout
+
+   help
+\end_layout
+
+\begin_layout Plain Layout
+
+   poi
+\end_layout
+
+\begin_layout Plain Layout
+
+   hwin
+\end_layout
+
+\begin_layout Plain Layout
+
+   cp
+\end_layout
+
+\begin_layout Plain Layout
+
+   cpi
+\end_layout
+
+\begin_layout Plain Layout
+
+   rplot
+\end_layout
+
+\begin_layout Plain Layout
+
+   llplot
+\end_layout
+
+\begin_layout Plain Layout
+
+   replot
+\end_layout
+
+\begin_layout Plain Layout
+
+   save
+\end_layout
+
+\begin_layout Plain Layout
+
+   exit
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+mvp>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+When the program starts, it selectes the current 
+\begin_inset Quotes eld
+\end_inset
+
+point of interest
+\begin_inset Quotes erd
+\end_inset
+
+ (see 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+help poi
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+) on the DEM to be the center of the DEM.
+ The 
+\begin_inset Quotes eld
+\end_inset
+
+current plane
+\begin_inset Quotes erd
+\end_inset
+
+ (see 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+help cp
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+) is initialized to be tangent to the surface of the DEM at that point.
+ Window size defaults to 10, and can be adjusted with 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+hwin
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Graphs can be generated with the 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+rplot
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+llplot
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+ commands, and can be saved to file using the 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+save
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+ command.
 \end_layout
 
 \begin_layout Subsection
 Results With Synthetic Data
 \end_layout
 
+\begin_layout Standard
+Synthetic data was created to examine the performance of the multiple-view
+ algorithm under ideal circumstances (no noise) and to verify the correct
+ operation of 
+\family typewriter
+mvpgui
+\family default
+.
+ The synthetic scene is simply DEM representing a planar surface with a
+ uniform noise texture, as seen in figure [FIG].
+ Notice how the planar geometry appears curved due to the equirectangular
+ projection.
+ Four 
+\begin_inset Quotes eld
+\end_inset
+
+orbital images
+\begin_inset Quotes erd
+\end_inset
+
+ were 
+\begin_inset Quotes eld
+\end_inset
+
+taken
+\begin_inset Quotes erd
+\end_inset
+
+ of the scene and are shown in figure [FIG].
+ The camera models and locations as well as the location of the surface
+ were chosen to be the same as the real orbital data used in the next section.
+\end_layout
+
+\begin_layout Standard
+Figure [FIG] of the objective function was created using the 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+rplot
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+ command.
+ It shows the objective function as a function of DEM post radius while
+ keeping the orientation constant.
+ It has a well defined minimum at exactly the height of the post.
+\end_layout
+
+\begin_layout Standard
+Figure [FIG] of the objective function was created using the 
+\begin_inset Quotes eld
+\end_inset
+
+
+\family typewriter
+llplot
+\family default
+
+\begin_inset Quotes erd
+\end_inset
+
+ command.
+ It shows the objective function as a function of plane orientation.
+ It also has a well defined minimum at the expected orientation.
+\end_layout
+
+\begin_layout Standard
+Both plots of the objective function show that it behaves quadratically
+ as expected, and doesn't suffer from local minima.
+ This good behavior can be attributed to the synthetic data being free of
+ noise, as well as the surface being planar.
+ The results here verify that the objective function and mvpgui are indeed
+ working correctly.
+\end_layout
+
 \begin_layout Subsection
 Results With Real Data
+\end_layout
+
+\begin_layout Standard
+Orbital data from the Apollo 15 mission [REF] was also used to examine the
+ performance of the multiple-view algorithm under real conditions.
+ Crops of frames AS15-M-1090 through AS15-M-1093 were used, shown in figure
+ [FIG].
+\end_layout
+
+\begin_layout Standard
+Figure [FIG] shows the objective funciton as a function of DEM post radius.
+ 
 \end_layout
 
 \begin_layout Section
