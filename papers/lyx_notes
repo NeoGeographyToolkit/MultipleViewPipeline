@@ -1,0 +1,4 @@
+To get urls, used the plainurl.bst style found online.
+It uses the url package for \url. To enable it, in the preamble of the doc, write \usepackage{url}
+
+if you try to insert a url in a caption it errors. you need to add \protect: \protect\url{http://} 

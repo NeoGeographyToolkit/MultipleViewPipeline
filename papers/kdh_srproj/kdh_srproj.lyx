@@ -3,6 +3,9 @@
 \begin_document
 \begin_header
 \textclass article
+\begin_preamble
+\usepackage{url}
+\end_preamble
 \use_default_options true
 \language english
 \inputencoding auto
@@ -77,7 +80,7 @@ February 19, 2011
 \end_layout
 
 \begin_layout Abstract
-During the summer of 2011, Dr.
+During the summer of 2010, Dr.
  Taemin Kim and Kyle Husmann jointly developed a novel new algorithm to
  generate topographical maps of planetary surfaces using a multiple-view
  photogrammetry approach.
@@ -164,12 +167,69 @@ stereophotogrammetry
 
 \begin_layout Standard
 Before computers automated this task, points in orbital images were manually
- matched using mechanical stereoplotters like the one shown in figure [FIG].
+ matched using mechanical stereoplotters like the one shown in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:stereoplotter"
+
+\end_inset
+
+.
  Now, computers can perform this once long and arduous process with minimal
  human interaction.
- Software suites like the Ames Stereo Pipeline (ASP) can be fed orbital
- images and will simply output the topography in the form of digital elevation
- maps (DEMs).
+ Software suites like the Ames Stereo Pipeline 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "asp-broxton2008,asp-website"
+
+\end_inset
+
+ can be fed orbital images and will simply output the topography in the
+ form of digital elevation maps (DEMs).
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename Kelsh_stereoplotter.jpg
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+A Kelsh stereoplotter (source: http://en.wikipedia.org/wiki/File:Kelsh.jpg)
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:stereoplotter"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -183,7 +243,7 @@ While stereophotogrammetry produces good results, we are interested in going
 \end_layout
 
 \begin_layout Standard
-During the summer of 2011, Dr.
+During the summer of 2010, Dr.
  Taemin Kim
 \begin_inset Foot
 status collapsed
@@ -277,10 +337,160 @@ map projection
 It is a well known fact that it is impossible to project the curved surface
  of a spheroid onto a plane without some kind of distortion.
  Depending on the map projection being used, the perceived distance, direction,
- area or the shape of features on the map may be distorted or preserved.
+ area or the shape of features on the map may be distorted or preserved
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "usgs-mapproj"
+
+\end_inset
+
+.
  For example, the Mollweide projection preserves area but heavily distorts
  shapes, while the Mercator projection preserves small shapes but distorts
- areas [FIG].
+ areas as seen in figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:mapprojs"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename Usgs_map_mercator.svg
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Caption
+
+\begin_layout Plain Layout
+The Mercator projection accurately depicts small shapes but distorts areas.
+ (Source: 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+protect
+\backslash
+url{http://egsc.usgs.gov/isb/pubs/MapProjections/graphics/sinousidal.gif}
+\end_layout
+
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename Usgs_map_sinousidal_equal_area.svg
+	scale 70
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Caption
+
+\begin_layout Plain Layout
+The sinusoidal projection accurately depicts relative sizes, but distorts
+ shapes and directions.
+ (Source: 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+protect
+\backslash
+url{http://egsc.usgs.gov/isb/pubs/MapProjections/graphics/mercator.gif}
+\end_layout
+
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+A comparison of two map projections: Mercator and sinusoidal
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:mapprojs"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsubsection
@@ -370,7 +580,14 @@ reference "eq:lonlat"
 
 \end_inset
 
- is a homogeneous equation, as described in [REF].
+ is a homogeneous equation, as described in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "mvg-hartley"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
@@ -434,6 +651,7 @@ reference "eq:lonlat"
 \end_layout
 
 \begin_layout Standard
+\noindent
 be the direction vector in Cartesian coordinates pointing from the origin
  longitude and latitude in question.
  Now, using the radius of the planetary body's surface at this point, 
@@ -457,6 +675,7 @@ be the direction vector in Cartesian coordinates pointing from the origin
 \end_layout
 
 \begin_layout Standard
+\noindent
 When calculating the Cartesian coordinates of points in a DEM around a small
  patch of pixels centered around a given pixel 
 \begin_inset Formula $\mathbf{z'}$
@@ -480,6 +699,7 @@ When calculating the Cartesian coordinates of points in a DEM around a small
 \end_layout
 
 \begin_layout Standard
+\noindent
 where 
 \begin_inset Formula $\mathbf{\boldsymbol{\theta}'}=\left(\theta',\varphi'\right)$
 \end_inset
@@ -536,6 +756,7 @@ reference "eq:e"
 \end_layout
 
 \begin_layout Standard
+\noindent
 where
 \end_layout
 
@@ -551,6 +772,7 @@ where
 \end_layout
 
 \begin_layout Standard
+\noindent
 Using this result, can now easily map a pixel 
 \begin_inset Formula $\mathbf{z}$
 \end_inset
@@ -578,6 +800,7 @@ Using this result, can now easily map a pixel
 \end_layout
 
 \begin_layout Standard
+\noindent
 This relationship very is important performance-wise when using small patches
  of the DEM to create orthoimages (defined in the next section).
  This performance gain is essential for the multiple-view algorithm described
@@ -594,7 +817,7 @@ After a DEM is generated, the source imagery can be projected onto the DEM
  to give it texture.
  This resulting image is called an orthoimage, because it appears as if
  the camera that took the image was orthographic to the planetary body's
- surface (see figure [FIG]).
+ surface.
 \end_layout
 
 \begin_layout Standard
@@ -608,7 +831,14 @@ To do this, a mapping between the orbital image coordinates
 
  is needed.
  For a pinhole camera, this mapping is given by its fundamental matrix (see
- [REF]):
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "mvg-hartley"
+
+\end_inset
+
+):
 \end_layout
 
 \begin_layout Standard
@@ -625,6 +855,7 @@ To do this, a mapping between the orbital image coordinates
 \end_layout
 
 \begin_layout Standard
+\noindent
 Then, using the approximation from the last section, a orbital image 
 \begin_inset Formula $O\left(\mathbf{u}\right)$
 \end_inset
@@ -684,8 +915,7 @@ Say the terrain of the planetary body is represented as the DEM
 
 .
  If the DEM exactly represents the planetary surface, the orthoimages should
- line up exactly (neglecting occlusions, shadows and other artifacts), as
- seen in figure [FIG].
+ line up exactly (neglecting occlusions, shadows and other artifacts).
  Error in the DEM will manifest as misalignment in the orthoimage patches.
 \end_layout
 
@@ -756,6 +986,7 @@ First, to form an equation for the plane, the normal must be converted into
 \end_layout
 
 \begin_layout Standard
+\noindent
 The equation for a plane using these parameters is:
 \end_layout
 
@@ -769,6 +1000,7 @@ The equation for a plane using these parameters is:
 \end_layout
 
 \begin_layout Standard
+\noindent
 where 
 \begin_inset Formula $\mathbf{x'}$
 \end_inset
@@ -790,6 +1022,7 @@ where
 \end_layout
 
 \begin_layout Standard
+\noindent
 (
 \begin_inset Formula $\mathbf{\hat{e}'}$
 \end_inset
@@ -819,6 +1052,7 @@ reference "eq:e"
 \end_layout
 
 \begin_layout Standard
+\noindent
 or, in matrix form:
 \end_layout
 
@@ -836,6 +1070,7 @@ or, in matrix form:
 \end_layout
 
 \begin_layout Standard
+\noindent
 where
 \end_layout
 
@@ -851,6 +1086,7 @@ where
 \end_layout
 
 \begin_layout Standard
+\noindent
 Using equations 
 \begin_inset CommandInset ref
 LatexCommand eqref
@@ -908,6 +1144,7 @@ reference "eq:P"
 \end_layout
 
 \begin_layout Standard
+\noindent
 where
 \end_layout
 
@@ -944,6 +1181,7 @@ I_{k}\left(\mathbf{z}\right)=\frac{\tilde{I}_{k}\left(\mathbf{z}\right)-\overlin
 \end_layout
 
 \begin_layout Standard
+\noindent
 Once the normalized orthoimage patches 
 \begin_inset Formula $I_{1}\left(\mathbf{z}\right),I_{2}\left(\mathbf{z}\right),\ldots,I_{n}\left(\mathbf{z}\right)$
 \end_inset
@@ -962,6 +1200,7 @@ f\left(h,n_{\theta},n_{\varphi}\right)=\sum_{k=1}^{n}\int g_{c}\left(\mathbf{z}\
 \end_layout
 
 \begin_layout Standard
+\noindent
 where
 \end_layout
 
@@ -975,6 +1214,7 @@ A\left(\mathbf{z}\right)=\frac{1}{n}\sum_{k=1}^{n}I_{k}\left(\mathbf{z}\right)\e
 \end_layout
 
 \begin_layout Standard
+\noindent
 is the estimated normalized albedo for the patch, and 
 \begin_inset Formula $g_{c}\left(\mathbf{z}\right)$
 \end_inset
@@ -1015,7 +1255,14 @@ octave
 \family typewriter
 MATLAB
 \family default
- clone (REF).
+ clone 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "octave-website"
+
+\end_inset
+
+.
  Since 
 \family typewriter
 octave
@@ -1026,10 +1273,17 @@ octave
 \family typewriter
 octave
 \family default
- and custom C++ code (REF).
+ and custom C++ code 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "octave-manual"
+
+\end_inset
+
+.
  In the oct-files, loading the images, georeferences and camera models was
  accomplished using the NASA Ames Vision Workbench, an open-source computer
- vision library (REF).
+ vision library .
 \end_layout
 
 \begin_layout Subsection
@@ -1042,6 +1296,19 @@ mvpgui is invoked by passing it a georeferenced DEM (to use for initial
 \end_layout
 
 \begin_layout Standard
+\begin_inset Box Framed
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status collapsed
+
+\begin_layout Plain Layout
 \begin_inset listings
 inline false
 status open
@@ -1066,7 +1333,13 @@ status open
 
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
 \begin_layout Standard
+\noindent
 After loading the images, it gives a simple prompt.
  Entering 
 \begin_inset Quotes eld
@@ -1080,6 +1353,19 @@ help
 \end_layout
 
 \begin_layout Standard
+\begin_inset Box Framed
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status collapsed
+
+\begin_layout Plain Layout
 \begin_inset listings
 inline false
 status open
@@ -1177,7 +1463,13 @@ mvp>
 
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
 \begin_layout Standard
+\noindent
 When the program starts, it selects the current 
 \begin_inset Quotes eld
 \end_inset
@@ -2264,7 +2556,7 @@ mvpgui
 \begin_inset CommandInset bibtex
 LatexCommand bibtex
 bibfiles "../amvp"
-options "plain"
+options "/home/khusmann/projects/MultipleViewPipeline/papers/plainurl"
 
 \end_inset
 
