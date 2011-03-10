@@ -346,26 +346,25 @@ key "usgs-mapproj"
 \end_inset
 
 .
- For example, the Mollweide projection preserves area but heavily distorts
- shapes, while the Mercator projection preserves small shapes but distorts
- areas as seen in figure 
+ For example, the Mercator projection (figure 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:mapprojs"
+reference "fig:proj-mercator"
 
 \end_inset
 
-.
+) preserves area but heavily distorts shapes, while the sinusoidal projection
+ (figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:proj-sin"
+
+\end_inset
+
+) preserves small shapes but distorts areas.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\align center
 \begin_inset Float figure
 wide false
 sideways false
@@ -403,7 +402,9 @@ url{http://egsc.usgs.gov/isb/pubs/MapProjections/graphics/sinousidal.gif}
 \end_inset
 
 )
-\end_layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:proj-mercator"
 
 \end_inset
 
@@ -415,12 +416,16 @@ url{http://egsc.usgs.gov/isb/pubs/MapProjections/graphics/sinousidal.gif}
 
 \end_layout
 
-\begin_layout Plain Layout
-\align center
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \align center
@@ -456,23 +461,9 @@ url{http://egsc.usgs.gov/isb/pubs/MapProjections/graphics/mercator.gif}
 \end_inset
 
 )
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\begin_inset Caption
-
-\begin_layout Plain Layout
-A comparison of two map projections: Mercator and sinusoidal
 \begin_inset CommandInset label
 LatexCommand label
-name "fig:mapprojs"
+name "fig:proj-sin"
 
 \end_inset
 
@@ -481,10 +472,6 @@ name "fig:mapprojs"
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Plain Layout
 
 \end_layout
 
