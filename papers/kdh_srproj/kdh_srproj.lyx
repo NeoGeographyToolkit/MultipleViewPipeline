@@ -76,7 +76,7 @@ California Polytechnic State University, San Luis Obispo, CA, USA
 \end_layout
 
 \begin_layout Date
-February 19, 2011
+March 11, 2011
 \end_layout
 
 \begin_layout Abstract
@@ -425,7 +425,7 @@ name "fig:proj-mercator"
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \align center
@@ -485,8 +485,8 @@ The Equirectangular Projection
 \end_layout
 
 \begin_layout Standard
-The equirectangular projection (plate carrée) is a common representation
- used in digital cartography.
+The equirectangular projection (also known as plate carrée) is a common
+ representation used in digital cartography.
  Although it preserves neither distance, direction, area nor the shape of
  features in the map, it has a computational advantage: The longitude and
  latitude 
@@ -1713,6 +1713,9 @@ name "fig:synthdem"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
@@ -1966,7 +1969,8 @@ status collapsed
 \begin_inset Caption
 
 \begin_layout Plain Layout
-The objective function landscape as created by the 
+The objective function landscape as a function of radius with orientation
+ held constant as created by the 
 \begin_inset Quotes eld
 \end_inset
 
@@ -2049,7 +2053,8 @@ status collapsed
 \begin_inset Caption
 
 \begin_layout Plain Layout
-The objective function landscape as created by the 
+The objective function landscape as a function of orientation with radius
+ held constant as created by the 
 \begin_inset Quotes eld
 \end_inset
 
@@ -2338,7 +2343,8 @@ status collapsed
 \begin_inset Caption
 
 \begin_layout Plain Layout
-The objective function landscape as created by the 
+The objective function landscape as a function of radius with orientation
+ held constant as created by the 
 \begin_inset Quotes eld
 \end_inset
 
@@ -2372,6 +2378,9 @@ name "fig:realrplot"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
 \begin_inset Float figure
 wide false
 sideways false
@@ -2393,7 +2402,8 @@ status collapsed
 \begin_inset Caption
 
 \begin_layout Plain Layout
-The objective function landscape as created by the 
+The objective function landscape as a function of orientation with radius
+ held constant, created by the 
 \begin_inset Quotes eld
 \end_inset
 
@@ -2484,6 +2494,8 @@ rplot
 
  command with orbital imagery from Apollo 15, with a Gaussian window of
  standard deviation 4.
+ Notice how the objective function begins to become noisy when a smaller
+ window size is used.
  
 \begin_inset CommandInset label
 LatexCommand label
