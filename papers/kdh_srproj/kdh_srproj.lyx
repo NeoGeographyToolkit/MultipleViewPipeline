@@ -929,7 +929,7 @@ ected orbital images is minimized.
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \align center
@@ -949,7 +949,7 @@ status collapsed
 \begin_layout Plain Layout
 The planetary surface is approximated by a plane tangent to the surface
  point at the center of the patch.
- The orientation and position of this plane are adjusted until alignment
+ The orientation and position of this plane are adjusted until the alignment
  error in the orthoprojected orbital images is minimized.
 \begin_inset CommandInset label
 LatexCommand label
@@ -2511,7 +2511,8 @@ reference "fig:realrplotsmwin"
 
  shows the objective function as a function of DEM post radius using a Gaussian
  window with a standard deviation of 4.
- Notice how the objective function begins to develop a local minimum.
+ Notice how the objective function begins to develop a local minimum, which
+ will create problems for the optimizer.
  Clearly, window size will be an important parameter for this algorithm.
 \end_layout
 
