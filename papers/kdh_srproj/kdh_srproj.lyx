@@ -127,7 +127,7 @@ posts
  Raw images that are captured as the satellite orbits the planetary body
  can also be processed to create highly detailed topographical maps.
  By registering and aligning these two data sets, maps can be created that
- are both dense accurate.
+ are both dense and accurate.
  The methods of processing orbital images into topographical maps are the
  topic of this paper.
 \end_layout
@@ -162,6 +162,13 @@ stereophotogrammetry
 \begin_inset Quotes erd
 \end_inset
 
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "mvg-hartley"
+
+\end_inset
+
 .
 \end_layout
 
@@ -184,8 +191,8 @@ key "asp-broxton2008,asp-website"
 
 \end_inset
 
- can be fed orbital images and will simply output the topography in the
- form of digital elevation maps (DEMs).
+ can be fed orbital images and will output the topography of the scene being
+ imaged in the form of digital elevation maps (DEMs).
 \end_layout
 
 \begin_layout Standard
@@ -256,13 +263,14 @@ Intelligent Robotics Group, NASA Ames Research Center, CA, USA
 
  and I jointly developed a novel multiple-view algorithm.
  It works by approximating very small sections of the planetary surface
- as planar patches and adjusting the height and orientation of the patches
+ as planar patches and adjusting the location and orientation of the patches
  to minimize the alignment error when the orbital images are projected on
  to them.
- As with any minimization process, local minima and stability are concerns.
- Therefore, to evaluate and debug the objective function, (the alignment
- error function being minimized), I have created a small program called
- 
+ As with any minimization process, local minima and the general shape of
+ the objective function (in this case, the alignment error function being
+ minimized) are concerns.
+ Therefore, to evaluate and debug the objective function, I have created
+ a small program called 
 \begin_inset Quotes eld
 \end_inset
 
@@ -315,6 +323,15 @@ post
 \end_inset
 
 .
+ This 
+\begin_inset Quotes eld
+\end_inset
+
+height
+\begin_inset Quotes erd
+\end_inset
+
+ is measured as the radius of the planetary body at that specific point.
 \end_layout
 
 \begin_layout Standard
@@ -335,10 +352,7 @@ map projection
 
 \begin_layout Standard
 It is a well known fact that it is impossible to project the curved surface
- of a spheroid onto a plane without some kind of distortion.
- Depending on the map projection being used, the perceived distance, direction,
- area or the shape of features on the map may be distorted or preserved
- 
+ of a spheroid onto a plane without some kind of distortion 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "usgs-mapproj"
@@ -346,6 +360,8 @@ key "usgs-mapproj"
 \end_inset
 
 .
+ Depending on the map projection being used, the perceived distance, direction,
+ area or the shape of features on the map may be distorted or preserved.
  For example, the Mercator projection (figure 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -536,11 +552,11 @@ s_{c} & 0 & t_{c}\\
 \end_inset
 
 
-\begin_inset Formula $s_{u}$
+\begin_inset Formula $s_{c}$
 \end_inset
 
  and 
-\begin_inset Formula $s_{v}$
+\begin_inset Formula $s_{r}$
 \end_inset
 
  are the 
@@ -567,7 +583,7 @@ reference "eq:lonlat"
 
 \end_inset
 
- is a homogeneous equation, as described in 
+ is a homogeneous equation 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "mvg-hartley"
@@ -714,11 +730,11 @@ reference "eq:e"
 \begin_inset Formula $\mathbf{\theta'}$
 \end_inset
 
- (equivalently 
+ (or equivalently 
 \begin_inset Formula $\mathbf{\hat{e}'}$
 \end_inset
 
-), we have an affine mapping between 
+), we find an affine mapping between 
 \begin_inset Formula $\hat{\mathbf{e}}$
 \end_inset
 
@@ -790,9 +806,9 @@ Using this result, can now easily map a pixel
 \noindent
 This relationship very is important performance-wise when using small patches
  of the DEM to create orthoimages (defined in the next section).
- This performance gain is essential for the multiple-view algorithm described
- later in this paper because the algorithm generates many orthoimage patches
- at each iteration.
+ Since the multiple-view algorithm described later in this paper generates
+ many orthoimage patches at each iteration, this performance gain from using
+ the Taylor approximation is essential.
 \end_layout
 
 \begin_layout Subsection
@@ -929,7 +945,7 @@ ected orbital images is minimized.
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \align center
@@ -2153,8 +2169,11 @@ Both plots of the objective function show that it behaves quadratically
  as expected, and doesn't suffer from local minima.
  This good behavior can be attributed to the synthetic data being free of
  noise, as well as the surface being planar.
- The results here verify that the objective function and mvpgui are indeed
- working correctly.
+ The results here verify that the objective function and 
+\family typewriter
+mvpgui
+\family default
+ are indeed working correctly.
 \end_layout
 
 \begin_layout Subsection
@@ -2586,9 +2605,8 @@ Through the use of the
 mvpgui
 \family default
  program, it is apparent the cost function for the new multiple-view photogramme
-try algorithm satisfies the needs of the algorithm: it has well-defined
- minima, is stable, and (if a sufficiently sized window is chosen), does
- not suffer from local minima.
+try algorithm satisfies the needs of the algorithm: it does not suffer from
+ local minima if a sufficiently large sized window is chosen.
 \end_layout
 
 \begin_layout Standard
