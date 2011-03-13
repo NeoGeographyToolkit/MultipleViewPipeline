@@ -909,12 +909,69 @@ Say the terrain of the planetary body is represented as the DEM
 \begin_layout Standard
 If the DEM patches are small, we can approximate the curved planetary surface
  that the patch represents with a plane tangent to the surface at the center
- point of the patch (see figure [FIG]).
+ point of the patch (see figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:tan_plane"
+
+\end_inset
+
+).
  Our algorithm attempts to find this plane for each DEM post by adjusting
- the plane's position and orientation until the alignment error is minimized.
+ the plane's position and orientation until the alignment error in the orthoproj
+ected orbital images is minimized.
  The plane's height at the DEM post in question becomes the value for that
  DEM post.
  
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename tan_plane_image.svg
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+The planetary surface is approximated by a plane tangent to the surface
+ point at the center of the patch.
+ The orientation and position of this plane are adjusted until alignment
+ error in the orthoprojected orbital images is minimized.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:tan_plane"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -1286,7 +1343,7 @@ mvpgui is invoked by passing it a georeferenced DEM (to use for initial
 \begin_inset Box Framed
 position "t"
 hor_pos "c"
-has_inner_box 1
+has_inner_box 0
 inner_pos "t"
 use_parbox 0
 width "100col%"
@@ -1343,7 +1400,7 @@ help
 \begin_inset Box Framed
 position "t"
 hor_pos "c"
-has_inner_box 1
+has_inner_box 0
 inner_pos "t"
 use_parbox 0
 width "100col%"
@@ -2462,7 +2519,7 @@ reference "fig:realrplotsmwin"
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \align center
@@ -2494,8 +2551,10 @@ rplot
 
  command with orbital imagery from Apollo 15, with a Gaussian window of
  standard deviation 4.
- Notice how the objective function begins to become noisy when a smaller
- window size is used.
+ Notice how the objective function begins to develop a local minimum when
+ the smaller window size is used.
+ Local minima will cause an optimizer to converge incorrectly before the
+ global solution is found.
  
 \begin_inset CommandInset label
 LatexCommand label
@@ -2533,8 +2592,12 @@ try algorithm satisfies the needs of the algorithm: it has well-defined
 
 \begin_layout Standard
 As the multiple-view photogrammetry algorithm is continued to be developed,
- mvpgui should be maintained in parallel as a debugging and visualization
- tool for the algorithm.
+ 
+\family typewriter
+mvpgui
+\family default
+ should be maintained in parallel as a debugging and visualization tool
+ for the algorithm.
  It's visualization capabilities will be invaluable as the complexity of
  the algorithm increases.
 \end_layout
