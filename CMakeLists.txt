@@ -9,7 +9,7 @@ add_subdirectory(src)
 
 find_package(Octave)
 
-if (NOT OCTAVE_FOUND)
+if (OCTAVE_FOUND)
   option(BUILD_OCTAVEVW "Build the octave->vw bridge" ON)
 else()
   option(BUILD_OCTAVEVW "Build the octave->vw bridge" OFF)
@@ -18,6 +18,3 @@ endif()
 option(BUILD_TOOLS "Build the tools module" ON)
 
 CMAKE_DEPENDENT_OPTION(BUILD_VWCONVERT "Build vwconvert" ON "BUILD_TOOLS" OFF)
-
-
-
