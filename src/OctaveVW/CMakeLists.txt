@@ -12,17 +12,17 @@ endif()
 include_directories(${OCTAVE_INCLUDE_DIRS})
 link_directories(${OCTAVE_LINK_DIRS})
 
-add_library(imread_vw MODULE imread_vw.cc)
-target_link_libraries(imread_vw vw vwCartography ${OCTAVE_LIBRARY})
+macro(ADD_OCTFILE _octfile _sources)
+  add_library(${_octfile} MODULE ${_sources})
+  target_link_libraries(${_octfile} ${OCTAVE_LIBRARIES})
 
-add_library(loadcam_vw MODULE loadcam_vw.cc)
-target_link_libraries(loadcam_vw vw vwCamera ${OCTAVE_LIBRARY})
+  set_target_properties(${_octfile} PROPERTIES
+                        LINK_FLAGS "${OCTAVE_LINK_FLAGS}"
+                        COMPILE_FLAGS "${OCTAVE_COMPILE_FLAGS}"
+                        PREFIX ""
+                        SUFFIX ".oct"
+                       )
+endmacro()
 
-set(OCTFILE_LIST imread_vw loadcam_vw)
-
-set_target_properties(${OCTFILE_LIST} PROPERTIES
-                      LINK_FLAGS "${OCTAVE_LINK_FLAGS}"
-                      COMPILE_FLAGS "${OCTAVE_CXXFLAGS}"
-                      PREFIX ""
-                      SUFFIX ".oct"
-                     )
+add_octfile(imread_vw imread_vw.cc)
+add_octfile(loadcam_vw loadcam_vw.cc)

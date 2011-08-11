@@ -14,24 +14,24 @@ mark_as_advanced(OCTAVE_CONFIG_EXECUTABLE)
 execute_process(
   COMMAND ${OCTAVE_CONFIG_EXECUTABLE} -p VERSION
   OUTPUT_VARIABLE _octave_version
-  RESULT_VARIABLE _octave_config_failed)
-string(REGEX REPLACE "[\r\n]$" "" _octave_version "${_octave_version}")
+  RESULT_VARIABLE _octave_config_failed
+  OUTPUT_STRIP_TRAILING_WHITESPACE)
 set(OCTAVE_VERSION "${_octave_version}")
 
 # OCTAVE_BINDIR
 execute_process(
   COMMAND ${OCTAVE_CONFIG_EXECUTABLE} -p BINDIR
   OUTPUT_VARIABLE _octave_bindir
-  RESULT_VARIABLE _octave_config_failed)
-string(REGEX REPLACE "[\r\n]$" "" _octave_bindir "${_octave_bindir}")
+  RESULT_VARIABLE _octave_config_failed
+  OUTPUT_STRIP_TRAILING_WHITESPACE)
 set(OCTAVE_BINDIR "${_octave_bindir}")
 
 # OCTAVE_OCTFILEDIR
 execute_process(
   COMMAND ${OCTAVE_CONFIG_EXECUTABLE} -p LOCALVEROCTFILEDIR
   OUTPUT_VARIABLE _octave_config_localveroctfiledir
-  RESULT_VARIABLE _octave_config_failed)
-string(REGEX REPLACE "[\r\n]$" "" _octave_config_localveroctfiledir "${_octave_config_localveroctfiledir}")
+  RESULT_VARIABLE _octave_config_failed
+  OUTPUT_STRIP_TRAILING_WHITESPACE)
 set(OCTAVE_OCTFILEDIR "${_octave_config_localveroctfiledir}")
 
 # MKOCTFILE_EXECUTABLE
@@ -44,14 +44,14 @@ set(OCTAVE_EXECUTABLE "${OCTAVE_BINDIR}/octave")
 execute_process(
   COMMAND ${MKOCTFILE_EXECUTABLE} -p CXXFLAGS
   OUTPUT_VARIABLE _octave_cxxflags
-  RESULT_VARIABLE _mkoctfile_failed)
-string(REGEX REPLACE "[\r\n]$" "" _octave_cxxflags "${_octave_cxxflags}")
+  RESULT_VARIABLE _mkoctfile_failed
+  OUTPUT_STRIP_TRAILING_WHITESPACE)
 
 execute_process(
   COMMAND ${MKOCTFILE_EXECUTABLE} -p XTRA_CXXFLAGS
   OUTPUT_VARIABLE _octave_xtra_cxxflags
-  RESULT_VARIABLE _mkoctfile_failed)
-string(REGEX REPLACE "[\r\n]$" "" _octave_xtra_cxxflags "${_octave_xtra_cxxflags}")
+  RESULT_VARIABLE _mkoctfile_failed
+  OUTPUT_STRIP_TRAILING_WHITESPACE)
 
 string(REGEX REPLACE " +$" "" _octave_cxxflags "${_octave_cxxflags} ${_octave_xtra_cxxflags}")
 set(OCTAVE_COMPILE_FLAGS "${_octave_cxxflags}")
@@ -60,8 +60,8 @@ set(OCTAVE_COMPILE_FLAGS "${_octave_cxxflags}")
 execute_process(
   COMMAND ${MKOCTFILE_EXECUTABLE} -p INCFLAGS
   OUTPUT_VARIABLE _octave_incflags
-  RESULT_VARIABLE _mkoctfile_failed)
-string(REGEX REPLACE "[\r\n]$" "" _octave_incflags "${_octave_incflags}")
+  RESULT_VARIABLE _mkoctfile_failed
+  OUTPUT_STRIP_TRAILING_WHITESPACE)
 string(REGEX REPLACE " +-I" " " _octave_incflags " ${_octave_incflags}")
 string(REGEX REPLACE "^ " "" _octave_incflags "${_octave_incflags}")
 separate_arguments(_octave_incflags)
@@ -71,14 +71,14 @@ set(OCTAVE_INCLUDE_DIRS "${_octave_incflags}")
 execute_process(
   COMMAND ${MKOCTFILE_EXECUTABLE} -p LIBS
   OUTPUT_VARIABLE _octave_libs
-  RESULT_VARIABLE _mkoctfile_failed)
-string(REGEX REPLACE "[\r\n]$" "" _octave_libs "${_octave_libs}")
+  RESULT_VARIABLE _mkoctfile_failed
+  OUTPUT_STRIP_TRAILING_WHITESPACE)
 
 execute_process(
   COMMAND ${MKOCTFILE_EXECUTABLE} -p OCTAVE_LIBS
   OUTPUT_VARIABLE _octave_octave_libs
-  RESULT_VARIABLE _mkoctfile_failed)
-string(REGEX REPLACE "[\r\n]$" "" _octave_octave_libs "${_octave_octave_libs}")
+  RESULT_VARIABLE _mkoctfile_failed
+  OUTPUT_STRIP_TRAILING_WHITESPACE)
 
 string(REGEX REPLACE " +-l" " " _octave_libs " ${_octave_libs} ${_octave_octave_libs}")
 string(REGEX REPLACE "^ " "" _octave_libs "${_octave_libs}")
@@ -89,25 +89,21 @@ set(OCTAVE_LIBRARIES "${_octave_libs}")
 execute_process(
   COMMAND ${MKOCTFILE_EXECUTABLE} -p ALL_LDFLAGS
   OUTPUT_VARIABLE _octave_all_ldflags
-  RESULT_VARIABLE _mkoctfile_failed)
-string(REGEX REPLACE "[\r\n]$" "" _octave_all_ldflags "${_octave_all_ldflags}")
+  RESULT_VARIABLE _mkoctfile_failed
+  OUTPUT_STRIP_TRAILING_WHITESPACE)
 separate_arguments(_octave_all_ldflags)
 set(OCTAVE_LINK_FLAGS "${_octave_all_ldflags}")
 
-# OCTAVE_LINK_DIRECTORIES
+# OCTAVE_LINK_DIRS
 execute_process(
   COMMAND ${MKOCTFILE_EXECUTABLE} -p LFLAGS
   OUTPUT_VARIABLE _octave_lflags
-  RESULT_VARIABLE _mkoctfile_failed)
-string(REGEX REPLACE "[\r\n]$" "" _octave_lflags "${_octave_lflags}")
+  RESULT_VARIABLE _mkoctfile_failed
+  OUTPUT_STRIP_TRAILING_WHITESPACE)
 string(REGEX REPLACE " +-L" " " _octave_lflags " ${_octave_lflags}")
 string(REGEX REPLACE "^ " "" _octave_lflags "${_octave_lflags}")
 separate_arguments(_octave_lflags)
-set(OCTAVE_LINK_DIRECTORIES "${_octave_lflags}")
+set(OCTAVE_LINK_DIRS "${_octave_lflags}")
 
 # Wrap up
 find_package_handle_standard_args(Octave REQUIRED_VARS OCTAVE_EXECUTABLE OCTAVE_CONFIG_EXECUTABLE MKOCTFILE_EXECUTABLE)
-
-if (OCTAVE_FOUND)
-  find_package_message(Octave "Found Octave version: ${OCTAVE_VERSION}" "[${OCTAVE_CONFIG_EXECUTABLE}]")
-endif()
