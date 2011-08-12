@@ -16,5 +16,3 @@ else()
 endif()
 
 option(BUILD_TOOLS "Build the tools module" ON)
-
-CMAKE_DEPENDENT_OPTION(BUILD_VWCONVERT "Build vwconvert" ON "BUILD_TOOLS" OFF)

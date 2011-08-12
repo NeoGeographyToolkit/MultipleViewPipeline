@@ -25,7 +25,7 @@ macro(find_vw_components _component_list _components_req)
   endforeach()
 endmacro()
 
-macro(vw_not_found_return _msg)
+macro(vw_not_found_err _msg)
   if (VW_FIND_REQUIRED)
     message(SEND_ERROR ${_msg})
   else()
@@ -116,3 +116,7 @@ endif()
 
 find_vw_components(_req_component_list REQUIRED)
 find_vw_components(_opt_component_list OPTIONAL)
+
+set(VW_INCLUDE_DIRS ${VW_INCLUDE_DIR} ${Boost_INCLUDE_DIRS})
+set(VW_LIBRARIES ${VW_LIBRARY})
+set(VW_FOUND true)
