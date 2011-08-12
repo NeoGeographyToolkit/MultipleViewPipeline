@@ -16,3 +16,5 @@ else()
 endif()
 
 option(BUILD_TOOLS "Build the tools module" ON)
+
+option(BUILD_ORBITFOOT "Build the orbitfoot utility" ON)
