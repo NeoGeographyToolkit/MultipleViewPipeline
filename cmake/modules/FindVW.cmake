@@ -11,12 +11,13 @@
 
 macro(find_vw_components _component_list _components_req)
   foreach(comp ${${_component_list}})
-    find_library(VW_${comp}_LIBRARY
+    string(TOUPPER ${comp} ucomp)
+    find_library(VW_${ucomp}_LIBRARY
                  NAMES vw${comp}
                  HINTS ${VW_ROOT}/lib)
     mark_as_advanced(VW_${comp}_LIBRARY)
-    if (VW_${comp}_LIBRARY)
-      set(VW_${comp}_FOUND true)
+    if (VW_${ucomp}_LIBRARY)
+      set(VW_${ucomp}_FOUND true)
     else()
       if (${_components_req} STREQUAL "REQUIRED")
         message(SEND_ERROR "Unable to find required VW component ${comp}")

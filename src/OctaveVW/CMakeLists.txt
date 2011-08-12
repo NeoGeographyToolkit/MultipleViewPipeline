@@ -10,12 +10,12 @@ include_directories(${OCTAVE_INCLUDE_DIRS})
 link_directories(${OCTAVE_LIBRARY_DIRS})
 
 # Add targets
-if (VW_Cartography_FOUND)
+if (VW_CARTOGRAPHY_FOUND)
   add_octfile(imread_vw imread_vw.cc)
-  target_link_libraries(imread_vw ${VW_LIBRARIES} ${VW_Cartography_LIBRARY})
+  target_link_libraries(imread_vw ${VW_LIBRARIES} ${VW_CARTOGRAPHY_LIBRARY})
 endif()
 
-if (VW_Camera_FOUND)
+if (VW_CAMERA_FOUND)
   add_octfile(loadcam_vw loadcam_vw.cc)
-  target_link_libraries(loadcam_vw ${VW_LIBRARIES} ${VW_Camera_LIBRARY})
+  target_link_libraries(loadcam_vw ${VW_LIBRARIES} ${VW_CAMERA_LIBRARY})
 endif()
