@@ -35,8 +35,6 @@ macro(vw_not_found_err _msg)
   endif()
 endmacro()
 
-set(VW_DEBUG true)
-
 set(VW_ROOT $ENV{VW_ROOT})
 
 find_path(VW_INCLUDE_DIR
