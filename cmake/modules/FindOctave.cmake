@@ -94,7 +94,7 @@ execute_process(
 separate_arguments(_octave_all_ldflags)
 set(OCTAVE_LINK_FLAGS "${_octave_all_ldflags}")
 
-# OCTAVE_LINK_DIRS
+# OCTAVE_LIBRARY_DIRS
 execute_process(
   COMMAND ${MKOCTFILE_EXECUTABLE} -p LFLAGS
   OUTPUT_VARIABLE _octave_lflags
@@ -103,7 +103,7 @@ execute_process(
 string(REGEX REPLACE " +-L" " " _octave_lflags " ${_octave_lflags}")
 string(REGEX REPLACE "^ " "" _octave_lflags "${_octave_lflags}")
 separate_arguments(_octave_lflags)
-set(OCTAVE_LINK_DIRS "${_octave_lflags}")
+set(OCTAVE_LIBRARY_DIRS "${_octave_lflags}")
 
 # Wrap up
 find_package_handle_standard_args(Octave REQUIRED_VARS OCTAVE_EXECUTABLE OCTAVE_CONFIG_EXECUTABLE MKOCTFILE_EXECUTABLE)

@@ -8,7 +8,7 @@ link_directories(/byss/khusmann/projects/build/lib)
 # Add octave's libraries
 find_package(Octave REQUIRED)
 include_directories(${OCTAVE_INCLUDE_DIRS})
-link_directories(${OCTAVE_LINK_DIRS})
+link_directories(${OCTAVE_LIBRARY_DIRS})
 
 # Add targets
 add_octfile(imread_vw imread_vw.cc)
