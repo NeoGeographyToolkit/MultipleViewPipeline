@@ -7,3 +7,9 @@ target_link_libraries(orbitfoot ${VW_LIBRARY}
                                 ${VW_CARTOGRAPHY_LIBRARY} 
                                 ${VW_CAMERA_LIBRARY}
                                 ${VW_PLATE_LIBRARY})
+
+add_executable(backproj_test backproj_test.cc)
+target_link_libraries(backproj_test ${VW_LIBRARY}
+                                ${VW_CARTOGRAPHY_LIBRARY} 
+                                ${VW_CAMERA_LIBRARY}
+                                ${VW_PLATE_LIBRARY})
