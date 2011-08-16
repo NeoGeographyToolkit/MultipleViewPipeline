@@ -12,3 +12,9 @@ endif()
 
 add_executable(vwconvert vwconvert.cc)
 target_link_libraries(vwconvert ${VW_LIBRARIES})
+
+if (VW_CAMERA_FOUND)
+  add_executable(print_pinhole print_pinhole.cc)
+  target_link_libraries(print_pinhole ${VW_LIBRARY}
+                                      ${VW_CAMERA_LIBRARY})
+endif()
