@@ -91,7 +91,9 @@ class OrbitFootprint
 
       // TODO: Take care of wrapping around the poles!
       // For now just warn
-      vw::BBox2 bounds(-180,180,360,-360);
+      //
+      // also, right now the footprints are being stored upside-down...
+      vw::BBox2 bounds(-180,-180,360,360);
       BOOST_FOREACH(vw::Vector2 v, m_vertices) {
         if (!bounds.contains(v)) {
           std::cout << v << " Ooops this vertex will wrap! fixme!" << std::endl;
@@ -116,11 +118,10 @@ class OrbitFootprint
     bool intersects(int col, int row, int level) {
       vw::BBox2 tile_box(col * m_tile_size, row * m_tile_size, m_tile_size, m_tile_size);
 
-      // Resolution at the current level, in degrees per pixel
+      // Resolution: size of workspace, in pixels
       double resolution = m_tile_size << level;
 
       // Create a transform
-      // TODO: us a prebuilt georef?
       vw::Matrix3x3 transform;
       transform(0,0) = 360.0 / resolution;
       transform(0,2) = -180.0;
@@ -128,10 +129,10 @@ class OrbitFootprint
       transform(1,2) = 180.0;
       transform(2,2) = 1;
 
-      vw::Vector2 newbox_min = dehom(transform * hom(tile_box.min()));
-      vw::Vector2 newbox_max = dehom(transform * hom(tile_box.max()));
+      vw::BBox2 newbox;
+      newbox.grow(dehom(transform * hom(tile_box.min())));
+      newbox.grow(dehom(transform * hom(tile_box.max())));
 
-      vw::BBox2 newbox(newbox_min, newbox_max);
       return this->intersects(newbox);
     }
 };
