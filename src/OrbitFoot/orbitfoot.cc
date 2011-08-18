@@ -5,6 +5,8 @@
 #include <vw/FileIO.h>
 #include <vw/Camera.h>
 
+#include <vw/Plate/PlateFile.h>
+
 #include "orbitfoot.h"
 
 #include <boost/format.hpp>
@@ -12,12 +14,73 @@
 
 namespace fs = boost::filesystem;
 
+
+using namespace vw;
+
+ImageView<PixelRGBA<uint8> > render_tile(int i, int j, int renderlevel, int tile_size, std::vector<OrbitFootprint> const& affected, double rad)
+{
+  ImageView<PixelRGBA<uint8> > tile(tile_size, tile_size);
+  if (affected.size() == 0) return tile;
+
+  BBox2 cam_bounds(0, 0, 5725, 5725);
+
+  std::vector<camera::PinholeModel> cams;
+
+  BOOST_FOREACH(OrbitFootprint o, affected) {
+    cams.push_back(o.camfile());
+  }
+
+  // Resolution: size of workspace, in pixels
+  double resolution = tile_size << renderlevel;
+  Matrix3x3 transform;
+  transform(0,0) = 360.0 / resolution;
+  transform(0,2) = -180.0;
+  transform(1,1) = -360.0 / resolution;
+  transform(1,2) = 180.0;
+  transform(2,2) = 1;
+
+  Vector2 tileoffset(tile_size*i, tile_size*j);
+
+  for (int i = 0; i < tile_size; i++) {
+    for (int j = 0; j < tile_size; j++) {
+      Vector3 llr = transform * hom(Vector2(i, j) + tileoffset);
+      llr[2] = rad;
+
+      Vector3 xyz = cartography::lon_lat_radius_to_xyz(llr);
+
+      int numovers = 0;
+      BOOST_FOREACH(camera::PinholeModel cam, cams) {
+        Vector2 orb_px = cam.point_to_pixel(xyz);
+        if (cam_bounds.contains(orb_px)) {
+          numovers++;
+        }
+      }
+      if (numovers == 1) {
+        tile(i, j) = PixelRGBA<vw::uint8>(255, 0, 0, 255);
+      } else if (numovers == 2) {
+        tile(i, j) = PixelRGBA<vw::uint8>(0, 255, 0, 255);
+      } else if (numovers == 3) {
+        tile(i, j) = PixelRGBA<vw::uint8>(0, 0, 255, 255);
+      } else if (numovers == 4) {
+        tile(i, j) = PixelRGBA<vw::uint8>(0, 0, 255, 255);
+      } else if (numovers == 5) {
+        tile(i, j) = PixelRGBA<vw::uint8>(50, 50, 50, 255);
+      } else if (numovers == 6) {
+        tile(i, j) = PixelRGBA<vw::uint8>(100, 100, 100, 255);
+      } else if (numovers >= 7) {
+        tile(i, j) = PixelRGBA<vw::uint8>(250, 250, 250, 255);
+      }
+
+    }
+  }
+  return tile;
+}
+
 int main()
 {
   using std::cout;
   using std::endl;
   using std::string;
-  using namespace vw;
 
   string pinhole_file_fmt = "/byss/khusmann/data/AS15_cameras/AS15-M-%04d.lev1.pinhole";
   double moon_rad = 1737400.0;
@@ -26,8 +89,8 @@ int main()
   std::vector<OrbitFootprint> orbits;
   BBox2 renderbox;
 
-  for (int i = 73; i < 2492; i++) {
-//  for (int i = 73; i < 74; i++) {
+//  for (int i = 73; i < 2492; i++) {
+  for (int i = 73; i < 1000; i++) {
     string pinhole_file = (boost::format(pinhole_file_fmt) % i).str();
     if (!fs::exists(pinhole_file)) {
       continue;
@@ -55,8 +118,31 @@ int main()
  
   BBox2i tile_renderbox(floor(renderbox_trans.min()), ceil(renderbox_trans.max()));
 
-  cout << tile_renderbox << endl;
-  cout << tile_renderbox.width() << " " << tile_renderbox.height() << endl;
+  boost::shared_ptr<platefile::PlateFile> pf(new platefile::PlateFile("output.plate", "equi", "desc", tile_size, "tif", VW_PIXEL_RGBA, VW_CHANNEL_UINT8));
+  platefile::Transaction tid = pf->transaction_request("tdesc", -1);
+
+  for (int i = tile_renderbox.min().x(); i < tile_renderbox.max().x(); i++) {
+    for (int j = tile_renderbox.min().y(); j < tile_renderbox.max().y(); j++) {
+      std::vector<OrbitFootprint> affected;
+
+      BOOST_FOREACH(OrbitFootprint o, orbits) {
+        if (o.intersects(i, j, renderlevel)) {
+            affected.push_back(o);
+        }
+      }
+
+      ImageView<PixelRGBA<uint8> > rendered_tile;
+      
+      cout << "Rendering tile: (" << i << ", " << j << ") @" << renderlevel << " affected: " << affected.size() << endl;
+      rendered_tile = render_tile(i, j, renderlevel, tile_size, affected, moon_rad);
+
+      // Add to platefile
+      pf->write_request();
+      pf->write_update(rendered_tile, i, j, renderlevel, tid);
+      pf->sync();
+      pf->write_complete();
+    }
+  }
 
   return 0;
 }

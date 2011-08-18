@@ -101,11 +101,15 @@ class OrbitFootprint
       }
     }
 
-    vw::BBox2 bounding_box() {
+    std::string camfile() const {
+      return m_camfile;
+    }
+
+    vw::BBox2 bounding_box() const {
       return m_bbox;
     }
 
-    bool intersects(vw::BBox2 tile) {
+    bool intersects(vw::BBox2 tile) const {
       std::vector<vw::Vector2> tile_poly(4);
       tile_poly[0] = tile.min();
       tile_poly[1] = vw::Vector2(tile.min().x(), tile.max().y());
@@ -115,7 +119,7 @@ class OrbitFootprint
       return isect_poly(m_vertices, tile_poly);
     }
 
-    bool intersects(int col, int row, int level) {
+    bool intersects(int col, int row, int level) const {
       vw::BBox2 tile_box(col * m_tile_size, row * m_tile_size, m_tile_size, m_tile_size);
 
       // Resolution: size of workspace, in pixels
