@@ -55,22 +55,11 @@ ImageView<PixelRGBA<uint8> > render_tile(int i, int j, int renderlevel, int tile
           numovers++;
         }
       }
-      if (numovers == 1) {
-        tile(i, j) = PixelRGBA<vw::uint8>(255, 0, 0, 255);
-      } else if (numovers == 2) {
-        tile(i, j) = PixelRGBA<vw::uint8>(0, 255, 0, 255);
-      } else if (numovers == 3) {
-        tile(i, j) = PixelRGBA<vw::uint8>(0, 0, 255, 255);
-      } else if (numovers == 4) {
-        tile(i, j) = PixelRGBA<vw::uint8>(0, 0, 255, 255);
-      } else if (numovers == 5) {
-        tile(i, j) = PixelRGBA<vw::uint8>(50, 50, 50, 255);
-      } else if (numovers == 6) {
-        tile(i, j) = PixelRGBA<vw::uint8>(100, 100, 100, 255);
-      } else if (numovers >= 7) {
-        tile(i, j) = PixelRGBA<vw::uint8>(250, 250, 250, 255);
+      if (numovers > 0) {
+        int color = int(255.0 * numovers / 20);
+        color = std::min(color, 255);
+        tile(i, j) = PixelRGBA<vw::uint8>(color, color, color, 255);
       }
-
     }
   }
   return tile;
@@ -90,7 +79,7 @@ int main()
   BBox2 renderbox;
 
 //  for (int i = 73; i < 2492; i++) {
-  for (int i = 73; i < 1000; i++) {
+  for (int i = 73; i < 600; i++) {
     string pinhole_file = (boost::format(pinhole_file_fmt) % i).str();
     if (!fs::exists(pinhole_file)) {
       continue;
