@@ -59,6 +59,8 @@ if (VW_DEBUG)
   message(STATUS "VW uses boost version: ${VW_BOOST_VERSION}")
 endif()
 
+# TODO Rather than trying to detect the exact boost version, simply compare detected boost to VW boost and
+# Error if they don't match.  
 find_package(Boost "${VW_BOOST_MAJOR_VERSION}.${VW_BOOST_MINOR_VERSION}.${VW_BOOST_SUBMINOR_VERSION}" EXACT REQUIRED)
 
 if (NOT Boost_FOUND)
