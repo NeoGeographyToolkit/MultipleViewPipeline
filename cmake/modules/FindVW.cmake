@@ -51,32 +51,21 @@ endif()
 file(READ ${VW_INCLUDE_DIR}/vw/config.h _vw_config_contents)
 string(REGEX REPLACE ".*#define VW_BOOST_VERSION ([0-9]+).*" "\\1" VW_BOOST_VERSION "${_vw_config_contents}")
 
-MATH(EXPR VW_BOOST_MAJOR_VERSION "${VW_BOOST_VERSION} / 100000")
-MATH(EXPR VW_BOOST_MINOR_VERSION "${VW_BOOST_VERSION} / 100 % 1000")
-MATH(EXPR VW_BOOST_SUBMINOR_VERSION "${VW_BOOST_VERSION} % 100")
-
 if (VW_DEBUG)
   message(STATUS "VW uses boost version: ${VW_BOOST_VERSION}")
 endif()
 
-# TODO Rather than trying to detect the exact boost version, simply compare detected boost to VW boost and
-# Error if they don't match.  
-find_package(Boost "${VW_BOOST_MAJOR_VERSION}.${VW_BOOST_MINOR_VERSION}.${VW_BOOST_SUBMINOR_VERSION}" EXACT REQUIRED)
+find_package(Boost QUIET)
 
 if (NOT Boost_FOUND)
-  # When searching for an exact version of boost, the first run of cmake will correctly error if a different one is
-  # discovered. Unfortunately, it leaves variables cached that cause it to "find" the wrong version of boost
-  # on a subsequent run. We clear those variables here so it isn't accidently "found" on the next run.
-  unset(Boost_INCLUDE_DIR CACHE)
-  unset(Boost_LIBRARY_DIRS CACHE)
+  vw_not_found_err("Prerequisite Boost not found")
   return()
 endif()
 
-if (Boost_FOUND AND NOT ${Boost_VERSION} STREQUAL ${VW_BOOST_VERSION})
-  message(FATAL_ERROR "Boost version mismatch. VW was compiled with boost version ${VW_BOOST_VERSION}, and "
-                      "the detected Boost was ${Boost_VERSION}. If this happens, the CMakeLists.txt was "
-                      "made incorrectly. VW must be detected before Boost, and then Boost must be detected "
-                      "using the exact version specified by VW_BOOST_VERSION")
+
+if (NOT ${Boost_VERSION} STREQUAL ${VW_BOOST_VERSION})
+  vw_not_found_err("Boost version mismatch. VW was compiled with boost version ${VW_BOOST_VERSION}, and the detected Boost was ${Boost_VERSION}. Make sure to export BOOST_ROOT=/path/to/boost, then clear cmake's cache and try again.")
+  return()
 endif()
 
 # Find VW

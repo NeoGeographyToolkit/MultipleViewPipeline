@@ -1,0 +1,12 @@
+
+
+Detecting boost
+---------------
+
+The boost detection in cmake is buggy for boosts installed outside
+system paths. Sometimes it will detect the correct boost for the headers
+but pull in the system boost libraries which might be at a different
+version. It would be a good idea to run ldd or otool -L to make sure 
+the correct libraries are being pulled.
+
+See $CMAKE_ROOT/CMakeLists.txt and http://public.kitware.com/Bug/view.php?id=12442

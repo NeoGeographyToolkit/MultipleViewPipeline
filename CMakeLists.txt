@@ -6,6 +6,13 @@ include(CMakeDependentOption)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules")
 set(GTEST_ROOT ${CMAKE_SOURCE_DIR}/thirdparty/gtest)
 
+# This is to avoid the bug http://public.kitware.com/Bug/view.php?id=12442
+# Otherwise, if /packages version does not have MT but the system distribution
+# does, it will incorrectly use the system version. It would be a good idea
+# to periodically check which boost libs the programs are linking to by running
+# ldd on them...
+set(Boost_USE_MULTITHREADED OFF)
+
 find_package(Octave)
 
 if (OCTAVE_FOUND)
