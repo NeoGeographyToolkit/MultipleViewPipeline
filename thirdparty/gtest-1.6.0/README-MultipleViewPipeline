@@ -1,0 +1,6 @@
+mkdir build
+cmake ..
+make
+
+Then:
+export GTEST_ROOT=/path/to/MultipleViewPipeline/thirdparty/gtest/build
