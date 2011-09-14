@@ -1,7 +1,7 @@
 include(AddOctfile)
 
 # Find VW packages
-find_package(VW REQUIRED)
+find_package(VW REQUIRED COMPONENTS Cartography Camera)
 include_directories(${VW_INCLUDE_DIRS})
 
 # Add octave's libraries
@@ -10,12 +10,11 @@ include_directories(${OCTAVE_INCLUDE_DIRS})
 link_directories(${OCTAVE_LIBRARY_DIRS})
 
 # Add targets
-if (VW_CARTOGRAPHY_FOUND)
-  add_octfile(imread_vw imread_vw.cc)
-  target_link_libraries(imread_vw ${VW_LIBRARIES} ${VW_CARTOGRAPHY_LIBRARY})
-endif()
+add_octfile(imread_vw imread_vw.cc)
+target_link_libraries(imread_vw ${VW_LIBRARIES})
 
-if (VW_CAMERA_FOUND)
-  add_octfile(loadcam_vw loadcam_vw.cc)
-  target_link_libraries(loadcam_vw ${VW_LIBRARIES} ${VW_CAMERA_LIBRARY})
-endif()
+add_octfile(loadcam_vw loadcam_vw.cc)
+target_link_libraries(loadcam_vw ${VW_LIBRARIES})
+
+add_executable(testb test.cc)
+target_link_libraries(testb ${VW_LIBRARIES} ${OCTAVE_LIBRARIES})

@@ -41,6 +41,12 @@ ImageView<PixelRGBA<uint8> > render_tile(int i, int j, int renderlevel, int tile
 
   Vector2 tileoffset(tile_size*i, tile_size*j);
 
+  //TODO: instead, get lonlat BBox from tile's col, row, and lvl
+  //      and then make a mapping from 0-tile_size => lonlat.min-lonlat.max
+  //
+  // Vector3 llr(0, 0, rad);
+  // subvector(llr, 0, 2) = Vector2(i,j) * (lonlat.max - lonlat.min) / tile_size + lonlat.min
+
   for (int i = 0; i < tile_size; i++) {
     for (int j = 0; j < tile_size; j++) {
       Vector3 llr = transform * hom(Vector2(i, j) + tileoffset);
