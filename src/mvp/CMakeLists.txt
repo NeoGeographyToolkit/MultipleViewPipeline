@@ -8,7 +8,8 @@ include_directories(${PROTOBUF_INCLUDE_DIRS})
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS MVPJobRequest.proto
-                                            OrbitalImageDesc.proto)
+                                            OrbitalImageDesc.proto
+                                            MVPOperationDesc.proto)
 
 
 add_executable(mvp_start mvp_start.cc ${PROTO_SRCS})

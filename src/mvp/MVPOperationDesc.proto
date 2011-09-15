@@ -1,0 +1,5 @@
+package mvp;
+
+message MVPOperationDesc {
+  required string name = 1;
+}

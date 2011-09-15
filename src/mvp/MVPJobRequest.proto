@@ -1,11 +1,13 @@
 package mvp;
 
 import "OrbitalImageDesc.proto";
+import "MVPOperationDesc.proto";
 
 message MVPJobRequest {
   required int32 tile_size = 1;
   required int32 col = 2;
   required int32 row = 3;
   required int32 level = 4;
-  repeated OrbitalImageDesc orbital_image = 5;
+  required MVPOperationDesc operation = 5;
+  repeated OrbitalImageDesc orbital_image = 6;
 }
