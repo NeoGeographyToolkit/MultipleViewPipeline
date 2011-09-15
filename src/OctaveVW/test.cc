@@ -79,6 +79,13 @@ int main(int argc, char *argv[])
   vw::ImageView<vw::uint8> out = vw::pixel_cast<vw::uint8>(octave_to_imageview(mat));
   vw::write_image("out.png", out);
   /*
+    Types of BBoxes:
+    tile_bbox
+    pixel_bbox
+    lonlat_bbox
+
+
+
   OrbitalImage("pinhole", size/"img", parent_workspace))
   - equal_resolution_level()
   - equal_density_level()
@@ -96,7 +103,7 @@ int main(int argc, char *argv[])
   - tile coords -> pixel bbox -> lonlat bbox
   ^^ depends on tile size, so make member funcs of MVPWorkspace
 
-  MVPWorkspace work(tile_size, Datum, process)
+  MVPWorkspace work(tile_size, Datum, "process", bounds)
   work.add_image("cam", size/"img")
   work.add_image_pattern("cam_pattern", size/"img_ptrn")
   cout << work.lonlat_bbox()
@@ -128,6 +135,25 @@ int main(int argc, char *argv[])
   Requests to Zach:
   - Bresham line class in VW
   - Georef: pixel_to_point_bbox, point_to_pixel_bbox, point_to_lonlat_bbox, point_to_lonlat_bbox, lonlat_to_point_bbox
-  - Protobuf for georef
+  - Protobuf for georefs
+
+  MVPWorkspace(Datum("D_MOON"), 256, Vector2())
+
+  TODO:
+  1) get protobuf to work in cmake
+  2) write protobuf for MVPOperationDesc and MVPJobRequest
+  3) implement MVPWorkspace, OrbitalImage & tests
+  4) implement MVPTileProcessor
+  5) design MVPOperation
+
+  MVPAlgorithm(MVPAlgorithmDesc): Given an x,y, a georeference, a set of images/cameramodels, seed => compute post height
+
+  Types of Algorithms: MVP algorithm. orthoimage (albedo), errors, footprint
+
+  function MVPAlgorithmFootprint(
+
+  Reflection for automatically registering stuff: http://stackoverflow.com/questions/582331/is-there-a-way-to-instantiate-objects-from-a-string-holding-their-class-name
+  Protobuf unions: http://code.google.com/apis/protocolbuffers/docs/techniques.html
+  Gearman start: http://toys.lerdorf.com/archives/51-Playing-with-Gearman.html
   */
 }
