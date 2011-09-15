@@ -15,6 +15,3 @@ target_link_libraries(imread_vw ${VW_LIBRARIES})
 
 add_octfile(loadcam_vw loadcam_vw.cc)
 target_link_libraries(loadcam_vw ${VW_LIBRARIES})
-
-add_executable(testb test.cc)
-target_link_libraries(testb ${VW_LIBRARIES} ${OCTAVE_LIBRARIES})
