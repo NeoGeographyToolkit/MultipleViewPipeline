@@ -136,6 +136,7 @@ int main(int argc, char *argv[])
   - Bresham line class in VW
   - Georef: pixel_to_point_bbox, point_to_pixel_bbox, point_to_lonlat_bbox, point_to_lonlat_bbox, lonlat_to_point_bbox
   - Protobuf for georefs
+  - Embed camera models in tif files
 
   MVPWorkspace(Datum("D_MOON"), 256, Vector2())
 
