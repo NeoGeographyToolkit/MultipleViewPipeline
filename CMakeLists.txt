@@ -4,7 +4,7 @@ project (AMVP)
 include(CMakeDependentOption)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules")
-set(GTEST_ROOT ${CMAKE_SOURCE_DIR}/thirdparty/gtest)
+set(GTEST_ROOT ${CMAKE_SOURCE_DIR}/thirdparty/gtest/build)
 
 # This is to avoid the bug http://public.kitware.com/Bug/view.php?id=12442
 # Otherwise, if /packages version does not have MT but the system distribution

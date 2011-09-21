@@ -1,14 +1,12 @@
-#include "orbitfoot.h"
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
+#include <test/Helpers.h>
 
 #include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
 
-namespace fs = boost::filesystem;
+#include "orbitfoot.h"
 
-//TODO: Set this define with cmake instead
-#define TEST_SRCDIR "."
-#include "Helpers.h"
+namespace fs = boost::filesystem;
 
 class OrbitFootprintTest : public ::testing::Test {
   private:

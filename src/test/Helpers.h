@@ -37,16 +37,33 @@ namespace vw {
 
 using namespace ::testing;
 
+#ifndef TEST_DSTDIR
+#error TEST_DSTDIR is not defined! Define it before including this header.
+#endif
+
 #ifndef TEST_SRCDIR
 #error TEST_SRCDIR is not defined! Define it before including this header.
 #endif
 
 // Create a temporary filename that is unlinked when constructed and destructed
 class UnlinkName : public std::string {
-  public:
-    UnlinkName() {}
-    UnlinkName(std::string base, std::string directory=TEST_SRCDIR);
-    ~UnlinkName();
+public:
+  UnlinkName() {}
+  UnlinkName(const std::string& base, const std::string& directory=TEST_DSTDIR);
+  UnlinkName(const char *base,        const std::string& directory=TEST_DSTDIR);
+  ~UnlinkName();
+};
+
+// Create a filename that auto applies the directory to the source
+// directory. This allows us to link back to files in the test
+// directory that are not in the build directory.
+class SrcName : public std::string {
+public:
+  SrcName() {}
+  SrcName(const std::string& base, const std::string& directory=TEST_SRCDIR)
+    : std::string(directory + "/" + base) {}
+  SrcName(const char *base,        const std::string& directory=TEST_SRCDIR)
+    : std::string(directory + "/" + base) {}
 };
 
 #define EXPECT_MATRIX_NEAR(val1, val2, delta)\
