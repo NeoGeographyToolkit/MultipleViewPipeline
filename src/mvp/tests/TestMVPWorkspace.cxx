@@ -4,10 +4,11 @@
 #include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
 
-//#include "MVPWorkspace.h"
+#include "MVPWorkspace.h"
 
 namespace fs = boost::filesystem;
 
-TEST(IsectPolyTest, Intersects) {
-  EXPECT_TRUE(5==5);
+using namespace mvp;
+
+TEST(MVPWorkspace, Construct) {
 }

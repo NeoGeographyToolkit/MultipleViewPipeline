@@ -29,6 +29,12 @@
 #ifndef __MVPWORKSPACE_H__
 #define __MVPWORKSPACE_H__
 
+#include "MVPOperationDesc.pb.h"
+#include "MVPJobRequest.pb.h"
+#include "OrbitalImage.h"
+
+#include <vw/Cartography/GeoReference.h>
+
 namespace mvp {
 
 class MVPWorkspace {
@@ -41,7 +47,7 @@ class MVPWorkspace {
   int m_equal_resolution_level, m_equal_density_level;
   
   public:
-    MVPWorkspace(int vw::cartography::Datum const& datum, vw::Vector2 const& post_height_limits, 
+    MVPWorkspace(vw::cartography::Datum const& datum, vw::Vector2 const& post_height_limits, 
                  MVPOperationDesc const& operation_desc, int tile_size = 256) :
       m_datum(datum), m_post_height_limits(post_height_limits), m_operation_desc(operation_desc),
       m_tile_size(tile_size), m_images(),

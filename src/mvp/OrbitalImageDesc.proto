@@ -5,5 +5,5 @@ message OrbitalImageDesc {
   required string image_path = 2;
   required int32 image_cols = 3;
   required int32 image_rows = 4;
-  repeated double vertices = 5 [packed=true];
+  repeated double footprint = 5 [packed=true];
 }
