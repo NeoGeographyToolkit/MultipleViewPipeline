@@ -1,0 +1,8 @@
+package mvp;
+
+message TileDescriptor {
+  required int32 col = 1;
+  required int32 row = 2;
+  required int32 level = 3;
+  required int32 tid = 4;
+}

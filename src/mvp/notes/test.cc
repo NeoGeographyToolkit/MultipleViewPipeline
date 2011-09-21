@@ -141,8 +141,8 @@ int main(int argc, char *argv[])
   MVPWorkspace(Datum("D_MOON"), 256, Vector2())
 
   TODO:
-  1) get protobuf to work in cmake
-  2) write protobuf for MVPOperationDesc and MVPJobRequest
+  X1) get protobuf to work in cmake
+  X2) write protobuf for MVPOperationDesc and MVPJobRequest
   3) implement MVPWorkspace, OrbitalImage & tests
   4) implement MVPTileProcessor
   5) design MVPOperation
