@@ -38,7 +38,35 @@ class OrbitalImageTest : public ::testing::Test {
     Vector2 radius_range;
 };
 
-TEST_F(OrbitalImageTest, Intersects) {
+TEST_F(OrbitalImageTest, build_desc) {
+  OrbitalImage orbimg(camfile, imgsize, radius_range);
+
+  OrbitalImageDesc desc(orbimg.build_desc());
+
+  OrbitalImage orbimg2(desc);
+
+  OrbitalImageDesc desc2(orbimg2.build_desc());
+
+  EXPECT_EQ(desc.DebugString(), desc2.DebugString());
+}
+
+TEST_F(OrbitalImageTest, construct_footprint) {
+  // TODO
+}
+
+TEST_F(OrbitalImageTest, set_radius_range) {
+  // TODO 
+}
+
+TEST_F(OrbitalImageTest, equal_resolution_level) {
+  // TODO 
+}
+
+TEST_F(OrbitalImageTest, equal_density_level) {
+  // TODO 
+}
+
+TEST_F(OrbitalImageTest, intersects) {
   OrbitalImage orbimg(camfile, imgsize, radius_range);
 
   // Vector2(173.541,-21.7811)
@@ -54,10 +82,4 @@ TEST_F(OrbitalImageTest, Intersects) {
 
   EXPECT_TRUE(orbimg.intersects(BBox2(175, -25, 5, 5)));
   EXPECT_FALSE(orbimg.intersects(BBox2(180, -25, 5, 5)));
-
-//  EXPECT_TRUE(orbimg.intersects(0, 0, 0));
-//  EXPECT_FALSE(orbimg.intersects(0, 0, 20));
-
-//  EXPECT_TRUE(orbimg.intersects(63, 36, 6));
-//  EXPECT_FALSE(orbimg.intersects(63, 37, 6));
 }

@@ -12,8 +12,11 @@ PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS MVPJobRequest.proto
                                             TileDescriptor.proto)
 
 
-add_executable(mvp_start mvp_start.cc ${PROTO_SRCS})
-target_link_libraries(mvp_start ${PROTOBUF_LIBRARIES})
+add_library(mvp ${PROTO_SRCS})
+
+add_executable(mvp_start mvp_start.cc)
+target_link_libraries(mvp_start mvp
+                                ${PROTOBUF_LIBRARIES})
 
 if (BUILD_TESTS)
   add_subdirectory(tests)
