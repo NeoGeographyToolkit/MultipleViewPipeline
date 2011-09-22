@@ -177,23 +177,36 @@ class OrbitalImage
     /// Return the level for which the resolution of one tile at that level
     /// is approximately equal to the resolution of the orbital image.
     int equal_resolution_level() const {
-      // TODO
-      return 0;
+      vw::BBox2 fp_bbox(footprint_bbox());
+
+      double x_res_lvl = log(360.0 / fp_bbox.width()) / log(2);
+      double y_res_lvl = log(360.0 / fp_bbox.height()) / log(2);
+
+      return round(std::max(x_res_lvl, y_res_lvl));
     }
 
     /// Return the level for which the pixel density (measured as pixels per 
-    /// degree) at that level is approximately equal to the pixel density of
+    /// degree) at that level is greater or equal to the pixel density of
     /// the orbital image.
-    int equal_density_level() const {
-      // TODO
-      return 0;
+    int equal_density_level(int tile_size = 256) const {
+      vw::BBox2 fp_bbox(footprint_bbox());
+
+      double x_dens_lvl = log(360.0 * m_image_size.x() / fp_bbox.width() / tile_size) / log(2);
+      double y_dens_lvl = log(360.0 * m_image_size.y() / fp_bbox.height() / tile_size) / log(2);
+
+      return ceil(std::max(x_dens_lvl, y_dens_lvl));
     }
 
     /// Return true if the footprint of the orbital image intersects the given
     /// lonlat BBox
     bool intersects(vw::BBox2 lonlat_bbox) const {
-      // TODO
-      return false;
+      std::vector<vw::Vector2> bbox_poly(4);
+      bbox_poly[0] = lonlat_bbox.min();
+      bbox_poly[1] = vw::Vector2(lonlat_bbox.min().x(), lonlat_bbox.max().y());
+      bbox_poly[2] = lonlat_bbox.max();
+      bbox_poly[3] = vw::Vector2(lonlat_bbox.max().x(), lonlat_bbox.min().y());
+
+      return isect_poly(m_footprint, bbox_poly);
     }
 
 };

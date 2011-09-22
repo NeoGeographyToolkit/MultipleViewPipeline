@@ -137,7 +137,7 @@ TEST_F(OrbitalImageTest, equal_resolution_level) {
 TEST_F(OrbitalImageTest, equal_density_level) {
   OrbitalImage orbimg(camfile, imgsize, radius_range);
 
-  EXPECT_EQ(orbimg.equal_density_level(), 20);
+  EXPECT_EQ(orbimg.equal_density_level(), 11);
 }
 
 TEST_F(OrbitalImageTest, intersects) {
