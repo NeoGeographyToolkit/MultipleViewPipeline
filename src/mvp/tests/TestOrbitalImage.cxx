@@ -15,15 +15,9 @@ using namespace vw::camera;
 using namespace vw::cartography;
 
 TEST(HelperFunction, backproj_px) {
-  double moon_rad = 1737400;
+  const double moon_rad = 1737400;
 
-  PinholeModel cam(vw::Vector3(-1664843.82,116630.703,-771606.935),
-    vw::Quat(0.6196358355,-0.3398896742,0.413973702,-0.5737178878).rotation_matrix(),
-    3802.7,3802.7,2862.875,2862.875,
-    vw::Vector3(1,0,0),
-    vw::Vector3(0,1,0),
-    vw::Vector3(0,0,1),
-    vw::camera::NullLensDistortion());
+  PinholeModel cam(SrcName("AS15-M-0073.lev1.pinhole"));
 
   Vector2 px_pick(100.0, 200.0);
 
@@ -68,32 +62,8 @@ TEST(HelperFunction, isec_poly) {
   EXPECT_FALSE(isect_poly(poly3, poly4));
 }
 
-class OrbitalImageTest : public ::testing::Test {
-  protected:
-    virtual void SetUp() {
-      camfile = UnlinkName("cam.pinhole");
-      imgsize = Vector2i(5725, 5725);
-      radius_range = Vector2(1737400, 1737400);
-
-      // AS15-M-0073.lev1.pinhole
-      PinholeModel cam(vw::Vector3(-1664843.82,116630.703,-771606.935),
-        vw::Quat(0.6196358355,-0.3398896742,0.413973702,-0.5737178878).rotation_matrix(),
-        3802.7,3802.7,2862.875,2862.875,
-        vw::Vector3(1,0,0),
-        vw::Vector3(0,1,0),
-        vw::Vector3(0,0,1),
-        vw::camera::NullLensDistortion());
-      
-      cam.write(camfile);
-    }
-
-    UnlinkName camfile;
-    Vector2i imgsize;
-    Vector2 radius_range;
-};
-
-TEST_F(OrbitalImageTest, build_desc) {
-  OrbitalImage orbimg(camfile, imgsize, radius_range);
+TEST(OrbitalImageTest, build_desc) {
+  OrbitalImage orbimg(SrcName("AS15-M-0073.lev1.pinhole"), SrcName("dummy_image.tif"), Vector2(1737400, 1737400));
 
   OrbitalImageDesc desc(orbimg.build_desc());
 
@@ -104,8 +74,8 @@ TEST_F(OrbitalImageTest, build_desc) {
   EXPECT_EQ(desc.DebugString(), desc2.DebugString());
 }
 
-TEST_F(OrbitalImageTest, construct_footprint) {
-  vector<Vector2> fp(OrbitalImage::construct_footprint(PinholeModel(camfile), imgsize, radius_range));
+TEST(OrbitalImageTest, construct_footprint) {
+  vector<Vector2> fp(OrbitalImage::construct_footprint(PinholeModel(SrcName("AS15-M-0073.lev1.pinhole")), Vector2(5725, 5725), Vector2(1737400, 1737400)));
 
   EXPECT_EQ(fp.size(), 4);
   EXPECT_VECTOR_NEAR(fp[0], Vector2(173.541,-21.7811), 1e-3);
@@ -114,34 +84,34 @@ TEST_F(OrbitalImageTest, construct_footprint) {
   EXPECT_VECTOR_NEAR(fp[3], Vector2(172.639,-26.9718), 1e-3);
 }
 
-TEST_F(OrbitalImageTest, footprint_bbox) {
+TEST(OrbitalImageTest, footprint_bbox) {
   // TODO
 }
 
-TEST_F(OrbitalImageTest, set_radius_range) {
+TEST(OrbitalImageTest, set_radius_range) {
   Vector2 newrad(1736400, 1738400);
-  OrbitalImage orbimg(camfile, imgsize, radius_range);
-  OrbitalImage orbimg2(camfile, imgsize, newrad);
+  OrbitalImage orbimg(SrcName("AS15-M-0073.lev1.pinhole"), SrcName("dummy_image.tif"), Vector2(1737400, 1737400));
+  OrbitalImage orbimg2(SrcName("AS15-M-0073.lev1.pinhole"), SrcName("dummy_image.tif"), Vector2(1737400, 1737400));
 
   orbimg.set_radius_range(newrad);
  
   EXPECT_EQ(orbimg.build_desc().DebugString(), orbimg2.build_desc().DebugString()); 
 }
 
-TEST_F(OrbitalImageTest, equal_resolution_level) {
-  OrbitalImage orbimg(camfile, imgsize, radius_range);
+TEST(OrbitalImageTest, equal_resolution_level) {
+  OrbitalImage orbimg(SrcName("AS15-M-0073.lev1.pinhole"), SrcName("dummy_image.tif"), Vector2(1737400, 1737400));
 
   EXPECT_EQ(orbimg.equal_resolution_level(), 6);
 }
 
-TEST_F(OrbitalImageTest, equal_density_level) {
-  OrbitalImage orbimg(camfile, imgsize, radius_range);
+TEST(OrbitalImageTest, equal_density_level) {
+  OrbitalImage orbimg(SrcName("AS15-M-0073.lev1.pinhole"), SrcName("dummy_image.tif"), Vector2(1737400, 1737400));
 
   EXPECT_EQ(orbimg.equal_density_level(), 11);
 }
 
-TEST_F(OrbitalImageTest, intersects) {
-  OrbitalImage orbimg(camfile, imgsize, radius_range);
+TEST(OrbitalImageTest, intersects) {
+  OrbitalImage orbimg(SrcName("AS15-M-0073.lev1.pinhole"), SrcName("dummy_image.tif"), Vector2(1737400, 1737400));
 
   // Vector2(173.541,-21.7811)
   //           -----------------
