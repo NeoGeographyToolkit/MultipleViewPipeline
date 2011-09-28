@@ -1,0 +1,20 @@
+// __BEGIN_LICENSE__
+// Copyright (C) 2006-2011 United States Government as represented by
+// the Administrator of the National Aeronautics and Space Administration.
+// All Rights Reserved.
+// __END_LICENSE__
+
+
+package vw.platefile;
+import "vw/Plate/Rpc.proto";
+
+message DoubleMessage {
+  required int32  num = 1;
+  optional uint32 seq = 2;
+}
+
+option cc_generic_services = true;
+
+service TestService {
+  rpc DoubleRequest (DoubleMessage) returns (DoubleMessage);
+}

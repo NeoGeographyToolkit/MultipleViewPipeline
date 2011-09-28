@@ -1,0 +1,5 @@
+VW doesn't distribute the protobuf .proto files, so for now we copy them
+into this dir and include them in our project.
+
+This should become obsolete when VW starts distributing their protobuf
+files.
