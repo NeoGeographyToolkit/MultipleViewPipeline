@@ -4,8 +4,11 @@ include_directories(${VW_INCLUDE_DIRS})
 
 find_package(Protobuf REQUIRED)
 include_directories(${PROTOBUF_INCLUDE_DIRS})
-
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
+
+# Hack to include VW's proto files
+set(_protobuf_include_path -I ${CMAKE_SOURCE_DIR}/thirdparty/vw_protobuf/proto)
+
 PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS MVPJobRequest.proto
                                             OrbitalImageDesc.proto
                                             MVPOperationDesc.proto
