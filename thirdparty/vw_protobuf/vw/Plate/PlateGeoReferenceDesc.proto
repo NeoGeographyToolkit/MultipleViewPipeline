@@ -1,0 +1,11 @@
+package vw.platefile;
+
+import "vw/Cartography/DatumDesc.proto";
+import "vw/Cartography/GeoReferenceDesc.proto";
+
+message PlateGeoReferenceDesc {
+  required cartography.DatumDesc datum = 1;
+  required string map_proj = 2;
+  required int32 tile_size = 3;
+  required cartography.GeoReferenceDesc.PixelInterpretation pixel_interpretation = 4;
+}

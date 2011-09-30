@@ -2,14 +2,17 @@
 
 if [[ "$#" != "1" ]]; then
   echo "Usage: $0 VW_SRC_DIR"
+  exit
 fi
 
 SCRIPT_DIR=$(dirname $0)
 PROTO_DIR=$SCRIPT_DIR/proto
 
-VW_SRC_DIR="$1"
+VW_SRC_DIR="$1"/src/vw
 
-#rsync -atv --prune-empty-dirs --include "*/" --include "*.proto" --exclude '*' $VW_SRC_DIR $SCRIPT_DIR
+if [[ ! -d "$VW_SRC_DIR" ]]; then
+  echo "Not a valid VW root src dir: $VW_SRC_DIR"
+  exit
+fi
 
-mkdir -p $PROTO_DIR
-find $VW_SRC_DIR -iname '*.proto' -print -exec cp {} $PROTO_DIR \;
+rsync -atv --prune-empty-dirs --include "*/" --include "*.proto" --exclude '*' $VW_SRC_DIR $SCRIPT_DIR
