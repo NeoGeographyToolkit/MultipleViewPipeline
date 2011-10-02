@@ -10,8 +10,7 @@ int main(int argc, char* argv[])
   cout << "Hello world" << endl;
 
   MVPJobRequest job;
-  job.set_tile_size(6);
-  cout << job.tile_size() << endl;
+  cout << job.plate_georef().tile_size() << endl;
 
   return 0;
 }

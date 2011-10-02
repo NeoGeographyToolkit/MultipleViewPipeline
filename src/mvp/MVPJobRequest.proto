@@ -3,10 +3,12 @@ package mvp;
 import "TileDescriptor.proto";
 import "OrbitalImageDesc.proto";
 import "MVPOperationDesc.proto";
+import "vw/Plate/PlateGeoReferenceDesc.proto";
 
 message MVPJobRequest {
-  required int32 tile_size = 1;
-  required TileDescriptor tile = 2;
-  required MVPOperationDesc operation = 3;
-  repeated OrbitalImageDesc orbital_image = 4;
+  required string platefile = 1;
+  required vw.platefile.PlateGeoReferenceDesc plate_georef = 2;
+  required TileDescriptor tile = 3;
+  required MVPOperationDesc operation = 4;
+  repeated OrbitalImageDesc orbital_image = 5;
 }

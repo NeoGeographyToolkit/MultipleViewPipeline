@@ -19,7 +19,8 @@ add_library(mvp ${PROTO_SRCS})
 
 add_executable(mvp_start mvp_start.cc)
 target_link_libraries(mvp_start mvp
-                                ${PROTOBUF_LIBRARIES})
+                                ${PROTOBUF_LIBRARIES}
+                                ${VW_LIBRARIES})
 
 if (BUILD_TESTS)
   add_subdirectory(tests)
