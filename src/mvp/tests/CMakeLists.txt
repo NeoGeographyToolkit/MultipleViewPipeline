@@ -12,9 +12,7 @@ macro(add_mvp_test test_name)
                                ${CMAKE_SOURCE_DIR}/src/test/test_main.cc)
   target_link_libraries(${test_name} mvp
                                      ${GTEST_LIBRARIES}
-                                     ${VW_LIBRARY}
-                                     ${VW_CARTOGRAPHY_LIBRARY}
-                                     ${VW_CAMERA_LIBRARY})
+                                     ${VW_LIBRARIES})
   set_target_properties(${test_name} PROPERTIES COMPILE_FLAGS 
                         "-DTEST_SRCDIR=\\\"${CMAKE_CURRENT_SOURCE_DIR}\\\" -DTEST_OBJDIR=\\\"${CMAKE_CURRENT_BINARY_DIR}\\\"")
 
