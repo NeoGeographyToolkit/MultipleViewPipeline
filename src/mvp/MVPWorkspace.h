@@ -44,6 +44,7 @@
 namespace mvp {
 
 class MVPWorkspace {
+  std::string m_result_platefile, m_internal_result_platefile;
   vw::platefile::PlateGeoReference m_plate_georef;
   vw::Vector2 m_post_height_limits;
   MVPOperationDesc m_operation_desc;
@@ -53,8 +54,10 @@ class MVPWorkspace {
   vw::BBox2 m_lonlat_work_area;
   
   public:
-    MVPWorkspace(vw::platefile::PlateGeoReference const& plate_georef, 
+    MVPWorkspace(std::string const& result_platefile, std::string const& internal_result_platefile,
+                 vw::platefile::PlateGeoReference const& plate_georef, 
                  MVPOperationDesc const& operation_desc, vw::Vector2 const& post_height_limits) :
+      m_result_platefile(result_platefile), m_internal_result_platefile(internal_result_platefile),
       m_plate_georef(plate_georef), m_operation_desc(operation_desc),
       m_post_height_limits(post_height_limits), m_images(),
       m_equal_resolution_level(std::numeric_limits<int>::max()), m_equal_density_level(0), m_lonlat_work_area() {}
@@ -137,8 +140,24 @@ class MVPWorkspace {
 
     /// Return an MVPJobRequest for a given tile at a given level.
     MVPJobRequest assemble_job(int col, int row, int level) const {
-      // MVPJobRequest will be a protobuf class
-      return MVPJobRequest();
+      MVPJobRequest request;
+
+      request.mutable_tile()->set_col(col);
+      request.mutable_tile()->set_row(row);
+      request.mutable_tile()->set_level(level);
+      
+      request.set_result_platefile(m_result_platefile);
+      request.set_internal_result_platefile(m_internal_result_platefile);
+      *request.mutable_plate_georef() = m_plate_georef.build_desc();
+      *request.mutable_operation() = m_operation_desc;
+      request.set_post_height_limit_min(m_post_height_limits[0]);
+      request.set_post_height_limit_max(m_post_height_limits[1]);
+
+      BOOST_FOREACH(OrbitalImage o, images_at_tile(col, row, level)) {
+        *request.add_orbital_images() = o.build_desc();
+      }
+
+      return request;
     }
 };
 

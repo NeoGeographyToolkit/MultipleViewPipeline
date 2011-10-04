@@ -11,7 +11,7 @@ using namespace vw::platefile;
 using namespace mvp;
 
 TEST(MVPWorkspace, AddImage) {
-  MVPWorkspace work(PlateGeoReference(Datum("D_MOON")), MVPOperationDesc(), Vector2());
+  MVPWorkspace work("", "", PlateGeoReference(Datum("D_MOON")), MVPOperationDesc(), Vector2());
   work.add_image(SrcName("AS15-M-0073.lev1.pinhole"), SrcName("dummy_image.tif"));
 
   EXPECT_EQ(work.num_images(), 1);
@@ -33,7 +33,7 @@ TEST(MVPWorkspace, AddImage) {
 
 
 TEST(MVPWorkspace, AddImagePattern) {
-  MVPWorkspace work(PlateGeoReference(Datum("D_MOON")), MVPOperationDesc(), Vector2());
+  MVPWorkspace work("", "", PlateGeoReference(Datum("D_MOON")), MVPOperationDesc(), Vector2());
   work.add_image_pattern(SrcName("AS15-M-%04d.lev1.pinhole"), SrcName("dummy_image.%d.png"), Vector2i(73, 76));
 
   EXPECT_EQ(work.num_images(), 4);
@@ -44,7 +44,7 @@ TEST(MVPWorkspace, AddImagePattern) {
 }
 
 TEST(MVPWorkspace, WorkAreas) {
-  MVPWorkspace work(PlateGeoReference(Datum("D_MOON")), MVPOperationDesc(), Vector2());
+  MVPWorkspace work("", "", PlateGeoReference(Datum("D_MOON")), MVPOperationDesc(), Vector2());
   work.add_image_pattern(SrcName("AS15-M-%04d.lev1.pinhole"), SrcName("dummy_image.%d.png"), Vector2i(73, 76));
 
   EXPECT_VECTOR_NEAR(work.lonlat_work_area().min(), Vector2(169.254, -27.6722), 1e-3);
@@ -62,7 +62,7 @@ TEST(MVPWorkspace, WorkAreas) {
 }
 
 TEST(MVPWorkspace, ImagesAtTile) {
-  MVPWorkspace work(PlateGeoReference(Datum("D_MOON")), MVPOperationDesc(), Vector2());
+  MVPWorkspace work("", "", PlateGeoReference(Datum("D_MOON")), MVPOperationDesc(), Vector2());
   work.add_image_pattern(SrcName("AS15-M-%04d.lev1.pinhole"), SrcName("dummy_image.%d.png"), Vector2i(73, 76));
 
   OrbitalImageCollection collect;
@@ -78,4 +78,24 @@ TEST(MVPWorkspace, ImagesAtTile) {
 
   collect = work.images_at_tile(996, 578, 10);
   EXPECT_EQ(collect.size(), 1);
+}
+
+TEST(MVPWorkspace, AssembleJob) {
+  MVPWorkspace work("result", "internal", PlateGeoReference(Datum("D_MOON")), MVPOperationDesc(), Vector2(-10, 10));
+  work.add_image_pattern(SrcName("AS15-M-%04d.lev1.pinhole"), SrcName("dummy_image.%d.png"), Vector2i(73, 76));
+
+  MVPJobRequest job;
+  
+  job = work.assemble_job(1, 1, 1);
+
+  EXPECT_EQ(job.tile().col(), 1);
+  EXPECT_EQ(job.tile().row(), 1);
+  EXPECT_EQ(job.tile().level(), 1);
+  EXPECT_EQ(job.result_platefile(), "result");
+  EXPECT_EQ(job.internal_result_platefile(), "internal");
+  EXPECT_EQ(job.plate_georef().DebugString(), PlateGeoReference(Datum("D_MOON")).build_desc().DebugString());
+  EXPECT_EQ(job.operation().DebugString(), MVPOperationDesc().DebugString());
+  EXPECT_EQ(job.post_height_limit_min(), -10);
+  EXPECT_EQ(job.post_height_limit_max(), 10);
+  EXPECT_EQ(job.orbital_images_size(), 4);
 }

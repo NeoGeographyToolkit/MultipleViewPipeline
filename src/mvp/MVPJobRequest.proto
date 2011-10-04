@@ -6,9 +6,12 @@ import "MVPOperationDesc.proto";
 import "vw/Plate/PlateGeoReferenceDesc.proto";
 
 message MVPJobRequest {
-  required string platefile = 1;
-  required vw.platefile.PlateGeoReferenceDesc plate_georef = 2;
-  required TileDescriptor tile = 3;
-  required MVPOperationDesc operation = 4;
-  repeated OrbitalImageDesc orbital_image = 5;
+  required TileDescriptor tile = 1;
+  required string result_platefile = 2;
+  required string internal_result_platefile = 3;
+  required vw.platefile.PlateGeoReferenceDesc plate_georef = 4;
+  required MVPOperationDesc operation = 5;
+  required double post_height_limit_min = 6;
+  required double post_height_limit_max = 7;
+  repeated OrbitalImageDesc orbital_images = 8;
 }
