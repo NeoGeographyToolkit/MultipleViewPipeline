@@ -123,7 +123,16 @@ class MVPWorkspace {
 
     /// Return all the orbital images that overlap a given tile
     OrbitalImageCollection images_at_tile(int col, int row, int level) const {
-      return OrbitalImageCollection();
+      OrbitalImageCollection result;
+      vw::BBox2 tile_lonlat_bbox(m_plate_georef.tile_lonlat_bbox(col, row, level));
+
+      BOOST_FOREACH(OrbitalImage o, m_images) {
+        if (o.intersects(tile_lonlat_bbox)) {
+          result.push_back(o);
+        } 
+      }
+
+      return result;
     }
 
     /// Return an MVPJobRequest for a given tile at a given level.

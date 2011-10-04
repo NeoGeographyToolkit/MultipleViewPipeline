@@ -60,3 +60,22 @@ TEST(MVPWorkspace, WorkAreas) {
   EXPECT_VECTOR_EQ(work.tile_work_area(10).min(), Vector2i(993, 572));
   EXPECT_VECTOR_EQ(work.tile_work_area(10).max(), Vector2i(1022, 591));
 }
+
+TEST(MVPWorkspace, ImagesAtTile) {
+  MVPWorkspace work(PlateGeoReference(Datum("D_MOON")), MVPOperationDesc(), Vector2());
+  work.add_image_pattern(SrcName("AS15-M-%04d.lev1.pinhole"), SrcName("dummy_image.%d.png"), Vector2i(73, 76));
+
+  OrbitalImageCollection collect;
+ 
+  collect = work.images_at_tile(0, 0, 0);
+  EXPECT_EQ(collect.size(), 4);
+
+  collect = work.images_at_tile(1, 1, 1);
+  EXPECT_EQ(collect.size(), 4);
+
+  collect = work.images_at_tile(0, 0, 1);
+  EXPECT_EQ(collect.size(), 0);
+
+  collect = work.images_at_tile(996, 578, 10);
+  EXPECT_EQ(collect.size(), 1);
+}
