@@ -72,6 +72,7 @@ TEST(OrbitalImageTest, build_desc) {
   OrbitalImageDesc desc2(orbimg2.build_desc());
 
   EXPECT_EQ(desc.DebugString(), desc2.DebugString());
+  EXPECT_NE(desc.DebugString(), "");
 }
 
 TEST(OrbitalImageTest, construct_footprint) {
@@ -91,7 +92,7 @@ TEST(OrbitalImageTest, footprint_bbox) {
 TEST(OrbitalImageTest, set_radius_range) {
   Vector2 newrad(1736400, 1738400);
   OrbitalImage orbimg(SrcName("AS15-M-0073.lev1.pinhole"), SrcName("dummy_image.73.png"), Vector2(1737400, 1737400));
-  OrbitalImage orbimg2(SrcName("AS15-M-0073.lev1.pinhole"), SrcName("dummy_image.73.png"), Vector2(1737400, 1737400));
+  OrbitalImage orbimg2(SrcName("AS15-M-0073.lev1.pinhole"), SrcName("dummy_image.73.png"), newrad);
 
   orbimg.set_radius_range(newrad);
  

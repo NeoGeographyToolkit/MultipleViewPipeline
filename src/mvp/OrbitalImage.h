@@ -110,6 +110,7 @@ class OrbitalImage
     {
       VW_ASSERT(desc.footprint_lons_size() == desc.footprint_lats_size(), 
                 vw::InputErr() << "Malformed footprint record");
+
       for (int i = 0; i < desc.footprint_lons_size(); i++) {
         m_footprint.push_back(vw::Vector2(desc.footprint_lons(i), desc.footprint_lats(i)));
       }
@@ -130,7 +131,7 @@ class OrbitalImage
         desc.add_footprint_lats(vertex.y());
       }
 
-      return OrbitalImageDesc();
+      return desc;
     }
 
     /// A static method that constructs a polygon that represents an orbital
