@@ -63,7 +63,7 @@ TEST(HelperFunction, isec_poly) {
 }
 
 TEST(OrbitalImageTest, build_desc) {
-  OrbitalImage orbimg(SrcName("AS15-M-0073.lev1.pinhole"), SrcName("dummy_image.tif"), Vector2(1737400, 1737400));
+  OrbitalImage orbimg(SrcName("AS15-M-0073.lev1.pinhole"), SrcName("dummy_image.73.png"), Vector2(1737400, 1737400));
 
   OrbitalImageDesc desc(orbimg.build_desc());
 
@@ -90,8 +90,8 @@ TEST(OrbitalImageTest, footprint_bbox) {
 
 TEST(OrbitalImageTest, set_radius_range) {
   Vector2 newrad(1736400, 1738400);
-  OrbitalImage orbimg(SrcName("AS15-M-0073.lev1.pinhole"), SrcName("dummy_image.tif"), Vector2(1737400, 1737400));
-  OrbitalImage orbimg2(SrcName("AS15-M-0073.lev1.pinhole"), SrcName("dummy_image.tif"), Vector2(1737400, 1737400));
+  OrbitalImage orbimg(SrcName("AS15-M-0073.lev1.pinhole"), SrcName("dummy_image.73.png"), Vector2(1737400, 1737400));
+  OrbitalImage orbimg2(SrcName("AS15-M-0073.lev1.pinhole"), SrcName("dummy_image.73.png"), Vector2(1737400, 1737400));
 
   orbimg.set_radius_range(newrad);
  
@@ -99,19 +99,19 @@ TEST(OrbitalImageTest, set_radius_range) {
 }
 
 TEST(OrbitalImageTest, equal_resolution_level) {
-  OrbitalImage orbimg(SrcName("AS15-M-0073.lev1.pinhole"), SrcName("dummy_image.tif"), Vector2(1737400, 1737400));
+  OrbitalImage orbimg(SrcName("AS15-M-0073.lev1.pinhole"), SrcName("dummy_image.73.png"), Vector2(1737400, 1737400));
 
   EXPECT_EQ(orbimg.equal_resolution_level(), 6);
 }
 
 TEST(OrbitalImageTest, equal_density_level) {
-  OrbitalImage orbimg(SrcName("AS15-M-0073.lev1.pinhole"), SrcName("dummy_image.tif"), Vector2(1737400, 1737400));
+  OrbitalImage orbimg(SrcName("AS15-M-0073.lev1.pinhole"), SrcName("dummy_image.73.png"), Vector2(1737400, 1737400));
 
   EXPECT_EQ(orbimg.equal_density_level(), 11);
 }
 
 TEST(OrbitalImageTest, intersects) {
-  OrbitalImage orbimg(SrcName("AS15-M-0073.lev1.pinhole"), SrcName("dummy_image.tif"), Vector2(1737400, 1737400));
+  OrbitalImage orbimg(SrcName("AS15-M-0073.lev1.pinhole"), SrcName("dummy_image.73.png"), Vector2(1737400, 1737400));
 
   // Vector2(173.541,-21.7811)
   //           -----------------
