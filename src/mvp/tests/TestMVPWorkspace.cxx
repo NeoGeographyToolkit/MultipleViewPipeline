@@ -42,3 +42,21 @@ TEST(MVPWorkspace, AddImagePattern) {
   EXPECT_VECTOR_NEAR(work.lonlat_work_area().min(), Vector2(169.254, -27.6722), 1e-3);
   EXPECT_VECTOR_NEAR(work.lonlat_work_area().max(), Vector2(179.133, -21.3673), 1e-3);
 }
+
+TEST(MVPWorkspace, WorkAreas) {
+  MVPWorkspace work(PlateGeoReference(Datum("D_MOON")), MVPOperationDesc(), Vector2());
+  work.add_image_pattern(SrcName("AS15-M-%04d.lev1.pinhole"), SrcName("dummy_image.%d.png"), Vector2i(73, 76));
+
+  EXPECT_VECTOR_NEAR(work.lonlat_work_area().min(), Vector2(169.254, -27.6722), 1e-3);
+  EXPECT_VECTOR_NEAR(work.lonlat_work_area().max(), Vector2(179.133, -21.3673), 1e-3);
+
+  EXPECT_VECTOR_EQ(work.pixel_work_area(0).min(), Vector2i(247, 142));
+  EXPECT_VECTOR_EQ(work.pixel_work_area(0).max(), Vector2i(255, 148));
+  EXPECT_VECTOR_EQ(work.pixel_work_area(10).min(), Vector2i(254318, 146630));
+  EXPECT_VECTOR_EQ(work.pixel_work_area(10).max(), Vector2i(261512, 151222));
+
+  EXPECT_VECTOR_EQ(work.tile_work_area(0).min(), Vector2i(0, 0));
+  EXPECT_VECTOR_EQ(work.tile_work_area(0).max(), Vector2i(1, 1));
+  EXPECT_VECTOR_EQ(work.tile_work_area(10).min(), Vector2i(993, 572));
+  EXPECT_VECTOR_EQ(work.tile_work_area(10).max(), Vector2i(1022, 591));
+}

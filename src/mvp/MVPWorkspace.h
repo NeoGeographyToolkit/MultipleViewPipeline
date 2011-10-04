@@ -110,7 +110,7 @@ class MVPWorkspace {
     /// Return a bounding box (in pixels) that contains all of the orbital
     /// imagery in the workspace at a given level
     vw::BBox2i pixel_work_area(int level) const {
-      return m_plate_georef.level_georef(level).pixel_to_lonlat_bbox(lonlat_work_area());
+      return m_plate_georef.level_georef(level).lonlat_to_pixel_bbox(lonlat_work_area());
     }
 
     /// Return a bounding box (in tiles) that contains all of the orbital
