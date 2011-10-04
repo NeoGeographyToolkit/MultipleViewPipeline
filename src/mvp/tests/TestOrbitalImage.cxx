@@ -86,7 +86,12 @@ TEST(OrbitalImageTest, construct_footprint) {
 }
 
 TEST(OrbitalImageTest, footprint_bbox) {
-  // TODO
+  OrbitalImage orbimg(SrcName("AS15-M-0073.lev1.pinhole"), SrcName("dummy_image.73.png"), Vector2(1737400, 1737400));
+
+  BBox2 bbox(orbimg.footprint_bbox());
+
+  EXPECT_VECTOR_NEAR(bbox.min(), Vector2(172.639, -27.6722), 1e-3);
+  EXPECT_VECTOR_NEAR(bbox.max(), Vector2(179.133, -21.7811), 1e-3);
 }
 
 TEST(OrbitalImageTest, set_radius_range) {
