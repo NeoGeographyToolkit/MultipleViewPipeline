@@ -10,7 +10,7 @@ using namespace vw::cartography;
 using namespace vw::platefile;
 using namespace mvp;
 
-TEST(MVPWorkspace, AddImage) {
+TEST(MVPWorkspace, add_image) {
   MVPWorkspace work("", "", PlateGeoReference(Datum("D_MOON")), MVPOperationDesc(), Vector2());
   work.add_image(SrcName("AS15-M-0073.lev1.pinhole"), SrcName("dummy_image.tif"));
 
@@ -32,7 +32,7 @@ TEST(MVPWorkspace, AddImage) {
 }
 
 
-TEST(MVPWorkspace, AddImagePattern) {
+TEST(MVPWorkspace, add_image_pattern) {
   MVPWorkspace work("", "", PlateGeoReference(Datum("D_MOON")), MVPOperationDesc(), Vector2());
   work.add_image_pattern(SrcName("AS15-M-%04d.lev1.pinhole"), SrcName("dummy_image.%d.png"), Vector2i(73, 76));
 
@@ -43,7 +43,7 @@ TEST(MVPWorkspace, AddImagePattern) {
   EXPECT_VECTOR_NEAR(work.lonlat_work_area().max(), Vector2(179.133, -21.3673), 1e-3);
 }
 
-TEST(MVPWorkspace, WorkAreas) {
+TEST(MVPWorkspace, work_area) {
   MVPWorkspace work("", "", PlateGeoReference(Datum("D_MOON")), MVPOperationDesc(), Vector2());
   work.add_image_pattern(SrcName("AS15-M-%04d.lev1.pinhole"), SrcName("dummy_image.%d.png"), Vector2i(73, 76));
 
@@ -61,7 +61,7 @@ TEST(MVPWorkspace, WorkAreas) {
   EXPECT_VECTOR_EQ(work.tile_work_area(10).max(), Vector2i(1022, 591));
 }
 
-TEST(MVPWorkspace, ImagesAtTile) {
+TEST(MVPWorkspace, images_at_tile) {
   MVPWorkspace work("", "", PlateGeoReference(Datum("D_MOON")), MVPOperationDesc(), Vector2());
   work.add_image_pattern(SrcName("AS15-M-%04d.lev1.pinhole"), SrcName("dummy_image.%d.png"), Vector2i(73, 76));
 
@@ -80,7 +80,7 @@ TEST(MVPWorkspace, ImagesAtTile) {
   EXPECT_EQ(collect.size(), 1);
 }
 
-TEST(MVPWorkspace, AssembleJob) {
+TEST(MVPWorkspace, assemble_job) {
   MVPWorkspace work("result", "internal", PlateGeoReference(Datum("D_MOON")), MVPOperationDesc(), Vector2(-10, 10));
   work.add_image_pattern(SrcName("AS15-M-%04d.lev1.pinhole"), SrcName("dummy_image.%d.png"), Vector2i(73, 76));
 
