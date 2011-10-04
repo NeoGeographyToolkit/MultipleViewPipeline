@@ -16,7 +16,7 @@ macro(add_mvp_test test_name)
                                      ${VW_CARTOGRAPHY_LIBRARY}
                                      ${VW_CAMERA_LIBRARY})
   set_target_properties(${test_name} PROPERTIES COMPILE_FLAGS 
-                        "-DTEST_SRCDIR=\\\"${CMAKE_CURRENT_SOURCE_DIR}\\\" -DTEST_DSTDIR=\\\"${CMAKE_CURRENT_BINARY_DIR}\\\"")
+                        "-DTEST_SRCDIR=\\\"${CMAKE_CURRENT_SOURCE_DIR}\\\" -DTEST_OBJDIR=\\\"${CMAKE_CURRENT_BINARY_DIR}\\\"")
 
   add_test(AllMVPTests ${test_name})
 endmacro()

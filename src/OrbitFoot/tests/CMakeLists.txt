@@ -14,6 +14,6 @@ target_link_libraries(TestOrbitFoot ${GTEST_LIBRARIES}
                                     ${VW_CARTOGRAPHY_LIBRARY}
                                     ${VW_CAMERA_LIBRARY})
 set_target_properties(TestOrbitFoot PROPERTIES COMPILE_FLAGS 
-                      "-DTEST_SRCDIR=\\\"${CMAKE_CURRENT_SOURCE_DIR}\\\" -DTEST_DSTDIR=\\\"${CMAKE_CURRENT_BINARY_DIR}\\\"")
+                      "-DTEST_SRCDIR=\\\"${CMAKE_CURRENT_SOURCE_DIR}\\\" -DTEST_OBJDIR=\\\"${CMAKE_CURRENT_BINARY_DIR}\\\"")
 
 add_test(AllTestsInOrbitFoot TestOrbitFoot)
