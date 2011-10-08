@@ -20,5 +20,5 @@ macro(add_mvp_test test_name)
 endmacro()
 
 add_mvp_test(TestMVPWorkspace)
-add_mvp_test(TestOrbitalImage)
+add_mvp_test(TestOrbitalImageFile)
 

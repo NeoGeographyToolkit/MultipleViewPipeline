@@ -1,7 +1,7 @@
 package mvp;
 
 import "TileDescriptor.proto";
-import "OrbitalImageDesc.proto";
+import "OrbitalImageFileDesc.proto";
 import "MVPOperationDesc.proto";
 import "vw/Plate/PlateGeoReferenceDesc.proto";
 
@@ -13,5 +13,5 @@ message MVPJobRequest {
   required MVPOperationDesc operation = 5;
   required double post_height_limit_min = 6;
   required double post_height_limit_max = 7;
-  repeated OrbitalImageDesc orbital_images = 8;
+  repeated OrbitalImageFileDesc orbital_images = 8;
 }

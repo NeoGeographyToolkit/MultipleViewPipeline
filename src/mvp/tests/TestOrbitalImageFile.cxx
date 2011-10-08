@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <test/Helpers.h>
 
-#include "OrbitalImage.h"
+#include "OrbitalImageFile.h"
 
 #include <vw/Camera.h>
 #include <vw/FileIO.h>
@@ -62,21 +62,21 @@ TEST(HelperFunction, isec_poly) {
   EXPECT_FALSE(isect_poly(poly3, poly4));
 }
 
-TEST(OrbitalImageTest, build_desc) {
-  OrbitalImage orbimg(SrcName("AS15-M-0073.lev1.pinhole"), SrcName("dummy_image.73.png"), Vector2(1737400, 1737400));
+TEST(OrbitalImageFile, build_desc) {
+  OrbitalImageFile orbimg(SrcName("AS15-M-0073.lev1.pinhole"), SrcName("dummy_image.73.png"), Vector2(1737400, 1737400));
 
-  OrbitalImageDesc desc(orbimg.build_desc());
+  OrbitalImageFileDesc desc(orbimg.build_desc());
 
-  OrbitalImage orbimg2(desc);
+  OrbitalImageFile orbimg2(desc);
 
-  OrbitalImageDesc desc2(orbimg2.build_desc());
+  OrbitalImageFileDesc desc2(orbimg2.build_desc());
 
   EXPECT_EQ(desc.DebugString(), desc2.DebugString());
   EXPECT_NE(desc.DebugString(), "");
 }
 
-TEST(OrbitalImageTest, construct_footprint) {
-  vector<Vector2> fp(OrbitalImage::construct_footprint(PinholeModel(SrcName("AS15-M-0073.lev1.pinhole")), Vector2(5725, 5725), Vector2(1737400, 1737400)));
+TEST(OrbitalImageFile, construct_footprint) {
+  vector<Vector2> fp(OrbitalImageFile::construct_footprint(PinholeModel(SrcName("AS15-M-0073.lev1.pinhole")), Vector2(5725, 5725), Vector2(1737400, 1737400)));
 
   EXPECT_EQ(fp.size(), 4);
   EXPECT_VECTOR_NEAR(fp[0], Vector2(173.541,-21.7811), 1e-3);
@@ -85,8 +85,8 @@ TEST(OrbitalImageTest, construct_footprint) {
   EXPECT_VECTOR_NEAR(fp[3], Vector2(172.639,-26.9718), 1e-3);
 }
 
-TEST(OrbitalImageTest, footprint_bbox) {
-  OrbitalImage orbimg(SrcName("AS15-M-0073.lev1.pinhole"), SrcName("dummy_image.73.png"), Vector2(1737400, 1737400));
+TEST(OrbitalImageFile, footprint_bbox) {
+  OrbitalImageFile orbimg(SrcName("AS15-M-0073.lev1.pinhole"), SrcName("dummy_image.73.png"), Vector2(1737400, 1737400));
 
   BBox2 bbox(orbimg.footprint_bbox());
 
@@ -94,30 +94,30 @@ TEST(OrbitalImageTest, footprint_bbox) {
   EXPECT_VECTOR_NEAR(bbox.max(), Vector2(179.133, -21.7811), 1e-3);
 }
 
-TEST(OrbitalImageTest, set_radius_range) {
+TEST(OrbitalImageFile, set_radius_range) {
   Vector2 newrad(1736400, 1738400);
-  OrbitalImage orbimg(SrcName("AS15-M-0073.lev1.pinhole"), SrcName("dummy_image.73.png"), Vector2(1737400, 1737400));
-  OrbitalImage orbimg2(SrcName("AS15-M-0073.lev1.pinhole"), SrcName("dummy_image.73.png"), newrad);
+  OrbitalImageFile orbimg(SrcName("AS15-M-0073.lev1.pinhole"), SrcName("dummy_image.73.png"), Vector2(1737400, 1737400));
+  OrbitalImageFile orbimg2(SrcName("AS15-M-0073.lev1.pinhole"), SrcName("dummy_image.73.png"), newrad);
 
   orbimg.set_radius_range(newrad);
  
   EXPECT_EQ(orbimg.build_desc().DebugString(), orbimg2.build_desc().DebugString()); 
 }
 
-TEST(OrbitalImageTest, equal_resolution_level) {
-  OrbitalImage orbimg(SrcName("AS15-M-0073.lev1.pinhole"), SrcName("dummy_image.73.png"), Vector2(1737400, 1737400));
+TEST(OrbitalImageFile, equal_resolution_level) {
+  OrbitalImageFile orbimg(SrcName("AS15-M-0073.lev1.pinhole"), SrcName("dummy_image.73.png"), Vector2(1737400, 1737400));
 
   EXPECT_EQ(orbimg.equal_resolution_level(), 6);
 }
 
-TEST(OrbitalImageTest, equal_density_level) {
-  OrbitalImage orbimg(SrcName("AS15-M-0073.lev1.pinhole"), SrcName("dummy_image.73.png"), Vector2(1737400, 1737400));
+TEST(OrbitalImageFile, equal_density_level) {
+  OrbitalImageFile orbimg(SrcName("AS15-M-0073.lev1.pinhole"), SrcName("dummy_image.73.png"), Vector2(1737400, 1737400));
 
   EXPECT_EQ(orbimg.equal_density_level(), 11);
 }
 
-TEST(OrbitalImageTest, intersects) {
-  OrbitalImage orbimg(SrcName("AS15-M-0073.lev1.pinhole"), SrcName("dummy_image.73.png"), Vector2(1737400, 1737400));
+TEST(OrbitalImageFile, intersects) {
+  OrbitalImageFile orbimg(SrcName("AS15-M-0073.lev1.pinhole"), SrcName("dummy_image.73.png"), Vector2(1737400, 1737400));
 
   // Vector2(173.541,-21.7811)
   //           -----------------

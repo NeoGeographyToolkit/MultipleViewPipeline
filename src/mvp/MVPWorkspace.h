@@ -31,7 +31,7 @@
 
 #include "MVPOperationDesc.pb.h"
 #include "MVPJobRequest.pb.h"
-#include "OrbitalImage.h"
+#include "OrbitalImageFile.h"
 
 #include <vw/Cartography/GeoReference.h>
 #include <vw/Plate/PlateGeoReference.h>
@@ -48,7 +48,7 @@ class MVPWorkspace {
   vw::platefile::PlateGeoReference m_plate_georef;
   vw::Vector2 m_post_height_limits;
   MVPOperationDesc m_operation_desc;
-  OrbitalImageCollection m_images;
+  OrbitalImageFileCollection m_images;
 
   int m_equal_resolution_level, m_equal_density_level;
   vw::BBox2 m_lonlat_work_area;
@@ -70,7 +70,7 @@ class MVPWorkspace {
 
       vw::Vector2 radius_range = vw::Vector2(m_plate_georef.datum().radius(0, 0), m_plate_georef.datum().radius(0, 0)) + m_post_height_limits;
 
-      OrbitalImage image(camera_path, image_path, radius_range);
+      OrbitalImageFile image(camera_path, image_path, radius_range);
       m_images.push_back(image);
       m_equal_resolution_level = std::min(m_equal_resolution_level, image.equal_resolution_level());
       m_equal_density_level = std::max(m_equal_density_level, image.equal_density_level());
@@ -125,11 +125,11 @@ class MVPWorkspace {
     } 
 
     /// Return all the orbital images that overlap a given tile
-    OrbitalImageCollection images_at_tile(int col, int row, int level) const {
-      OrbitalImageCollection result;
+    OrbitalImageFileCollection images_at_tile(int col, int row, int level) const {
+      OrbitalImageFileCollection result;
       vw::BBox2 tile_lonlat_bbox(m_plate_georef.tile_lonlat_bbox(col, row, level));
 
-      BOOST_FOREACH(OrbitalImage o, m_images) {
+      BOOST_FOREACH(OrbitalImageFile o, m_images) {
         if (o.intersects(tile_lonlat_bbox)) {
           result.push_back(o);
         } 
@@ -153,7 +153,7 @@ class MVPWorkspace {
       request.set_post_height_limit_min(m_post_height_limits[0]);
       request.set_post_height_limit_max(m_post_height_limits[1]);
 
-      BOOST_FOREACH(OrbitalImage o, images_at_tile(col, row, level)) {
+      BOOST_FOREACH(OrbitalImageFile o, images_at_tile(col, row, level)) {
         *request.add_orbital_images() = o.build_desc();
       }
 

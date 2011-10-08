@@ -65,7 +65,7 @@ TEST(MVPWorkspace, images_at_tile) {
   MVPWorkspace work("", "", PlateGeoReference(Datum("D_MOON")), MVPOperationDesc(), Vector2());
   work.add_image_pattern(SrcName("AS15-M-%04d.lev1.pinhole"), SrcName("dummy_image.%d.png"), Vector2i(73, 76));
 
-  OrbitalImageCollection collect;
+  OrbitalImageFileCollection collect;
  
   collect = work.images_at_tile(0, 0, 0);
   EXPECT_EQ(collect.size(), 4);

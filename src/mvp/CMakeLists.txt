@@ -10,7 +10,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 set(_protobuf_include_path -I ${CMAKE_SOURCE_DIR}/thirdparty/vw_protobuf)
 
 PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS MVPJobRequest.proto
-                                            OrbitalImageDesc.proto
+                                            OrbitalImageFileDesc.proto
                                             MVPOperationDesc.proto
                                             TileDescriptor.proto)
 

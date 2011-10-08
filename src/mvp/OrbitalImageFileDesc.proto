@@ -1,6 +1,6 @@
 package mvp;
 
-message OrbitalImageDesc {
+message OrbitalImageFileDesc {
   required string camera_path = 1;
   required string image_path = 2;
   required int32 image_cols = 3;

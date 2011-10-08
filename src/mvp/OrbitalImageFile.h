@@ -1,15 +1,15 @@
 /// \file OrbitalImage.h
 ///
-/// Orbital Image class
+/// Orbital Image Class class
 ///
-/// The OrbitalImage class represents a single orbital image and its camera
-/// model. Also, it can determine if the footprint of the orbital image
-/// intersects a given lonlat BBox using the intersects() function.
+/// The OrbitalImageFile class represents a single orbital image and its camera
+/// model saved on disk. Also, it can determine if the footprint of the orbital 
+/// image intersects a given lonlat BBox using the intersects() function.
 
-#ifndef __ORBITALIMAGE_H__
-#define __ORBITALIMAGE_H__
+#ifndef __ORBITALIMAGEFILE_H__
+#define __ORBITALIMAGEFILE_H__
 
-#include "OrbitalImageDesc.pb.h"
+#include "OrbitalImageFileDesc.pb.h"
 
 #include <vw/Cartography/Datum.h>
 #include <vw/Cartography/SimplePointImageManipulation.h>
@@ -76,7 +76,7 @@ bool isect_poly(std::vector<vw::Vector2> poly1, std::vector<vw::Vector2> poly2)
   return true;  
 }
 
-class OrbitalImage
+class OrbitalImageFile
 {
   std::string m_camera_path, m_image_path;
   vw::Vector2i m_image_size;
@@ -85,7 +85,7 @@ class OrbitalImage
 
   public:
 
-    OrbitalImage(std::string const& camera_path, std::string const& image_path, vw::Vector2 const& radius_range) :
+    OrbitalImageFile(std::string const& camera_path, std::string const& image_path, vw::Vector2 const& radius_range) :
       m_camera_path(camera_path), m_image_path(image_path), m_radius_range(radius_range)
     {
       boost::scoped_ptr<vw::DiskImageResource> rsrc(vw::DiskImageResource::open(image_path));
@@ -95,15 +95,15 @@ class OrbitalImage
       m_footprint = construct_footprint(m_camera_path, m_image_size, radius_range);
     }
 
-    OrbitalImage(std::string const& camera_path, vw::Vector2i const& image_size, vw::Vector2 const& radius_range) :
+    OrbitalImageFile(std::string const& camera_path, vw::Vector2i const& image_size, vw::Vector2 const& radius_range) :
       m_camera_path(camera_path), m_image_path("None"), m_image_size(image_size), m_radius_range(radius_range)
 
     {
       m_footprint = construct_footprint(m_camera_path, m_image_size, radius_range);
     }
 
-    /// Construct an OrbitalImage from a OrbitalImageDesc
-    OrbitalImage(OrbitalImageDesc const& desc) :
+    /// Construct an OrbitalImageFile from a OrbitalImageFileDesc
+    OrbitalImageFile(OrbitalImageFileDesc const& desc) :
       m_camera_path(desc.camera_path()), m_image_path(desc.image_path()), 
       m_image_size(vw::Vector2i(desc.image_cols(), desc.image_rows())),
       m_radius_range(vw::Vector2(desc.radius_min(), desc.radius_max()))
@@ -111,14 +111,15 @@ class OrbitalImage
       VW_ASSERT(desc.footprint_lons_size() == desc.footprint_lats_size(), 
                 vw::InputErr() << "Malformed footprint record");
 
+      // TODO: Don't store footprint in protobuf?
       for (int i = 0; i < desc.footprint_lons_size(); i++) {
         m_footprint.push_back(vw::Vector2(desc.footprint_lons(i), desc.footprint_lats(i)));
       }
     }
 
-    /// Create a OrbitalImageDesc that represents this OrbitalImage
-    OrbitalImageDesc build_desc() const {
-      OrbitalImageDesc desc;
+    /// Create a OrbitalImageFileDesc that represents this OrbitalImageFile
+    OrbitalImageFileDesc build_desc() const {
+      OrbitalImageFileDesc desc;
       desc.set_camera_path(m_camera_path);
       desc.set_image_path(m_image_path);
       desc.set_image_cols(m_image_size.x());
@@ -212,7 +213,7 @@ class OrbitalImage
 
 };
 
-typedef std::vector<OrbitalImage> OrbitalImageCollection;
+typedef std::vector<OrbitalImageFile> OrbitalImageFileCollection;
 
 } // namespace mvp
 
