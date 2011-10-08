@@ -11,7 +11,7 @@ set(_protobuf_include_path -I ${CMAKE_SOURCE_DIR}/thirdparty/vw_protobuf)
 
 PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS MVPJobRequest.proto
                                             OrbitalImageFileDesc.proto
-                                            MVPOperationDesc.proto
+                                            MVPAlgorithmDesc.proto
                                             TileDescriptor.proto)
 
 

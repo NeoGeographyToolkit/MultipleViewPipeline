@@ -29,7 +29,7 @@
 #ifndef __MVPWORKSPACE_H__
 #define __MVPWORKSPACE_H__
 
-#include "MVPOperationDesc.pb.h"
+#include "MVPAlgorithmDesc.pb.h"
 #include "MVPJobRequest.pb.h"
 #include "OrbitalImageFile.h"
 
@@ -47,7 +47,7 @@ class MVPWorkspace {
   std::string m_result_platefile, m_internal_result_platefile;
   vw::platefile::PlateGeoReference m_plate_georef;
   vw::Vector2 m_post_height_limits;
-  MVPOperationDesc m_operation_desc;
+  MVPAlgorithmDesc m_operation_desc;
   OrbitalImageFileCollection m_images;
 
   int m_equal_resolution_level, m_equal_density_level;
@@ -56,7 +56,7 @@ class MVPWorkspace {
   public:
     MVPWorkspace(std::string const& result_platefile, std::string const& internal_result_platefile,
                  vw::platefile::PlateGeoReference const& plate_georef, 
-                 MVPOperationDesc const& operation_desc, vw::Vector2 const& post_height_limits) :
+                 MVPAlgorithmDesc const& operation_desc, vw::Vector2 const& post_height_limits) :
       m_result_platefile(result_platefile), m_internal_result_platefile(internal_result_platefile),
       m_plate_georef(plate_georef), m_operation_desc(operation_desc),
       m_post_height_limits(post_height_limits), m_images(),
