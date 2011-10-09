@@ -13,24 +13,18 @@ set(GTEST_ROOT ${CMAKE_SOURCE_DIR}/thirdparty/gtest/build)
 # ldd on them...
 set(Boost_USE_MULTITHREADED OFF)
 
-find_package(Octave)
-
-if (OCTAVE_FOUND)
-  option(BUILD_OCTAVEVW "Build the octave->vw bridge" ON)
-else()
-  option(BUILD_OCTAVEVW "Build the octave->vw bridge" OFF)
-endif()
-
-option(BUILD_TOOLS "Build the tools module" ON)
-
-option(BUILD_ORBITFOOT "Build the orbitfoot utility" ON)
-
 option(BUILD_TESTS "Build tests" OFF)
+
+find_package(Octave)
+if (OCTAVE_FOUND)
+  option(BUILD_VWOCTAVE "Build with octave support" ON)
+else()
+  option(BUILD_VWOCTAVE "Build with octave support" OFF)
+endif()
 
 if (BUILD_TESTS)
   enable_testing()
 endif()
-
 
 include_directories(${CMAKE_SOURCE_DIR}/src)
 include_directories(${CMAKE_BINARY_DIR}/src)
