@@ -4,8 +4,8 @@
 ///
 /// TODO: Write something here
 
-#ifndef __MVPALGORITHM_H__
-#define __MVPALGORITHM_H__
+#ifndef __MVP_MVPALGORITHM_H__
+#define __MVP_MVPALGORITHM_H__
 
 namespace mvp {
 

@@ -6,8 +6,8 @@
 /// model saved on disk. Also, it can determine if the footprint of the orbital 
 /// image intersects a given lonlat BBox using the intersects() function.
 
-#ifndef __ORBITALIMAGEFILE_H__
-#define __ORBITALIMAGEFILE_H__
+#ifndef __MVP_ORBITALIMAGEFILE_H__
+#define __MVP_ORBITALIMAGEFILE_H__
 
 #include <mvp/OrbitalImageFileDesc.pb.h>
 

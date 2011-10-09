@@ -26,8 +26,8 @@
 /// BBox of an entire level in this system will be (0, 0) to (2^level, 2^level)
 ///
 
-#ifndef __MVPWORKSPACE_H__
-#define __MVPWORKSPACE_H__
+#ifndef __MVP_MVPWORKSPACE_H__
+#define __MVP_MVPWORKSPACE_H__
 
 #include <mvp/MVPAlgorithmSettings.pb.h>
 #include <mvp/MVPJobRequest.pb.h>

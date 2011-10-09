@@ -5,8 +5,8 @@
 /// TODO: write something here
 ///
 
-#ifndef __MVPTILEPROCESSOR_H__
-#define __MVPTILEPROCESSOR_H__
+#ifndef __MVP_MVPTILEPROCESSOR_H__
+#define __MVP_MVPTILEPROCESSOR_H__
 
 #include <mvp/MVPJobRequest.pb.h>
 #include <mvp/OrbitalImage.h>
