@@ -7,9 +7,11 @@
 % settings.fix_orientation
 % settings.fix_windows
 
-% (0, 0) for the georef is the center of the patch
 
-% octave cameras have (1, 1) as the upper left pixel
+% all octave images have 1,1 as upper left pixel.
+% Note for cameras and georefs
+
+% so (1, 1) for the georef is the center of the patch
 
 % images.camera
 % images.data
@@ -17,8 +19,11 @@
 % OrbitalImage vs OrbitalImageFile
 % OrbitalImageFileDesc
 
+% Descriptions can encapsulate entire objects
+% Settings are settings
+
 function result = mvpalgorithm(seed, georef, images, settings)
-  lonlat_h = georef * [0; 0; 1];
+  lonlat_h = georef * [1; 1; 1];
   lonlat = lonlat_h(1:2) / lonlat_h(3);
  
   xyz = seed.height * lonlat2normal(lonlat);
