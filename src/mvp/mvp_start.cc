@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include <MVPJobRequest.pb.h>
+#include <mvp/MVPJobRequest.pb.h>
 
 int main(int argc, char* argv[])
 {

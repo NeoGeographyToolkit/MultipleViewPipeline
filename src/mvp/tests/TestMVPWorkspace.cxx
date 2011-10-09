@@ -1,7 +1,6 @@
 #include <gtest/gtest.h>
 #include <test/Helpers.h>
-
-#include "MVPWorkspace.h"
+#include <mvp/MVPWorkspace.h>
 
 using namespace std;
 using namespace vw;

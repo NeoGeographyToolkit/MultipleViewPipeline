@@ -1,10 +1,12 @@
+include_directories(${CMAKE_SOURCE_DIR}/src)
+
 # Find VW packages
 find_package(VW REQUIRED COMPONENTS Cartography Camera Plate)
 include_directories(${VW_INCLUDE_DIRS})
 
 find_package(Protobuf REQUIRED)
 include_directories(${PROTOBUF_INCLUDE_DIRS})
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
+include_directories(${CMAKE_BINARY_DIR}/src)
 
 # Hack to include VW's proto files
 set(_protobuf_include_path -I ${CMAKE_SOURCE_DIR}/thirdparty/vw_protobuf)

@@ -9,7 +9,7 @@
 #ifndef __ORBITALIMAGEFILE_H__
 #define __ORBITALIMAGEFILE_H__
 
-#include "OrbitalImageFileDesc.pb.h"
+#include <mvp/OrbitalImageFileDesc.pb.h>
 
 #include <vw/Cartography/Datum.h>
 #include <vw/Cartography/SimplePointImageManipulation.h>

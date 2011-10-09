@@ -8,8 +8,8 @@
 #ifndef __MVPTILEPROCESSOR_H__
 #define __MVPTILEPROCESSOR_H__
 
-#include "MVPJobRequest.pb.h"
-#include "OrbitalImage.h"
+#include <mvp/MVPJobRequest.pb.h>
+#include <mvp/OrbitalImage.h>
 
 #include <vw/Plate/PlateGeoReference.h>
 

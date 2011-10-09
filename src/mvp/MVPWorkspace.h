@@ -29,9 +29,9 @@
 #ifndef __MVPWORKSPACE_H__
 #define __MVPWORKSPACE_H__
 
-#include "MVPAlgorithmSettings.pb.h"
-#include "MVPJobRequest.pb.h"
-#include "OrbitalImageFile.h"
+#include <mvp/MVPAlgorithmSettings.pb.h>
+#include <mvp/MVPJobRequest.pb.h>
+#include <mvp/OrbitalImageFile.h>
 
 #include <vw/Cartography/GeoReference.h>
 #include <vw/Plate/PlateGeoReference.h>

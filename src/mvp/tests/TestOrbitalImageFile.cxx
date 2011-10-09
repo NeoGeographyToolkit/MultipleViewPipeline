@@ -1,7 +1,6 @@
 #include <gtest/gtest.h>
 #include <test/Helpers.h>
-
-#include "OrbitalImageFile.h"
+#include <mvp/OrbitalImageFile.h>
 
 #include <vw/Camera.h>
 #include <vw/FileIO.h>
