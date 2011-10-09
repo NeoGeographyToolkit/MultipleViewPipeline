@@ -1,5 +1,5 @@
 package mvp;
 
-message MVPAlgorithmDesc {
+message MVPAlgorithmSettings {
   required string name = 1;
 }

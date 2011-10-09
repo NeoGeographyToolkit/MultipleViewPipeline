@@ -15,19 +15,6 @@
 
 namespace mvp {
 
-struct MVPAlgorithmVar {
-  vw::float32 height;
-  vw::float32 variance;
-
-  vw::Vector3f orientation;
-  vw::Vector3f windows;
-
-  MVPAlgorithmVar(vw::float32 h, vw::float32 v, vw::Vector3f o, vw::Vector3f w) :
-    height(h), variance(v), orientation(o), windows(w) {}
-  
-  // to_octave()
-};
-
 class MVPTileProcessor {
   vw::cartography::GeoReference m_georef;
   int m_tile_size;

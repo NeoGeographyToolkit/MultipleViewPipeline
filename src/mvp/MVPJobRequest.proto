@@ -2,7 +2,7 @@ package mvp;
 
 import "TileDescriptor.proto";
 import "OrbitalImageFileDesc.proto";
-import "MVPAlgorithmDesc.proto";
+import "MVPAlgorithmSettings.proto";
 import "vw/Plate/PlateGeoReferenceDesc.proto";
 
 message MVPJobRequest {
@@ -10,7 +10,7 @@ message MVPJobRequest {
   required string result_platefile = 2;
   required string internal_result_platefile = 3;
   required vw.platefile.PlateGeoReferenceDesc plate_georef = 4;
-  required MVPAlgorithmDesc operation = 5;
+  required MVPAlgorithmSettings algorithm_settings = 5;
   required double post_height_limit_min = 6;
   required double post_height_limit_max = 7;
   repeated OrbitalImageFileDesc orbital_images = 8;

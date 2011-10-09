@@ -29,7 +29,7 @@
 #ifndef __MVPWORKSPACE_H__
 #define __MVPWORKSPACE_H__
 
-#include "MVPAlgorithmDesc.pb.h"
+#include "MVPAlgorithmSettings.pb.h"
 #include "MVPJobRequest.pb.h"
 #include "OrbitalImageFile.h"
 
@@ -47,7 +47,7 @@ class MVPWorkspace {
   std::string m_result_platefile, m_internal_result_platefile;
   vw::platefile::PlateGeoReference m_plate_georef;
   vw::Vector2 m_post_height_limits;
-  MVPAlgorithmDesc m_operation_desc;
+  MVPAlgorithmSettings m_algorithm_settings;
   OrbitalImageFileCollection m_images;
 
   int m_equal_resolution_level, m_equal_density_level;
@@ -56,9 +56,9 @@ class MVPWorkspace {
   public:
     MVPWorkspace(std::string const& result_platefile, std::string const& internal_result_platefile,
                  vw::platefile::PlateGeoReference const& plate_georef, 
-                 MVPAlgorithmDesc const& operation_desc, vw::Vector2 const& post_height_limits) :
+                 MVPAlgorithmSettings const& algorithm_settings, vw::Vector2 const& post_height_limits) :
       m_result_platefile(result_platefile), m_internal_result_platefile(internal_result_platefile),
-      m_plate_georef(plate_georef), m_operation_desc(operation_desc),
+      m_plate_georef(plate_georef), m_algorithm_settings(algorithm_settings),
       m_post_height_limits(post_height_limits), m_images(),
       m_equal_resolution_level(std::numeric_limits<int>::max()), m_equal_density_level(0), m_lonlat_work_area() {}
 
@@ -149,7 +149,7 @@ class MVPWorkspace {
       request.set_result_platefile(m_result_platefile);
       request.set_internal_result_platefile(m_internal_result_platefile);
       *request.mutable_plate_georef() = m_plate_georef.build_desc();
-      *request.mutable_operation() = m_operation_desc;
+      *request.mutable_algorithm_settings() = m_algorithm_settings;
       request.set_post_height_limit_min(m_post_height_limits[0]);
       request.set_post_height_limit_max(m_post_height_limits[1]);
 
