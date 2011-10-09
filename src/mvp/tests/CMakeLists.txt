@@ -1,10 +1,5 @@
-include_directories(${CMAKE_SOURCE_DIR}/src)
-
 find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIRS})
-
-find_package(VW REQUIRED COMPONENTS Cartography Camera Plate)
-include_directories(${VW_INCLUDE_DIRS})
 
 macro(add_mvp_test test_name)
   add_executable(${test_name} ${test_name}.cxx 
@@ -20,4 +15,3 @@ endmacro()
 
 add_mvp_test(TestMVPWorkspace)
 add_mvp_test(TestOrbitalImageFile)
-

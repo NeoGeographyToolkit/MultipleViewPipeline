@@ -1,5 +1,3 @@
-include_directories(${CMAKE_SOURCE_DIR}/src)
-
 # Find VW packages
 find_package(VW REQUIRED COMPONENTS Cartography Camera)
 include_directories(${VW_INCLUDE_DIRS})
