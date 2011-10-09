@@ -1,7 +1,3 @@
-if (BUILD_OCTAVEVW)
-  add_subdirectory(OctaveVW)
-endif()
-
 if (BUILD_TOOLS)
   add_subdirectory(Tools)
 endif()
@@ -11,3 +7,4 @@ if (BUILD_ORBITFOOT)
 endif()
 
 add_subdirectory(mvp)
+add_subdirectory(vwoctave)
