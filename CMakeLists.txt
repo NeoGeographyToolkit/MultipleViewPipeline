@@ -33,19 +33,19 @@ else()
   option(ENABLE_OCTAVE_SUPPORT "Build the MVP with octave support" OFF)
 endif()
 
-# If MFILE_INSTALL_PREFIX, OCTFILE_INSTALL_PREFIX
+# If MFILE_INSTALL_DIR, OCTFILE_INSTALL_DIR
 if (ENABLE_OCTAVE_SUPPORT)
-  set(MFILE_INSTALL_PREFIX ${OCTAVE_MFILE_DIR} CACHE PATH "Install prefix for octave m-files")
-  set(OCTFILE_INSTALL_PREFIX ${OCTAVE_OCTFILE_DIR} CACHE PATH "Install prefix for octive oct-files")
+  set(MFILE_INSTALL_DIR ${OCTAVE_MFILE_DIR}/mvp CACHE PATH "Install prefix for octave m-files")
+  set(OCTFILE_INSTALL_DIR ${OCTAVE_OCTFILE_DIR} CACHE PATH "Install prefix for octive oct-files")
 
-  mark_as_advanced(CLEAR FORCE MFILE_INSTALL_PREFIX
-                               OCTFILE_INSTALL_PREFIX)
+  mark_as_advanced(CLEAR FORCE MFILE_INSTALL_DIR
+                               OCTFILE_INSTALL_DIR)
 else()
-  set(MFILE_INSTALL_PREFIX "NOTFOUND" CACHE PATH "Install prefix for octave m-files")
-  set(OCTFILE_INSTALL_PREFIX "NOTFOUND" CACHE PATH "Install prefix for octave oct-files")
+  set(MFILE_INSTALL_DIR "NOTFOUND" CACHE PATH "Install prefix for octave m-files")
+  set(OCTFILE_INSTALL_DIR "NOTFOUND" CACHE PATH "Install prefix for octave oct-files")
 
-  mark_as_advanced(FORCE MFILE_INSTALL_PREFIX
-                         OCTFILE_INSTALL_PREFIX)
+  mark_as_advanced(FORCE MFILE_INSTALL_DIR
+                         OCTFILE_INSTALL_DIR)
 endif()
 
 # Force settings if BINARY_DIR_INSTALL, otherwise make them available
@@ -53,19 +53,19 @@ if (BINARY_DIR_INSTALL)
   set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR} CACHE PATH "Install prefix" FORCE)
 
   if (ENABLE_OCTAVE_SUPPORT)
-    set(MFILE_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX}/share/mvp/m CACHE PATH "Install prefix for octave m-files" FORCE)
-    set(OCTFILE_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX}/share/mvp/oct CACHE PATH "Install prefix for octave oct-files" FORCE)
+    set(MFILE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/share/mvp/m CACHE PATH "Install prefix for octave m-files" FORCE)
+    set(OCTFILE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/share/mvp/oct CACHE PATH "Install prefix for octave oct-files" FORCE)
   endif()
 
   mark_as_advanced(FORCE CMAKE_INSTALL_PREFIX
-                         MFILE_INSTALL_PREFIX
-                         OCTFILE_INSTALL_PREFIX)
+                         MFILE_INSTALL_DIR
+                         OCTFILE_INSTALL_DIR)
 else()
   mark_as_advanced(CLEAR FORCE CMAKE_INSTALL_PREFIX)
 
   if (ENABLE_OCTAVE_SUPPORT)
-    mark_as_advanced(CLEAR FORCE MFILE_INSTALL_PREFIX
-                                 OCTFILE_INSTALL_PREFIX)
+    mark_as_advanced(CLEAR FORCE MFILE_INSTALL_DIR
+                                 OCTFILE_INSTALL_DIR)
   endif()
 endif()
 

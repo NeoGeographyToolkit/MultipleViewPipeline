@@ -7,7 +7,7 @@ target_link_libraries(loadcam_vw ${VW_LIBRARIES})
 
 install(TARGETS imread_vw
                 loadcam_vw
-                DESTINATION ${OCTFILE_INSTALL_PREFIX})
+                DESTINATION ${OCTFILE_INSTALL_DIR})
 install(FILES Conversions.h DESTINATION include/vw/Octave)
 
 if (BUILD_TESTS)
