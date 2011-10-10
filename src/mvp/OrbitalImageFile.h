@@ -1,6 +1,6 @@
-/// \file OrbitalImage.h
+/// \file OrbitalImageFile.h
 ///
-/// Orbital Image Class class
+/// Orbital Image File Class class
 ///
 /// The OrbitalImageFile class represents a single orbital image and its camera
 /// model saved on disk. Also, it can determine if the footprint of the orbital 
