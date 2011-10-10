@@ -2,4 +2,6 @@ package mvp;
 
 message MVPAlgorithmSettings {
   required string name = 1;
+  required double post_height_limit_min = 2;
+  required double post_height_limit_max = 3;
 }

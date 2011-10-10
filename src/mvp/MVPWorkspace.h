@@ -46,7 +46,6 @@ namespace mvp {
 class MVPWorkspace {
   std::string m_result_platefile, m_internal_result_platefile;
   vw::platefile::PlateGeoReference m_plate_georef;
-  vw::Vector2 m_post_height_limits;
   MVPAlgorithmSettings m_algorithm_settings;
   OrbitalImageFileCollection m_images;
 
@@ -56,10 +55,9 @@ class MVPWorkspace {
   public:
     MVPWorkspace(std::string const& result_platefile, std::string const& internal_result_platefile,
                  vw::platefile::PlateGeoReference const& plate_georef, 
-                 MVPAlgorithmSettings const& algorithm_settings, vw::Vector2 const& post_height_limits) :
+                 MVPAlgorithmSettings const& algorithm_settings) :
       m_result_platefile(result_platefile), m_internal_result_platefile(internal_result_platefile),
-      m_plate_georef(plate_georef), m_algorithm_settings(algorithm_settings),
-      m_post_height_limits(post_height_limits), m_images(),
+      m_plate_georef(plate_georef), m_algorithm_settings(algorithm_settings), m_images(),
       m_equal_resolution_level(std::numeric_limits<int>::max()), m_equal_density_level(0), m_lonlat_work_area() {}
 
     /// Add an orbital image to the workspace
@@ -68,7 +66,8 @@ class MVPWorkspace {
       VW_ASSERT(m_plate_georef.datum().semi_major_axis() == m_plate_georef.datum().semi_minor_axis(),
         vw::ArgumentErr() << "Datum must be spheroid");
 
-      vw::Vector2 radius_range = vw::Vector2(m_plate_georef.datum().radius(0, 0), m_plate_georef.datum().radius(0, 0)) + m_post_height_limits;
+      vw::Vector2 post_height_limits(m_algorithm_settings.post_height_limit_min(), m_algorithm_settings.post_height_limit_max());
+      vw::Vector2 radius_range = vw::Vector2(m_plate_georef.datum().radius(0, 0), m_plate_georef.datum().radius(0, 0)) + post_height_limits;
 
       OrbitalImageFile image(camera_path, image_path, radius_range);
       m_images.push_back(image);
@@ -150,8 +149,6 @@ class MVPWorkspace {
       request.set_internal_result_platefile(m_internal_result_platefile);
       *request.mutable_plate_georef() = m_plate_georef.build_desc();
       *request.mutable_algorithm_settings() = m_algorithm_settings;
-      request.set_post_height_limit_min(m_post_height_limits[0]);
-      request.set_post_height_limit_max(m_post_height_limits[1]);
 
       BOOST_FOREACH(OrbitalImageFile o, images_at_tile(col, row, level)) {
         *request.add_orbital_images() = o.build_desc();
