@@ -39,13 +39,21 @@ if (OCTAVE_CONFIG_EXECUTABLE)
     OUTPUT_STRIP_TRAILING_WHITESPACE)
   set(OCTAVE_BINDIR "${_octave_bindir}")
 
-  # OCTAVE_OCTFILEDIR
+  # OCTAVE_MFILE_DIR
   execute_process(
-    COMMAND ${OCTAVE_CONFIG_EXECUTABLE} -p LOCALVEROCTFILEDIR
-    OUTPUT_VARIABLE _octave_config_localveroctfiledir
-    RESULT_VARIABLE _octave_config_failed
+    COMMAND ${OCTAVE_CONFIG_EXECUTABLE} -p FCNFILEDIR
+    OUTPUT_VARIABLE _octave_mfile_dir
+    RESULT_VARIABLE _mkoctfile_failed
     OUTPUT_STRIP_TRAILING_WHITESPACE)
-  set(OCTAVE_OCTFILEDIR "${_octave_config_localveroctfiledir}")
+  set(OCTAVE_MFILE_DIR "${_octave_mfile_dir}")
+
+  # OCTAVE_OCTFILE_DIR
+  execute_process(
+    COMMAND ${OCTAVE_CONFIG_EXECUTABLE} -p OCTFILEDIR
+    OUTPUT_VARIABLE _octave_octfiledir
+    RESULT_VARIABLE _mkoctfile_failed
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
+  set(OCTAVE_OCTFILE_DIR "${_octave_octfiledir}")
 
   # MKOCTFILE_EXECUTABLE
   set(MKOCTFILE_EXECUTABLE "${OCTAVE_BINDIR}/mkoctfile")

@@ -1,9 +1,3 @@
 add_subdirectory(mvp)
-
-if (BUILD_VWOCTAVE)
-  add_subdirectory(vwoctave)
-endif()
-
-if (BUILD_TOOLS)
-  add_subdirectory(tools)
-endif()
+add_subdirectory(vw)
+add_subdirectory(tools)
