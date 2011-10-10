@@ -17,16 +17,8 @@ set(Boost_USE_MULTITHREADED OFF)
 ### Find Packages
 ###
 find_package(VW REQUIRED COMPONENTS Cartography Camera Plate)
-include_directories(${VW_INCLUDE_DIRS})
-
 find_package(Protobuf REQUIRED)
-include_directories(${PROTOBUF_INCLUDE_DIRS})
-
 find_package(Octave)
-if (OCTAVE_FOUND)
-  include_directories(${OCTAVE_INCLUDE_DIRS})
-  link_directories(${OCTAVE_LIBRARY_DIRS})
-endif()
 
 ###
 ### Set Options
@@ -87,8 +79,16 @@ if (BUILD_TESTS)
 endif()
 
 ###
-### Add subdirs 
+### Add include paths and subdirs to build 
 ###
 include_directories(${CMAKE_SOURCE_DIR}/src)
 include_directories(${CMAKE_BINARY_DIR}/src)
+include_directories(${VW_INCLUDE_DIRS})
+include_directories(${PROTOBUF_INCLUDE_DIRS})
+
+if (ENABLE_OCTAVE_SUPPORT)
+  include_directories(${OCTAVE_INCLUDE_DIRS})
+  link_directories(${OCTAVE_LIBRARY_DIRS})
+endif()
+
 add_subdirectory(src)
