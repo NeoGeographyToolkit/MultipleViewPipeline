@@ -16,10 +16,11 @@ set(Boost_USE_MULTITHREADED OFF)
 option(BUILD_TESTS "Build tests" OFF)
 
 find_package(Octave)
+
 if (OCTAVE_FOUND)
-  option(BUILD_VWOCTAVE "Build with octave support" ON)
+  set(ENABLE_OCTAVE_SUPPORT ON CACHE BOOL "Build the MVP with octave support" FORCE)
 else()
-  option(BUILD_VWOCTAVE "Build with octave support" OFF)
+  set(ENABLE_OCTAVE_SUPPORT OFF CACHE BOOL "Build the MVP with octave support" FORCE)
 endif()
 
 if (BUILD_TESTS)

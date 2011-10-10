@@ -1,0 +1,13 @@
+/// \file MVPAlgorithm.h
+///
+/// Config.h
+///
+/// Holds configurations used when built
+///
+
+#ifndef __MVP_CONFIG_H__
+#define __MVP_CONFIG_H__
+
+#define MVP_MFILE_INSTALL_DIR @MFILE_INSTALL_DIR@
+
+#endif

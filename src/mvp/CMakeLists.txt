@@ -21,6 +21,22 @@ target_link_libraries(mvp_start mvp
                                 ${PROTOBUF_LIBRARIES}
                                 ${VW_LIBRARIES})
 
+set(MVP_HDRS MVPAlgorithm.h
+             MVPTileProcessor.h
+             MVPWorkspace.h
+             OrbitalImageFile.h
+             ${CMAKE_CURRENT_BINARY_DIR}/Config.h
+             ${PROTO_HDRS})
+
+set(MFILE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/share/mvp/octave)
+
+configure_file(Config.h.in Config.h)
+
+install(TARGETS mvp_start DESTINATION bin)
+install(FILES ${MVP_HDRS} DESTINATION include/mvp)
+
+add_subdirectory(octave)
+
 if (BUILD_TESTS)
   add_subdirectory(tests)
 endif()
