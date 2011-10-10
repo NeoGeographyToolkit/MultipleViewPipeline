@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 2.6)
-project (AMVP)
+project (MVP)
 
 include(CMakeDependentOption)
 
@@ -13,10 +13,28 @@ set(GTEST_ROOT ${CMAKE_SOURCE_DIR}/thirdparty/gtest/build)
 # ldd on them...
 set(Boost_USE_MULTITHREADED OFF)
 
+###
+### Find Packages
+###
+find_package(VW REQUIRED COMPONENTS Cartography Camera Plate)
+include_directories(${VW_INCLUDE_DIRS})
+
+find_package(Protobuf REQUIRED)
+include_directories(${PROTOBUF_INCLUDE_DIRS})
+
+find_package(Octave)
+if (OCTAVE_FOUND)
+  include_directories(${OCTAVE_INCLUDE_DIRS})
+  link_directories(${OCTAVE_LIBRARY_DIRS})
+endif()
+
+###
+### Set Options
+###
 option(BINARY_DIR_INSTALL "Install in the build directory" OFF)
+option(CMAKE_INSTALL_RPATH_USE_LINK_PATH "Use the link path as the rpath in the install" ON)
 
 # ENABLE_OCTAVE_SUPPORT
-find_package(Octave)
 if (OCTAVE_FOUND)
   option(ENABLE_OCTAVE_SUPPORT "Build the MVP with octave support" ON)
 else()
@@ -59,14 +77,18 @@ else()
   endif()
 endif()
 
-# Tests
+###
+### Testing
+###
 option(BUILD_TESTS "Build tests" OFF)
 
 if (BUILD_TESTS)
   enable_testing()
 endif()
 
-# Add subdirs 
+###
+### Add subdirs 
+###
 include_directories(${CMAKE_SOURCE_DIR}/src)
 include_directories(${CMAKE_BINARY_DIR}/src)
 add_subdirectory(src)

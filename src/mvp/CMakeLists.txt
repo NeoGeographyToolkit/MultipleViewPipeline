@@ -1,10 +1,3 @@
-# Find VW packages
-find_package(VW REQUIRED COMPONENTS Cartography Camera Plate)
-include_directories(${VW_INCLUDE_DIRS})
-
-find_package(Protobuf REQUIRED)
-include_directories(${PROTOBUF_INCLUDE_DIRS})
-
 # Hack to include VW's proto files
 set(_protobuf_include_path -I ${CMAKE_SOURCE_DIR}/thirdparty/vw_protobuf)
 
@@ -35,7 +28,9 @@ configure_file(Config.h.in Config.h)
 install(TARGETS mvp_start DESTINATION bin)
 install(FILES ${MVP_HDRS} DESTINATION include/mvp)
 
-add_subdirectory(octave)
+if (ENABLE_OCTAVE_SUPPORT)
+  add_subdirectory(octave)
+endif()
 
 if (BUILD_TESTS)
   add_subdirectory(tests)
