@@ -1,7 +1,6 @@
 #include <vwoctave/Conversions.h>
 
-DEFUN_DLD(loadcam_vw, args, ,
-         "Load a camera using VW")
+DEFUN_DLD(loadcam_vw, args, nargout, "Load a camera using VW")
 {
    octave_value_list retval;
 
@@ -16,7 +15,6 @@ DEFUN_DLD(loadcam_vw, args, ,
      error("Argument must be a filename");
      return retval;
    }
-
 
    std::string filename = args(0).string_value();
 
