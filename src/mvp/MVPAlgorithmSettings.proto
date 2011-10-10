@@ -1,7 +1,9 @@
 package mvp;
 
 message MVPAlgorithmSettings {
-  required string name = 1;
-  required double post_height_limit_min = 2;
-  required double post_height_limit_max = 3;
+  required double post_height_limit_min = 1;
+  required double post_height_limit_max = 2;
+
+  optional bool use_octave = 3;
+  optional string octave_function = 4;
 }
