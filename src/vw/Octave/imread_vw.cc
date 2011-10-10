@@ -1,4 +1,4 @@
-#include <vwoctave/Conversions.h>
+#include <vw/Octave/Conversions.h>
 
 DEFUN_DLD(imread_vw, args, nargout, "Load an image using VW")
 {

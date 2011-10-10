@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <test/Helpers.h>
 
-#include <vwoctave/Conversions.h>
+#include <vw/Octave/Conversions.h>
 #include <vw/Image/UtilityViews.h>
 
 #include <boost/random/linear_congruential.hpp>

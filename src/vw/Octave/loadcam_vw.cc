@@ -1,4 +1,4 @@
-#include <vwoctave/Conversions.h>
+#include <vw/Octave/Conversions.h>
 
 DEFUN_DLD(loadcam_vw, args, nargout, "Load a camera using VW")
 {
