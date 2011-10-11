@@ -7,6 +7,10 @@
 #ifndef __MVP_MVPALGORITHM_H__
 #define __MVP_MVPALGORITHM_H__
 
+#if MVP_ENABLE_OCTAVE_SUPPORT
+#include <vw/Octave/Conversions.h>
+#endif
+
 namespace mvp {
 
 struct MVPAlgorithmVar {
@@ -45,10 +49,10 @@ class MVPAlgorithmImplBase {
 };
 
 class MVPAlgorithmImpl : public MVPAlgorithmImplBase {
-  OrbitalImageCollection m_images;
+  OrbitalImageCropCollection m_images;
 
   public:
-    MVPAlgorithmImpl(MVPAlgorithmSettings const& settings, OrbitalImageCollection const& images) :
+    MVPAlgorithmImpl(MVPAlgorithmSettings const& settings, OrbitalImageCropCollection const& images) :
       MVPAlgorithmImplBase(settings), m_images(images) {}
 
     virtual const MVPAlgorithmResult do_algorithm(MVPAlgorithmVar const& seed, 
@@ -58,11 +62,12 @@ class MVPAlgorithmImpl : public MVPAlgorithmImplBase {
     }
 };
 
+#if MVP_ENABLE_OCTAVE_SUPPORT
 class MVPAlgorithmImplOctave : public MVPAlgorithmImplBase {
-  // Octave OrbitalImageCollection
+  // Octave OrbitalImageCropCollection
 
   public:
-    MVPAlgorithmImpl(MVPAlgorithmSettings const& settings, OrbitalImageCollection const& images) :
+    MVPAlgorithmImpl(MVPAlgorithmSettings const& settings, OrbitalImageCropCollection const& images) :
       MVPAlgorithmImplBase(settings) {}
 
     virtual const MVPAlgorithmResult do_algorithm(MVPAlgorithmVar const& seed, 
@@ -71,13 +76,22 @@ class MVPAlgorithmImplOctave : public MVPAlgorithmImplBase {
       return MVPAlgorithmResult(seed);
     }
 };
+#endif
 
 class MVPAlgorithm {
   boost::shared_ptr<MVPAlgorithmImplBase> m_impl;
 
   public:
-    MVPAlgorithm(MVPAlgorithmSettings const& settings, OrbitalImageCollection const& images) {
-      m_impl.reset(new MVPAlgorithmImpl(settings, images)); 
+    MVPAlgorithm(MVPAlgorithmSettings const& settings, OrbitalImageCropCollection const& images) {
+      if (settings.use_octave()) {
+        #if MVP_ENABLE_OCTAVE_SUPPORT
+          m_impl.reset(new MVPAlgorithmImplOctave(settings, images));
+        #else
+          vw::vw_throw(vw::NoImplErr() << "Cannot use octave algorithm, as the MVP was not compled with it!");
+        #endif
+      } else {
+        m_impl.reset(new MVPAlgorithmImpl(settings, images)); 
+      }
     }
 
     const MVPAlgorithmResult operator()(MVPAlgorithmVar const& seed, 
