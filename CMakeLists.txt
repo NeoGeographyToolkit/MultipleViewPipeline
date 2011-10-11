@@ -50,7 +50,7 @@ endif()
 
 # Force settings if BINARY_DIR_INSTALL, otherwise make them available
 if (BINARY_DIR_INSTALL)
-  set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR} CACHE PATH "Install prefix" FORCE)
+  set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/usr CACHE PATH "Install prefix" FORCE)
 
   if (ENABLE_OCTAVE_SUPPORT)
     set(MFILE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/share/mvp/m CACHE PATH "Install prefix for octave m-files" FORCE)
