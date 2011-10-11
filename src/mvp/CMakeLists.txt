@@ -21,8 +21,6 @@ set(MVP_HDRS MVPAlgorithm.h
              ${CMAKE_CURRENT_BINARY_DIR}/Config.h
              ${PROTO_HDRS})
 
-set(MFILE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/share/mvp/octave)
-
 configure_file(Config.h.in Config.h)
 
 install(TARGETS mvp_start DESTINATION bin)

@@ -1,6 +1,4 @@
-/// \file MVPAlgorithm.h
-///
-/// Config.h
+/// \file Config.h
 ///
 /// Holds configurations used when built
 ///
@@ -8,6 +6,15 @@
 #ifndef __MVP_CONFIG_H__
 #define __MVP_CONFIG_H__
 
-#define MVP_MFILE_INSTALL_DIR @MFILE_INSTALL_DIR@
+#define CMAKE_OPTION_ON 1
+#define CMAKE_OPTION_OFF 0
+
+#define MVP_ENABLE_OCTAVE_SUPPORT CMAKE_OPTION_@ENABLE_OCTAVE_SUPPORT@
+
+#if MVP_ENABLE_OCTAVE_SUPPORT
+  #define MVP_MFILE_INSTALL_DIR @MFILE_INSTALL_DIR@
+  #define MVP_OCTFILE_INSTALL_DIR @OCTFILE_INSTALL_DIR@
+  #define MVP_ALGORITHM_MFILE MVP_MFILE_INSTALL_DIR/mvpalgorithm.m
+#endif
 
 #endif
