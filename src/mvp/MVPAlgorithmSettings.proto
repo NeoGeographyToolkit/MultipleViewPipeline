@@ -5,5 +5,6 @@ message MVPAlgorithmSettings {
   required double post_height_limit_max = 2;
 
   optional bool use_octave = 3;
-  optional string octave_function = 4;
+  optional bool null_algorithm = 4;
+  optional string octave_function = 5;
 }

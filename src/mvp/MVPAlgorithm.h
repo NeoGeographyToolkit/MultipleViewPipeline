@@ -7,6 +7,12 @@
 #ifndef __MVP_MVPALGORITHM_H__
 #define __MVP_MVPALGORITHM_H__
 
+#include <vw/Cartography/GeoReference.h>
+#include <vw/Image/ImageView.h>
+
+#include <mvp/MVPAlgorithmSettings.pb.h>
+#include <mvp/OrbitalImageCrop.h>
+
 #if MVP_ENABLE_OCTAVE_SUPPORT
 #include <vw/Octave/Conversions.h>
 #endif
@@ -19,7 +25,7 @@ struct MVPAlgorithmVar {
   vw::Vector3f orientation;
   vw::Vector3f windows;
 
-  MVPAlgorithmVar(vw::float32 h, vw::Vector3f const& o, vw::Vector3f const& w) :
+  MVPAlgorithmVar(vw::float32 h = 0, vw::Vector3f const& o = vw::Vector3f(), vw::Vector3f const& w = vw::Vector3f()) :
     height(h), orientation(o), windows(w) {}
   
   // to_octave()
@@ -31,7 +37,7 @@ struct MVPAlgorithmResult {
   bool converged;
   int num_iterations_to_converge;
 
-  MVPAlgorithmResult(MVPAlgorithmVar r, vw::float32 v = 0f, bool c = true, int n = 0) :
+  MVPAlgorithmResult(MVPAlgorithmVar const& r = MVPAlgorithmVar(), vw::float32 v = 0f, bool c = true, int n = 0) :
     result(r), variance(v), converged(c), num_iterations_to_converge(n) {}
 
   // constructor from octave vars
@@ -62,12 +68,24 @@ class MVPAlgorithmImpl : public MVPAlgorithmImplBase {
     }
 };
 
+class MVPAlgorithmNullImpl : public MVPAlgorithmImplBase {
+  public:
+    MVPAlgorithmNullImpl(MVPAlgorithmSettings const& settings) :
+      MVPAlgorithmImplBase(settings) {}
+
+    virtual const MVPAlgorithmResult do_algorithm(MVPAlgorithmVar const& seed, 
+                                                  vw::cartography::GeoReference const& georef) const
+    {
+      return MVPAlgorithmResult();
+    }
+};
+
 #if MVP_ENABLE_OCTAVE_SUPPORT
-class MVPAlgorithmImplOctave : public MVPAlgorithmImplBase {
+class MVPAlgorithmOctaveImpl : public MVPAlgorithmImplBase {
   // Octave OrbitalImageCropCollection
 
   public:
-    MVPAlgorithmImpl(MVPAlgorithmSettings const& settings, OrbitalImageCropCollection const& images) :
+    MVPAlgorithmOctaveImpl(MVPAlgorithmSettings const& settings, OrbitalImageCropCollection const& images) :
       MVPAlgorithmImplBase(settings) {}
 
     virtual const MVPAlgorithmResult do_algorithm(MVPAlgorithmVar const& seed, 
@@ -85,12 +103,16 @@ class MVPAlgorithm {
     MVPAlgorithm(MVPAlgorithmSettings const& settings, OrbitalImageCropCollection const& images) {
       if (settings.use_octave()) {
         #if MVP_ENABLE_OCTAVE_SUPPORT
-          m_impl.reset(new MVPAlgorithmImplOctave(settings, images));
+          m_impl.reset(new MVPAlgorithmOctaveImpl(settings, images));
         #else
           vw::vw_throw(vw::NoImplErr() << "Cannot use octave algorithm, as the MVP was not compled with it!");
         #endif
       } else {
-        m_impl.reset(new MVPAlgorithmImpl(settings, images)); 
+        if (settings.null_algorithm()) {
+          m_impl.reset(new MVPAlgorithmNullImpl(settings));
+        } else {
+          m_impl.reset(new MVPAlgorithmImpl(settings, images));
+        }
       }
     }
 

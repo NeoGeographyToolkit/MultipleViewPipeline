@@ -7,7 +7,10 @@
 #ifndef __MVP_ORBITALIMAGECROP_H__
 #define __MVP_ORBITALIMAGECROP_H__
 
+#include <mvp/OrbitalImageFileDesc.pb.h>
+
 #include <vw/Image/ImageView.h>
+#include <vw/FileIO/DiskImageView.h>
 #include <vw/Camera/PinholeModel.h>
 
 #if MVP_ENABLE_OCTAVE_SUPPORT
@@ -20,10 +23,15 @@ class OrbitalImageCrop {
   vw::camera::PinholeModel m_camera;
   vw::ImageView<double> m_image;
 
+  void crop_image(OrbitalImageFileDesc const& desc, vw::BBox2 const& lonlat_bbox) {
+    // TODO: Create crops
+    m_camera = vw::camera::PinholeModel(desc.camera_path());
+    m_image = vw::DiskImageView<double>(desc.image_path());
+  }
+
   public:
-    OrbitalImageCrop(OrbitalImageFileDesc const& desc, vw::BBox2 const& lonlat_bbox) :
-      m_camera(desc.camera_path()), m_image(desc.image_path()) {
-      // TODO: Create crops instead
+    OrbitalImageCrop(OrbitalImageFileDesc const& desc, vw::BBox2 const& lonlat_bbox) {
+      crop_image(desc, lonlat_bbox);
     }
 
     vw::camera::PinholeModel camera() const {return m_camera;}

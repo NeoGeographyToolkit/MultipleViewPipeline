@@ -15,3 +15,4 @@ endmacro()
 
 add_mvp_test(TestMVPWorkspace)
 add_mvp_test(TestOrbitalImageFile)
+add_mvp_test(TestOrbitalImageCrop)
