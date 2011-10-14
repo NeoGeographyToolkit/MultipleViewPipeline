@@ -18,6 +18,28 @@
 
 namespace mvp {
 
+struct MVPTileResult {
+  vw::cartography::GeoReference georef;
+
+  vw::ImageView<vw::float32> post_height;
+  vw::ImageView<vw::float32> variance;
+
+  vw::ImageView<vw::Vector3f> orientation;
+  vw::ImageView<vw::Vector3f> windows;
+
+  MVPTileResult(int tile_size) : 
+    post_height(tile_size, tile_size), variance(tile_size, tile_size), 
+    orientation(tile_size, tile_size), windows(tile_size, tile_size) {}
+
+  void update(int col, int row, MVPAlgorithmResult const& px_result) {
+    post_height(col, row) = px_result.post_height;
+    variance(col, row) = px_result.variance;
+
+    orientation(col, row) = px_result.orientation;
+    windows(col, row) = px_result.windows;
+  }
+};
+
 class MVPTileProcessor {
   vw::cartography::GeoReference m_georef;
   int m_tile_size;
@@ -25,27 +47,6 @@ class MVPTileProcessor {
   MVPAlgorithm m_algorithm;
 
   public:
-    struct result_type {
-      vw::cartography::GeoReference georef;
-
-      vw::ImageView<vw::float32> post_height;
-      vw::ImageView<vw::float32> variance;
-
-      vw::ImageView<vw::Vector3f> orientation;
-      vw::ImageView<vw::Vector3f> windows;
-
-      result_type(int tile_size) : 
-        post_height(tile_size, tile_size), variance(tile_size, tile_size), 
-        orientation(tile_size, tile_size), windows(tile_size, tile_size) {}
-
-      void update(int col, int row, MVPAlgorithmResult const& px_result) {
-        post_height(col, row) = px_result.post_height;
-        variance(col, row) = px_result.variance;
-
-        orientation(col, row) = px_result.orientation;
-        windows(col, row) = px_result.windows;
-      }
-    };
 
     MVPTileProcessor(MVPJobRequest request) {
       int col = request.tile().col(), row = request.tile().row(), level = request.tile().level();
@@ -67,8 +68,8 @@ class MVPTileProcessor {
     void write_prob(std::string prob_filename)
     */
 
-    result_type process() {
-      result_type tile_result(m_tile_size);
+    MVPTileResult process() {
+      MVPTileResult tile_result(m_tile_size);
       MVPAlgorithmVar seed;
       for (int col = 0; col < m_tile_size; col++) {
         for (int row = 0; row < m_tile_size; row++) {

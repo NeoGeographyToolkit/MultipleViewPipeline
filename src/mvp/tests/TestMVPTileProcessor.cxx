@@ -23,7 +23,7 @@ TEST(MVPTileProcessor, process) {
 
   MVPTileProcessor proc(job);
 
-  MVPTileProcessor::result_type result = proc.process();
+  MVPTileResult result = proc.process();
 
   EXPECT_EQ(result.post_height(0, 0), 0);
 }
