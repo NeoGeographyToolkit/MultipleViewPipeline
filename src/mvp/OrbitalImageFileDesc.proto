@@ -7,6 +7,4 @@ message OrbitalImageFileDesc {
   required int32 image_rows = 4;
   required double radius_min = 5;
   required double radius_max = 6; 
-  repeated double footprint_lons = 7 [packed=true];
-  repeated double footprint_lats = 8 [packed=true];
 }

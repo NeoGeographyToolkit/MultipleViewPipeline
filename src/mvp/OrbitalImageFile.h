@@ -92,14 +92,7 @@ class OrbitalImageFile
       m_image_size.x() = rsrc->cols();
       m_image_size.y() = rsrc->rows();
 
-      m_footprint = construct_footprint(m_camera_path, m_image_size, radius_range);
-    }
-
-    OrbitalImageFile(std::string const& camera_path, vw::Vector2i const& image_size, vw::Vector2 const& radius_range) :
-      m_camera_path(camera_path), m_image_path("None"), m_image_size(image_size), m_radius_range(radius_range)
-
-    {
-      m_footprint = construct_footprint(m_camera_path, m_image_size, radius_range);
+      m_footprint = construct_footprint(m_camera_path, m_image_size, m_radius_range);
     }
 
     /// Construct an OrbitalImageFile from a OrbitalImageFileDesc
@@ -108,13 +101,7 @@ class OrbitalImageFile
       m_image_size(vw::Vector2i(desc.image_cols(), desc.image_rows())),
       m_radius_range(vw::Vector2(desc.radius_min(), desc.radius_max()))
     {
-      VW_ASSERT(desc.footprint_lons_size() == desc.footprint_lats_size(), 
-                vw::InputErr() << "Malformed footprint record");
-
-      // TODO: Don't store footprint in protobuf?
-      for (int i = 0; i < desc.footprint_lons_size(); i++) {
-        m_footprint.push_back(vw::Vector2(desc.footprint_lons(i), desc.footprint_lats(i)));
-      }
+      m_footprint = construct_footprint(m_camera_path, m_image_size, m_radius_range);
     }
 
     /// Create a OrbitalImageFileDesc that represents this OrbitalImageFile
@@ -127,11 +114,6 @@ class OrbitalImageFile
       desc.set_radius_min(m_radius_range[0]);
       desc.set_radius_max(m_radius_range[1]);
       
-      BOOST_FOREACH(vw::Vector2 vertex, m_footprint) {
-        desc.add_footprint_lons(vertex.x());
-        desc.add_footprint_lats(vertex.y());
-      }
-
       return desc;
     }
 
