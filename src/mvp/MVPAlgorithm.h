@@ -20,25 +20,24 @@
 namespace mvp {
 
 struct MVPAlgorithmVar {
-  vw::float32 height;
+  vw::float32 post_height;
 
   vw::Vector3f orientation;
   vw::Vector3f windows;
 
   MVPAlgorithmVar(vw::float32 h = 0, vw::Vector3f const& o = vw::Vector3f(), vw::Vector3f const& w = vw::Vector3f()) :
-    height(h), orientation(o), windows(w) {}
+    post_height(h), orientation(o), windows(w) {}
   
   // to_octave()
 };
 
-struct MVPAlgorithmResult {
-  MVPAlgorithmVar result;
+struct MVPAlgorithmResult : public MVPAlgorithmVar {
   vw::float32 variance;
   bool converged;
   int num_iterations_to_converge;
 
-  MVPAlgorithmResult(MVPAlgorithmVar const& r = MVPAlgorithmVar(), vw::float32 v = 0f, bool c = true, int n = 0) :
-    result(r), variance(v), converged(c), num_iterations_to_converge(n) {}
+  MVPAlgorithmResult(MVPAlgorithmVar const& mav = MVPAlgorithmVar(), vw::float32 v = 0, bool c = true, int n = 0) :
+    MVPAlgorithmVar(mav), variance(v), converged(c), num_iterations_to_converge(n) {}
 
   // constructor from octave vars
 };

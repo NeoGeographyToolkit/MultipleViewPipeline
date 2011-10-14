@@ -6,7 +6,6 @@ using namespace std;
 using namespace vw;
 using namespace vw::test;
 using namespace vw::cartography;
-using namespace vw::platefile;
 using namespace mvp;
 
 TEST(MVPAlgorithm, NullImpl) {
@@ -14,4 +13,15 @@ TEST(MVPAlgorithm, NullImpl) {
 
   settings.set_null_algorithm(true);
 
+  MVPAlgorithm algo(settings, OrbitalImageCropCollection());
+
+  MVPAlgorithmResult result = algo(MVPAlgorithmVar(), GeoReference());
+
+  EXPECT_EQ(result.post_height, 0);
+  EXPECT_VECTOR_EQ(result.orientation, Vector3f());
+  EXPECT_VECTOR_EQ(result.windows, Vector3f());
+
+  EXPECT_EQ(result.variance, 0);
+  EXPECT_TRUE(result.converged);
+  EXPECT_EQ(result.num_iterations_to_converge, 0);
 }
