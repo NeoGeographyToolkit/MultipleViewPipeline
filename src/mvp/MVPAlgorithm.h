@@ -69,8 +69,8 @@ class MVPAlgorithmImpl : public MVPAlgorithmImplBase {
 
 class MVPAlgorithmNullImpl : public MVPAlgorithmImplBase {
   public:
-    MVPAlgorithmNullImpl(MVPAlgorithmSettings const& settings) :
-      MVPAlgorithmImplBase(settings) {}
+    MVPAlgorithmNullImpl() :
+      MVPAlgorithmImplBase(MVPAlgorithmSettings()) {}
 
     virtual const MVPAlgorithmResult do_algorithm(MVPAlgorithmVar const& seed, 
                                                   vw::cartography::GeoReference const& georef) const
@@ -99,6 +99,7 @@ class MVPAlgorithm {
   boost::shared_ptr<MVPAlgorithmImplBase> m_impl;
 
   public:
+    MVPAlgorithm() : m_impl(new MVPAlgorithmNullImpl()) {}
     MVPAlgorithm(MVPAlgorithmSettings const& settings, OrbitalImageCropCollection const& images) {
       if (settings.use_octave()) {
         #if MVP_ENABLE_OCTAVE_SUPPORT
@@ -108,7 +109,7 @@ class MVPAlgorithm {
         #endif
       } else {
         if (settings.null_algorithm()) {
-          m_impl.reset(new MVPAlgorithmNullImpl(settings));
+          m_impl.reset(new MVPAlgorithmNullImpl());
         } else {
           m_impl.reset(new MVPAlgorithmImpl(settings, images));
         }

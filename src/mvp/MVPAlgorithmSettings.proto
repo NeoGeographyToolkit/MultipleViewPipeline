@@ -4,7 +4,7 @@ message MVPAlgorithmSettings {
   required double post_height_limit_min = 1;
   required double post_height_limit_max = 2;
 
-  optional bool use_octave = 3;
-  optional bool null_algorithm = 4;
+  optional bool use_octave = 3 [default=false];
+  optional bool null_algorithm = 4 [default=true];
   optional string octave_function = 5;
 }

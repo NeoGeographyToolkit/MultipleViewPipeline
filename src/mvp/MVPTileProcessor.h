@@ -9,7 +9,10 @@
 #define __MVP_MVPTILEPROCESSOR_H__
 
 #include <mvp/MVPJobRequest.pb.h>
-#include <mvp/OrbitalImage.h>
+
+#include <mvp/MVPAlgorithm.h>
+#include <mvp/OrbitalImageFile.h>
+#include <mvp/OrbitalImageCrop.h>
 
 #include <vw/Plate/PlateGeoReference.h>
 
@@ -18,34 +21,43 @@ namespace mvp {
 class MVPTileProcessor {
   vw::cartography::GeoReference m_georef;
   int m_tile_size;
-  vw::Vector2 post_height_limits;
+  OrbitalImageCropCollection m_orbital_images;
   MVPAlgorithm m_algorithm;
-
-  // Store cameras and images as octave types too
-  std::vector<vw::camera::PinholeModel> m_cameras;
-  std::vector<vw::ImageView<vw::float32> > m_images;
-  // TODO: Include seeds
 
   public:
     struct result_type {
-      ImageView<vw::float32> posts;
-      ImageView<vw::float32> variance;
+      vw::cartography::GeoReference georef;
 
-      ImageView<vw::Vector3f> orientation;
-      ImageView<vw::Vector3f> windows;
+      vw::ImageView<vw::float32> post_height;
+      vw::ImageView<vw::float32> variance;
+
+      vw::ImageView<vw::Vector3f> orientation;
+      vw::ImageView<vw::Vector3f> windows;
 
       result_type(int tile_size) : 
-        posts(tile_size), variance(tile_size), orientation(tile_size), windows(tile_size) {}
+        post_height(tile_size, tile_size), variance(tile_size, tile_size), 
+        orientation(tile_size, tile_size), windows(tile_size, tile_size) {}
+
+      void update(int col, int row, MVPAlgorithmResult const& px_result) {
+        post_height(col, row) = px_result.post_height;
+        variance(col, row) = px_result.variance;
+
+        orientation(col, row) = px_result.orientation;
+        windows(col, row) = px_result.windows;
+      }
     };
 
-    MVPTileProcessor(vw::cartography::GeoReference georef, int tile_size, MVPAlgorithm algorithm, 
-                     std::vector<vw::camera::PinholeModel> cameras, std::vector<vw::ImageView<vw::float32> > images) :
-      m_georef(georef), m_tile_size(tile_size), m_algorithm(algorithm), m_images(images), m_cameras(cameras) {}
-
     MVPTileProcessor(MVPJobRequest request) {
+      int col = request.tile().col(), row = request.tile().row(), level = request.tile().level();
+      vw::platefile::PlateGeoReference plate_georef(request.plate_georef());
+      m_georef = plate_georef.tile_georef(col, row, level);
+      m_tile_size = plate_georef.tile_size();
 
-      // TODO: Actually crop the images and camera files!
+      BOOST_FOREACH(OrbitalImageFileDesc const& o, request.orbital_images()) {
+        m_orbital_images.push_back(OrbitalImageCrop(o, plate_georef.tile_lonlat_bbox(col, row, level)));
+      }
 
+      m_algorithm = MVPAlgorithm(request.algorithm_settings(), m_orbital_images); 
     }
 
     /* // Load from problem file
@@ -55,10 +67,16 @@ class MVPTileProcessor {
     void write_prob(std::string prob_filename)
     */
 
-    MVPTileResult process() {
-      // TODO: some sort of seed propigation scheme...
-
-
+    result_type process() {
+      result_type tile_result(m_tile_size);
+      MVPAlgorithmVar seed;
+      for (int col = 0; col < m_tile_size; col++) {
+        for (int row = 0; row < m_tile_size; row++) {
+          MVPAlgorithmResult px_result = m_algorithm(seed, m_georef);
+          tile_result.update(col, row, px_result);
+        }
+      }
+      return tile_result;
     }
 };
 
