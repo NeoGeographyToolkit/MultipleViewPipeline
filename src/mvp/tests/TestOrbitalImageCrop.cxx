@@ -9,15 +9,15 @@ using namespace vw;
 using namespace vw::test;
 using namespace mvp;
 
-TEST(OrbtialImageCrop, constructors) {
-  string camera_file(SrcName("AS15-M-0073.lev1.pinhole"));
-  string image_file(SrcName("dummy_image.73.png"));
+TEST(OrbtialImageCrop, crop) {
+  // TODO: Actually test the cropping ability
+  string camera_file(SrcName("synth.0.pinhole"));
+  string image_file(SrcName("synth.0.tif"));
 
   OrbitalImageFile orbitalimagefile(camera_file, image_file, Vector2(1737400, 1737400));
 
-  OrbitalImageCrop imgcrop(orbitalimagefile.build_desc(), BBox2());
-}
+  OrbitalImageCrop orbitalimagecrop(orbitalimagefile.build_desc(), BBox2());
 
-TEST(OrbitalImageCrop, crop) {
-  // TODO
+  EXPECT_EQ(orbitalimagecrop.image().cols(), 460);
+  EXPECT_EQ(orbitalimagecrop.image().rows(), 460);
 }
