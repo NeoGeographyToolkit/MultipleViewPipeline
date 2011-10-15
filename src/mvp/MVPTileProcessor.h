@@ -61,7 +61,7 @@ class MVPTileProcessor {
 
   public:
 
-    MVPTileProcessor(MVPJobRequest request) {
+    MVPTileProcessor(MVPJobRequest const& request) {
       int col = request.tile().col(), row = request.tile().row(), level = request.tile().level();
       vw::platefile::PlateGeoReference plate_georef(request.plate_georef());
       m_georef = plate_georef.tile_georef(col, row, level);
