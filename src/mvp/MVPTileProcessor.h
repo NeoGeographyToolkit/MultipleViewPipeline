@@ -40,6 +40,19 @@ struct MVPTileResult {
   }
 };
 
+// TODO: This should be replaced by a function in VW
+vw::cartography::GeoReference offset_georef(vw::cartography::GeoReference const& georef, int cols, int rows) {
+  vw::Matrix3x3 offset;
+
+  offset.set_identity();
+  offset(0, 2) = cols;
+  offset(1, 2) = rows;
+
+  vw::cartography::GeoReference result(georef);
+  result.set_transform(georef.transform() * offset);
+  return result; 
+}
+
 class MVPTileProcessor {
   vw::cartography::GeoReference m_georef;
   int m_tile_size;
@@ -73,7 +86,7 @@ class MVPTileProcessor {
       MVPAlgorithmVar seed;
       for (int col = 0; col < m_tile_size; col++) {
         for (int row = 0; row < m_tile_size; row++) {
-          MVPAlgorithmResult px_result = m_algorithm(seed, m_georef);
+          MVPAlgorithmResult px_result = m_algorithm(seed, offset_georef(m_georef, col, row));
           tile_result.update(col, row, px_result);
         }
       }

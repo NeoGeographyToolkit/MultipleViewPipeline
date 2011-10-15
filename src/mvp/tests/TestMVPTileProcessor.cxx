@@ -27,3 +27,11 @@ TEST(MVPTileProcessor, process) {
 
   EXPECT_EQ(result.post_height(0, 0), 0);
 }
+
+TEST(MVPTileProcessor, offset_georef) {
+  GeoReference geo = PlateGeoReference().tile_georef(1, 2, 3);
+  GeoReference crop_geo = offset_georef(geo, 100, 200);
+
+  EXPECT_VECTOR_EQ(geo.pixel_to_lonlat(Vector2(100, 200)), crop_geo.pixel_to_lonlat(Vector2(0, 0)));
+  EXPECT_VECTOR_EQ(geo.pixel_to_lonlat(Vector2(120, 230)), crop_geo.pixel_to_lonlat(Vector2(20, 30)));
+}
