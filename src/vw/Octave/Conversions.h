@@ -148,11 +148,11 @@ ImageView<double> octave_to_imageview(::Matrix const& oct_img) {
 
   ::Matrix rebase = ::identity_matrix(3, 3);
   if (vw_geo.pixel_interpretation() == cartography::GeoReference::PixelAsPoint) {
-    rebase(0, 2) = rebase(1, 2) = 1;
+    rebase(0, 2) = rebase(1, 2) = -1;
   } else {
-    rebase(0, 2) = rebase(1, 2) = 0.5;
+    rebase(0, 2) = rebase(1, 2) = -0.5;
   }
-  oct_geo = oct_geo * rebase.inverse();
+  oct_geo = oct_geo * rebase;
 
   ::Matrix deg2rad = ::identity_matrix(3, 3);
   deg2rad(0, 0) = deg2rad(1, 1) = M_PI / 180.0;
