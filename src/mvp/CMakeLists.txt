@@ -6,20 +6,22 @@ PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS MVPJobRequest.proto
                                             MVPAlgorithmSettings.proto
                                             TileDescriptor.proto)
 
-
-add_library(mvp ${PROTO_SRCS})
-
-add_executable(mvp_solo mvp_solo.cc)
-target_link_libraries(mvp_solo mvp
-                               ${PROTOBUF_LIBRARIES}
-                               ${VW_LIBRARIES})
-
 set(MVP_HDRS MVPAlgorithm.h
              MVPTileProcessor.h
              MVPWorkspace.h
              OrbitalImageFile.h
              ${CMAKE_CURRENT_BINARY_DIR}/Config.h
              ${PROTO_HDRS})
+set(MVP_SRCS MVPAlgorithm.cc
+             ${PROTO_SRCS})
+
+add_library(mvp ${MVP_SRCS})
+
+add_executable(mvp_solo mvp_solo.cc)
+target_link_libraries(mvp_solo mvp
+                               ${PROTOBUF_LIBRARIES}
+                               ${VW_LIBRARIES})
+#set_target_properties(mvp_solo PROPERTIES COMPILE_FLAGS "-DTEST_SRCDIR\\\"${CMAKE_CURRENT_SOURCE_DIR}\\\"")
 
 configure_file(Config.h.in Config.h)
 

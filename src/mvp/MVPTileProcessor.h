@@ -27,7 +27,7 @@ struct MVPTileResult {
   vw::ImageView<vw::Vector3f> orientation;
   vw::ImageView<vw::Vector3f> windows;
 
-  MVPTileResult(int tile_size) : 
+  MVPTileResult(vw::cartography::GeoReference g, int tile_size) : georef(g),
     post_height(tile_size, tile_size), variance(tile_size, tile_size), 
     orientation(tile_size, tile_size), windows(tile_size, tile_size) {}
 
@@ -49,6 +49,7 @@ vw::cartography::GeoReference offset_georef(vw::cartography::GeoReference const&
   offset(1, 2) = rows;
 
   vw::cartography::GeoReference result(georef);
+  // TODO: This is slow...
   result.set_transform(georef.transform() * offset);
   return result; 
 }
@@ -82,7 +83,7 @@ class MVPTileProcessor {
     */
 
     MVPTileResult process() {
-      MVPTileResult tile_result(m_tile_size);
+      MVPTileResult tile_result(m_georef, m_tile_size);
       MVPAlgorithmVar seed;
       for (int col = 0; col < m_tile_size; col++) {
         for (int row = 0; row < m_tile_size; row++) {

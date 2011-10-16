@@ -75,10 +75,7 @@ class MVPAlgorithmTestImpl : public MVPAlgorithmImplBase {
       MVPAlgorithmImplBase(settings), m_images(images) {}
 
     virtual const MVPAlgorithmResult do_algorithm(MVPAlgorithmVar const& seed, 
-                                                  vw::cartography::GeoReference const& georef) const
-    {
-      return MVPAlgorithmResult();
-    }
+                                                  vw::cartography::GeoReference const& georef) const;
 };
 
 #if MVP_ENABLE_OCTAVE_SUPPORT
@@ -101,8 +98,8 @@ class MVPAlgorithm {
   boost::shared_ptr<MVPAlgorithmImplBase> m_impl;
 
   public:
-    // TODO: need a better default constructor
-    MVPAlgorithm() : m_impl(new MVPAlgorithmTestImpl(MVPAlgorithmSettings(), OrbitalImageCropCollection())) {}
+    // TODO: need a better default constructor?
+    MVPAlgorithm() {}
 
     MVPAlgorithm(MVPAlgorithmSettings const& settings, OrbitalImageCropCollection const& images) {
       if (settings.use_octave()) {
@@ -122,6 +119,9 @@ class MVPAlgorithm {
 
     const MVPAlgorithmResult operator()(MVPAlgorithmVar const& seed, 
                                         vw::cartography::GeoReference const& georef) const {
+      if (m_impl.get() == 0) {
+        vw::vw_throw(vw::NoImplErr() << "MVPAlgorithm not initialized!");
+      }
       return m_impl->do_algorithm(seed, georef);
     }
 };
