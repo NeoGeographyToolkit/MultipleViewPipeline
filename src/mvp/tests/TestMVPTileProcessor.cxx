@@ -17,7 +17,7 @@ TEST(MVPTileProcessor, process) {
   EXPECT_EQ(work.num_images(), 4);
 
   int level = work.equal_density_level();
-  Vector2 col_row = work.tile_work_area(work.equal_density_level()).min();
+  Vector2 col_row = work.tile_work_area(level).min();
 
   MVPJobRequest job = work.assemble_job(col_row[0], col_row[1], level);
 
