@@ -11,7 +11,7 @@ using namespace mvp;
 TEST(MVPAlgorithm, NullImpl) {
   MVPAlgorithmSettings settings;
 
-  settings.set_null_algorithm(true);
+  settings.set_test_algorithm(true);
 
   MVPAlgorithm algo(settings, OrbitalImageCropCollection());
 

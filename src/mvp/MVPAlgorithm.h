@@ -67,10 +67,12 @@ class MVPAlgorithmImpl : public MVPAlgorithmImplBase {
     }
 };
 
-class MVPAlgorithmNullImpl : public MVPAlgorithmImplBase {
+class MVPAlgorithmTestImpl : public MVPAlgorithmImplBase {
+  OrbitalImageCropCollection m_images;
+
   public:
-    MVPAlgorithmNullImpl() :
-      MVPAlgorithmImplBase(MVPAlgorithmSettings()) {}
+    MVPAlgorithmTestImpl(MVPAlgorithmSettings const& settings, OrbitalImageCropCollection const& images) :
+      MVPAlgorithmImplBase(settings), m_images(images) {}
 
     virtual const MVPAlgorithmResult do_algorithm(MVPAlgorithmVar const& seed, 
                                                   vw::cartography::GeoReference const& georef) const
@@ -99,7 +101,9 @@ class MVPAlgorithm {
   boost::shared_ptr<MVPAlgorithmImplBase> m_impl;
 
   public:
-    MVPAlgorithm() : m_impl(new MVPAlgorithmNullImpl()) {}
+    // TODO: need a better default constructor
+    MVPAlgorithm() : m_impl(new MVPAlgorithmTestImpl(MVPAlgorithmSettings(), OrbitalImageCropCollection())) {}
+
     MVPAlgorithm(MVPAlgorithmSettings const& settings, OrbitalImageCropCollection const& images) {
       if (settings.use_octave()) {
         #if MVP_ENABLE_OCTAVE_SUPPORT
@@ -108,8 +112,8 @@ class MVPAlgorithm {
           vw::vw_throw(vw::NoImplErr() << "Cannot use octave algorithm, as the MVP was not compled with it!");
         #endif
       } else {
-        if (settings.null_algorithm()) {
-          m_impl.reset(new MVPAlgorithmNullImpl());
+        if (settings.test_algorithm()) {
+          m_impl.reset(new MVPAlgorithmTestImpl(settings, images));
         } else {
           m_impl.reset(new MVPAlgorithmImpl(settings, images));
         }
