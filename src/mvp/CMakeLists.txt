@@ -9,10 +9,10 @@ PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS MVPJobRequest.proto
 
 add_library(mvp ${PROTO_SRCS})
 
-add_executable(mvp_start mvp_start.cc)
-target_link_libraries(mvp_start mvp
-                                ${PROTOBUF_LIBRARIES}
-                                ${VW_LIBRARIES})
+add_executable(mvp_solo mvp_solo.cc)
+target_link_libraries(mvp_solo mvp
+                               ${PROTOBUF_LIBRARIES}
+                               ${VW_LIBRARIES})
 
 set(MVP_HDRS MVPAlgorithm.h
              MVPTileProcessor.h
@@ -23,7 +23,7 @@ set(MVP_HDRS MVPAlgorithm.h
 
 configure_file(Config.h.in Config.h)
 
-install(TARGETS mvp_start DESTINATION bin)
+install(TARGETS mvp_solo DESTINATION bin)
 install(FILES ${MVP_HDRS} DESTINATION include/mvp)
 
 if (ENABLE_OCTAVE_SUPPORT)
