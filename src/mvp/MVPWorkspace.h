@@ -72,7 +72,7 @@ class MVPWorkspace {
       OrbitalImageFile image(camera_path, image_path, radius_range);
       m_images.push_back(image);
       m_equal_resolution_level = std::min(m_equal_resolution_level, image.equal_resolution_level());
-      m_equal_density_level = std::max(m_equal_density_level, image.equal_density_level());
+      m_equal_density_level = std::max(m_equal_density_level, image.equal_density_level(m_plate_georef.tile_size()));
       m_lonlat_work_area.grow(image.footprint_bbox());
     }
 
