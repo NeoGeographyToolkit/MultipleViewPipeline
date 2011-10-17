@@ -75,6 +75,10 @@ class MVPTileProcessor {
       m_algorithm = MVPAlgorithm(request.algorithm_settings(), m_orbital_images); 
     }
 
+    OrbitalImageCropCollection orbital_images() const {
+      return m_orbital_images;
+    }
+
     /* // Load from problem file
     MVPTileProcessor(std::string prob_filename)
 
@@ -82,15 +86,21 @@ class MVPTileProcessor {
     void write_prob(std::string prob_filename)
     */
 
-    MVPTileResult process() {
+    MVPTileResult process(vw::ProgressCallback const& progress = vw::ProgressCallback::dummy_instance()) {
       MVPTileResult tile_result(m_georef, m_tile_size);
       MVPAlgorithmVar seed;
+
+      int curr_px_num = 0;
+      int num_px_to_process = m_tile_size * m_tile_size;
+      progress.report_progress(0);
       for (int col = 0; col < m_tile_size; col++) {
         for (int row = 0; row < m_tile_size; row++) {
           MVPAlgorithmResult px_result = m_algorithm(seed, offset_georef(m_georef, col, row));
           tile_result.update(col, row, px_result);
+          progress.report_progress(double(++curr_px_num) / num_px_to_process);
         }
       }
+      progress.report_finished();
       return tile_result;
     }
 };
