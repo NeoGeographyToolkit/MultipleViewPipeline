@@ -31,15 +31,11 @@ TEST(MVPTileProcessor, process) {
 
   MVPJobRequest job = work.assemble_job(col_row[0], col_row[1], level);
   MVPTileProcessor proc(job);
-  MVPTileResult result = proc.process(TerminalProgressCallback("mvp", "Projecting Footprints: "));
+  MVPTileResult result = proc.process();
   
   GeoReference georef(plate_geo.tile_georef(col_row[0], col_row[1], level));
   EXPECT_EQ(georef.build_desc().DebugString(), result.georef.build_desc().DebugString());
 
-  TerminalProgressCallback progress("mvp", "Verifying result: ");
-  int curr_px_num = 0;
-  int num_px_to_process = result.post_height.cols() * result.post_height.rows() / validation_divisor / validation_divisor;
-  progress.report_progress(0);
   for (int i = 0; i < result.post_height.cols(); i += validation_divisor) {
     for (int j = 0; j < result.post_height.rows(); j += validation_divisor) {
       Vector2 ll = georef.pixel_to_lonlat(Vector2(i, j));
@@ -61,11 +57,8 @@ TEST(MVPTileProcessor, process) {
 
       min_overlap = min(overlaps, min_overlap);
       max_overlap = max(overlaps, max_overlap);
-
-      progress.report_progress(double(++curr_px_num) / num_px_to_process);
     }
   }
-  progress.report_finished();
 
   // Make sure we saw both no images AND all images
   EXPECT_EQ(min_overlap, 0);
