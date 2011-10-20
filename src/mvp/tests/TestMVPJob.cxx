@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include <test/Helpers.h>
-#include <mvp/MVPTileProcessor.h>
+#include <mvp/MVPJob.h>
 #include <mvp/MVPWorkspace.h>
 
 using namespace std;
@@ -10,7 +10,7 @@ using namespace vw::cartography;
 using namespace vw::platefile;
 using namespace mvp;
 
-TEST(MVPTileProcessor, process) {
+TEST(MVPJob, process_tile) {
   // Don't verify all pixels in result, only verify every fourth one for speed
   const int validation_divisor = 4;
   const int tile_size = 128;
@@ -29,10 +29,18 @@ TEST(MVPTileProcessor, process) {
   int min_overlap = numeric_limits<int>::max();
   int max_overlap = 0;
 
-  MVPJobRequest job = work.assemble_job(col_row[0], col_row[1], level);
-  MVPTileProcessor proc(job);
-  MVPTileResult result = proc.process();
+  MVPJobRequest job_request = work.assemble_job(col_row[0], col_row[1], level);
   
+  MVPTileResult result = MVPJobTest(job_request).process_tile();
+ 
+  // TODO: Make this nicer 
+  OrbitalImageCropCollection crops;
+ 
+  BOOST_FOREACH(OrbitalImageFileDescriptor const& o, job_request.orbital_images()) {
+    crops.push_back(OrbitalImageCrop(o, plate_geo.tile_lonlat_bbox(col_row[0], col_row[1], level)));
+  }
+  //
+
   GeoReference georef(plate_geo.tile_georef(col_row[0], col_row[1], level));
   EXPECT_EQ(georef.build_desc().DebugString(), result.georef.build_desc().DebugString());
 
@@ -43,7 +51,7 @@ TEST(MVPTileProcessor, process) {
       Vector3 xyz = lon_lat_radius_to_xyz(llr);
 
       int overlaps = 0;
-      BOOST_FOREACH(OrbitalImageCrop const& o, proc.orbital_images()) {
+      BOOST_FOREACH(OrbitalImageCrop const& o, crops) {
         Vector2 px = o.camera().point_to_pixel(xyz);
         if (bounding_box(o.image()).contains(px)) {
           overlaps++;
@@ -65,7 +73,7 @@ TEST(MVPTileProcessor, process) {
   EXPECT_EQ(max_overlap, 4);
 }
 
-TEST(MVPTileProcessor, offset_georef) {
+TEST(Helpers, offset_georef) {
   GeoReference geo = PlateGeoReference().tile_georef(1, 2, 3);
   GeoReference crop_geo = offset_georef(geo, 100, 200);
 

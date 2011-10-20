@@ -7,13 +7,12 @@ PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS MVPJobRequest.proto
                                             TileDescriptor.proto)
 
 set(MVP_HDRS MVPAlgorithm.h
-             MVPTileProcessor.h
+             MVPJob.h
              MVPWorkspace.h
              OrbitalImageFootprint.h
              ${CMAKE_CURRENT_BINARY_DIR}/Config.h
              ${PROTO_HDRS})
-set(MVP_SRCS MVPAlgorithm.cc
-             ${PROTO_SRCS})
+set(MVP_SRCS ${PROTO_SRCS})
 
 add_library(mvp ${MVP_SRCS})
 

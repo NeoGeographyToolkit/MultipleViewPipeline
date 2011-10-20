@@ -5,7 +5,7 @@
 #include <vw/Plate/PlateFile.h>
 
 #include <mvp/MVPWorkspace.h>
-#include <mvp/MVPTileProcessor.h>
+#include <mvp/MVPJob.h>
 
 using namespace vw;
 using namespace vw::cartography;
@@ -15,6 +15,7 @@ using namespace mvp;
 
 int main(int argc, char* argv[])
 {
+  /*
   const int MAX_OVERLAP = 4;
 
   PlateGeoReference plate_georef(Datum("D_MOON"), "equi", 256, GeoReference::PixelAsPoint);
@@ -62,6 +63,6 @@ int main(int argc, char* argv[])
       }
     }
   }
-
+  */
   return 0;
 }
