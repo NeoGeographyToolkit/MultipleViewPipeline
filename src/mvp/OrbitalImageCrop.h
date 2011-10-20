@@ -24,10 +24,10 @@ class OrbitalImageCrop {
   vw::ImageView<double> m_image;
 
   public:
-    OrbitalImageCrop(OrbitalImageFileDescriptor const& desc, vw::BBox2 const& lonlat_bbox) {
+    OrbitalImageCrop(OrbitalImageFileDescriptor const& image_file, vw::BBox2 const& lonlat_bbox) {
       // TODO: Create crops
-      m_camera = vw::camera::PinholeModel(desc.camera_path());
-      m_image = vw::DiskImageView<double>(desc.image_path());
+      m_camera = vw::camera::PinholeModel(image_file.camera_path());
+      m_image = vw::DiskImageView<double>(image_file.image_path());
     }
 
     vw::camera::PinholeModel camera() const {return m_camera;}
