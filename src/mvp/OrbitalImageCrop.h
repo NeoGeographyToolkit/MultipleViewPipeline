@@ -13,6 +13,8 @@
 #include <vw/FileIO/DiskImageView.h>
 #include <vw/Camera/PinholeModel.h>
 
+#include <boost/foreach.hpp>
+
 #if MVP_ENABLE_OCTAVE_SUPPORT
 #include <vw/Octave/Conversions.h>
 #endif
@@ -34,7 +36,13 @@ class OrbitalImageCrop {
     vw::ImageView<double> image() const {return m_image;}
 };
 
-typedef std::vector<OrbitalImageCrop> OrbitalImageCropCollection;
+struct OrbitalImageCropCollection : public std::vector<OrbitalImageCrop> {
+  OrbitalImageCropCollection(google::protobuf::RepeatedPtrField<OrbitalImageFileDescriptor> const& orbital_images, vw::BBox2 const& lonlat_bbox) {
+    BOOST_FOREACH(OrbitalImageFileDescriptor const& o, orbital_images) {
+      push_back(OrbitalImageCrop(o, lonlat_bbox));
+    }
+  }
+};
 
 #if MVP_ENABLE_OCTAVE_SUPPORT
 class OrbitalImageCropOctave {

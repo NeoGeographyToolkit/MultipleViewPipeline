@@ -1,15 +1,18 @@
 package mvp;
 
-import "TileDescriptor.proto";
 import "OrbitalImageFileDescriptor.proto";
 import "MVPAlgorithmSettings.proto";
-import "vw/Plate/PlateGeoReferenceDesc.proto";
+import "vw/Cartography/GeoReferenceDesc.proto";
 
 message MVPJobRequest {
-  required TileDescriptor tile = 1;
-  required string result_platefile = 2;
-  required string internal_result_platefile = 3;
-  required vw.platefile.PlateGeoReferenceDesc plate_georef = 4;
-  required MVPAlgorithmSettings algorithm_settings = 5;
-  repeated OrbitalImageFileDescriptor orbital_images = 6;
+  required int32 col = 1;
+  required int32 row = 2;
+  required int32 level = 3;
+  required int32 tile_size = 4;
+
+  required string result_platefile = 5;
+  required string internal_result_platefile = 6;
+  required vw.cartography.GeoReferenceDesc georef = 7;
+  required MVPAlgorithmSettings algorithm_settings = 8;
+  repeated OrbitalImageFileDescriptor orbital_images = 9;
 }

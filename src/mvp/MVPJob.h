@@ -110,26 +110,19 @@ struct MVPJobBase {
     vw::cartography::GeoReference m_georef;
     int m_tile_size;
     OrbitalImageCropCollection m_crops;
+    // TODO: A seed object...
 
     // This is defined here to prevent the user from accidently
     // constructing an MVPJobBase
-    MVPJobBase(MVPJobRequest job_request) {
-      int col = job_request.tile().col(), row = job_request.tile().row(), level = job_request.tile().level();
-      vw::platefile::PlateGeoReference plate_georef(job_request.plate_georef());
-
-      m_settings = job_request.algorithm_settings();
-      m_georef = plate_georef.tile_georef(col, row, level);
-      m_tile_size = plate_georef.tile_size();
-
-      // TODO: Make OrbitalImageCropCollection do this for you...
-      BOOST_FOREACH(OrbitalImageFileDescriptor const& o, job_request.orbital_images()) {
-        m_crops.push_back(OrbitalImageCrop(o, plate_georef.tile_lonlat_bbox(col, row, level)));
-      }
-    }
+    MVPJobBase(MVPJobRequest job_request) : 
+      m_settings(job_request.algorithm_settings()),
+      m_georef(job_request.georef()),
+      m_tile_size(job_request.tile_size()),
+      m_crops(job_request.orbital_images(), m_georef.pixel_to_lonlat_bbox(vw::BBox2(0, 0, m_tile_size, m_tile_size))) {}
 
   private:
+    // These are defined here to prevent them from being used
     MVPJobBase(MVPJobBase const&) {}
-
     MVPJobBase& operator=(MVPJobBase const&) {return *this;}
 };
 

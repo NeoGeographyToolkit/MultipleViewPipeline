@@ -106,13 +106,14 @@ class MVPWorkspace {
 
       MVPJobRequest request;
 
-      request.mutable_tile()->set_col(col);
-      request.mutable_tile()->set_row(row);
-      request.mutable_tile()->set_level(level);
+      request.set_col(col);
+      request.set_row(row);
+      request.set_level(level);
+      request.set_tile_size(m_plate_georef.tile_size());
       
       request.set_result_platefile(m_result_platefile);
       request.set_internal_result_platefile(m_internal_result_platefile);
-      *request.mutable_plate_georef() = m_plate_georef.build_desc();
+      *request.mutable_georef() = m_plate_georef.tile_georef(col, row, level).build_desc();
       *request.mutable_algorithm_settings() = m_algorithm_settings;
 
       std::vector<OrbitalImageFileDescriptor> image_matches(images_at_tile(col, row, level));
