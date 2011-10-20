@@ -9,12 +9,14 @@
 #define __MVP_MVPTILEPROCESSOR_H__
 
 #include <mvp/MVPJobRequest.pb.h>
+#include <mvp/OrbitalImageFileDescriptor.pb.h>
 
 #include <mvp/MVPAlgorithm.h>
-#include <mvp/OrbitalImageFile.h>
 #include <mvp/OrbitalImageCrop.h>
 
 #include <vw/Plate/PlateGeoReference.h>
+
+#include <boost/foreach.hpp>
 
 namespace mvp {
 
@@ -68,7 +70,7 @@ class MVPTileProcessor {
       m_georef = plate_georef.tile_georef(col, row, level);
       m_tile_size = plate_georef.tile_size();
 
-      BOOST_FOREACH(OrbitalImageFileDesc const& o, request.orbital_images()) {
+      BOOST_FOREACH(OrbitalImageFileDescriptor const& o, request.orbital_images()) {
         m_orbital_images.push_back(OrbitalImageCrop(o, plate_georef.tile_lonlat_bbox(col, row, level)));
       }
 

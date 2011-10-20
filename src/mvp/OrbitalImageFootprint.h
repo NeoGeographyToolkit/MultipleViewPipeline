@@ -1,21 +1,24 @@
-/// \file OrbitalImageFile.h
+/// \file OrbitalImageFootprint.h
 ///
-/// Orbital Image File Class class
+/// Orbital Image Footprint Class class
 ///
+/// TODO: Write me!
 /// The OrbitalImageFile class represents a single orbital image and its camera
 /// model saved on disk. Also, it can determine if the footprint of the orbital 
 /// image intersects a given lonlat BBox using the intersects() function.
 
-#ifndef __MVP_ORBITALIMAGEFILE_H__
-#define __MVP_ORBITALIMAGEFILE_H__
+#ifndef __MVP_ORBITALIMAGEFOOTPRINT_H__
+#define __MVP_ORBITALIMAGEFOOTPRINT_H__
 
-#include <mvp/OrbitalImageFileDesc.pb.h>
+#include <mvp/OrbitalImageFileDescriptor.pb.h>
 
 #include <vw/Cartography/Datum.h>
 #include <vw/Cartography/SimplePointImageManipulation.h>
 #include <vw/Camera/PinholeModel.h>
 #include <vw/FileIO/DiskImageResource.h>
 
+#include <boost/format.hpp>
+#include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
 
 namespace mvp {
@@ -76,45 +79,29 @@ bool isect_poly(std::vector<vw::Vector2> poly1, std::vector<vw::Vector2> poly2)
   return true;  
 }
 
-class OrbitalImageFile
+class OrbitalImageFootprint
 {
-  std::string m_camera_path, m_image_path;
+  OrbitalImageFileDescriptor m_image_file;
   vw::Vector2i m_image_size;
-  vw::Vector2 m_radius_range;
   std::vector<vw::Vector2> m_footprint;
 
   public:
 
-    OrbitalImageFile(std::string const& camera_path, std::string const& image_path, vw::Vector2 const& radius_range) :
-      m_camera_path(camera_path), m_image_path(image_path), m_radius_range(radius_range)
+    OrbitalImageFootprint(std::string const& camera_path, std::string const& image_path, vw::cartography::Datum const& datum, vw::Vector2 const& post_height_limits)
     {
-      boost::scoped_ptr<vw::DiskImageResource> rsrc(vw::DiskImageResource::open(image_path));
+      m_image_file.set_camera_path(camera_path);
+      m_image_file.set_image_path(image_path);
+
+      boost::scoped_ptr<vw::DiskImageResource> rsrc(vw::DiskImageResource::open(m_image_file.image_path()));
       m_image_size.x() = rsrc->cols();
       m_image_size.y() = rsrc->rows();
 
-      m_footprint = construct_footprint(m_camera_path, m_image_size, m_radius_range);
-    }
+      // TODO: Rewrite for ellipsoid
+      VW_ASSERT(datum.semi_major_axis() == datum.semi_minor_axis(),
+        vw::ArgumentErr() << "Datum must be spheroid");
 
-    /// Construct an OrbitalImageFile from a OrbitalImageFileDesc
-    OrbitalImageFile(OrbitalImageFileDesc const& desc) :
-      m_camera_path(desc.camera_path()), m_image_path(desc.image_path()), 
-      m_image_size(vw::Vector2i(desc.image_cols(), desc.image_rows())),
-      m_radius_range(vw::Vector2(desc.radius_min(), desc.radius_max()))
-    {
-      m_footprint = construct_footprint(m_camera_path, m_image_size, m_radius_range);
-    }
-
-    /// Create a OrbitalImageFileDesc that represents this OrbitalImageFile
-    OrbitalImageFileDesc build_desc() const {
-      OrbitalImageFileDesc desc;
-      desc.set_camera_path(m_camera_path);
-      desc.set_image_path(m_image_path);
-      desc.set_image_cols(m_image_size.x());
-      desc.set_image_rows(m_image_size.y());
-      desc.set_radius_min(m_radius_range[0]);
-      desc.set_radius_max(m_radius_range[1]);
-      
-      return desc;
+      vw::Vector2 radius_range = vw::Vector2(datum.radius(0, 0), datum.radius(0, 0)) + post_height_limits;
+      m_footprint = construct_footprint(m_image_file.camera_path(), m_image_size, radius_range);
     }
 
     /// A static method that constructs a polygon that represents an orbital
@@ -141,8 +128,12 @@ class OrbitalImageFile
       return fp;
     }
 
+    OrbitalImageFileDescriptor orbital_image_file() const {
+      return m_image_file;
+    }
+
     /// Return a lonlat bounding box for the footprint of the orbital image
-    vw::BBox2 footprint_bbox() const {
+    vw::BBox2 lonlat_bbox() const {
       vw::BBox2 bbox;
 
       BOOST_FOREACH(vw::Vector2 v, m_footprint) {
@@ -152,16 +143,10 @@ class OrbitalImageFile
       return bbox;
     }
 
-    /// Reset the radius range for the footprint
-    void set_radius_range(vw::Vector2 const& radius_range) {
-      m_radius_range = radius_range;
-      m_footprint = construct_footprint(m_camera_path, m_image_size, radius_range);
-    }
-
     /// Return the level for which the resolution of one tile at that level
     /// is approximately equal to the resolution of the orbital image.
     int equal_resolution_level() const {
-      vw::BBox2 fp_bbox(footprint_bbox());
+      vw::BBox2 fp_bbox(lonlat_bbox());
 
       double x_res_lvl = log(360.0 / fp_bbox.width()) / log(2);
       double y_res_lvl = log(360.0 / fp_bbox.height()) / log(2);
@@ -172,8 +157,8 @@ class OrbitalImageFile
     /// Return the level for which the pixel density (measured as pixels per 
     /// degree) at that level is greater or equal to the pixel density of
     /// the orbital image.
-    int equal_density_level(int tile_size = 256) const {
-      vw::BBox2 fp_bbox(footprint_bbox());
+    int equal_density_level(int tile_size) const {
+      vw::BBox2 fp_bbox(lonlat_bbox());
 
       double x_dens_lvl = log(360.0 * m_image_size.x() / fp_bbox.width() / tile_size) / log(2);
       double y_dens_lvl = log(360.0 * m_image_size.y() / fp_bbox.height() / tile_size) / log(2);
@@ -195,7 +180,77 @@ class OrbitalImageFile
 
 };
 
-typedef std::vector<OrbitalImageFile> OrbitalImageFileCollection;
+class OrbitalImageFootprintCollection : public std::vector<OrbitalImageFootprint> {
+  vw::cartography::Datum m_datum;
+  vw::Vector2 m_post_height_limits;
+
+  public:
+    OrbitalImageFootprintCollection(vw::cartography::Datum const& datum, vw::Vector2 const& post_height_limits) :
+      m_datum(datum), m_post_height_limits(post_height_limits) {}
+
+    OrbitalImageFootprintCollection(vw::cartography::Datum const& datum, double post_height_limit_min, double post_height_limit_max) :
+      m_datum(datum), m_post_height_limits(vw::Vector2(post_height_limit_min, post_height_limit_max)) {}
+
+    void add_image(std::string const& camera_path, std::string const& image_path) {
+      this->push_back(OrbitalImageFootprint(camera_path, image_path, m_datum, m_post_height_limits));
+    }
+
+    void add_image_pattern(std::string const& camera_pattern, std::string const& image_pattern, vw::Vector2i const& range) {
+      namespace fs = boost::filesystem;
+
+      for (int i = range[0]; i <= range[1]; i++) {
+        std::string camera_file = (boost::format(camera_pattern) % i).str();
+        std::string image_file = (boost::format(image_pattern) % i).str();
+        if (fs::exists(camera_file) && fs::exists(image_file)) {
+          add_image(camera_file, image_file);
+        } else {
+          vw::vw_out(vw::DebugMessage, "mvp") << "Couldn't find " << camera_file << " or " << image_file;
+        }
+      }
+    }
+
+    int equal_resolution_level() const {
+      int result = std::numeric_limits<int>::max();
+
+      BOOST_FOREACH(OrbitalImageFootprint const& fp, *this) {
+        result = std::min(result, fp.equal_resolution_level());
+      }
+
+      return result;
+    }
+
+    int equal_density_level(int tile_size) const {
+      int result = 0;
+
+      BOOST_FOREACH(OrbitalImageFootprint const& fp, *this) {
+        result = std::max(result, fp.equal_density_level(tile_size));
+      }
+
+      return result;
+    }
+
+    vw::BBox2 lonlat_bbox() const {
+      vw::BBox2 result;
+
+      BOOST_FOREACH(OrbitalImageFootprint const& fp, *this) {
+        result.grow(fp.lonlat_bbox());
+      }
+
+      return result;
+    }
+
+    std::vector<OrbitalImageFileDescriptor> images_in_region(vw::BBox2 const& lonlat_bbox) const {
+      std::vector<OrbitalImageFileDescriptor> result;
+
+      BOOST_FOREACH(OrbitalImageFootprint const& fp, *this) {
+        if (fp.intersects(lonlat_bbox)) {
+          result.push_back(fp.orbital_image_file());
+        } 
+      }
+
+      return result;
+    }
+};
 
 } // namespace mvp
 

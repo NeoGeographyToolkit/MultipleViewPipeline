@@ -14,7 +14,7 @@ macro(add_mvp_test test_name)
 endmacro()
 
 add_mvp_test(TestMVPWorkspace)
-add_mvp_test(TestOrbitalImageFile)
+add_mvp_test(TestOrbitalImageFootprint)
 add_mvp_test(TestOrbitalImageCrop)
 add_mvp_test(TestMVPAlgorithm)
 add_mvp_tesT(TestMVPTileProcessor)

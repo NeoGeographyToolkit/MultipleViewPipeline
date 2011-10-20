@@ -2,14 +2,14 @@
 set(_protobuf_include_path -I ${CMAKE_SOURCE_DIR}/thirdparty/vw_protobuf)
 
 PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS MVPJobRequest.proto
-                                            OrbitalImageFileDesc.proto
+                                            OrbitalImageFileDescriptor.proto
                                             MVPAlgorithmSettings.proto
                                             TileDescriptor.proto)
 
 set(MVP_HDRS MVPAlgorithm.h
              MVPTileProcessor.h
              MVPWorkspace.h
-             OrbitalImageFile.h
+             OrbitalImageFootprint.h
              ${CMAKE_CURRENT_BINARY_DIR}/Config.h
              ${PROTO_HDRS})
 set(MVP_SRCS MVPAlgorithm.cc

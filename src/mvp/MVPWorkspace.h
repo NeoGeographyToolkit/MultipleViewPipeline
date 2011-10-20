@@ -31,15 +31,11 @@
 
 #include <mvp/MVPAlgorithmSettings.pb.h>
 #include <mvp/MVPJobRequest.pb.h>
-#include <mvp/OrbitalImageFile.h>
+#include <mvp/OrbitalImageFootprint.h>
 
 #include <vw/Cartography/GeoReference.h>
 #include <vw/Plate/PlateGeoReference.h>
 #include <vw/Image/Transform.h> // grow_bbox_to_int
-
-#include <boost/format.hpp>
-#include <boost/filesystem.hpp>
-#include <boost/foreach.hpp>
 
 namespace mvp {
 
@@ -47,67 +43,43 @@ class MVPWorkspace {
   std::string m_result_platefile, m_internal_result_platefile;
   vw::platefile::PlateGeoReference m_plate_georef;
   MVPAlgorithmSettings m_algorithm_settings;
-  OrbitalImageFileCollection m_images;
-
-  int m_equal_resolution_level, m_equal_density_level;
-  vw::BBox2 m_lonlat_work_area;
-  
+  OrbitalImageFootprintCollection m_footprints;
+ 
   public:
     MVPWorkspace(std::string const& result_platefile, std::string const& internal_result_platefile,
                  vw::platefile::PlateGeoReference const& plate_georef, 
                  MVPAlgorithmSettings const& algorithm_settings) :
       m_result_platefile(result_platefile), m_internal_result_platefile(internal_result_platefile),
-      m_plate_georef(plate_georef), m_algorithm_settings(algorithm_settings), m_images(),
-      m_equal_resolution_level(std::numeric_limits<int>::max()), m_equal_density_level(0), m_lonlat_work_area() {}
+      m_plate_georef(plate_georef), m_algorithm_settings(algorithm_settings),
+      m_footprints(plate_georef.datum(), algorithm_settings.post_height_limit_min(), algorithm_settings.post_height_limit_max()) {}
 
     /// Add an orbital image to the workspace
     void add_image(std::string const& camera_path, std::string const& image_path) {
-      // TODO: Someday take into account Datums that are ellipsoid
-      VW_ASSERT(m_plate_georef.datum().semi_major_axis() == m_plate_georef.datum().semi_minor_axis(),
-        vw::ArgumentErr() << "Datum must be spheroid");
-
-      vw::Vector2 post_height_limits(m_algorithm_settings.post_height_limit_min(), m_algorithm_settings.post_height_limit_max());
-      vw::Vector2 radius_range = vw::Vector2(m_plate_georef.datum().radius(0, 0), m_plate_georef.datum().radius(0, 0)) + post_height_limits;
-
-      OrbitalImageFile image(camera_path, image_path, radius_range);
-      m_images.push_back(image);
-      m_equal_resolution_level = std::min(m_equal_resolution_level, image.equal_resolution_level());
-      m_equal_density_level = std::max(m_equal_density_level, image.equal_density_level(m_plate_georef.tile_size()));
-      m_lonlat_work_area.grow(image.footprint_bbox());
+      m_footprints.add_image(camera_path, image_path);
     }
 
     /// Add a set of orbital images to the workspace based on a pattern
     void add_image_pattern(std::string const& camera_pattern, std::string const& image_pattern, vw::Vector2i const& range) {
-      namespace fs = boost::filesystem;
-
-      for (int i = range[0]; i <= range[1]; i++) {
-        std::string camera_file = (boost::format(camera_pattern) % i).str();
-        std::string image_file = (boost::format(image_pattern) % i).str();
-        if (fs::exists(camera_file) && fs::exists(image_file)) {
-          add_image(camera_file, image_file);
-        } else {
-          vw::vw_out(vw::DebugMessage, "mvp") << "Couldn't find " << camera_file << " or " << image_file;
-        }
-      }
+      m_footprints.add_image_pattern(camera_pattern, image_pattern, range);
     }
 
-    int num_images() const {return m_images.size();}
+    int num_images() const {return m_footprints.size();}
 
     /// Return the PlateGeoReference for the workspace
     vw::platefile::PlateGeoReference plate_georef() const {return m_plate_georef;}
 
     /// Return the level at which the resolution of the orbital image is 
     /// approximately equal to the resolution of a tile in the platefile
-    int equal_resolution_level() const {return m_equal_resolution_level;}
+    int equal_resolution_level() const {return m_footprints.equal_resolution_level();}
 
     /// Return the level at which the pixel density (measured in pixels 
     /// per degree) of the orbital image is approximately equal to the pixel 
     /// density of a tile in the platefile
-    int equal_density_level() const {return m_equal_density_level;}
+    int equal_density_level() const {return m_footprints.equal_density_level(m_plate_georef.tile_size());}
 
     /// Return a bounding box (in lonlat) that contains all of the orbital 
     /// imagery in the workspace
-    vw::BBox2 lonlat_work_area() const {return m_lonlat_work_area;}
+    vw::BBox2 lonlat_work_area() const {return m_footprints.lonlat_bbox();}
 
     /// Return a bounding box (in pixels) that contains all of the orbital
     /// imagery in the workspace at a given level
@@ -124,21 +96,14 @@ class MVPWorkspace {
     } 
 
     /// Return all the orbital images that overlap a given tile
-    OrbitalImageFileCollection images_at_tile(int col, int row, int level) const {
-      OrbitalImageFileCollection result;
-      vw::BBox2 tile_lonlat_bbox(m_plate_georef.tile_lonlat_bbox(col, row, level));
-
-      BOOST_FOREACH(OrbitalImageFile o, m_images) {
-        if (o.intersects(tile_lonlat_bbox)) {
-          result.push_back(o);
-        } 
-      }
-
-      return result;
+    std::vector<OrbitalImageFileDescriptor> images_at_tile(int col, int row, int level) const {
+      return m_footprints.images_in_region(m_plate_georef.tile_lonlat_bbox(col, row, level));
     }
 
     /// Return an MVPJobRequest for a given tile at a given level.
     MVPJobRequest assemble_job(int col, int row, int level) const {
+      using google::protobuf::RepeatedFieldBackInserter;
+
       MVPJobRequest request;
 
       request.mutable_tile()->set_col(col);
@@ -150,9 +115,8 @@ class MVPWorkspace {
       *request.mutable_plate_georef() = m_plate_georef.build_desc();
       *request.mutable_algorithm_settings() = m_algorithm_settings;
 
-      BOOST_FOREACH(OrbitalImageFile o, images_at_tile(col, row, level)) {
-        *request.add_orbital_images() = o.build_desc();
-      }
+      std::vector<OrbitalImageFileDescriptor> image_matches(images_at_tile(col, row, level));
+      std::copy(image_matches.begin(), image_matches.end(), RepeatedFieldBackInserter(request.mutable_orbital_images()));
 
       return request;
     }

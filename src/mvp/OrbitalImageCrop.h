@@ -7,7 +7,7 @@
 #ifndef __MVP_ORBITALIMAGECROP_H__
 #define __MVP_ORBITALIMAGECROP_H__
 
-#include <mvp/OrbitalImageFileDesc.pb.h>
+#include <mvp/OrbitalImageFileDescriptor.pb.h>
 
 #include <vw/Image/ImageView.h>
 #include <vw/FileIO/DiskImageView.h>
@@ -24,7 +24,7 @@ class OrbitalImageCrop {
   vw::ImageView<double> m_image;
 
   public:
-    OrbitalImageCrop(OrbitalImageFileDesc const& desc, vw::BBox2 const& lonlat_bbox) {
+    OrbitalImageCrop(OrbitalImageFileDescriptor const& desc, vw::BBox2 const& lonlat_bbox) {
       // TODO: Create crops
       m_camera = vw::camera::PinholeModel(desc.camera_path());
       m_image = vw::DiskImageView<double>(desc.image_path());
