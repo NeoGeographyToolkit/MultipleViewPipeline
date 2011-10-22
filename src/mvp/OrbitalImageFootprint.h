@@ -87,7 +87,7 @@ class OrbitalImageFootprint
 
   public:
 
-    OrbitalImageFootprint(std::string const& camera_path, std::string const& image_path, vw::cartography::Datum const& datum, vw::Vector2 const& post_height_limits)
+    OrbitalImageFootprint(std::string const& image_path, std::string const& camera_path, vw::cartography::Datum const& datum, vw::Vector2 const& post_height_limits)
     {
       m_image_file.set_camera_path(camera_path);
       m_image_file.set_image_path(image_path);
@@ -191,18 +191,18 @@ class OrbitalImageFootprintCollection : public std::vector<OrbitalImageFootprint
     OrbitalImageFootprintCollection(vw::cartography::Datum const& datum, double post_height_limit_min, double post_height_limit_max) :
       m_datum(datum), m_post_height_limits(vw::Vector2(post_height_limit_min, post_height_limit_max)) {}
 
-    void add_image(std::string const& camera_path, std::string const& image_path) {
-      this->push_back(OrbitalImageFootprint(camera_path, image_path, m_datum, m_post_height_limits));
+    void add_image(std::string const& image_path, std::string const& camera_path) {
+      this->push_back(OrbitalImageFootprint(image_path, camera_path, m_datum, m_post_height_limits));
     }
 
-    void add_image_pattern(std::string const& camera_pattern, std::string const& image_pattern, int start, int end) {
+    void add_image_pattern(std::string const& image_pattern, std::string const& camera_pattern, int start, int end) {
       namespace fs = boost::filesystem;
 
       for (int i = start; i <= end; i++) {
         std::string camera_file = (boost::format(camera_pattern) % i).str();
         std::string image_file = (boost::format(image_pattern) % i).str();
         if (fs::exists(camera_file) && fs::exists(image_file)) {
-          add_image(camera_file, image_file);
+          add_image(image_file, camera_file);
         } else {
           vw::vw_out(vw::DebugMessage, "mvp") << "Couldn't find " << camera_file << " or " << image_file;
         }

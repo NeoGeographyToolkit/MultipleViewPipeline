@@ -92,21 +92,21 @@ class MVPWorkspace {
       // TODO: Add 'octave_function'
 
       MVPWorkspace work(vm["result-platefile"].as<std::string>(), vm["internal-result-platefile"].as<std::string>(), plate_georef, settings);
-      work.add_image_pattern(vm["camera-pattern"].as<std::string>(), 
-                             vm["orbital-image-pattern"].as<std::string>(),
+      work.add_image_pattern(vm["orbital-image-pattern"].as<std::string>(), 
+                             vm["camera-pattern"].as<std::string>(),
                              vm["pattern-index-start"].as<int>(),
                              vm["pattern-index-end"].as<int>());
       return work;
     }
 
     /// Add an orbital image to the workspace
-    void add_image(std::string const& camera_path, std::string const& image_path) {
-      m_footprints.add_image(camera_path, image_path);
+    void add_image(std::string const& image_path, std::string const& camera_path) {
+      m_footprints.add_image(image_path, camera_path);
     }
 
     /// Add a set of orbital images to the workspace based on a pattern
-    void add_image_pattern(std::string const& camera_pattern, std::string const& image_pattern, int start, int end) {
-      m_footprints.add_image_pattern(camera_pattern, image_pattern, start, end);
+    void add_image_pattern(std::string const& image_pattern, std::string const& camera_pattern, int start, int end) {
+      m_footprints.add_image_pattern(image_pattern, camera_pattern, start, end);
     }
 
     /// Return the name of the result platefile for this workspace
