@@ -7,14 +7,49 @@
 #include <mvp/MVPWorkspace.h>
 #include <mvp/MVPJob.h>
 
+#include <boost/program_options.hpp>
+
 using namespace vw;
 using namespace vw::cartography;
 using namespace vw::platefile;
 using namespace std;
 using namespace mvp;
 
+namespace po = boost::program_options;
+
 int main(int argc, char* argv[])
 {
+  po::options_description cmd_opts("Command line options");
+  cmd_opts.add_options()
+    ("help,h", "Print this message")
+    ("silent", "Run without outputting status")
+    ("config-file,f", po::value<string>()->default_value("mvp.conf"), "Specify a pipeline configuration file")
+    ;
+
+  po::options_description mvp_opts;
+  mvp_opts.add(MVPWorkspace::program_options());
+
+  po::options_description all_opts;
+  all_opts.add(cmd_opts).add(mvp_opts);
+
+  po::variables_map vm;
+  store(po::command_line_parser(argc, argv).options(all_opts).run(), vm);
+
+  if (vm.count("help")) {
+    cout << all_opts << endl;
+    return 0;
+  }
+
+  ifstream ifs(vm["config-file"].as<string>().c_str());
+  if (ifs) {
+    store(parse_config_file(ifs, mvp_opts), vm);
+  }
+
+  notify(vm);
+
+
+  MVPWorkspace work(MVPWorkspace::construct_from_program_options(vm)); 
+
   /*
   const int MAX_OVERLAP = 4;
 

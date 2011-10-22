@@ -37,6 +37,8 @@
 #include <vw/Plate/PlateGeoReference.h>
 #include <vw/Image/Transform.h> // grow_bbox_to_int
 
+#include <boost/program_options.hpp>
+
 namespace mvp {
 
 class MVPWorkspace {
@@ -52,6 +54,33 @@ class MVPWorkspace {
       m_result_platefile(result_platefile), m_internal_result_platefile(internal_result_platefile),
       m_plate_georef(plate_georef), m_algorithm_settings(algorithm_settings),
       m_footprints(plate_georef.datum(), algorithm_settings.post_height_limit_min(), algorithm_settings.post_height_limit_max()) {}
+
+    static boost::program_options::options_description program_options() {
+      namespace po = boost::program_options;
+
+      po::options_description options("Pipeline Configuration");
+      options.add_options()
+        ("orbital-image-pattern", po::value<std::string>()->required(), "Path to orbital images")
+        ("camera-pattern", po::value<std::string>()->required(), "Path to orbital image camera models")
+        ("pattern-index-start", po::value<int>(), "Starting index to substitute into image/camera pattern")
+        ("pattern-index-end", po::value<int>(), "Ending index to substitute into image/camera pattern")
+        ("datum", po::value<std::string>()->required(), "Datum name")
+        ("map-projection", po::value<std::string>()->default_value("equi"), "Plate map projection type")
+        ("tile-size", po::value<int>()->default_value(256), "Plate tile size")
+        ("result-plate", po::value<std::string>()->required(), "Result plate filename")
+        ("internal-result-plate", po::value<std::string>(), "Internal result plate filename")
+        ("post-height-limit-min", po::value<double>()->required(), "Min DEM post height to search")
+        ("post-height-limit-max", po::value<double>()->required(), "Man DEM post height to search")
+        ("use-octave", "Use octave in processing")
+        ("test-algorithm", "Run the test algorithm that draws footprints instead of creating a DEM")
+        ;
+
+      return options;
+    }
+
+    static MVPWorkspace construct_from_program_options(boost::program_options::variables_map const& vm) {
+      return MVPWorkspace("", "", vw::platefile::PlateGeoReference(vw::cartography::Datum("D_MOON")), MVPAlgorithmSettings());
+    }
 
     /// Add an orbital image to the workspace
     void add_image(std::string const& camera_path, std::string const& image_path) {
