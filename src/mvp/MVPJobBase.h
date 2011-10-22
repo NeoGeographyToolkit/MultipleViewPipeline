@@ -84,10 +84,15 @@ template <class ImplT>
 struct MVPJobBase {
 
   static ImplT construct_from_job_request(MVPJobRequest const& job_request) {
-    vw::cartography::GeoReference georef(job_request.georef());
-    OrbitalImageCropCollection crops(job_request.orbital_images(), georef.pixel_to_lonlat_bbox(vw::BBox2(0, 0, job_request.tile_size(), job_request.tile_size())));
+    vw::platefile::PlateGeoReference plate_georef(job_request.plate_georef());
 
-    return ImplT(georef, job_request.tile_size(), crops, job_request.algorithm_settings());
+    vw::cartography::GeoReference georef(plate_georef.tile_georef(job_request.col(), job_request.row(), job_request.level()));
+
+    vw::BBox2 tile_bbox(plate_georef.tile_lonlat_bbox(job_request.col(), job_request.row(), job_request.level()));
+
+    OrbitalImageCropCollection crops(job_request.orbital_images(), tile_bbox);
+
+    return ImplT(georef, plate_georef.tile_size(), crops, job_request.algorithm_settings());
   }
 
   inline ImplT& impl() {return static_cast<ImplT&>(*this);}

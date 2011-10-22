@@ -59,7 +59,7 @@ TEST(MVPWorkspace, assemble_job) {
   EXPECT_EQ(job.level(), 1);
   EXPECT_EQ(job.result_platefile(), "result");
   EXPECT_EQ(job.internal_result_platefile(), "internal");
-  EXPECT_EQ(job.georef().DebugString(), PlateGeoReference(Datum("D_MOON")).tile_georef(1, 1, 1).build_desc().DebugString());
+  EXPECT_EQ(job.plate_georef().DebugString(), PlateGeoReference(Datum("D_MOON")).build_desc().DebugString());
   EXPECT_EQ(job.algorithm_settings().DebugString(), MVPAlgorithmSettings().DebugString());
   EXPECT_EQ(job.orbital_images_size(), 4);
 }
