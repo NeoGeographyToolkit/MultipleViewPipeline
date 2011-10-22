@@ -92,8 +92,8 @@ class MVPWorkspace {
       // TODO: Add 'octave_function'
 
       MVPWorkspace work(vm["result-platefile"].as<std::string>(), vm["internal-result-platefile"].as<std::string>(), plate_georef, settings);
-      work.add_image_pattern(vm["orbital-image-pattern"].as<std::string>(), 
-                             vm["camera-pattern"].as<std::string>(),
+      work.add_image_pattern(vm["camera-pattern"].as<std::string>(), 
+                             vm["orbital-image-pattern"].as<std::string>(),
                              vm["pattern-index-start"].as<int>(),
                              vm["pattern-index-end"].as<int>());
       return work;
