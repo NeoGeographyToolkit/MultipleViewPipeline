@@ -63,3 +63,7 @@ TEST(MVPWorkspace, assemble_job) {
   EXPECT_EQ(job.algorithm_settings().DebugString(), MVPAlgorithmSettings().DebugString());
   EXPECT_EQ(job.orbital_images_size(), 4);
 }
+
+TEST(MVPWorkspace, construct_from_program_options) {
+  //TODO: write me!
+}
