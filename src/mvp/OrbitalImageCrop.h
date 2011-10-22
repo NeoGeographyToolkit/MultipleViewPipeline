@@ -36,12 +36,24 @@ class OrbitalImageCrop {
     vw::ImageView<double> image() const {return m_image;}
 };
 
-struct OrbitalImageCropCollection : public std::vector<OrbitalImageCrop> {
-  OrbitalImageCropCollection(google::protobuf::RepeatedPtrField<OrbitalImageFileDescriptor> const& orbital_images, vw::BBox2 const& lonlat_bbox) {
-    BOOST_FOREACH(OrbitalImageFileDescriptor const& o, orbital_images) {
-      push_back(OrbitalImageCrop(o, lonlat_bbox));
+class OrbitalImageCropCollection : public std::vector<OrbitalImageCrop> {
+
+  vw::BBox2 m_lonlat_bbox;
+
+  public:
+    
+    OrbitalImageCropCollection(vw::BBox2 const& lonlat_bbox) : m_lonlat_bbox(lonlat_bbox) {}
+
+    void add_image(OrbitalImageFileDescriptor const& image) {
+      push_back(OrbitalImageCrop(image, m_lonlat_bbox));
     }
-  }
+    
+    template <class CollectionT>
+    void add_image_collection(CollectionT const& orbital_images) {
+      BOOST_FOREACH(OrbitalImageFileDescriptor const& o, orbital_images) {
+        add_image(o);
+      }
+    }
 };
 
 #if MVP_ENABLE_OCTAVE_SUPPORT

@@ -33,7 +33,8 @@ TEST(MVPJob, process_tile) {
   
   MVPTileResult result = mvpjob_process_tile(job_request);
  
-  OrbitalImageCropCollection crops(job_request.orbital_images(), plate_georef.tile_lonlat_bbox(col_row[0], col_row[1], level));
+  OrbitalImageCropCollection crops(plate_georef.tile_lonlat_bbox(col_row[0], col_row[1], level));
+  crops.add_image_collection(job_request.orbital_images());
 
   GeoReference georef(plate_georef.tile_georef(col_row[0], col_row[1], level));
   EXPECT_EQ(georef.build_desc().DebugString(), result.georef.build_desc().DebugString());

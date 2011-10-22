@@ -90,7 +90,8 @@ struct MVPJobBase {
 
     vw::BBox2 tile_bbox(plate_georef.tile_lonlat_bbox(job_request.col(), job_request.row(), job_request.level()));
 
-    OrbitalImageCropCollection crops(job_request.orbital_images(), tile_bbox);
+    OrbitalImageCropCollection crops(tile_bbox);
+    crops.add_image_collection(job_request.orbital_images());
 
     return ImplT(georef, plate_georef.tile_size(), crops, job_request.algorithm_settings());
   }
