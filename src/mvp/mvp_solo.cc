@@ -64,6 +64,7 @@ int main(int argc, char* argv[])
 
   int curr_tile = 0;
   int num_tiles = tile_bbox.width() * tile_bbox.height();
+  float32 plate_min_val = numeric_limits<float32>::max(), plate_max_val = numeric_limits<float32>::min();
   for (int col = tile_bbox.min().x(); col < tile_bbox.max().x(); col++) {
     for (int row = tile_bbox.min().y(); row < tile_bbox.max().y(); row++) {
       ostringstream status;
@@ -71,7 +72,12 @@ int main(int argc, char* argv[])
 
       MVPTileResult result = mvpjob_process_tile(work.assemble_job(col, row, render_level), TerminalProgressCallback("mvp", status.str()));
       
-      ImageView<PixelGrayA<float32> > rendered_tile = pixel_cast<PixelGrayA<float32> >(result.post_height / work.num_images());
+      ImageView<PixelGrayA<float32> > rendered_tile = pixel_cast<PixelGrayA<float32> >(result.post_height);
+
+      float32 tile_min_val, tile_max_val;
+      min_max_pixel_values(result.post_height, tile_min_val, tile_max_val);
+      plate_min_val = min(plate_min_val, tile_min_val);
+      plate_max_val = max(plate_max_val, tile_max_val);
 
       pf->write_request();
       pf->write_update(rendered_tile, col, row, render_level, tid);
@@ -81,12 +87,11 @@ int main(int argc, char* argv[])
   }
 
   // This way that tile is easy to find...
-
   for (int level = 2; level < render_level; level++) {
     int divisor = render_level - level;
     for (int col = tile_bbox.min().x() >> divisor; col <= tile_bbox.max().x() >> divisor; col++) {
       for (int row = tile_bbox.min().y() >> divisor; row <= tile_bbox.max().y() >> divisor; row++) {
-        ImageView<PixelGrayA<float32> > rendered_tile(constant_view(PixelGrayA<float32>(255, 255), 
+        ImageView<PixelGrayA<float32> > rendered_tile(constant_view(PixelGrayA<float32>(plate_max_val, 1), 
                                                                     work.plate_georef().tile_size(), work.plate_georef().tile_size()));
         pf->write_request();
         pf->write_update(rendered_tile, col, row, level, tid);
@@ -95,6 +100,8 @@ int main(int argc, char* argv[])
       }
     }
   }
+
+  cout << "Plate (min, max): (" << plate_min_val << ", " << plate_max_val << ")" << endl;
 
   return 0;
 }
