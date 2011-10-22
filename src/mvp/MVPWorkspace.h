@@ -109,10 +109,13 @@ class MVPWorkspace {
       m_footprints.add_image_pattern(camera_pattern, image_pattern, start, end);
     }
 
+    /// Return the name of the result platefile for this workspace
     std::string result_platefile() const {return m_result_platefile;}
 
+    /// Return the name of the internal result platefile for this workspace
     std::string internal_result_platefile() const {return m_internal_result_platefile;}
 
+    /// Return the number of images in this workspace
     int num_images() const {return m_footprints.size();}
 
     /// Return the PlateGeoReference for the workspace
