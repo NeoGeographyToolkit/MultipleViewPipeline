@@ -50,17 +50,17 @@ struct MVPJobTest : public MVPJobBase<MVPJobTest> {
   }
 };
 
-inline MVPTileResult mvpjob_process_tile(MVPJobRequest const& job_request) {
+inline MVPTileResult mvpjob_process_tile(MVPJobRequest const& job_request, vw::ProgressCallback const& progress = vw::ProgressCallback::dummy_instance()) {
   if (job_request.algorithm_settings().use_octave()) {
     #if MVP_ENABLE_OCTAVE_SUPPORT
-      return MVPJobOctave(job_request).process_tile();
+      return MVPJobOctave(job_request).process_tile(progress);
     #else
       vw::vw_throw(vw::NoImplErr() << "Cannot use octave algorithm, as the MVP was not compled with it!");
     #endif
   } else if (job_request.algorithm_settings().test_algorithm()) {
-    return MVPJobTest(job_request).process_tile();
+    return MVPJobTest(job_request).process_tile(progress);
   } else {
-    return MVPJob(job_request).process_tile();
+    return MVPJob(job_request).process_tile(progress);
   }
 }
 
