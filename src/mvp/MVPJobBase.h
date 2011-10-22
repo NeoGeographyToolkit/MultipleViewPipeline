@@ -82,6 +82,14 @@ struct MVPTileResult {
 
 template <class ImplT>
 struct MVPJobBase {
+
+  static ImplT construct_from_job_request(MVPJobRequest const& job_request) {
+    vw::cartography::GeoReference georef(job_request.georef());
+    OrbitalImageCropCollection crops(job_request.orbital_images(), georef.pixel_to_lonlat_bbox(vw::BBox2(0, 0, job_request.tile_size(), job_request.tile_size())));
+
+    return ImplT(georef, job_request.tile_size(), crops, job_request.algorithm_settings());
+  }
+
   inline ImplT& impl() {return static_cast<ImplT&>(*this);}
   inline ImplT const& impl() const {return static_cast<ImplT const&>(*this);}
 
@@ -107,23 +115,20 @@ struct MVPJobBase {
   }
 
   protected:
-    MVPAlgorithmSettings m_settings;
     vw::cartography::GeoReference m_georef;
     int m_tile_size;
     OrbitalImageCropCollection m_crops;
+    MVPAlgorithmSettings m_settings;
     // TODO: A seed object...
 
     // This is defined here to prevent the user from accidently
     // constructing an MVPJobBase
-    MVPJobBase(MVPJobRequest job_request) : 
-      m_settings(job_request.algorithm_settings()),
-      m_georef(job_request.georef()),
-      m_tile_size(job_request.tile_size()),
-      m_crops(job_request.orbital_images(), m_georef.pixel_to_lonlat_bbox(vw::BBox2(0, 0, m_tile_size, m_tile_size))) {}
+    MVPJobBase(vw::cartography::GeoReference const& georef, int tile_size, OrbitalImageCropCollection const& crops, MVPAlgorithmSettings const& settings) :
+      m_georef(georef), m_tile_size(tile_size), m_crops(crops), m_settings(settings) {}
+    MVPJobBase(MVPJobBase const& job) : m_georef(job.m_georef), m_tile_size(job.m_tile_size), m_crops(job.m_crops), m_settings(job.m_settings) {}
 
   private:
     // These are defined here to prevent them from being used
-    MVPJobBase(MVPJobBase const&) {}
     MVPJobBase& operator=(MVPJobBase const&) {return *this;}
 };
 

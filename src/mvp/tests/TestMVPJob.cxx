@@ -31,7 +31,7 @@ TEST(MVPJob, process_tile) {
 
   MVPJobRequest job_request = work.assemble_job(col_row[0], col_row[1], level);
   
-  MVPTileResult result = MVPJobTest(job_request).process_tile();
+  MVPTileResult result = mvpjob_process_tile(job_request);
  
   OrbitalImageCropCollection crops(job_request.orbital_images(), plate_georef.tile_lonlat_bbox(col_row[0], col_row[1], level));
 

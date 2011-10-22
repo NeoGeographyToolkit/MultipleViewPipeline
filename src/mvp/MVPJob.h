@@ -13,8 +13,9 @@
 namespace mvp {
 
 struct MVPJob : public MVPJobBase<MVPJob> {
-  
-  MVPJob(MVPJobRequest const& job_request) : MVPJobBase(job_request) {}
+
+  MVPJob(vw::cartography::GeoReference const& georef, int tile_size, OrbitalImageCropCollection const& crops, MVPAlgorithmSettings const& settings) :
+    MVPJobBase(georef, tile_size, crops, settings) {}
 
   inline MVPPixelResult process_pixel(MVPAlgorithmVar const& seed, vw::cartography::GeoReference const& georef) const {
     using namespace vw;
@@ -27,7 +28,8 @@ struct MVPJob : public MVPJobBase<MVPJob> {
 
 struct MVPJobTest : public MVPJobBase<MVPJobTest> {
 
-  MVPJobTest(MVPJobRequest const& job_request) : MVPJobBase(job_request) {}
+  MVPJobTest(vw::cartography::GeoReference const& georef, int tile_size, OrbitalImageCropCollection const& crops, MVPAlgorithmSettings const& settings) :
+    MVPJobBase(georef, tile_size, crops, settings) {}
 
   inline MVPPixelResult process_pixel(MVPAlgorithmVar const& seed, vw::cartography::GeoReference const& georef) const {
     using namespace vw;
@@ -53,14 +55,14 @@ struct MVPJobTest : public MVPJobBase<MVPJobTest> {
 inline MVPTileResult mvpjob_process_tile(MVPJobRequest const& job_request, vw::ProgressCallback const& progress = vw::ProgressCallback::dummy_instance()) {
   if (job_request.algorithm_settings().use_octave()) {
     #if MVP_ENABLE_OCTAVE_SUPPORT
-      return MVPJobOctave(job_request).process_tile(progress);
+      return MVPJobOctave::construct_from_job_request(job_request).process_tile(progress);
     #else
       vw::vw_throw(vw::NoImplErr() << "Cannot use octave algorithm, as the MVP was not compled with it!");
     #endif
   } else if (job_request.algorithm_settings().test_algorithm()) {
-    return MVPJobTest(job_request).process_tile(progress);
+    return MVPJobTest::construct_from_job_request(job_request).process_tile(progress);
   } else {
-    return MVPJob(job_request).process_tile(progress);
+    return MVPJob::construct_from_job_request(job_request).process_tile(progress);
   }
 }
 
