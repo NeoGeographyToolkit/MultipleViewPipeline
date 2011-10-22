@@ -67,8 +67,8 @@ class MVPWorkspace {
         ("datum", po::value<std::string>()->required(), "Datum name")
         ("map-projection", po::value<std::string>()->default_value("equi"), "Plate map projection type")
         ("tile-size", po::value<int>()->default_value(256), "Plate tile size")
-        ("result-plate", po::value<std::string>()->required(), "Result plate filename")
-        ("internal-result-plate", po::value<std::string>(), "Internal result plate filename")
+        ("result-platefile", po::value<std::string>()->required(), "Result plate filename")
+        ("internal-result-platefile", po::value<std::string>(), "Internal result plate filename")
         ("post-height-limit-min", po::value<double>()->required(), "Min DEM post height to search")
         ("post-height-limit-max", po::value<double>()->required(), "Man DEM post height to search")
         ("use-octave", "Use octave in processing")
@@ -91,7 +91,7 @@ class MVPWorkspace {
       settings.set_test_algorithm(vm.count("test-algorithm"));
       // TODO: Add 'octave_function'
 
-      MVPWorkspace work(vm["result-plate"].as<std::string>(), vm["internal-result-plate"].as<std::string>(), plate_georef, settings);
+      MVPWorkspace work(vm["result-platefile"].as<std::string>(), vm["internal-result-platefile"].as<std::string>(), plate_georef, settings);
       work.add_image_pattern(vm["orbital-image-pattern"].as<std::string>(), 
                              vm["camera-pattern"].as<std::string>(),
                              vm["pattern-index-start"].as<int>(),
