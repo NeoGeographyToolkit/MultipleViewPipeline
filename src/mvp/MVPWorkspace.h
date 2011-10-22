@@ -71,8 +71,8 @@ class MVPWorkspace {
         ("internal-result-platefile", po::value<std::string>(), "Internal result plate filename")
         ("post-height-limit-min", po::value<double>()->required(), "Min DEM post height to search")
         ("post-height-limit-max", po::value<double>()->required(), "Man DEM post height to search")
-        ("use-octave", "Use octave in processing")
-        ("test-algorithm", "Run the test algorithm that draws footprints instead of creating a DEM")
+        ("use-octave", po::value<bool>()->default_value(false), "Use octave in processing")
+        ("test-algorithm", po::value<bool>()->default_value(false), "Run the test algorithm that draws footprints instead of creating a DEM")
         ;
 
       return options;
@@ -87,8 +87,8 @@ class MVPWorkspace {
       MVPAlgorithmSettings settings;
       settings.set_post_height_limit_min(vm["post-height-limit-min"].as<double>());
       settings.set_post_height_limit_max(vm["post-height-limit-max"].as<double>());
-      settings.set_use_octave(vm.count("use-octave"));
-      settings.set_test_algorithm(vm.count("test-algorithm"));
+      settings.set_use_octave(vm["use-octave"].as<bool>());
+      settings.set_test_algorithm(vm["test-algorithm"].as<bool>());
       // TODO: Add 'octave_function'
 
       MVPWorkspace work(vm["result-platefile"].as<std::string>(), vm["internal-result-platefile"].as<std::string>(), plate_georef, settings);
