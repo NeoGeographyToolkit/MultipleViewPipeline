@@ -134,7 +134,7 @@ TEST(OrbitalImageFootprintCollection, add_image) {
 
 TEST(OrbitalImageFootprintCollection, add_image_pattern) {
   OrbitalImageFootprintCollection images(Datum("D_MOON"), Vector2(0, 0));
-  images.add_image_pattern(SrcName("AS15-M-%04d.lev1.pinhole"), SrcName("dummy_image.%d.png"), Vector2i(73, 76));
+  images.add_image_pattern(SrcName("AS15-M-%04d.lev1.pinhole"), SrcName("dummy_image.%d.png"), 73, 76);
 
   EXPECT_EQ(images.size(), 4);
   EXPECT_EQ(images.equal_resolution_level(), 6);

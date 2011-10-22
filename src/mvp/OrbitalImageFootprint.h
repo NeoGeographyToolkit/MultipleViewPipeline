@@ -195,10 +195,10 @@ class OrbitalImageFootprintCollection : public std::vector<OrbitalImageFootprint
       this->push_back(OrbitalImageFootprint(camera_path, image_path, m_datum, m_post_height_limits));
     }
 
-    void add_image_pattern(std::string const& camera_pattern, std::string const& image_pattern, vw::Vector2i const& range) {
+    void add_image_pattern(std::string const& camera_pattern, std::string const& image_pattern, int start, int end) {
       namespace fs = boost::filesystem;
 
-      for (int i = range[0]; i <= range[1]; i++) {
+      for (int i = start; i <= end; i++) {
         std::string camera_file = (boost::format(camera_pattern) % i).str();
         std::string image_file = (boost::format(image_pattern) % i).str();
         if (fs::exists(camera_file) && fs::exists(image_file)) {

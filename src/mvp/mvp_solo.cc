@@ -53,11 +53,6 @@ int main(int argc, char* argv[])
   /*
   const int MAX_OVERLAP = 4;
 
-  PlateGeoReference plate_georef(Datum("D_MOON"), "equi", 256, GeoReference::PixelAsPoint);
-  MVPAlgorithmSettings settings;
-  settings.set_test_algorithm(true);
-
-  MVPWorkspace work("result.plate", "result-internal.plate", plate_georef, settings);
   work.add_image_pattern("synth.%d.pinhole", "synth.%d.tif", Vector2i(0, 3));
 
   int render_level = work.equal_resolution_level();

@@ -62,8 +62,8 @@ class MVPWorkspace {
       options.add_options()
         ("orbital-image-pattern", po::value<std::string>()->required(), "Path to orbital images")
         ("camera-pattern", po::value<std::string>()->required(), "Path to orbital image camera models")
-        ("pattern-index-start", po::value<int>(), "Starting index to substitute into image/camera pattern")
-        ("pattern-index-end", po::value<int>(), "Ending index to substitute into image/camera pattern")
+        ("pattern-index-start", po::value<int>()->required(), "Starting index to substitute into image/camera pattern")
+        ("pattern-index-end", po::value<int>()->required(), "Ending index to substitute into image/camera pattern")
         ("datum", po::value<std::string>()->required(), "Datum name")
         ("map-projection", po::value<std::string>()->default_value("equi"), "Plate map projection type")
         ("tile-size", po::value<int>()->default_value(256), "Plate tile size")
@@ -79,7 +79,24 @@ class MVPWorkspace {
     }
 
     static MVPWorkspace construct_from_program_options(boost::program_options::variables_map const& vm) {
-      return MVPWorkspace("", "", vw::platefile::PlateGeoReference(vw::cartography::Datum("D_MOON")), MVPAlgorithmSettings());
+      vw::platefile::PlateGeoReference plate_georef(vw::cartography::Datum(vm["datum"].as<std::string>()), 
+                                                    vm["map-projection"].as<std::string>(), 
+                                                    vm["tile-size"].as<int>(), 
+                                                    vw::cartography::GeoReference::PixelAsPoint);
+
+      MVPAlgorithmSettings settings;
+      settings.set_post_height_limit_min(vm["post-height-limit-min"].as<double>());
+      settings.set_post_height_limit_max(vm["post-height-limit-max"].as<double>());
+      settings.set_use_octave(vm.count("use-octave"));
+      settings.set_test_algorithm(vm.count("test-algorithm"));
+      // TODO: Add 'octave_function'
+
+      MVPWorkspace work(vm["result-plate"].as<std::string>(), vm["internal-result-plate"].as<std::string>(), plate_georef, settings);
+      work.add_image_pattern(vm["orbital-image-pattern"].as<std::string>(), 
+                             vm["camera-pattern"].as<std::string>(),
+                             vm["pattern-index-start"].as<int>(),
+                             vm["pattern-index-end"].as<int>());
+      return work;
     }
 
     /// Add an orbital image to the workspace
@@ -88,8 +105,8 @@ class MVPWorkspace {
     }
 
     /// Add a set of orbital images to the workspace based on a pattern
-    void add_image_pattern(std::string const& camera_pattern, std::string const& image_pattern, vw::Vector2i const& range) {
-      m_footprints.add_image_pattern(camera_pattern, image_pattern, range);
+    void add_image_pattern(std::string const& camera_pattern, std::string const& image_pattern, int start, int end) {
+      m_footprints.add_image_pattern(camera_pattern, image_pattern, start, end);
     }
 
     int num_images() const {return m_footprints.size();}

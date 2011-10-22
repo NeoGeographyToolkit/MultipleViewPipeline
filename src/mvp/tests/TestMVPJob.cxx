@@ -20,7 +20,7 @@ TEST(MVPJob, process_tile) {
   settings.set_test_algorithm(true);
 
   MVPWorkspace work("", "", plate_georef, settings);
-  work.add_image_pattern(SrcName("synth.%d.pinhole"), SrcName("synth.%d.tif"), Vector2i(0, 3));
+  work.add_image_pattern(SrcName("synth.%d.pinhole"), SrcName("synth.%d.tif"), 0, 3);
   EXPECT_EQ(work.num_images(), 4);
 
   int level = work.equal_resolution_level();
