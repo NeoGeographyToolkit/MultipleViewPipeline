@@ -3,6 +3,7 @@
 #include <vw/Image/ImageMath.h>
 #include <vw/Image/UtilityViews.h>
 #include <vw/Plate/PlateFile.h>
+#include <vw/Image/MaskViews.h>
 
 #include <mvp/MVPWorkspace.h>
 #include <mvp/MVPJob.h>
@@ -57,11 +58,9 @@ int main(int argc, char* argv[])
                                                 work.plate_georef().map_proj(),
                                                 "desc",
                                                 work.plate_georef().tile_size(),
-                                                "tif", VW_PIXEL_RGBA, VW_CHANNEL_UINT8));
+                                                "tif", VW_PIXEL_GRAYA, VW_CHANNEL_FLOAT32));
 
   Transaction tid = pf->transaction_request("tdesc", -1);
-
-  const int MAX_OVERLAP = 4;
 
   int curr_tile = 0;
   int num_tiles = tile_bbox.width() * tile_bbox.height();
@@ -72,7 +71,7 @@ int main(int argc, char* argv[])
 
       MVPTileResult result = mvpjob_process_tile(work.assemble_job(col, row, render_level), TerminalProgressCallback("mvp", status.str()));
       
-      ImageView<PixelRGBA<uint8> > rendered_tile = pixel_cast_rescale<PixelRGB<uint8> >(result.post_height / MAX_OVERLAP);
+      ImageView<PixelGrayA<float32> > rendered_tile = pixel_cast<PixelGrayA<float32> >(result.post_height / work.num_images());
 
       pf->write_request();
       pf->write_update(rendered_tile, col, row, render_level, tid);
@@ -87,8 +86,8 @@ int main(int argc, char* argv[])
     int divisor = render_level - level;
     for (int col = tile_bbox.min().x() >> divisor; col <= tile_bbox.max().x() >> divisor; col++) {
       for (int row = tile_bbox.min().y() >> divisor; row <= tile_bbox.max().y() >> divisor; row++) {
-        ImageView<PixelRGBA<uint8> > rendered_tile(constant_view(PixelRGBA<uint8>(255, 0, 0, 255), 
-                                                                 work.plate_georef().tile_size(), work.plate_georef().tile_size()));
+        ImageView<PixelGrayA<float32> > rendered_tile(constant_view(PixelGrayA<float32>(255, 255), 
+                                                                    work.plate_georef().tile_size(), work.plate_georef().tile_size()));
         pf->write_request();
         pf->write_update(rendered_tile, col, row, level, tid);
         pf->sync();
