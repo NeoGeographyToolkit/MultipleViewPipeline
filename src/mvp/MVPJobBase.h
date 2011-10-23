@@ -11,6 +11,7 @@
 #include <vw/Plate/PlateGeoReference.h>
 #include <vw/Cartography/GeoReference.h>
 #include <vw/Cartography/SimplePointImageManipulation.h>
+#include <vw/Image/PixelMask.h>
 
 #include <mvp/MVPJobRequest.pb.h>
 #include <mvp/OrbitalImageCrop.h>
@@ -61,11 +62,11 @@ struct MVPPixelResult : public MVPAlgorithmVar {
 struct MVPTileResult {
   vw::cartography::GeoReference georef;
 
-  vw::ImageView<vw::float32> post_height;
-  vw::ImageView<vw::float32> variance;
+  vw::ImageView<vw::PixelMask<vw::PixelGray<vw::float32> > > post_height;
+  vw::ImageView<vw::PixelMask<vw::PixelGray<vw::float32> > > variance;
 
-  vw::ImageView<vw::Vector3f> orientation;
-  vw::ImageView<vw::Vector3f> windows;
+  vw::ImageView<vw::PixelMask<vw::Vector3f> > orientation;
+  vw::ImageView<vw::PixelMask<vw::Vector3f> > windows;
 
   MVPTileResult(vw::cartography::GeoReference g, int tile_size) : georef(g),
     post_height(tile_size, tile_size), variance(tile_size, tile_size), 
@@ -77,6 +78,13 @@ struct MVPTileResult {
 
     orientation(col, row) = px_result.orientation;
     windows(col, row) = px_result.windows;
+
+    if (!px_result.converged) {
+      post_height(col, row).invalidate();
+      variance(col, row).invalidate();
+      orientation(col, row).invalidate();
+      windows(col, row).invalidate();
+    }
   }
 };
 

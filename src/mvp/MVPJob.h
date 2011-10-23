@@ -48,7 +48,7 @@ struct MVPJobTest : public MVPJobBase<MVPJobTest> {
 
     MVPAlgorithmVar result(overlaps, Vector3f(overlaps, overlaps, overlaps), Vector3f(overlaps, overlaps, overlaps));
 
-    return MVPPixelResult(result, overlaps, true, overlaps);
+    return MVPPixelResult(result, overlaps, overlaps > 0, overlaps);
   }
 };
 

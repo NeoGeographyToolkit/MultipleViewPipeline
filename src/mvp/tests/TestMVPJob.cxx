@@ -53,10 +53,17 @@ TEST(MVPJob, process_tile) {
         }
       }
 
-      EXPECT_EQ(overlaps, result.post_height(i, j));
-      EXPECT_EQ(overlaps, result.variance(i, j));
-      EXPECT_VECTOR_EQ(Vector3f(overlaps, overlaps, overlaps), result.orientation(i, j));
-      EXPECT_VECTOR_EQ(Vector3f(overlaps, overlaps, overlaps), result.windows(i, j));
+      PixelMask<PixelGray<float32> > px_result(overlaps);
+      PixelMask<Vector3f> px_result3(overlaps, overlaps, overlaps);
+      if (!overlaps) {
+        px_result.invalidate();
+        px_result3.invalidate();
+      }
+
+      EXPECT_TYPE_EQ(px_result, result.post_height(i, j));
+      EXPECT_TYPE_EQ(px_result, result.variance(i, j));
+      EXPECT_TYPE_EQ(px_result3, result.orientation(i, j));
+      EXPECT_TYPE_EQ(px_result3, result.windows(i, j));
 
       min_overlap = min(overlaps, min_overlap);
       max_overlap = max(overlaps, max_overlap);
