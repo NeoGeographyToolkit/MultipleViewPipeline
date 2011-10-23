@@ -10,6 +10,7 @@
 #include <mvp/OrbitalImageFileDescriptor.pb.h>
 
 #include <vw/Image/ImageView.h>
+#include <vw/Image/MaskViews.h>
 #include <vw/FileIO/DiskImageView.h>
 #include <vw/Camera/PinholeModel.h>
 
@@ -22,18 +23,23 @@
 namespace mvp {
 
 class OrbitalImageCrop {
+  vw::ImageView<vw::PixelMask<vw::PixelGray<vw::float32> > > m_image;
   vw::camera::PinholeModel m_camera;
-  vw::ImageView<double> m_image;
 
   public:
     OrbitalImageCrop(OrbitalImageFileDescriptor const& image_file, vw::BBox2 const& lonlat_bbox) {
       // TODO: Create crops
+      try {
+        m_image = vw::DiskImageView<vw::PixelMask<vw::PixelGray<vw::float32> > >(image_file.image_path());
+      } catch (vw::ArgumentErr& ex) {
+        // TODO: Require orbital images to have alpha channels... creating a mask is slow!
+        m_image = create_mask(vw::DiskImageView<vw::PixelGray<vw::float32> >(image_file.image_path()), std::numeric_limits<vw::float32>::quiet_NaN());
+      }
       m_camera = vw::camera::PinholeModel(image_file.camera_path());
-      m_image = vw::DiskImageView<double>(image_file.image_path());
     }
 
+    vw::ImageView<vw::PixelMask<vw::PixelGray<vw::float32> > > image() const {return m_image;}
     vw::camera::PinholeModel camera() const {return m_camera;}
-    vw::ImageView<double> image() const {return m_image;}
 };
 
 class OrbitalImageCropCollection : public std::vector<OrbitalImageCrop> {
