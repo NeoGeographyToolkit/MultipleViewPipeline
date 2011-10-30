@@ -41,26 +41,21 @@ class OrbitalImageFootprint
       m_image_size.x() = rsrc->cols();
       m_image_size.y() = rsrc->rows();
 
-      // TODO: Rewrite for ellipsoid
-      VW_ASSERT(datum.semi_major_axis() == datum.semi_minor_axis(),
-        vw::ArgumentErr() << "Datum must be spheroid");
-
-      vw::Vector2 radius_range = vw::Vector2(datum.radius(0, 0), datum.radius(0, 0)) + post_height_limits;
-      m_footprint = construct_footprint(m_image_file.camera_path(), m_image_size, radius_range);
+      m_footprint = construct_footprint(m_image_file.camera_path(), m_image_size, datum, post_height_limits);
     }
 
     /// A static method that constructs a polygon that represents an orbital
     /// image's footprint
     static std::vector<vw::Vector2> construct_footprint(vw::camera::PinholeModel const& camera, vw::Vector2i const& image_size,
-                                                        vw::Vector2 const& radius_range)
+                                                        vw::cartography::Datum const& datum, vw::Vector2 const& post_height_limits)
     {
       std::vector<vw::Vector2> fp;
 
       // TODO: Take into account the radius range!
-      fp.push_back(backproj_px(camera, vw::Vector2i(0, 0), radius_range[0]));
-      fp.push_back(backproj_px(camera, vw::Vector2i(image_size.x(), 0), radius_range[0]));
-      fp.push_back(backproj_px(camera, vw::Vector2i(image_size.x(), image_size.y()), radius_range[0]));
-      fp.push_back(backproj_px(camera, vw::Vector2i(0, image_size.y()), radius_range[0]));
+      fp.push_back(backproj_px(camera, vw::Vector2i(0, 0), datum, post_height_limits[0]));
+      fp.push_back(backproj_px(camera, vw::Vector2i(image_size.x(), 0), datum, post_height_limits[0]));
+      fp.push_back(backproj_px(camera, vw::Vector2i(image_size.x(), image_size.y()), datum, post_height_limits[0]));
+      fp.push_back(backproj_px(camera, vw::Vector2i(0, image_size.y()), datum, post_height_limits[0]));
 
       // TODO: Need to take care of wrapping around poles!
       vw::BBox2 maxbounds(-180,-180,360,360);

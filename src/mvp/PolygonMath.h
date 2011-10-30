@@ -9,13 +9,17 @@
 
 #include <vw/Camera/PinholeModel.h>
 #include <vw/Cartography/SimplePointImageManipulation.h>
+#include <vw/Cartography/Datum.h>
 
 #include <boost/foreach.hpp>
 
 namespace mvp {
 
-vw::Vector2 backproj_px(vw::camera::PinholeModel const& cam, vw::Vector2 const& px, double sphere_rad)
-{
+vw::Vector2 backproj_px(vw::camera::PinholeModel const& cam, vw::Vector2 const& px, vw::cartography::Datum const& datum, double alt) {
+  VW_ASSERT(datum.semi_major_axis() == datum.semi_minor_axis(), vw::NoImplErr() << "Spheroid datums not supported"); 
+
+  double sphere_rad = datum.semi_major_axis() + alt;
+
   vw::Vector3 dir = cam.pixel_to_vector(px);
   vw::Vector3 cntr = cam.camera_center();
 
@@ -32,8 +36,7 @@ vw::Vector2 backproj_px(vw::camera::PinholeModel const& cam, vw::Vector2 const& 
   return vw::math::subvector(llr, 0, 2);
 }
 
-bool isect_poly(std::vector<vw::Vector2> poly1, std::vector<vw::Vector2> poly2)
-{
+bool isect_poly(std::vector<vw::Vector2> poly1, std::vector<vw::Vector2> poly2) {
   // Algorithm from http://www.gpwiki.org/index.php/Polygon_Collision
   // Straight up dumb check, no optimizations attempted...
   VW_ASSERT(poly1.size() >= 3 && poly2.size() >= 3, vw::LogicErr() << "Invalid polygons");

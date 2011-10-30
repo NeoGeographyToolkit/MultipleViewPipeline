@@ -6,18 +6,17 @@ using namespace std;
 using namespace mvp;
 using namespace vw;
 using namespace vw::camera;
+using namespace vw::cartography;
 using namespace vw::test;
 
-TEST(HelperFunction, backproj_px) {
-  const double moon_rad = 1737400;
-
+TEST(PolygonMath, backproj_px) {
   PinholeModel cam(SrcName("AS15-M-0073.lev1.pinhole"));
 
   Vector2 px_pick(100.0, 200.0);
 
-  Vector2 lonlat = backproj_px(cam, px_pick, moon_rad);
+  Vector2 lonlat = backproj_px(cam, px_pick, Datum("D_MOON"), 0);
 
-  Vector3 llr(lonlat[0], lonlat[1], moon_rad);
+  Vector3 llr(lonlat[0], lonlat[1], Datum("D_MOON").semi_major_axis());
   Vector3 xyz = vw::cartography::lon_lat_radius_to_xyz(llr);
 
   Vector2 px_pick_again = cam.point_to_pixel(xyz);
@@ -25,7 +24,7 @@ TEST(HelperFunction, backproj_px) {
   EXPECT_VECTOR_NEAR(px_pick, px_pick_again, 1e-6);
 }
 
-TEST(HelperFunction, isec_poly) {
+TEST(PolygonMath, isec_poly) {
   vector<Vector2> poly1, poly2, poly3, poly4;
 
   poly1.push_back(Vector2(30, 40));

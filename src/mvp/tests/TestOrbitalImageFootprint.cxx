@@ -14,7 +14,7 @@ using namespace vw::camera;
 using namespace vw::cartography;
 
 TEST(OrbitalImageFootprint, construct_footprint) {
-  vector<Vector2> fp(OrbitalImageFootprint::construct_footprint(PinholeModel(SrcName("AS15-M-0073.lev1.pinhole")), Vector2(5725, 5725), Vector2(1737400, 1737400)));
+  vector<Vector2> fp(OrbitalImageFootprint::construct_footprint(PinholeModel(SrcName("AS15-M-0073.lev1.pinhole")), Vector2(5725, 5725), Datum("D_MOON"), Vector2()));
 
   EXPECT_EQ(fp.size(), 4);
   EXPECT_VECTOR_NEAR(fp[0], Vector2(173.541,-21.7811), 1e-3);
@@ -24,7 +24,7 @@ TEST(OrbitalImageFootprint, construct_footprint) {
 }
 
 TEST(OrbitalImageFootprint, lonlat_bbox) {
-  OrbitalImageFootprint image_fp(SrcName("dummy_image.73.png"), SrcName("AS15-M-0073.lev1.pinhole"), Datum("D_MOON"), Vector2(0, 0));
+  OrbitalImageFootprint image_fp(SrcName("dummy_image.73.png"), SrcName("AS15-M-0073.lev1.pinhole"), Datum("D_MOON"), Vector2());
 
   BBox2 bbox(image_fp.lonlat_bbox());
 
@@ -33,19 +33,19 @@ TEST(OrbitalImageFootprint, lonlat_bbox) {
 }
 
 TEST(OrbitalImageFootprint, equal_resolution_level) {
-  OrbitalImageFootprint image_fp(SrcName("dummy_image.73.png"), SrcName("AS15-M-0073.lev1.pinhole"), Datum("D_MOON"), Vector2(0, 0));
+  OrbitalImageFootprint image_fp(SrcName("dummy_image.73.png"), SrcName("AS15-M-0073.lev1.pinhole"), Datum("D_MOON"), Vector2());
 
   EXPECT_EQ(image_fp.equal_resolution_level(), 6);
 }
 
 TEST(OrbitalImageFootprint, equal_density_level) {
-  OrbitalImageFootprint image_fp(SrcName("dummy_image.73.png"), SrcName("AS15-M-0073.lev1.pinhole"), Datum("D_MOON"), Vector2(0, 0));
+  OrbitalImageFootprint image_fp(SrcName("dummy_image.73.png"), SrcName("AS15-M-0073.lev1.pinhole"), Datum("D_MOON"), Vector2());
 
   EXPECT_EQ(image_fp.equal_density_level(256), 11);
 }
 
 TEST(OrbitalImageFootprint, intersects) {
-  OrbitalImageFootprint image_fp(SrcName("dummy_image.73.png"), SrcName("AS15-M-0073.lev1.pinhole"), Datum("D_MOON"), Vector2(0, 0));
+  OrbitalImageFootprint image_fp(SrcName("dummy_image.73.png"), SrcName("AS15-M-0073.lev1.pinhole"), Datum("D_MOON"), Vector2());
 
   // Vector2(173.541,-21.7811)
   //           -----------------
@@ -63,7 +63,7 @@ TEST(OrbitalImageFootprint, intersects) {
 }
 
 TEST(OrbitalImageFootprintCollection, add_image) {
-  OrbitalImageFootprintCollection images(Datum("D_MOON"), Vector2(0, 0));
+  OrbitalImageFootprintCollection images(Datum("D_MOON"), Vector2());
 
   images.add_image(SrcName("dummy_image.73.png"), SrcName("AS15-M-0073.lev1.pinhole"));
 
@@ -85,7 +85,7 @@ TEST(OrbitalImageFootprintCollection, add_image) {
 }
 
 TEST(OrbitalImageFootprintCollection, add_image_pattern) {
-  OrbitalImageFootprintCollection images(Datum("D_MOON"), Vector2(0, 0));
+  OrbitalImageFootprintCollection images(Datum("D_MOON"), Vector2());
   images.add_image_pattern(SrcName("dummy_image.%d.png"), SrcName("AS15-M-%04d.lev1.pinhole"), 73, 76);
 
   EXPECT_EQ(images.size(), 4);
