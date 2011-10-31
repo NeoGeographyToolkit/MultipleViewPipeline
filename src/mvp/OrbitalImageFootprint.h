@@ -45,11 +45,12 @@ vw::Vector2 backproj_px(vw::camera::PinholeModel const& cam, vw::Vector2 const& 
   return vw::math::subvector(llr, 0, 2);
 }
 
+// TODO: is-a ConvexPolygon?
 class OrbitalImageFootprint
 {
   OrbitalImageFileDescriptor m_image_file;
   vw::Vector2i m_image_size;
-  std::vector<vw::Vector2> m_footprint;
+  ConvexPolygon m_footprint;
 
   public:
 
@@ -62,7 +63,7 @@ class OrbitalImageFootprint
       m_image_size.x() = rsrc->cols();
       m_image_size.y() = rsrc->rows();
 
-      m_footprint = construct_footprint(m_image_file.camera_path(), m_image_size, datum, post_height_limits);
+      m_footprint = ConvexPolygon(construct_footprint(m_image_file.camera_path(), m_image_size, datum, post_height_limits));
     }
 
     /// A static method that constructs a polygon that represents an orbital
@@ -95,13 +96,7 @@ class OrbitalImageFootprint
 
     /// Return a lonlat bounding box for the footprint of the orbital image
     vw::BBox2 lonlat_bbox() const {
-      vw::BBox2 bbox;
-
-      BOOST_FOREACH(vw::Vector2 v, m_footprint) {
-        bbox.grow(v);
-      }
-
-      return bbox;
+      return m_footprint.bounding_box();
     }
 
     /// Return the level for which the resolution of one tile at that level
@@ -130,13 +125,7 @@ class OrbitalImageFootprint
     /// Return true if the footprint of the orbital image intersects the given
     /// lonlat BBox
     bool intersects(vw::BBox2 lonlat_bbox) const {
-      std::vector<vw::Vector2> bbox_poly(4);
-      bbox_poly[0] = lonlat_bbox.min();
-      bbox_poly[1] = vw::Vector2(lonlat_bbox.min().x(), lonlat_bbox.max().y());
-      bbox_poly[2] = lonlat_bbox.max();
-      bbox_poly[3] = vw::Vector2(lonlat_bbox.max().x(), lonlat_bbox.min().y());
-
-      return isect_poly(m_footprint, bbox_poly);
+      return m_footprint.intersects(lonlat_bbox);
     }
 
 };

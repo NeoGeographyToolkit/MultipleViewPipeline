@@ -8,34 +8,34 @@ using namespace vw;
 using namespace vw::test;
 
 TEST(PolygonMath, isec_poly) {
-  vector<Vector2> poly1, poly2, poly3, poly4;
+  ConvexPolygon::VertexList list1, list2, list3, list4;
 
-  poly1.push_back(Vector2(30, 40));
-  poly1.push_back(Vector2(30, 80));
-  poly1.push_back(Vector2(50, 80));
-  poly1.push_back(Vector2(50, 40));
+  list1.push_back(Vector2(30, 40));
+  list1.push_back(Vector2(30, 80));
+  list1.push_back(Vector2(50, 80));
+  list1.push_back(Vector2(50, 40));
 
-  poly2.push_back(Vector2(40, 30));
-  poly2.push_back(Vector2(40, 70));
-  poly2.push_back(Vector2(60, 70));
-  poly2.push_back(Vector2(60, 30));
+  list2.push_back(Vector2(40, 30));
+  list2.push_back(Vector2(40, 70));
+  list2.push_back(Vector2(60, 70));
+  list2.push_back(Vector2(60, 30));
 
-  poly3.push_back(Vector2(45, 50));
-  poly3.push_back(Vector2(45, 60));
-  poly3.push_back(Vector2(47, 60));
-  poly3.push_back(Vector2(47, 50));
+  list3.push_back(Vector2(45, 50));
+  list3.push_back(Vector2(45, 60));
+  list3.push_back(Vector2(47, 60));
+  list3.push_back(Vector2(47, 50));
 
-  poly4.push_back(Vector2(48, 20));
-  poly4.push_back(Vector2(48, 60));
-  poly4.push_back(Vector2(70, 60));
-  poly4.push_back(Vector2(70, 20));
+  list4.push_back(Vector2(48, 20));
+  list4.push_back(Vector2(48, 60));
+  list4.push_back(Vector2(70, 60));
+  list4.push_back(Vector2(70, 20));
 
-  EXPECT_TRUE(isect_poly(poly1, poly2));
-  EXPECT_TRUE(isect_poly(poly1, poly3));
-  EXPECT_TRUE(isect_poly(poly2, poly3));
-  EXPECT_TRUE(isect_poly(poly1, poly4));
-  EXPECT_TRUE(isect_poly(poly2, poly4));
-  EXPECT_FALSE(isect_poly(poly3, poly4));
+  EXPECT_TRUE(ConvexPolygon(list1).intersects(ConvexPolygon(list2)));
+  EXPECT_TRUE(ConvexPolygon(list1).intersects(ConvexPolygon(list3)));
+  EXPECT_TRUE(ConvexPolygon(list2).intersects(ConvexPolygon(list3)));
+  EXPECT_TRUE(ConvexPolygon(list1).intersects(ConvexPolygon(list4)));
+  EXPECT_TRUE(ConvexPolygon(list2).intersects(ConvexPolygon(list4)));
+  EXPECT_FALSE(ConvexPolygon(list3).intersects(ConvexPolygon(list4)));
 }
 
 TEST(PolygonMath, circulation_direction) {
