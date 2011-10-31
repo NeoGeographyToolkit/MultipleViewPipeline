@@ -21,7 +21,7 @@ TEST(ConvexPolygon, contains) {
   EXPECT_FALSE(poly.contains(Vector2(20, 20)));
 }
 
-TEST(PolygonMath, intersect) {
+TEST(ConvexPolygon, intersect) {
   vector<Vector2> pt_list(4);
 
   pt_list[0] = Vector2(30, 40);
@@ -56,7 +56,7 @@ TEST(PolygonMath, intersect) {
   EXPECT_FALSE(poly3.intersects(poly4));
 }
 
-TEST(PolygonMath, circulation_direction) {
+TEST(ConvexPolygon, circulation_direction) {
   EXPECT_GT(circulation_direction(Vector2(2, 2), Vector2(3, 3), Vector2(1, 5)), 0);
   EXPECT_LT(circulation_direction(Vector2(1, 5), Vector2(3, 3), Vector2(2, 2)), 0);
   EXPECT_EQ(circulation_direction(Vector2(2, 2), Vector2(3, 3), Vector2(4, 4)), 0);
