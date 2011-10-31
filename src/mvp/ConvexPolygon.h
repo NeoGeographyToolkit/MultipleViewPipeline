@@ -101,6 +101,10 @@ struct ConvexPolygon {
 
         double circulation = circulation_direction(*curr, *next, pt);
 
+        // Round to zero if close... (assume colinear)
+        circulation = circulation * circulation < 1e-6 ? 0 : circulation;
+
+        // Different signs will result in negative
         if (prev_circulation * circulation < 0) {
           return false;
         }

@@ -2,10 +2,36 @@
 #include <test/Helpers.h>
 #include <mvp/ConvexPolygon.h>
 
+#include <boost/random/linear_congruential.hpp>
+#include <boost/random/uniform_real_distribution.hpp>
+
 using namespace std;
 using namespace mvp;
 using namespace vw;
 using namespace vw::test;
+
+TEST(ConvexPolygon, construct) {
+  boost::rand48 gen(10);
+  boost::random::uniform_real_distribution<> dist(1, 6);
+
+  vector<Vector2> pt_list;
+
+  for (int i = 0; i < 100; i++) {
+    pt_list.push_back(Vector2(dist(gen), dist(gen)));
+  }
+
+  ConvexPolygon poly(pt_list);
+
+  EXPECT_LT(poly.vertices().size(), pt_list.size());
+
+  BOOST_FOREACH(Vector2 const& v, pt_list) {
+    EXPECT_TRUE(poly.contains(v));
+  }
+
+  EXPECT_FALSE(poly.contains(Vector2(0, 0)));
+  EXPECT_FALSE(poly.contains(Vector2(2, -2)));
+  EXPECT_FALSE(poly.contains(Vector2(10, 3)));
+}
 
 TEST(ConvexPolygon, contains) {
   vector<Vector2> pt_list(4);
