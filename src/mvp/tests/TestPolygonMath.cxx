@@ -54,3 +54,9 @@ TEST(PolygonMath, isec_poly) {
   EXPECT_TRUE(isect_poly(poly2, poly4));
   EXPECT_FALSE(isect_poly(poly3, poly4));
 }
+
+TEST(PolygonMath, circulation_direction) {
+  EXPECT_GT(circulation_direction(Vector2(2, 2), Vector2(3, 3), Vector2(1, 5)), 0);
+  EXPECT_LT(circulation_direction(Vector2(1, 5), Vector2(3, 3), Vector2(2, 2)), 0);
+  EXPECT_EQ(circulation_direction(Vector2(2, 2), Vector2(3, 3), Vector2(4, 4)), 0);
+}

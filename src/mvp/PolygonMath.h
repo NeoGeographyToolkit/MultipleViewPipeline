@@ -15,6 +15,15 @@
 
 namespace mvp {
 
+
+typedef std::vector<vw::Vector2> ConvexPolygon;
+
+/// Return the circulation direction of three points. Negative if clockwise,
+/// positive if anticlockwise, zero if colinear.
+int circulation_direction(vw::Vector2 const& v0, vw::Vector2 const& v1, vw::Vector2 const& v) {
+  return (v.y() - v0.y()) * (v1.x() - v0.x()) - (v.x() - v0.x()) * (v1.y() - v0.y());
+}
+
 vw::Vector2 backproj_px(vw::camera::PinholeModel const& cam, vw::Vector2 const& px, vw::cartography::Datum const& datum, double alt) {
   VW_ASSERT(datum.semi_major_axis() == datum.semi_minor_axis(), vw::NoImplErr() << "Spheroid datums not supported"); 
 
@@ -36,7 +45,7 @@ vw::Vector2 backproj_px(vw::camera::PinholeModel const& cam, vw::Vector2 const& 
   return vw::math::subvector(llr, 0, 2);
 }
 
-bool isect_poly(std::vector<vw::Vector2> poly1, std::vector<vw::Vector2> poly2) {
+bool isect_poly(ConvexPolygon poly1, ConvexPolygon poly2) {
   // Algorithm from http://www.gpwiki.org/index.php/Polygon_Collision
   // Straight up dumb check, no optimizations attempted...
   VW_ASSERT(poly1.size() >= 3 && poly2.size() >= 3, vw::LogicErr() << "Invalid polygons");
