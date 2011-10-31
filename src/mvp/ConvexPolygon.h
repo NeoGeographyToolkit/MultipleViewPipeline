@@ -1,15 +1,13 @@
-/// \file PolygonMath.h
+/// \file ConvexPolygon.h
 ///
-/// Orbital Image Footprint Class class
+/// Convex Polygon Class
 ///
 /// TODO: Write me!
 
-#ifndef __MVP_POLYGONMATH_H__
-#define __MVP_POLYGONMATH_H__
+#ifndef __MVP_CONVEXPOLYGON_H__
+#define __MVP_CONVEXPOLYGON_H__
 
-#include <vw/Camera/PinholeModel.h>
-#include <vw/Cartography/SimplePointImageManipulation.h>
-#include <vw/Cartography/Datum.h>
+#include <vw/Math/Vector.h>
 
 #include <boost/foreach.hpp>
 
@@ -22,27 +20,6 @@ typedef std::vector<vw::Vector2> ConvexPolygon;
 /// positive if anticlockwise, zero if colinear.
 int circulation_direction(vw::Vector2 const& v0, vw::Vector2 const& v1, vw::Vector2 const& v) {
   return (v.y() - v0.y()) * (v1.x() - v0.x()) - (v.x() - v0.x()) * (v1.y() - v0.y());
-}
-
-vw::Vector2 backproj_px(vw::camera::PinholeModel const& cam, vw::Vector2 const& px, vw::cartography::Datum const& datum, double alt) {
-  VW_ASSERT(datum.semi_major_axis() == datum.semi_minor_axis(), vw::NoImplErr() << "Spheroid datums not supported"); 
-
-  double sphere_rad = datum.semi_major_axis() + alt;
-
-  vw::Vector3 dir = cam.pixel_to_vector(px);
-  vw::Vector3 cntr = cam.camera_center();
-
-  double a = dot_prod(dir, dir);
-  double b = 2 * dot_prod(cntr, dir);
-  double c = dot_prod(cntr, cntr) - sphere_rad * sphere_rad;
-
-  double t = (-b - sqrt(b*b-4*a*c))/2/a;
-
-  vw::Vector3 isect = cntr + t * dir;
-
-  vw::Vector3 llr = vw::cartography::xyz_to_lon_lat_radius(isect);
-
-  return vw::math::subvector(llr, 0, 2);
 }
 
 bool isect_poly(ConvexPolygon poly1, ConvexPolygon poly2) {

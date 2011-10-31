@@ -9,6 +9,7 @@ set(MVP_HDRS MVPAlgorithm.h
              MVPJob.h
              MVPWorkspace.h
              OrbitalImageFootprint.h
+             ConvexPolygon.h
              ${CMAKE_CURRENT_BINARY_DIR}/Config.h
              ${PROTO_HDRS})
 set(MVP_SRCS ${PROTO_SRCS})
