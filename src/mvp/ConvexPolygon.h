@@ -15,7 +15,7 @@
 namespace mvp {
 
 /// Return the circulation direction of three points. Negative if clockwise,
-/// positive if anticlockwise, zero if colinear.
+/// positive if anticlockwise, zero if colinear. For Y pointing up, X pointing right
 int circulation_direction(vw::Vector2 const& v0, vw::Vector2 const& v1, vw::Vector2 const& v) {
   return (v.y() - v0.y()) * (v1.x() - v0.x()) - (v.x() - v0.x()) * (v1.y() - v0.y());
 }
@@ -31,9 +31,54 @@ struct ConvexPolygon {
 
     ConvexPolygon() : m_vertices() {}
 
-    // TODO: Always find convex hull of input
     template <class ContainerT>
-    ConvexPolygon(ContainerT vertices) : m_vertices(vertices) {}
+    ConvexPolygon(ContainerT point_list) {
+      // Algorithm is the 'giftwrap' algorithm http://www.cse.unsw.edu.au/~lambert/java/3d/giftwrap.html
+      // Probably not the most efficient implementation...
+      VW_ASSERT(point_list.size() >= 3, vw::ArgumentErr() << "Need at least 3 points to construct a polygon!");
+
+      std::vector<vw::Vector2> pts(point_list);
+
+      vw::Vector2 end = pts[0];
+      BOOST_FOREACH(vw::Vector2 const& v, pts) {
+        if (end.y() < v.y()) {
+          end = v;
+        }
+      }
+
+      bool done = false;
+      vw::Vector2 curr = end;
+
+      while (!done) {
+        bool found_next = false;
+        BOOST_FOREACH(vw::Vector2 const& next, pts) {
+          if (curr != next) {
+            found_next = true;
+            BOOST_FOREACH(vw::Vector2 const& pt, pts) {
+              if (circulation_direction(curr, next, pt) > 0 && pt != next) {
+                found_next = false;
+                break;
+              }
+            }
+            if (found_next) {
+              curr = next;
+              break;
+            }
+          }
+        }
+
+        VW_ASSERT(found_next, vw::LogicErr() << "Unable to construct convex hull");
+
+        m_vertices.push_back(curr);
+        if (curr == end) {
+          done = true;
+        }
+      }
+    }
+
+    VertexList vertices() const {
+      return m_vertices;
+    }
 
     vw::BBox2 bounding_box() const {
       vw::BBox2 bbox;

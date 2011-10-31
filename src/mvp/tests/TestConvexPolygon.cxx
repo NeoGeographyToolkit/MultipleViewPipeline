@@ -7,35 +7,39 @@ using namespace mvp;
 using namespace vw;
 using namespace vw::test;
 
-TEST(PolygonMath, isec_poly) {
-  ConvexPolygon::VertexList list1, list2, list3, list4;
+TEST(PolygonMath, intersect) {
+  vector<Vector2> pt_list(4);
 
-  list1.push_back(Vector2(30, 40));
-  list1.push_back(Vector2(30, 80));
-  list1.push_back(Vector2(50, 80));
-  list1.push_back(Vector2(50, 40));
+  pt_list[0] = Vector2(30, 40);
+  pt_list[1] = Vector2(30, 80);
+  pt_list[2] = Vector2(50, 80);
+  pt_list[3] = Vector2(50, 40);
+  ConvexPolygon poly1(pt_list);
 
-  list2.push_back(Vector2(40, 30));
-  list2.push_back(Vector2(40, 70));
-  list2.push_back(Vector2(60, 70));
-  list2.push_back(Vector2(60, 30));
+  pt_list[0] = Vector2(40, 30);
+  pt_list[1] = Vector2(40, 70);
+  pt_list[2] = Vector2(60, 70);
+  pt_list[3] = Vector2(60, 30);
+  ConvexPolygon poly2(pt_list);
 
-  list3.push_back(Vector2(45, 50));
-  list3.push_back(Vector2(45, 60));
-  list3.push_back(Vector2(47, 60));
-  list3.push_back(Vector2(47, 50));
+  pt_list[0] = Vector2(45, 50);
+  pt_list[1] = Vector2(45, 60);
+  pt_list[2] = Vector2(47, 60);
+  pt_list[3] = Vector2(47, 50);
+  ConvexPolygon poly3(pt_list);
 
-  list4.push_back(Vector2(48, 20));
-  list4.push_back(Vector2(48, 60));
-  list4.push_back(Vector2(70, 60));
-  list4.push_back(Vector2(70, 20));
+  pt_list[0] = Vector2(48, 20);
+  pt_list[1] = Vector2(48, 60);
+  pt_list[2] = Vector2(70, 60);
+  pt_list[3] = Vector2(70, 20);
+  ConvexPolygon poly4(pt_list);
 
-  EXPECT_TRUE(ConvexPolygon(list1).intersects(ConvexPolygon(list2)));
-  EXPECT_TRUE(ConvexPolygon(list1).intersects(ConvexPolygon(list3)));
-  EXPECT_TRUE(ConvexPolygon(list2).intersects(ConvexPolygon(list3)));
-  EXPECT_TRUE(ConvexPolygon(list1).intersects(ConvexPolygon(list4)));
-  EXPECT_TRUE(ConvexPolygon(list2).intersects(ConvexPolygon(list4)));
-  EXPECT_FALSE(ConvexPolygon(list3).intersects(ConvexPolygon(list4)));
+  EXPECT_TRUE(poly1.intersects(poly2));
+  EXPECT_TRUE(poly1.intersects(poly3));
+  EXPECT_TRUE(poly2.intersects(poly3));
+  EXPECT_TRUE(poly1.intersects(poly4));
+  EXPECT_TRUE(poly2.intersects(poly4));
+  EXPECT_FALSE(poly3.intersects(poly4));
 }
 
 TEST(PolygonMath, circulation_direction) {
