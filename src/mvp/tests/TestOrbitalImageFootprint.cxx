@@ -28,16 +28,6 @@ TEST(HelperFunction, backproj_px) {
   EXPECT_VECTOR_NEAR(px_pick, px_pick_again, 1e-6);
 }
 
-TEST(OrbitalImageFootprint, construct_footprint) {
-  vector<Vector2> fp(OrbitalImageFootprint::construct_footprint(PinholeModel(SrcName("AS15-M-0073.lev1.pinhole")), Vector2(5725, 5725), Datum("D_MOON"), Vector2()));
-
-  EXPECT_EQ(fp.size(), 4);
-  EXPECT_VECTOR_NEAR(fp[0], Vector2(173.541,-21.7811), 1e-3);
-  EXPECT_VECTOR_NEAR(fp[1], Vector2(179.133,-22.5502), 1e-3);
-  EXPECT_VECTOR_NEAR(fp[2], Vector2(178.42,-27.6722), 1e-3);
-  EXPECT_VECTOR_NEAR(fp[3], Vector2(172.639,-26.9718), 1e-3);
-}
-
 TEST(OrbitalImageFootprint, lonlat_bbox) {
   OrbitalImageFootprint image_fp(SrcName("dummy_image.73.png"), SrcName("AS15-M-0073.lev1.pinhole"), Datum("D_MOON"), Vector2());
 

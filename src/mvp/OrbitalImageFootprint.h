@@ -45,7 +45,6 @@ vw::Vector2 backproj_px(vw::camera::PinholeModel const& cam, vw::Vector2 const& 
   return vw::math::subvector(llr, 0, 2);
 }
 
-// TODO: is-a ConvexPolygon?
 class OrbitalImageFootprint
 {
   OrbitalImageFileDescriptor m_image_file;
@@ -63,31 +62,23 @@ class OrbitalImageFootprint
       m_image_size.x() = rsrc->cols();
       m_image_size.y() = rsrc->rows();
 
-      m_footprint = ConvexPolygon(construct_footprint(m_image_file.camera_path(), m_image_size, datum, post_height_limits));
-    }
+      std::vector<vw::Vector2> fp_points(4);
 
-    /// A static method that constructs a polygon that represents an orbital
-    /// image's footprint
-    static std::vector<vw::Vector2> construct_footprint(vw::camera::PinholeModel const& camera, vw::Vector2i const& image_size,
-                                                        vw::cartography::Datum const& datum, vw::Vector2 const& post_height_limits)
-    {
-      std::vector<vw::Vector2> fp;
-
-      // TODO: Take into account the radius range!
-      fp.push_back(backproj_px(camera, vw::Vector2i(0, 0), datum, post_height_limits[0]));
-      fp.push_back(backproj_px(camera, vw::Vector2i(image_size.x(), 0), datum, post_height_limits[0]));
-      fp.push_back(backproj_px(camera, vw::Vector2i(image_size.x(), image_size.y()), datum, post_height_limits[0]));
-      fp.push_back(backproj_px(camera, vw::Vector2i(0, image_size.y()), datum, post_height_limits[0]));
+      vw::camera::PinholeModel camera(m_image_file.camera_path());
+      fp_points[0] = backproj_px(camera, vw::Vector2i(0, 0), datum, post_height_limits[0]);
+      fp_points[1] = backproj_px(camera, vw::Vector2i(m_image_size.x(), 0), datum, post_height_limits[0]);
+      fp_points[2] = backproj_px(camera, vw::Vector2i(m_image_size.x(), m_image_size.y()), datum, post_height_limits[0]);
+      fp_points[3] = backproj_px(camera, vw::Vector2i(0, m_image_size.y()), datum, post_height_limits[0]);
 
       // TODO: Need to take care of wrapping around poles!
       vw::BBox2 maxbounds(-180,-180,360,360);
-      BOOST_FOREACH(vw::Vector2 v, fp) {
+      BOOST_FOREACH(vw::Vector2 v, fp_points) {
         if (!maxbounds.contains(v)) {
           VW_ASSERT(maxbounds.contains(v), vw::NoImplErr() << "Lonlat wrapping in footprints needs to be implemented");
         }
       }
 
-      return fp;
+      m_footprint = ConvexPolygon(fp_points);
     }
 
     OrbitalImageFileDescriptor orbital_image_file() const {
