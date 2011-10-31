@@ -16,7 +16,7 @@ namespace mvp {
 
 /// Return the circulation direction of three points. Negative if clockwise,
 /// positive if anticlockwise, zero if colinear. For Y pointing up, X pointing right
-int circulation_direction(vw::Vector2 const& v0, vw::Vector2 const& v1, vw::Vector2 const& v) {
+double circulation_direction(vw::Vector2 const& v0, vw::Vector2 const& v1, vw::Vector2 const& v) {
   return (v.y() - v0.y()) * (v1.x() - v0.x()) - (v.x() - v0.x()) * (v1.y() - v0.y());
 }
 
@@ -88,6 +88,27 @@ struct ConvexPolygon {
       }
 
       return bbox;
+    }
+
+    bool contains(vw::Vector2 const& pt) const {
+      // Use solution 3 from http://paulbourke.net/geometry/insidepoly/
+      double prev_circulation = 0;
+      for (VertexList::const_iterator curr = m_vertices.begin(); curr != m_vertices.end(); curr++) {
+        VertexList::const_iterator next = curr;
+        if (++next == m_vertices.end()) {
+          next = m_vertices.begin();
+        }
+
+        double circulation = circulation_direction(*curr, *next, pt);
+
+        if (prev_circulation * circulation < 0) {
+          return false;
+        }
+
+        prev_circulation = circulation;
+      }
+
+      return true;
     }
 
     bool intersects(ConvexPolygon const& other) const {

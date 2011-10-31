@@ -7,6 +7,20 @@ using namespace mvp;
 using namespace vw;
 using namespace vw::test;
 
+TEST(ConvexPolygon, contains) {
+  vector<Vector2> pt_list(4);
+
+  pt_list[0] = Vector2(30, 40);
+  pt_list[1] = Vector2(30, 80);
+  pt_list[2] = Vector2(50, 80);
+  pt_list[3] = Vector2(50, 40);
+
+  ConvexPolygon poly(pt_list);
+
+  EXPECT_TRUE(poly.contains(Vector2(40, 50)));
+  EXPECT_FALSE(poly.contains(Vector2(20, 20)));
+}
+
 TEST(PolygonMath, intersect) {
   vector<Vector2> pt_list(4);
 
