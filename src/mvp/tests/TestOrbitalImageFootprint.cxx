@@ -28,29 +28,37 @@ TEST(HelperFunction, backproj_px) {
   EXPECT_VECTOR_NEAR(px_pick, px_pick_again, 1e-6);
 }
 
-TEST(OrbitalImageFootprint, lonlat_bbox) {
-  OrbitalImageFootprint image_fp(SrcName("dummy_image.73.png"), SrcName("AS15-M-0073.lev1.pinhole"), Datum("D_MOON"), Vector2());
+TEST(OrbitalImageFootprint, bounding_box) {
+  OrbitalImageFootprint image_fp(OrbitalImageFootprint::construct_from_paths(SrcName("dummy_image.73.png"), 
+                                                                             SrcName("AS15-M-0073.lev1.pinhole"), 
+                                                                             Datum("D_MOON"), Vector2()));
 
-  BBox2 bbox(image_fp.lonlat_bbox());
+  BBox2 bbox(image_fp.bounding_box());
 
   EXPECT_VECTOR_NEAR(bbox.min(), Vector2(172.639, -27.6722), 1e-3);
   EXPECT_VECTOR_NEAR(bbox.max(), Vector2(179.133, -21.7811), 1e-3);
 }
 
 TEST(OrbitalImageFootprint, equal_resolution_level) {
-  OrbitalImageFootprint image_fp(SrcName("dummy_image.73.png"), SrcName("AS15-M-0073.lev1.pinhole"), Datum("D_MOON"), Vector2());
+  OrbitalImageFootprint image_fp(OrbitalImageFootprint::construct_from_paths(SrcName("dummy_image.73.png"), 
+                                                                             SrcName("AS15-M-0073.lev1.pinhole"), 
+                                                                             Datum("D_MOON"), Vector2()));
 
   EXPECT_EQ(image_fp.equal_resolution_level(), 6);
 }
 
 TEST(OrbitalImageFootprint, equal_density_level) {
-  OrbitalImageFootprint image_fp(SrcName("dummy_image.73.png"), SrcName("AS15-M-0073.lev1.pinhole"), Datum("D_MOON"), Vector2());
+  OrbitalImageFootprint image_fp(OrbitalImageFootprint::construct_from_paths(SrcName("dummy_image.73.png"), 
+                                                                             SrcName("AS15-M-0073.lev1.pinhole"), 
+                                                                             Datum("D_MOON"), Vector2()));
 
   EXPECT_EQ(image_fp.equal_density_level(256), 11);
 }
 
 TEST(OrbitalImageFootprint, intersects) {
-  OrbitalImageFootprint image_fp(SrcName("dummy_image.73.png"), SrcName("AS15-M-0073.lev1.pinhole"), Datum("D_MOON"), Vector2());
+  OrbitalImageFootprint image_fp(OrbitalImageFootprint::construct_from_paths(SrcName("dummy_image.73.png"), 
+                                                                             SrcName("AS15-M-0073.lev1.pinhole"), 
+                                                                             Datum("D_MOON"), Vector2()));
 
   // Vector2(173.541,-21.7811)
   //           -----------------

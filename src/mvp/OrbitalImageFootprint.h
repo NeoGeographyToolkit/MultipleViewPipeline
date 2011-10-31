@@ -45,30 +45,31 @@ vw::Vector2 backproj_px(vw::camera::PinholeModel const& cam, vw::Vector2 const& 
   return vw::math::subvector(llr, 0, 2);
 }
 
-class OrbitalImageFootprint
+class OrbitalImageFootprint : public ConvexPolygon
 {
   OrbitalImageFileDescriptor m_image_file;
   vw::Vector2i m_image_size;
-  ConvexPolygon m_footprint;
 
   public:
-
-    OrbitalImageFootprint(std::string const& image_path, std::string const& camera_path, vw::cartography::Datum const& datum, vw::Vector2 const& post_height_limits)
+    static OrbitalImageFootprint construct_from_paths(std::string const& image_path, 
+                                                      std::string const& camera_path, 
+                                                      vw::cartography::Datum const& datum, 
+                                                      vw::Vector2 const& post_height_limits)
     {
-      m_image_file.set_camera_path(camera_path);
-      m_image_file.set_image_path(image_path);
+      OrbitalImageFileDescriptor image_file;
+      image_file.set_camera_path(camera_path);
+      image_file.set_image_path(image_path);
 
-      boost::scoped_ptr<vw::DiskImageResource> rsrc(vw::DiskImageResource::open(m_image_file.image_path()));
-      m_image_size.x() = rsrc->cols();
-      m_image_size.y() = rsrc->rows();
+      boost::scoped_ptr<vw::DiskImageResource> rsrc(vw::DiskImageResource::open(image_file.image_path()));
+      vw::Vector2i image_size(rsrc->cols(), rsrc->rows());
 
       std::vector<vw::Vector2> fp_points(4);
 
-      vw::camera::PinholeModel camera(m_image_file.camera_path());
+      vw::camera::PinholeModel camera(image_file.camera_path());
       fp_points[0] = backproj_px(camera, vw::Vector2i(0, 0), datum, post_height_limits[0]);
-      fp_points[1] = backproj_px(camera, vw::Vector2i(m_image_size.x(), 0), datum, post_height_limits[0]);
-      fp_points[2] = backproj_px(camera, vw::Vector2i(m_image_size.x(), m_image_size.y()), datum, post_height_limits[0]);
-      fp_points[3] = backproj_px(camera, vw::Vector2i(0, m_image_size.y()), datum, post_height_limits[0]);
+      fp_points[1] = backproj_px(camera, vw::Vector2i(image_size.x(), 0), datum, post_height_limits[0]);
+      fp_points[2] = backproj_px(camera, vw::Vector2i(image_size.x(), image_size.y()), datum, post_height_limits[0]);
+      fp_points[3] = backproj_px(camera, vw::Vector2i(0, image_size.y()), datum, post_height_limits[0]);
 
       // TODO: Need to take care of wrapping around poles!
       vw::BBox2 maxbounds(-180,-180,360,360);
@@ -78,22 +79,17 @@ class OrbitalImageFootprint
         }
       }
 
-      m_footprint = ConvexPolygon(fp_points);
+      return OrbitalImageFootprint(image_file, image_size, fp_points);
     }
 
     OrbitalImageFileDescriptor orbital_image_file() const {
       return m_image_file;
     }
 
-    /// Return a lonlat bounding box for the footprint of the orbital image
-    vw::BBox2 lonlat_bbox() const {
-      return m_footprint.bounding_box();
-    }
-
     /// Return the level for which the resolution of one tile at that level
     /// is approximately equal to the resolution of the orbital image.
     int equal_resolution_level() const {
-      vw::BBox2 fp_bbox(lonlat_bbox());
+      vw::BBox2 fp_bbox(bounding_box());
 
       double x_res_lvl = log(360.0 / fp_bbox.width()) / log(2);
       double y_res_lvl = log(360.0 / fp_bbox.height()) / log(2);
@@ -105,7 +101,7 @@ class OrbitalImageFootprint
     /// degree) at that level is greater or equal to the pixel density of
     /// the orbital image.
     int equal_density_level(int tile_size) const {
-      vw::BBox2 fp_bbox(lonlat_bbox());
+      vw::BBox2 fp_bbox(bounding_box());
 
       double x_dens_lvl = log(360.0 * m_image_size.x() / fp_bbox.width() / tile_size) / log(2);
       double y_dens_lvl = log(360.0 * m_image_size.y() / fp_bbox.height() / tile_size) / log(2);
@@ -113,12 +109,11 @@ class OrbitalImageFootprint
       return ceil(std::max(x_dens_lvl, y_dens_lvl));
     }
 
-    /// Return true if the footprint of the orbital image intersects the given
-    /// lonlat BBox
-    bool intersects(vw::BBox2 lonlat_bbox) const {
-      return m_footprint.intersects(lonlat_bbox);
-    }
-
+  protected:
+    // Make sure the user doesn't construct one
+    template <class ContainerT>
+    OrbitalImageFootprint(OrbitalImageFileDescriptor const& image_file, vw::Vector2i const& image_size, ContainerT point_list) :
+      ConvexPolygon(point_list), m_image_file(image_file), m_image_size(image_size) {}
 };
 
 class OrbitalImageFootprintCollection : public std::vector<OrbitalImageFootprint> {
@@ -133,7 +128,7 @@ class OrbitalImageFootprintCollection : public std::vector<OrbitalImageFootprint
       m_datum(datum), m_post_height_limits(vw::Vector2(post_height_limit_min, post_height_limit_max)) {}
 
     void add_image(std::string const& image_path, std::string const& camera_path) {
-      this->push_back(OrbitalImageFootprint(image_path, camera_path, m_datum, m_post_height_limits));
+      this->push_back(OrbitalImageFootprint::construct_from_paths(image_path, camera_path, m_datum, m_post_height_limits));
     }
 
     void add_image_pattern(std::string const& image_pattern, std::string const& camera_pattern, int start, int end) {
@@ -174,7 +169,7 @@ class OrbitalImageFootprintCollection : public std::vector<OrbitalImageFootprint
       vw::BBox2 result;
 
       BOOST_FOREACH(OrbitalImageFootprint const& fp, *this) {
-        result.grow(fp.lonlat_bbox());
+        result.grow(fp.bounding_box());
       }
 
       return result;
