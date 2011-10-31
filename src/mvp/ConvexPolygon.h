@@ -92,7 +92,6 @@ struct ConvexPolygon {
 
     bool contains(vw::Vector2 const& pt) const {
       // Use solution 3 from http://paulbourke.net/geometry/insidepoly/
-      double prev_circulation = 0;
       for (VertexList::const_iterator curr = m_vertices.begin(); curr != m_vertices.end(); curr++) {
         VertexList::const_iterator next = curr;
         if (++next == m_vertices.end()) {
@@ -104,12 +103,9 @@ struct ConvexPolygon {
         // Round to zero if close... (assume colinear)
         circulation = circulation * circulation < 1e-6 ? 0 : circulation;
 
-        // Different signs will result in negative
-        if (prev_circulation * circulation < 0) {
+        if (circulation > 0) {
           return false;
         }
-
-        prev_circulation = circulation;
       }
 
       return true;

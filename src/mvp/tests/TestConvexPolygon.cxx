@@ -45,6 +45,19 @@ TEST(ConvexPolygon, contains) {
 
   EXPECT_TRUE(poly.contains(Vector2(40, 50)));
   EXPECT_FALSE(poly.contains(Vector2(20, 20)));
+
+  vector<Vector2> pt_list2(6);
+  pt_list2[0] = Vector2(56.7642,9.61175);
+  pt_list2[1] = Vector2(56.7642,9.61174);
+  pt_list2[2] = Vector2(56.573,9.18129);
+  pt_list2[3] = Vector2(56.5729,9.18129);
+  pt_list2[4] = Vector2(56.1308,9.37433);
+  pt_list2[5] = Vector2(56.3215,9.80684);
+  
+  ConvexPolygon poly2(pt_list2);
+
+  EXPECT_TRUE(poly2.contains(Vector2(56.57, 9.4)));
+  EXPECT_FALSE(poly2.contains(Vector2(56.7642,9.18129)));
 }
 
 TEST(ConvexPolygon, intersect) {
