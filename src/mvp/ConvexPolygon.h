@@ -126,7 +126,7 @@ struct ConvexPolygon {
 
         double poly1_min = std::numeric_limits<double>::max();
         double poly1_max = std::numeric_limits<double>::min();
-        BOOST_FOREACH(vw::Vector2 v, m_vertices) {
+        BOOST_FOREACH(vw::Vector2 const& v, m_vertices) {
           double res = dot_prod(perp_dir, v);
           poly1_min = std::min(res, poly1_min);
           poly1_max = std::max(res, poly1_max);
@@ -134,7 +134,7 @@ struct ConvexPolygon {
 
         double poly2_min = std::numeric_limits<double>::max();
         double poly2_max = std::numeric_limits<double>::min();
-        BOOST_FOREACH(vw::Vector2 v, other.m_vertices) {
+        BOOST_FOREACH(vw::Vector2 const& v, other.m_vertices) {
           double res = dot_prod(perp_dir, v);
           poly2_min = std::min(res, poly2_min);
           poly2_max = std::max(res, poly2_max);
