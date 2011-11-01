@@ -80,7 +80,7 @@ TEST(OrbitalImageFootprintCollection, add_image) {
 
   images.add_image(SrcName("dummy_image.73.png"), SrcName("AS15-M-0073.lev1.pinhole"));
 
-  EXPECT_EQ(images.size(), 1);
+  EXPECT_EQ(images.size(), 1u);
   EXPECT_EQ(images.equal_resolution_level(), 6);
   EXPECT_EQ(images.equal_density_level(256), 11);
   EXPECT_VECTOR_NEAR(images.lonlat_bbox().min(), Vector2(172.639, -27.6722), 1e-3);
@@ -90,7 +90,7 @@ TEST(OrbitalImageFootprintCollection, add_image) {
   images.add_image(SrcName("dummy_image.75.png"), SrcName("AS15-M-0075.lev1.pinhole"));
   images.add_image(SrcName("dummy_image.76.png"), SrcName("AS15-M-0076.lev1.pinhole"));
 
-  EXPECT_EQ(images.size(), 4);
+  EXPECT_EQ(images.size(), 4u);
   EXPECT_EQ(images.equal_resolution_level(), 6);
   EXPECT_EQ(images.equal_density_level(256), 11);
   EXPECT_VECTOR_NEAR(images.lonlat_bbox().min(), Vector2(169.254, -27.6722), 1e-3);
@@ -101,7 +101,7 @@ TEST(OrbitalImageFootprintCollection, add_image_pattern) {
   OrbitalImageFootprintCollection images(Datum("D_MOON"), Vector2());
   images.add_image_pattern(SrcName("dummy_image.%d.png"), SrcName("AS15-M-%04d.lev1.pinhole"), 73, 76);
 
-  EXPECT_EQ(images.size(), 4);
+  EXPECT_EQ(images.size(), 4u);
   EXPECT_EQ(images.equal_resolution_level(), 6);
   EXPECT_EQ(images.equal_density_level(256), 11);
   EXPECT_VECTOR_NEAR(images.lonlat_bbox().min(), Vector2(169.254, -27.6722), 1e-3);

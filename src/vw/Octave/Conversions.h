@@ -22,7 +22,7 @@ template <class VectorT>
   VectorT vw_vect(v.impl());
   ::ColumnVector oct_vect(vw_vect.size());
 
-  for (int i = 0; i < vw_vect.size(); i++) {
+  for (unsigned i = 0; i < vw_vect.size(); i++) {
     oct_vect(i) = vw_vect[i];
   }
 
@@ -46,8 +46,8 @@ template <class MatrixT>
   MatrixT vw_mat(m.impl());
   ::Matrix oct_mat(vw_mat.rows(), vw_mat.cols());
   
-  for (int col = 0; col < vw_mat.cols(); col++) {
-    for (int row = 0; row < vw_mat.rows(); row++) {
+  for (unsigned col = 0; col < vw_mat.cols(); col++) {
+    for (unsigned row = 0; row < vw_mat.rows(); row++) {
       oct_mat(row, col) = vw_mat(col, row);
     }
   }
@@ -59,8 +59,8 @@ template <class MatrixT>
 Matrix<double, 0> octave_to_matrix(::Matrix const& oct_mat) {
   Matrix<double, 0> vw_mat(oct_mat.cols(), oct_mat.rows());
 
-  for (int col = 0; col < vw_mat.cols(); col++) {
-    for (int row = 0; row < vw_mat.rows(); row++) {
+  for (unsigned col = 0; col < vw_mat.cols(); col++) {
+    for (unsigned row = 0; row < vw_mat.rows(); row++) {
       vw_mat(col, row) = oct_mat(row, col);
     }
   }

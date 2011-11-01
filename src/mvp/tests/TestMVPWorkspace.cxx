@@ -34,16 +34,16 @@ TEST(MVPWorkspace, images_at_tile) {
   vector<OrbitalImageFileDescriptor> images;
  
   images = work.images_at_tile(0, 0, 0);
-  EXPECT_EQ(images.size(), 4);
+  EXPECT_EQ(images.size(), 4u);
 
   images = work.images_at_tile(1, 1, 1);
-  EXPECT_EQ(images.size(), 4);
+  EXPECT_EQ(images.size(), 4u);
 
   images = work.images_at_tile(0, 0, 1);
-  EXPECT_EQ(images.size(), 0);
+  EXPECT_EQ(images.size(), 0u);
 
   images = work.images_at_tile(996, 578, 10);
-  EXPECT_EQ(images.size(), 1);
+  EXPECT_EQ(images.size(), 1u);
 }
 
 TEST(MVPWorkspace, assemble_job) {

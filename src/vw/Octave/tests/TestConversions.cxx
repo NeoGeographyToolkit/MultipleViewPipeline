@@ -17,7 +17,7 @@ TEST(Conversions, vector_to_octave) {
   vw::Vector3 vw_vect(10, 20, 30);
   ::ColumnVector oct_vect(vector_to_octave(vw_vect));
 
-  for (int i = 0; i < vw_vect.size(); i++) {
+  for (unsigned i = 0; i < vw_vect.size(); i++) {
     EXPECT_EQ(vw_vect[i], oct_vect(i));
   }
 }
@@ -28,7 +28,7 @@ TEST(Conversions, octave_to_vector) {
 
   vw::Vector3 vw_vect(octave_to_vector(oct_vect));
 
-  for (int i = 0; i < vw_vect.size(); i++) {
+  for (unsigned i = 0; i < vw_vect.size(); i++) {
     EXPECT_EQ(vw_vect[i], oct_vect(i));
   }
 }

@@ -13,6 +13,8 @@ set(GTEST_ROOT ${CMAKE_SOURCE_DIR}/thirdparty/gtest/build)
 # ldd on them...
 set(Boost_USE_MULTITHREADED OFF)
 
+set(CMAKE_CXX_FLAGS "-Wall")
+
 ###
 ### Find Packages
 ###
