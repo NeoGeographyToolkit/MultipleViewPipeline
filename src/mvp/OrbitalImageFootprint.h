@@ -63,13 +63,17 @@ class OrbitalImageFootprint : public ConvexPolygon
       boost::scoped_ptr<vw::DiskImageResource> rsrc(vw::DiskImageResource::open(image_file.image_path()));
       vw::Vector2i image_size(rsrc->cols(), rsrc->rows());
 
-      std::vector<vw::Vector2> fp_points(4);
+      std::vector<vw::Vector2> fp_points(8);
 
       vw::camera::PinholeModel camera(image_file.camera_path());
       fp_points[0] = backproj_px(camera, vw::Vector2i(0, 0), datum, post_height_limits[0]);
       fp_points[1] = backproj_px(camera, vw::Vector2i(image_size.x(), 0), datum, post_height_limits[0]);
       fp_points[2] = backproj_px(camera, vw::Vector2i(image_size.x(), image_size.y()), datum, post_height_limits[0]);
       fp_points[3] = backproj_px(camera, vw::Vector2i(0, image_size.y()), datum, post_height_limits[0]);
+      fp_points[4] = backproj_px(camera, vw::Vector2i(0, 0), datum, post_height_limits[1]);
+      fp_points[5] = backproj_px(camera, vw::Vector2i(image_size.x(), 0), datum, post_height_limits[1]);
+      fp_points[6] = backproj_px(camera, vw::Vector2i(image_size.x(), image_size.y()), datum, post_height_limits[1]);
+      fp_points[7] = backproj_px(camera, vw::Vector2i(0, image_size.y()), datum, post_height_limits[1]);
 
       // TODO: Need to take care of wrapping around poles!
       vw::BBox2 maxbounds(-180,-180,360,360);
