@@ -22,6 +22,12 @@
 
 namespace mvp {
 
+vw::camera::PinholeModel offset_pinhole(vw::camera::PinholeModel const& cam, vw::Vector2 const& offset) {
+  vw::camera::PinholeModel result(cam);
+  result.set_point_offset(result.point_offset() - offset);
+  return result;
+}
+
 class OrbitalImageCrop {
   vw::ImageView<vw::PixelMask<vw::PixelGray<vw::float32> > > m_image;
   vw::camera::PinholeModel m_camera;
