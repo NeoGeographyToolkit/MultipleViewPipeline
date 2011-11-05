@@ -13,7 +13,6 @@
 #include <vw/Image/ImageViewRef.h>
 #include <vw/Image/Algorithms.h>
 #include <vw/Image/MaskViews.h>
-#include <vw/Image/Transform.h> // grow_bbox_to_int
 #include <vw/FileIO/DiskImageView.h>
 #include <vw/Camera/PinholeModel.h>
 #include <vw/Cartography/Datum.h>

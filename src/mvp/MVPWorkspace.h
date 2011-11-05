@@ -35,7 +35,6 @@
 
 #include <vw/Cartography/GeoReference.h>
 #include <vw/Plate/PlateGeoReference.h>
-#include <vw/Image/Transform.h> // grow_bbox_to_int
 
 #include <boost/program_options.hpp>
 

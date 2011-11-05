@@ -95,6 +95,6 @@ Vector2(55.9392,9.4308)
   EXPECT_EQ(empty_image.rows(), 0);
 
   OrbitalImageCrop entire_image(OrbitalImageCrop::construct_from_descriptor(image_file, boxes[3], datum, alt_range));
-  EXPECT_EQ(entire_image.cols(), image_nocrop.cols() + 1); //vw::grow_bbox_to_int adds one
-  EXPECT_EQ(entire_image.rows(), image_nocrop.rows() + 1); //vw::grow_bbox_to_int adds one
+  EXPECT_EQ(entire_image.cols(), image_nocrop.cols());
+  EXPECT_EQ(entire_image.rows(), image_nocrop.rows());
 }
