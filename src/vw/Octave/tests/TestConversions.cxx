@@ -55,7 +55,7 @@ TEST(Conversions, pinhole_to_octave) {
 TEST(Conversions, imageview_to_octave) {
   boost::rand48 gen(10);
 
-  ImageView<double> vw_img(uniform_noise_view(gen, 10, 10));
+  ImageView<float32> vw_img(uniform_noise_view(gen, 10, 10));
   ::Matrix oct_img(imageview_to_octave(vw_img));
 
   for (int col = 0; col < vw_img.cols(); col++) {
@@ -69,11 +69,32 @@ TEST(Conversions, octave_to_imageview) {
   ::octave_rand::seed(10);
 
   ::Matrix oct_img(::octave_rand::matrix(10, 10));
-  ImageView<double> vw_img(octave_to_imageview(oct_img));
+  ImageView<float32> vw_img(octave_to_imageview(oct_img));
 
   for (int col = 0; col < vw_img.cols(); col++) {
     for (int row = 0; row < vw_img.rows(); row++) {
-      EXPECT_EQ(vw_img(col, row), oct_img(row, col));
+      EXPECT_PIXEL_NEAR(vw_img(col, row), oct_img(row, col), 1e-6);
+    }
+  }
+}
+
+TEST(Conversions, imageview_to_octave_masked) {
+  boost::rand48 gen(10);
+
+  ImageView<PixelMask<float32> > vw_img(uniform_noise_view(gen, 10, 10));
+  vw_img(5, 5).invalidate();
+
+  ::Matrix oct_img(imageview_to_octave(vw_img));
+
+  ImageView<PixelMask<float32> > vw_img2(octave_to_imageview(oct_img));
+
+  for (int col = 0; col < vw_img.cols(); col++) {
+    for (int row = 0; row < vw_img.rows(); row++) {
+      if (is_valid(vw_img(col, row))) {
+        EXPECT_PIXEL_NEAR(vw_img(col, row), vw_img2(col, row), 1e-6);
+      } else {
+        EXPECT_FALSE(is_valid(vw_img2(col, row)));
+      }
     }
   }
 }

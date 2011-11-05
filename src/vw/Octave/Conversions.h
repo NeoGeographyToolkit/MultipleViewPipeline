@@ -88,10 +88,10 @@ Matrix<double, 0> octave_to_matrix(::Matrix const& oct_mat) {
 /// Convert a VW ImageView to an Octave Matrix
 template <class ViewT>
 ::Matrix imageview_to_octave(ImageViewBase<ViewT> const& vw_img) {
-  typedef ImageView<double> RasterT;
+  typedef ImageView<PixelMask<double> > RasterT;
 
   // Rasterize image before copying to octave
-  RasterT rast = pixel_cast<double>(vw_img.impl());
+  RasterT rast = vw_img.impl();
 
   ::Matrix oct_img(rast.rows(), rast.cols());
 
@@ -101,7 +101,7 @@ template <class ViewT>
   for(int row = 0; row < rast.rows(); row++) {
     AccT cacc = racc;
     for(int col = 0; col < rast.cols(); col++) {
-      oct_img(row, col) = *cacc;
+      oct_img(row, col) = is_valid(*cacc) ? remove_mask(*cacc) : std::numeric_limits<double>::quiet_NaN();
       cacc.next_col();
     }
     racc.next_row();
@@ -111,8 +111,8 @@ template <class ViewT>
 }
 
 /// Convert an Octave Matrix to a VW ImageView
-ImageView<double> octave_to_imageview(::Matrix const& oct_img) {
-  typedef ImageView<double> RasterT;
+ImageView<PixelMask<double> > octave_to_imageview(::Matrix const& oct_img) {
+  typedef ImageView<PixelMask<double> > RasterT;
 
   RasterT rast(oct_img.cols(), oct_img.rows());
 
@@ -122,7 +122,7 @@ ImageView<double> octave_to_imageview(::Matrix const& oct_img) {
   for(int row = 0; row < rast.rows(); row++) {
     AccT cacc = racc;
     for(int col = 0; col < rast.cols(); col++) {
-      *cacc = oct_img(row, col);
+      *cacc = std::isnan(oct_img(row, col)) ? PixelMask<double>() : PixelMask<double>(oct_img(row, col));
       cacc.next_col();
     }
     racc.next_row();
