@@ -37,30 +37,33 @@ Vector2(55.9392,9.4308)
                                  Vector2(56.4232,9.21995)
                                                                   Vector2(56.7208,9.14307)
 */
-  OrbitalImageFileDescriptor image_file;
+  // Number of points to test per range
+  const int num_pts = 20;
 
+  // Set up test space
+  OrbitalImageFileDescriptor image_file;
   image_file.set_image_path(SrcName("synth.0.tif"));
   image_file.set_camera_path(SrcName("synth.0.pinhole"));
 
   Datum datum("D_MOON");
   Vector2 alt_range(-10000, 10000);
-  
-  VW_ASSERT(datum.semi_major_axis() == datum.semi_minor_axis(), LogicErr() << "Spheroid datums not supported");
   Vector2 radius_range(alt_range + Vector2(datum.semi_major_axis(), datum.semi_major_axis()));
 
-  ImageView<PixelMask<PixelGray<float32> > > uncrop_image(create_mask(DiskImageView<PixelGray<float32> >(image_file.image_path()), 
+  // Reference image, not cropped
+  ImageView<PixelMask<PixelGray<float32> > > image_nocrop(create_mask(DiskImageView<PixelGray<float32> >(image_file.image_path()), 
                                                                       numeric_limits<float32>::quiet_NaN()));
+  PinholeModel camera_nocrop(image_file.camera_path());
 
-  PinholeModel uncrop_camera(image_file.camera_path());
-
+  // Bounding boxes to test
   vector<BBox2> boxes(4);
-
   boxes[0] = BBox2(55.9392, 9.21995, 0.1, 0.1); // outside footprint
   boxes[1] = BBox2(55.9392, 9.21995, 0.1, 0.3); // overlap footprint
   boxes[2] = BBox2(56.4232, 9.4308, 0.1, 0.1); // inside footprint
-  boxes[3] = BBox2(55, 9, 1, 1); // entire footprint
+  boxes[3] = BBox2(55, 9, 2, 1); // entire footprint
 
-  const int num_pts = 20;
+  // For each bbox to test, break the lonlat and alt range into
+  // num_pts points and make sure the crop and reference give
+  // the same values
   BOOST_FOREACH(BBox2 const& b, boxes) {
     OrbitalImageCrop image_crop(OrbitalImageCrop::construct_from_descriptor(image_file, b, datum, alt_range));
 
@@ -73,20 +76,25 @@ Vector2(55.9392,9.4308)
           Vector3 llr(lon, lat, rad);
           Vector3 xyz(lon_lat_radius_to_xyz(llr));
 
-          Vector2 crop_px(image_crop.camera().point_to_pixel(xyz));
-          Vector2 uncrop_px(uncrop_camera.point_to_pixel(xyz));
+          Vector2 px_crop(image_crop.camera().point_to_pixel(xyz));
+          Vector2 px_nocrop(camera_nocrop.point_to_pixel(xyz));
 
           // If the uncropped image contains the pixel, then the crop MUST have it, and be the same value
           // If the uncropped image doesn't contain the pixel, the crop can have it or not.
-          if (bounding_box(uncrop_image).contains(uncrop_px)) {
-            bool crop_contains = bounding_box(image_crop.image()).contains(crop_px);
-            EXPECT_TRUE(crop_contains);
-            if (crop_contains) {
-              EXPECT_TYPE_EQ(image_crop.image()(crop_px.x(), crop_px.y()), uncrop_image(uncrop_px.x(), uncrop_px.y()));
-            }
+          if (bounding_box(image_nocrop).contains(px_nocrop)) {
+            ASSERT_TRUE(bounding_box(image_crop).contains(px_crop));
+            EXPECT_TYPE_EQ(image_crop(px_crop.x(), px_crop.y()), image_nocrop(px_nocrop.x(), px_nocrop.y()));
           }
         }
       }
     }
   }
+
+  OrbitalImageCrop empty_image(OrbitalImageCrop::construct_from_descriptor(image_file, boxes[0], datum, alt_range));
+  EXPECT_EQ(empty_image.cols(), 0);
+  EXPECT_EQ(empty_image.rows(), 0);
+
+  OrbitalImageCrop entire_image(OrbitalImageCrop::construct_from_descriptor(image_file, boxes[3], datum, alt_range));
+  EXPECT_EQ(entire_image.cols(), image_nocrop.cols() + 1); //vw::grow_bbox_to_int adds one
+  EXPECT_EQ(entire_image.rows(), image_nocrop.rows() + 1); //vw::grow_bbox_to_int adds one
 }

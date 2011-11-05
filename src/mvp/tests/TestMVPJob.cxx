@@ -13,6 +13,8 @@ using namespace mvp;
 TEST(MVPJob, process_tile) {
   // Don't verify all pixels in result, only verify every fourth one for speed
   const int validation_divisor = 4;
+
+  // Set up workspace
   const int tile_size = 64;
   const Datum datum("D_MOON");
   const Vector2 post_height_limits(0, 0);
@@ -27,22 +29,26 @@ TEST(MVPJob, process_tile) {
   work.add_image_pattern(SrcName("synth.%d.tif"), SrcName("synth.%d.pinhole"), 0, 3);
   EXPECT_EQ(work.num_images(), 4);
 
+  // Determine work levels, create the job request
   int level = work.equal_resolution_level();
   Vector2 col_row = work.tile_work_area(level).min();
 
-  int min_overlap = numeric_limits<int>::max();
-  int max_overlap = 0;
-
   MVPJobRequest job_request = work.assemble_job(col_row[0], col_row[1], level);
-  
-  MVPTileResult result = mvpjob_process_tile(job_request);
  
+  // Process the tile 
+  MVPTileResult result = mvpjob_process_tile(job_request);
+
+  // Set up variables for the reference calculation 
   OrbitalImageCropCollection crops(plate_georef.tile_lonlat_bbox(col_row[0], col_row[1], level), datum, post_height_limits);
   crops.add_image_collection(job_request.orbital_images());
 
   GeoReference georef(plate_georef.tile_georef(col_row[0], col_row[1], level));
   EXPECT_EQ(georef.build_desc().DebugString(), result.georef.build_desc().DebugString());
 
+  int min_overlap = numeric_limits<int>::max();
+  int max_overlap = 0;
+
+  // Manually calculate overlaps, and compare to the result from MVPJob
   for (int i = 0; i < result.post_height.cols(); i += validation_divisor) {
     for (int j = 0; j < result.post_height.rows(); j += validation_divisor) {
       Vector2 ll = georef.pixel_to_lonlat(Vector2(i, j));
@@ -52,7 +58,7 @@ TEST(MVPJob, process_tile) {
       int overlaps = 0;
       BOOST_FOREACH(OrbitalImageCrop const& o, crops) {
         Vector2 px = o.camera().point_to_pixel(xyz);
-        if (bounding_box(o.image()).contains(px)) {
+        if (bounding_box(o).contains(px)) {
           overlaps++;
         }
       }

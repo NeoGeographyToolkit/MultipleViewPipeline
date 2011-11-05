@@ -41,7 +41,7 @@ struct MVPJobTest : public MVPJobBase<MVPJobTest> {
     int overlaps = 0;
     BOOST_FOREACH(OrbitalImageCrop const& o, m_crops) {
       Vector2 px = o.camera().point_to_pixel(xyz);
-      if (bounding_box(o.image()).contains(px)) {
+      if (bounding_box(o).contains(px)) {
         overlaps++;
       }
     }

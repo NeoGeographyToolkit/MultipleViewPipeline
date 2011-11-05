@@ -33,10 +33,8 @@ vw::camera::PinholeModel offset_pinhole(vw::camera::PinholeModel const& cam, vw:
   return result;
 }
 
-class OrbitalImageCrop {
-  vw::ImageView<vw::PixelMask<vw::PixelGray<vw::float32> > > m_image;
+class OrbitalImageCrop : public vw::ImageView<vw::PixelMask<vw::PixelGray<vw::float32> > > {
   vw::camera::PinholeModel m_camera;
-  bool m_isempty;
 
   public:
 
@@ -46,8 +44,8 @@ class OrbitalImageCrop {
                                                       vw::Vector2 const& post_height_limits) {
 
       boost::scoped_ptr<vw::DiskImageResource> rsrc(vw::DiskImageResource::open(image_file.image_path()));
-      vw::BBox2i imagebox(0, 0, rsrc->cols(), rsrc->rows());
 
+      VW_ASSERT(datum.semi_major_axis() == datum.semi_minor_axis(), vw::LogicErr() << "Spheroid datums not supported");
       vw::Vector2 radius_range(post_height_limits + vw::Vector2(datum.semi_major_axis(), datum.semi_major_axis()));
 
       vw::camera::PinholeModel camera(image_file.camera_path());
@@ -68,7 +66,7 @@ class OrbitalImageCrop {
         cropbox.grow(camera.point_to_pixel(xyz));
       }
 
-      cropbox.crop(imagebox);
+      cropbox.crop(vw::BBox2i(0, 0, rsrc->cols(), rsrc->rows()));
 
       // Return empty if smaller than a pixel
       if (cropbox.width() < 1 || cropbox.height() < 1) {
@@ -79,31 +77,30 @@ class OrbitalImageCrop {
 
       vw::ImageView<vw::PixelMask<vw::PixelGray<vw::float32> > > image;
 
-      // TODO: Need a better way of determining alpha in VW
       switch(rsrc->format().pixel_format) {
         case vw::VW_PIXEL_GRAYA:
-        case vw::VW_PIXEL_SCALAR_MASKED:
-        case vw::VW_PIXEL_GRAY_MASKED:
           image = vw::crop(vw::DiskImageView<vw::PixelMask<vw::PixelGray<vw::float32> > >(image_file.image_path()), cropbox);
           break;
-        default:
+        case vw::VW_PIXEL_GRAY:
           image = vw::crop(create_mask(vw::DiskImageView<vw::PixelGray<vw::float32> >(image_file.image_path()), 
                                        std::numeric_limits<vw::float32>::quiet_NaN()), cropbox);
+          break;
+        default:
+          vw::vw_throw(vw::ArgumentErr() << "Unsupported orbital image pixel format: " << vw::pixel_format_name(rsrc->format().pixel_format));
       }
 
       return OrbitalImageCrop(image, offset_pinhole(camera, cropbox.min()));
     }
 
-
-    vw::ImageView<vw::PixelMask<vw::PixelGray<vw::float32> > > image() const {return m_image;}
     vw::camera::PinholeModel camera() const {return m_camera;}
-    bool isempty() const {return m_isempty;}
 
   protected:
     // Make sure the user doesn't construct one
-    OrbitalImageCrop() : m_image(), m_camera(), m_isempty(true) {}
+    OrbitalImageCrop() : vw::ImageView<vw::PixelMask<vw::PixelGray<vw::float32> > >(), m_camera() {}
+
     template <class ViewT>
-    OrbitalImageCrop(vw::ImageViewBase<ViewT> const& image, vw::camera::PinholeModel camera) : m_image(image.impl()), m_camera(camera), m_isempty(false) {}
+    OrbitalImageCrop(vw::ImageViewBase<ViewT> const& image, vw::camera::PinholeModel camera) : 
+      vw::ImageView<vw::PixelMask<vw::PixelGray<vw::float32> > >(image.impl()), m_camera(camera) {}
 };
 
 class OrbitalImageCropCollection : public std::vector<OrbitalImageCrop> {
@@ -121,7 +118,7 @@ class OrbitalImageCropCollection : public std::vector<OrbitalImageCrop> {
 
     void add_image(OrbitalImageFileDescriptor const& image_file) {
       OrbitalImageCrop image(OrbitalImageCrop::construct_from_descriptor(image_file, m_lonlat_bbox, m_datum, m_post_height_limits));
-      if (!image.isempty()) {
+      if (image.cols() > 0 && image.rows() > 0) {
         push_back(image);
       }
     }
