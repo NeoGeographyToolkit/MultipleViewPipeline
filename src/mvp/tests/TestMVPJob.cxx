@@ -69,7 +69,7 @@ TEST(MVPJob, process_tile) {
         }
       }
 
-      PixelMask<PixelGray<float32> > px_result(overlaps);
+      PixelMask<float32> px_result(overlaps);
       PixelMask<Vector3f> px_result3(overlaps, overlaps, overlaps);
       if (!overlaps) {
         px_result.invalidate();

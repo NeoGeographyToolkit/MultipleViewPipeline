@@ -72,7 +72,7 @@ int main(int argc, char* argv[])
 
       MVPTileResult result = mvpjob_process_tile(work.assemble_job(col, row, render_level), TerminalProgressCallback("mvp", status.str()));
       
-      ImageView<PixelGrayA<float32> > rendered_tile = mask_to_alpha(result.post_height);
+      ImageView<PixelGrayA<float32> > rendered_tile = mask_to_alpha(pixel_cast<PixelMask<PixelGray<float32> > >(result.post_height));
 
       float32 tile_min_val, tile_max_val;
       min_max_channel_values(result.post_height, tile_min_val, tile_max_val);

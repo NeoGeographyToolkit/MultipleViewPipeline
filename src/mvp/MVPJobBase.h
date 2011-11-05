@@ -62,8 +62,8 @@ struct MVPPixelResult : public MVPAlgorithmVar {
 struct MVPTileResult {
   vw::cartography::GeoReference georef;
 
-  vw::ImageView<vw::PixelMask<vw::PixelGray<vw::float32> > > post_height;
-  vw::ImageView<vw::PixelMask<vw::PixelGray<vw::float32> > > variance;
+  vw::ImageView<vw::PixelMask<vw::float32> > post_height;
+  vw::ImageView<vw::PixelMask<vw::float32> > variance;
 
   vw::ImageView<vw::PixelMask<vw::Vector3f> > orientation;
   vw::ImageView<vw::PixelMask<vw::Vector3f> > windows;
