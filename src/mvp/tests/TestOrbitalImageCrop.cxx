@@ -7,6 +7,7 @@ using namespace std;
 using namespace vw;
 using namespace vw::test;
 using namespace vw::camera;
+using namespace vw::cartography;
 using namespace mvp;
 
 TEST(HelperFunction, offset_pinhole) {
@@ -24,7 +25,7 @@ TEST(OrbtialImageCrop, crop) {
   image_file.set_camera_path(SrcName("synth.0.pinhole"));
   image_file.set_image_path(SrcName("synth.0.tif"));
 
-  OrbitalImageCrop orbitalimagecrop(image_file, BBox2());
+  OrbitalImageCrop orbitalimagecrop(OrbitalImageCrop::construct_from_descriptor(image_file, BBox2(), Datum("D_MOON"), Vector2()));
 
   EXPECT_EQ(orbitalimagecrop.image().cols(), 460);
   EXPECT_EQ(orbitalimagecrop.image().rows(), 460);

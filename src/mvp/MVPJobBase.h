@@ -97,8 +97,9 @@ struct MVPJobBase {
     vw::cartography::GeoReference georef(plate_georef.tile_georef(job_request.col(), job_request.row(), job_request.level()));
 
     vw::BBox2 tile_bbox(plate_georef.tile_lonlat_bbox(job_request.col(), job_request.row(), job_request.level()));
+    vw::Vector2 post_height_limits(job_request.algorithm_settings().post_height_limit_min(), job_request.algorithm_settings().post_height_limit_max());
 
-    OrbitalImageCropCollection crops(tile_bbox);
+    OrbitalImageCropCollection crops(tile_bbox, georef.datum(), post_height_limits);
     crops.add_image_collection(job_request.orbital_images());
 
     return ImplT(georef, plate_georef.tile_size(), crops, job_request.algorithm_settings());

@@ -14,10 +14,14 @@ TEST(MVPJob, process_tile) {
   // Don't verify all pixels in result, only verify every fourth one for speed
   const int validation_divisor = 4;
   const int tile_size = 64;
+  const Datum datum("D_MOON");
+  const Vector2 post_height_limits(0, 0);
 
-  PlateGeoReference plate_georef(Datum("D_MOON"), "equi", tile_size, GeoReference::PixelAsPoint);
+  PlateGeoReference plate_georef(datum, "equi", tile_size, GeoReference::PixelAsPoint);
   MVPAlgorithmSettings settings;
   settings.set_test_algorithm(true);
+  settings.set_post_height_limit_min(post_height_limits[0]);
+  settings.set_post_height_limit_max(post_height_limits[1]);
 
   MVPWorkspace work("", "", plate_georef, settings);
   work.add_image_pattern(SrcName("synth.%d.tif"), SrcName("synth.%d.pinhole"), 0, 3);
@@ -33,7 +37,7 @@ TEST(MVPJob, process_tile) {
   
   MVPTileResult result = mvpjob_process_tile(job_request);
  
-  OrbitalImageCropCollection crops(plate_georef.tile_lonlat_bbox(col_row[0], col_row[1], level));
+  OrbitalImageCropCollection crops(plate_georef.tile_lonlat_bbox(col_row[0], col_row[1], level), datum, post_height_limits);
   crops.add_image_collection(job_request.orbital_images());
 
   GeoReference georef(plate_georef.tile_georef(col_row[0], col_row[1], level));

@@ -13,6 +13,7 @@
 #include <vw/Image/MaskViews.h>
 #include <vw/FileIO/DiskImageView.h>
 #include <vw/Camera/PinholeModel.h>
+#include <vw/Cartography/Datum.h>
 
 #include <boost/foreach.hpp>
 
@@ -33,31 +34,47 @@ class OrbitalImageCrop {
   vw::camera::PinholeModel m_camera;
 
   public:
-    OrbitalImageCrop(OrbitalImageFileDescriptor const& image_file, vw::BBox2 const& lonlat_bbox) {
+    static OrbitalImageCrop construct_from_descriptor(OrbitalImageFileDescriptor const& image_file, 
+                                                      vw::BBox2 const& lonlat_bbox, 
+                                                      vw::cartography::Datum const& datum,
+                                                      vw::Vector2 const& post_height_limits) {
+      vw::ImageView<vw::PixelMask<vw::PixelGray<vw::float32> > > image;
+
       // TODO: Create crops
       try {
-        m_image = vw::DiskImageView<vw::PixelMask<vw::PixelGray<vw::float32> > >(image_file.image_path());
+        image = vw::DiskImageView<vw::PixelMask<vw::PixelGray<vw::float32> > >(image_file.image_path());
       } catch (vw::ArgumentErr& ex) {
         // TODO: Require orbital images to have alpha channels... creating a mask is slow!
-        m_image = create_mask(vw::DiskImageView<vw::PixelGray<vw::float32> >(image_file.image_path()), std::numeric_limits<vw::float32>::quiet_NaN());
+        image = create_mask(vw::DiskImageView<vw::PixelGray<vw::float32> >(image_file.image_path()), std::numeric_limits<vw::float32>::quiet_NaN());
       }
-      m_camera = vw::camera::PinholeModel(image_file.camera_path());
+      
+      vw::camera::PinholeModel camera(image_file.camera_path());
+
+      return OrbitalImageCrop(image, camera);
     }
 
     vw::ImageView<vw::PixelMask<vw::PixelGray<vw::float32> > > image() const {return m_image;}
     vw::camera::PinholeModel camera() const {return m_camera;}
+
+  protected:
+    // Make sure the user doesn't construct one
+    template <class ViewT>
+    OrbitalImageCrop(vw::ImageViewBase<ViewT> const& image, vw::camera::PinholeModel camera) : m_image(image.impl()), m_camera(camera) {}
 };
 
 class OrbitalImageCropCollection : public std::vector<OrbitalImageCrop> {
 
   vw::BBox2 m_lonlat_bbox;
+  vw::cartography::Datum m_datum;
+  vw::Vector2 m_post_height_limits;
 
   public:
     
-    OrbitalImageCropCollection(vw::BBox2 const& lonlat_bbox) : m_lonlat_bbox(lonlat_bbox) {}
+    OrbitalImageCropCollection(vw::BBox2 const& lonlat_bbox, vw::cartography::Datum const& datum, vw::Vector2 const& post_height_limits) : 
+      m_lonlat_bbox(lonlat_bbox), m_datum(datum), m_post_height_limits(post_height_limits) {}
 
     void add_image(OrbitalImageFileDescriptor const& image) {
-      push_back(OrbitalImageCrop(image, m_lonlat_bbox));
+      push_back(OrbitalImageCrop::construct_from_descriptor(image, m_lonlat_bbox, m_datum, m_post_height_limits));
     }
     
     template <class CollectionT>
