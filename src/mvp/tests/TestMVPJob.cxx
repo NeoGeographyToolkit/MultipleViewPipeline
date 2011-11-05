@@ -44,7 +44,7 @@ TEST(MVPJob, process_tile) {
   vector<PinholeModel> cameras;
 
   BOOST_FOREACH(OrbitalImageFileDescriptor d, job_request.orbital_images()) {
-    orbital_images.push_back(create_mask(DiskImageView<PixelGray<float32> >(d.image_path()), numeric_limits<float32>::quiet_NaN()));
+    orbital_images.push_back(DiskImageView<PixelGray<float32> >(d.image_path()));
     cameras.push_back(PinholeModel(d.camera_path()));
   }
 

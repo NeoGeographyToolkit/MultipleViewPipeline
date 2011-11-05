@@ -81,8 +81,7 @@ class OrbitalImageCrop : public vw::ImageView<vw::PixelMask<vw::PixelGray<vw::fl
           image = vw::crop(vw::DiskImageView<vw::PixelMask<vw::PixelGray<vw::float32> > >(image_file.image_path()), cropbox);
           break;
         case vw::VW_PIXEL_GRAY:
-          image = vw::crop(create_mask(vw::DiskImageView<vw::PixelGray<vw::float32> >(image_file.image_path()), 
-                                       std::numeric_limits<vw::float32>::quiet_NaN()), cropbox);
+          image = vw::crop(vw::DiskImageView<vw::PixelGray<vw::float32> >(image_file.image_path()), cropbox);
           break;
         default:
           vw::vw_throw(vw::ArgumentErr() << "Unsupported orbital image pixel format: " << vw::pixel_format_name(rsrc->format().pixel_format));

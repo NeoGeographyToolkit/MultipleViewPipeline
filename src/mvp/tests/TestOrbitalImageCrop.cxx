@@ -50,8 +50,7 @@ Vector2(55.9392,9.4308)
   Vector2 radius_range(alt_range + Vector2(datum.semi_major_axis(), datum.semi_major_axis()));
 
   // Reference image, not cropped
-  ImageView<PixelMask<PixelGray<float32> > > image_nocrop(create_mask(DiskImageView<PixelGray<float32> >(image_file.image_path()), 
-                                                                      numeric_limits<float32>::quiet_NaN()));
+  ImageView<PixelMask<PixelGray<float32> > > image_nocrop(DiskImageView<PixelGray<float32> >(image_file.image_path()));
   PinholeModel camera_nocrop(image_file.camera_path());
 
   // Bounding boxes to test
