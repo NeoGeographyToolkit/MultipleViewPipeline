@@ -18,7 +18,7 @@ TEST(HelperFunction, offset_pinhole) {
   EXPECT_VECTOR_NEAR(cam.pixel_to_vector(Vector2(20, 30)), cam_off.pixel_to_vector(Vector2(10, 10)), 1e-6);
 }
 
-TEST(OrbtialImageCropCollection, crop) {
+TEST(OrbtialImageCrop, construct_from_descriptor) {
 /* Footprint for synth.0.pinhole with alt +-10000
 
     Vector2(56.1474,9.90343)
@@ -97,4 +97,29 @@ Vector2(55.9392,9.4308)
   OrbitalImageCrop entire_image(OrbitalImageCrop::construct_from_descriptor(image_file, boxes[3], datum, alt_range));
   EXPECT_EQ(entire_image.cols(), image_nocrop.cols());
   EXPECT_EQ(entire_image.rows(), image_nocrop.rows());
+}
+
+
+TEST(OrbtialImageCropCollection, add_image) {
+  // Set up test space
+  OrbitalImageFileDescriptor image_file;
+  image_file.set_image_path(SrcName("synth.0.tif"));
+  image_file.set_camera_path(SrcName("synth.0.pinhole"));
+
+  Datum datum("D_MOON");
+  Vector2 alt_range(-10000, 10000);
+
+  {
+    // Outside footprint
+    OrbitalImageCropCollection collect(BBox2(55.9392, 9.21995, 0.1, 0.1), datum, alt_range);
+    collect.add_image(image_file);
+    EXPECT_EQ(collect.size(), 0u);
+  }
+
+  {
+    // Entire footprint
+    OrbitalImageCropCollection collect(BBox2(55, 9, 2, 1), datum, alt_range);
+    collect.add_image(image_file);
+    EXPECT_EQ(collect.size(), 1u);
+  }
 }
