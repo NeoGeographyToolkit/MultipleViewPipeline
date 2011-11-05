@@ -8,6 +8,7 @@ using namespace vw;
 using namespace vw::test;
 using namespace vw::cartography;
 using namespace vw::platefile;
+using namespace vw::camera;
 using namespace mvp;
 
 TEST(MVPJob, process_tile) {
@@ -38,9 +39,14 @@ TEST(MVPJob, process_tile) {
   // Process the tile 
   MVPTileResult result = mvpjob_process_tile(job_request);
 
-  // Set up variables for the reference calculation 
-  OrbitalImageCropCollection crops(plate_georef.tile_lonlat_bbox(col_row[0], col_row[1], level), datum, post_height_limits);
-  crops.add_image_collection(job_request.orbital_images());
+  // Set up variables for the reference calculation
+  vector<ImageView<PixelMask<PixelGray<float32> > > > orbital_images;
+  vector<PinholeModel> cameras;
+
+  BOOST_FOREACH(OrbitalImageFileDescriptor d, job_request.orbital_images()) {
+    orbital_images.push_back(create_mask(DiskImageView<PixelGray<float32> >(d.image_path()), numeric_limits<float32>::quiet_NaN()));
+    cameras.push_back(PinholeModel(d.camera_path()));
+  }
 
   GeoReference georef(plate_georef.tile_georef(col_row[0], col_row[1], level));
   EXPECT_EQ(georef.build_desc().DebugString(), result.georef.build_desc().DebugString());
@@ -56,9 +62,9 @@ TEST(MVPJob, process_tile) {
       Vector3 xyz = lon_lat_radius_to_xyz(llr);
 
       int overlaps = 0;
-      BOOST_FOREACH(OrbitalImageCrop const& o, crops) {
-        Vector2 px = o.camera().point_to_pixel(xyz);
-        if (bounding_box(o).contains(px)) {
+      for (unsigned k = 0; k < orbital_images.size(); k++) {
+        Vector2 px = cameras[k].point_to_pixel(xyz);
+        if (bounding_box(orbital_images[k]).contains(px)) {
           overlaps++;
         }
       }
