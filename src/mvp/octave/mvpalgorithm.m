@@ -24,10 +24,11 @@
 % images[x].data
 
 function [result, variance, converged, num_iterations]  = mvpalgorithm(seed, georef, images, settings)
-  lonlat_h = georef * [1; 1; 1];
+  lonlat_h = georef.transform * [1; 1; 1];
   lonlat = lonlat_h(1:2) / lonlat_h(3);
- 
-  xyz = 1737400 * lonlat2normal(lonlat);
+
+  assert(georef.datum.semi_major_axis == georef.datum.semi_minor_axis);
+  xyz = georef.datum.semi_major_axis * lonlat2normal(lonlat);
   xyz_h = [xyz; 1];
 
   overlap = 0;

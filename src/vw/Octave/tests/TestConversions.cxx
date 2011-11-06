@@ -109,20 +109,25 @@ TEST(Conversions, georef_to_octave) {
   transform(1,2) = 180.0;
   transform(2,2) = 1;
 
-  GeoReference vw_geo(Datum(), transform);
-  ::Matrix oct_geo(georef_to_octave(vw_geo));
+  Datum datum;
+
+  GeoReference vw_geo(datum, transform);
+  ::octave_scalar_map oct_geo(georef_to_octave(vw_geo));
 
   { 
     Vector2 px(0, 0);
     Vector2 vw_result = vw_geo.pixel_to_lonlat(px) * M_PI / 180.0; // Convert to radians
-    Vector2 oct_result = dehom(octave_to_vector(oct_geo * vector_to_octave(hom(px + Vector2(1, 1)))));
+    Vector2 oct_result = dehom(octave_to_vector(oct_geo.getfield("transform").matrix_value() * vector_to_octave(hom(px + Vector2(1, 1)))));
     EXPECT_VECTOR_NEAR(vw_result, oct_result, 1e-6);
   }
 
   { 
     Vector2 px(100, -30);
     Vector2 vw_result = vw_geo.pixel_to_lonlat(px) * M_PI / 180.0; // Convert to radians
-    Vector2 oct_result = dehom(octave_to_vector(oct_geo * vector_to_octave(hom(px + Vector2(1, 1)))));
+    Vector2 oct_result = dehom(octave_to_vector(oct_geo.getfield("transform").matrix_value() * vector_to_octave(hom(px + Vector2(1, 1)))));
     EXPECT_VECTOR_NEAR(vw_result, oct_result, 1e-6);
   }
+
+  EXPECT_EQ(oct_geo.getfield("datum").scalar_map_value().getfield("semi_major_axis").double_value(), datum.semi_major_axis());
+  EXPECT_EQ(oct_geo.getfield("datum").scalar_map_value().getfield("semi_minor_axis").double_value(), datum.semi_minor_axis());
 }

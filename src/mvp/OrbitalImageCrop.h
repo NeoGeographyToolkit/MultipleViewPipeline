@@ -23,7 +23,6 @@
 
 #if MVP_ENABLE_OCTAVE_SUPPORT
 #include <vw/Octave/Conversions.h>
-#include <octave/oct-map.h>
 #endif
 
 namespace mvp {

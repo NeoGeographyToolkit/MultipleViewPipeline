@@ -7,6 +7,7 @@
 #define __VWOCTAVE_CONVERSIONS_H__
 
 #include <octave/oct.h>
+#include <octave/oct-map.h>
 
 #include <vw/FileIO/DiskImageResource.h>
 #include <vw/Image/ImageView.h>
@@ -132,17 +133,17 @@ ImageView<PixelMask<double> > octave_to_imageview(::Matrix const& oct_img) {
 }
 
 /// Convert a VW GeoReference to an Octave Matrix
-::Matrix georef_to_octave(cartography::GeoReference const& vw_geo) {
+::octave_scalar_map georef_to_octave(cartography::GeoReference const& vw_geo) {
   if (vw_geo.is_projected()) {
     vw_throw(ArgumentErr() << "Projected georefs not supported!");
   }
 
   Matrix3x3 vw_geo_trans = vw_geo.transform();
-  ::Matrix oct_geo(3, 3);
+  ::Matrix oct_geo_trans(3, 3);
 
   for (int r = 0; r < 3; r++) {
     for (int c = 0; c < 3; c++) {
-      oct_geo(r, c) = vw_geo_trans(r, c);
+      oct_geo_trans(r, c) = vw_geo_trans(r, c);
     }
   }
 
@@ -152,13 +153,21 @@ ImageView<PixelMask<double> > octave_to_imageview(::Matrix const& oct_img) {
   } else {
     rebase(0, 2) = rebase(1, 2) = -0.5;
   }
-  oct_geo = oct_geo * rebase;
+  oct_geo_trans = oct_geo_trans * rebase;
 
   ::Matrix deg2rad = ::identity_matrix(3, 3);
   deg2rad(0, 0) = deg2rad(1, 1) = M_PI / 180.0;
-  oct_geo = deg2rad * oct_geo;
+  oct_geo_trans = deg2rad * oct_geo_trans;
 
-  return oct_geo;
+  ::octave_scalar_map oct_datum;
+  oct_datum.setfield("semi_major_axis", vw_geo.datum().semi_major_axis());
+  oct_datum.setfield("semi_minor_axis", vw_geo.datum().semi_minor_axis());
+
+  ::octave_scalar_map result;
+  result.setfield("transform", oct_geo_trans);
+  result.setfield("datum", oct_datum);
+
+  return result;
 }
 
 }} // namespace vw, octave
