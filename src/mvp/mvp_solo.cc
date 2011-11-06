@@ -96,7 +96,7 @@ int main(int argc, char* argv[])
     int divisor = render_level - level;
     for (int col = tile_bbox.min().x() >> divisor; col <= tile_bbox.max().x() >> divisor; col++) {
       for (int row = tile_bbox.min().y() >> divisor; row <= tile_bbox.max().y() >> divisor; row++) {
-        ImageView<PixelGrayA<float32> > rendered_tile(constant_view(PixelGrayA<float32>(plate_max_val, 1), 
+        ImageView<PixelGrayA<float32> > rendered_tile(constant_view(PixelGrayA<float32>(), 
                                                                     work.plate_georef().tile_size(), work.plate_georef().tile_size()));
         pf->write_request();
         pf->write_update(rendered_tile, col, row, level, tid);
