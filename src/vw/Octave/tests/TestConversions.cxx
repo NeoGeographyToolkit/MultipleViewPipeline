@@ -6,12 +6,16 @@
 
 #include <boost/random/linear_congruential.hpp>
 #include <octave/oct-rand.h>
+#include <octave/ov-struct.h>
+
+#include <vw/Octave/tests/TestProto.pb.h>
 
 using namespace vw;
 using namespace vw::camera;
 using namespace vw::cartography;
 using namespace vw::octave;
 using namespace vw::test;
+using namespace std;
 
 TEST(Conversions, vector_to_octave) {
   vw::Vector3 vw_vect(10, 20, 30);
@@ -130,4 +134,21 @@ TEST(Conversions, georef_to_octave) {
 
   EXPECT_EQ(oct_geo.getfield("datum").scalar_map_value().getfield("semi_major_axis").double_value(), datum.semi_major_axis());
   EXPECT_EQ(oct_geo.getfield("datum").scalar_map_value().getfield("semi_minor_axis").double_value(), datum.semi_minor_axis());
+}
+
+TEST(Conversions, protobuf_to_octave) {
+  TestProto message;
+  message.set_double_field(0.1);
+  message.set_float_field(0.2);
+  message.set_int32_field(3);
+  message.set_bool_field(true);
+  message.set_string_field("4");
+
+  octave_scalar_map oct_map(protobuf_to_octave(&message));
+
+  EXPECT_EQ(oct_map.getfield("double_field").double_value(), message.double_field());
+  EXPECT_EQ(oct_map.getfield("float_field").float_value(), message.float_field());
+  EXPECT_EQ(oct_map.getfield("int32_field").int_value(), message.int32_field());
+  EXPECT_EQ(oct_map.getfield("bool_field").bool_value(), message.bool_field());
+  EXPECT_EQ(oct_map.getfield("string_field").string_value(), message.string_field());
 }

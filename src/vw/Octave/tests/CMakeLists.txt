@@ -1,9 +1,12 @@
 find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIRS})
 
+PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS TestProto.proto)
+
 macro(add_vwoctave_test test_name)
   add_executable(${test_name} ${test_name}.cxx 
-                               ${CMAKE_SOURCE_DIR}/src/test/test_main.cc)
+                              ${CMAKE_SOURCE_DIR}/src/test/test_main.cc
+                              ${PROTO_SRCS})
   target_link_libraries(${test_name} mvp
                                      ${GTEST_LIBRARIES}
                                      ${VW_LIBRARIES}

@@ -14,6 +14,9 @@
 #include <vw/Camera/PinholeModel.h>
 #include <vw/Cartography/GeoReference.h>
 
+#include <google/protobuf/message.h>
+#include <google/protobuf/descriptor.h>
+
 namespace vw {
 namespace octave {
 
@@ -166,6 +169,43 @@ ImageView<PixelMask<double> > octave_to_imageview(::Matrix const& oct_img) {
   ::octave_scalar_map result;
   result.setfield("transform", oct_geo_trans);
   result.setfield("datum", oct_datum);
+
+  return result;
+}
+
+::octave_scalar_map protobuf_to_octave(const google::protobuf::Message *message) {
+  using namespace google::protobuf;
+
+  ::octave_scalar_map result;
+
+  const Descriptor *descriptor = message->GetDescriptor();
+  const Reflection *reflection = message->GetReflection();
+
+  for (int i = 0; i < descriptor->field_count(); i++) {
+    const FieldDescriptor *field = descriptor->field(i);
+
+    const std::string field_name(field->name());
+
+    switch(field->type()) {
+      case FieldDescriptor::TYPE_DOUBLE:
+        result.setfield(field_name, reflection->GetDouble(*message, field));
+        break;
+      case FieldDescriptor::TYPE_FLOAT:
+        result.setfield(field_name, reflection->GetFloat(*message, field));
+        break;
+      case FieldDescriptor::TYPE_INT32:
+        result.setfield(field_name, reflection->GetInt32(*message, field));
+        break;
+      case FieldDescriptor::TYPE_BOOL:
+        result.setfield(field_name, reflection->GetBool(*message, field));
+        break;
+      case FieldDescriptor::TYPE_STRING:
+        result.setfield(field_name, reflection->GetString(*message, field));
+        break;
+      default:
+        vw::vw_throw(vw::NoImplErr() << "Not a supported field type to convert to octave");
+    }
+  }
 
   return result;
 }
