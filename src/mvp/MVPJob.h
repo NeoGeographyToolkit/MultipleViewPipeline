@@ -61,11 +61,13 @@ struct MVPJobTest : public MVPJobBase<MVPJobTest> {
 #if MVP_ENABLE_OCTAVE_SUPPORT
 struct MVPJobOctave : public MVPJobBase<MVPJobOctave> {
   ::octave_map m_octave_crops;
+  ::octave_scalar_map m_octave_settings;
 
   MVPJobOctave(vw::cartography::GeoReference const& georef, int tile_size, OrbitalImageCropCollection const& crops, MVPAlgorithmSettings const& settings) :
     MVPJobBase(georef, tile_size, crops, settings) 
   {
-    m_octave_crops = m_crops.to_octave();  
+    m_octave_crops = m_crops.to_octave();
+    m_octave_settings = vw::octave::protobuf_to_octave(&settings); 
   }
 
   inline MVPPixelResult process_pixel(MVPAlgorithmVar const& seed, vw::cartography::GeoReference const& georef) const {
@@ -73,7 +75,7 @@ struct MVPJobOctave : public MVPJobBase<MVPJobOctave> {
     args.append(seed.to_octave());
     args.append(vw::octave::georef_to_octave(georef));
     args.append(m_octave_crops);
-    args.append(5); // TODO: pass settings
+    args.append(m_octave_settings);
 
     return MVPPixelResult(::feval(MVP_OCTAVE_ALGORITHM_FCN, args, 1));
   }
