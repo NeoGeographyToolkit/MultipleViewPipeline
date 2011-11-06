@@ -27,8 +27,7 @@ function [result, variance, converged, num_iterations]  = mvpalgorithm(seed, geo
   lonlat_h = georef.transform * [1; 1; 1];
   lonlat = lonlat_h(1:2) / lonlat_h(3);
 
-  assert(georef.datum.semi_major_axis == georef.datum.semi_minor_axis);
-  xyz = georef.datum.semi_major_axis * lonlat2normal(lonlat);
+  xyz = lonlatalt2xyz(georef.datum, lonlat, 0);
   xyz_h = [xyz; 1];
 
   overlap = 0;
