@@ -11,7 +11,15 @@ using namespace vw::platefile;
 using namespace vw::camera;
 using namespace mvp;
 
-TEST(MVPJob, process_tile) {
+TEST(Helpers, offset_georef) {
+  GeoReference geo = PlateGeoReference().tile_georef(1, 2, 3);
+  GeoReference crop_geo = offset_georef(geo, 100, 200);
+
+  EXPECT_VECTOR_EQ(geo.pixel_to_lonlat(Vector2(100, 200)), crop_geo.pixel_to_lonlat(Vector2(0, 0)));
+  EXPECT_VECTOR_EQ(geo.pixel_to_lonlat(Vector2(120, 230)), crop_geo.pixel_to_lonlat(Vector2(20, 30)));
+}
+
+void process_tile_test(bool use_octave) {
   // Don't verify all pixels in result, only verify every fourth one for speed
   const int validation_divisor = 4;
 
@@ -23,6 +31,7 @@ TEST(MVPJob, process_tile) {
   PlateGeoReference plate_georef(datum, "equi", tile_size, GeoReference::PixelAsPoint);
   MVPAlgorithmSettings settings;
   settings.set_test_algorithm(true);
+  settings.set_use_octave(use_octave);
   settings.set_post_height_limit_min(post_height_limits[0]);
   settings.set_post_height_limit_max(post_height_limits[1]);
 
@@ -91,10 +100,44 @@ TEST(MVPJob, process_tile) {
   EXPECT_EQ(max_overlap, 4);
 }
 
-TEST(Helpers, offset_georef) {
-  GeoReference geo = PlateGeoReference().tile_georef(1, 2, 3);
-  GeoReference crop_geo = offset_georef(geo, 100, 200);
-
-  EXPECT_VECTOR_EQ(geo.pixel_to_lonlat(Vector2(100, 200)), crop_geo.pixel_to_lonlat(Vector2(0, 0)));
-  EXPECT_VECTOR_EQ(geo.pixel_to_lonlat(Vector2(120, 230)), crop_geo.pixel_to_lonlat(Vector2(20, 30)));
+TEST(MVPJob, process_tile) {
+  process_tile_test(false);
 }
+
+#if MVP_ENABLE_OCTAVE_SUPPORT
+TEST(MVPJob, process_tile_octave) {
+  MVPJobOctave::start_interpreter();
+  process_tile_test(true);
+}
+
+TEST(MVPAlgorithmVar, to_octave) {
+  MVPAlgorithmVar var(1, Vector3(2, 3, 4), Vector3(5, 6, 7));
+
+  ::octave_scalar_map oct_var(var.to_octave());
+
+  MVPAlgorithmVar var2(oct_var);
+
+  EXPECT_EQ(var.post_height, var2.post_height);
+  EXPECT_VECTOR_NEAR(var.orientation, var2.orientation, 1e-6);
+  EXPECT_VECTOR_NEAR(var.windows, var2.windows, 1e-6);
+}
+
+TEST(MVPPixelResult, octave_construct) {
+  MVPAlgorithmVar var(1, Vector3(2, 3, 4), Vector3(5, 6, 7));
+
+  ::octave_value_list oct_result;
+  oct_result.append(var.to_octave());
+  oct_result.append(8);
+  oct_result.append(true);
+  oct_result.append(9);
+
+  MVPPixelResult result(oct_result);
+
+  EXPECT_EQ(result.post_height, var.post_height);
+  EXPECT_VECTOR_NEAR(result.orientation, var.orientation, 1e-6);
+  EXPECT_VECTOR_NEAR(result.windows, var.windows, 1e-6);
+  EXPECT_EQ(result.variance, 8);
+  EXPECT_TRUE(result.converged);
+  EXPECT_EQ(result.num_iterations_to_converge, 9);
+}
+#endif

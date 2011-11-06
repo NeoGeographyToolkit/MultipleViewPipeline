@@ -101,24 +101,41 @@ Vector2(55.9392,9.4308)
 
 TEST(OrbtialImageCropCollection, add_image) {
   // Set up test space
-  OrbitalImageFileDescriptor image_file;
-  image_file.set_image_path(SrcName("synth.0.tif"));
-  image_file.set_camera_path(SrcName("synth.0.pinhole"));
-
   Datum datum("D_MOON");
   Vector2 alt_range(-10000, 10000);
 
   {
     // Outside footprint
     OrbitalImageCropCollection collect(BBox2(55.9392, 9.21995, 0.1, 0.1), datum, alt_range);
-    collect.add_image(image_file);
+    collect.add_image(SrcName("synth.0.tif"), SrcName("synth.0.pinhole"));
     EXPECT_EQ(collect.size(), 0u);
   }
 
   {
     // Entire footprint
     OrbitalImageCropCollection collect(BBox2(55, 9, 2, 1), datum, alt_range);
-    collect.add_image(image_file);
+    collect.add_image(SrcName("synth.0.tif"), SrcName("synth.0.pinhole"));
     EXPECT_EQ(collect.size(), 1u);
   }
 }
+
+#if MVP_ENABLE_OCTAVE_SUPPORT
+TEST(OrbitalImageCropCollection, to_octave) {
+  // Set up test space
+  Datum datum("D_MOON");
+  Vector2 alt_range(-10000, 10000);
+
+  OrbitalImageCropCollection collect(BBox2(55, 9, 2, 1), datum, alt_range); // Should catch all footprints
+  collect.add_image(SrcName("synth.0.tif"), SrcName("synth.0.pinhole"));
+  collect.add_image(SrcName("synth.1.tif"), SrcName("synth.1.pinhole"));
+  collect.add_image(SrcName("synth.2.tif"), SrcName("synth.2.pinhole"));
+  collect.add_image(SrcName("synth.3.tif"), SrcName("synth.3.pinhole"));
+  EXPECT_EQ(collect.size(), 4u);
+
+  ::octave_map oct_collect(collect.to_octave());
+  EXPECT_EQ(oct_collect.dims()(0), 1);
+  EXPECT_EQ(oct_collect.dims()(1), 4);
+  EXPECT_EQ(oct_collect.keys()(0), "data");
+  EXPECT_EQ(oct_collect.keys()(1), "camera");
+}
+#endif

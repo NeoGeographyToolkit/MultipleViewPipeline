@@ -10,6 +10,12 @@
 
 #include <mvp/MVPJobBase.h>
 
+#if MVP_ENABLE_OCTAVE_SUPPORT
+#include <octave/parse.h>
+#include <octave/octave.h>
+#include <octave/toplev.h> /* do_octave_atexit */ 
+#endif
+
 namespace mvp {
 
 struct MVPJob : public MVPJobBase<MVPJob> {
@@ -51,6 +57,33 @@ struct MVPJobTest : public MVPJobBase<MVPJobTest> {
     return MVPPixelResult(result, overlaps, overlaps > 0, overlaps);
   }
 };
+
+#if MVP_ENABLE_OCTAVE_SUPPORT
+struct MVPJobOctave : public MVPJobBase<MVPJobOctave> {
+  ::octave_map m_octave_crops;
+
+  MVPJobOctave(vw::cartography::GeoReference const& georef, int tile_size, OrbitalImageCropCollection const& crops, MVPAlgorithmSettings const& settings) :
+    MVPJobBase(georef, tile_size, crops, settings) 
+  {
+    m_octave_crops = m_crops.to_octave();  
+  }
+
+  inline MVPPixelResult process_pixel(MVPAlgorithmVar const& seed, vw::cartography::GeoReference const& georef) const {
+    ::octave_value_list args;
+    args.append(seed.to_octave());
+    args.append(vw::octave::georef_to_octave(georef));
+    args.append(m_octave_crops);
+    args.append(5); // TODO: pass settings
+
+    return MVPPixelResult(::feval(MVP_OCTAVE_ALGORITHM_FCN, args, 1));
+  }
+
+  static void start_interpreter() {
+    const char * argvv [] = {"" /* name of program, not relevant */, "--silent", "--path", MVP_MFILE_INSTALL_DIR ":" MVP_OCTFILE_INSTALL_DIR};
+    octave_main (4, (char **) argvv, true /* embedded */);
+  }
+};
+#endif
 
 inline MVPTileResult mvpjob_process_tile(MVPJobRequest const& job_request, vw::ProgressCallback const& progress = vw::ProgressCallback::dummy_instance()) {
   if (job_request.algorithm_settings().use_octave()) {

@@ -5,6 +5,7 @@
 #include <vw/Plate/PlateFile.h>
 #include <vw/Image/MaskViews.h>
 
+#include <mvp/Config.h>
 #include <mvp/MVPWorkspace.h>
 #include <mvp/MVPJob.h>
 
@@ -20,6 +21,10 @@ namespace po = boost::program_options;
 
 int main(int argc, char* argv[])
 {
+  #if MVP_ENABLE_OCTAVE_SUPPORT
+  MVPJobOctave::start_interpreter();
+  #endif
+
   po::options_description cmd_opts("Command line options");
   cmd_opts.add_options()
     ("help,h", "Print this message")

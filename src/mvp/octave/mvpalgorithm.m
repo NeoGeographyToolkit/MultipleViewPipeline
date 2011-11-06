@@ -1,8 +1,14 @@
-% seed.height
-% seed.variance
+% seed: scalar struct
+% seed.post_height
 % seed.orientation
 % seed.windows
 
+% result: scalar struct
+% result.variance
+% result.converged
+% result.num_iterations_to_converge
+
+% settings: scalar struct
 % settings.post_height_limits
 % settings.fix_orientation
 % settings.fix_windows
@@ -13,33 +19,32 @@
 
 % so (1, 1) for the georef is the center of the patch
 
-% images.camera
-% images.data
+% images: struct array
+% images[x].camera
+% images[x].data
 
-% OrbitalImage vs OrbitalImageFile
-% OrbitalImageFileDesc
-
-% Descriptions can encapsulate entire objects
-% Settings are settings
-
-function result = mvpalgorithm(seed, georef, images, settings)
+function [result, variance, converged, num_iterations]  = mvpalgorithm(seed, georef, images, settings)
   lonlat_h = georef * [1; 1; 1];
   lonlat = lonlat_h(1:2) / lonlat_h(3);
  
-  xyz = seed.height * lonlat2normal(lonlat);
+  xyz = 1737400 * lonlat2normal(lonlat);
   xyz_h = [xyz; 1];
 
   overlap = 0;
 
   for img = images
-    px_h = img.camera * xyz;
+    px_h = img.camera * xyz_h;
     px = px_h(1:2) /  px_h(3);
 
-    if (px > [0; 0] && px < size(img.data))
+    if (px > [1; 1] && px < flipud(size(img.data)'))
       overlap++;
     endif
   endfor
 
-  result = seed;
-  result.height = overlap;
+  result.post_height = overlap;
+  result.orientation = [overlap; overlap; overlap];
+  result.windows = [overlap; overlap; overlap];
+  variance = overlap;
+  converged = overlap > 0;
+  num_iterations = overlap;
 endfunction

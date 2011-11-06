@@ -5,8 +5,7 @@ PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS MVPJobRequest.proto
                                             OrbitalImageFileDescriptor.proto
                                             MVPAlgorithmSettings.proto)
 
-set(MVP_HDRS MVPAlgorithm.h
-             MVPJob.h
+set(MVP_HDRS MVPJob.h
              MVPWorkspace.h
              OrbitalImageFootprint.h
              ConvexPolygon.h
@@ -20,6 +19,9 @@ add_executable(mvp_solo mvp_solo.cc)
 target_link_libraries(mvp_solo mvp
                                ${PROTOBUF_LIBRARIES}
                                ${VW_LIBRARIES})
+if (ENABLE_OCTAVE_SUPPORT)
+  target_link_libraries(mvp_solo ${OCTAVE_LIBRARIES})
+endif()
 #set_target_properties(mvp_solo PROPERTIES COMPILE_FLAGS "-DTEST_SRCDIR\\\"${CMAKE_CURRENT_SOURCE_DIR}\\\"")
 
 configure_file(Config.h.in Config.h)

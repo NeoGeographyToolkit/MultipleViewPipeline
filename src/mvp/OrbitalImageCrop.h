@@ -7,6 +7,7 @@
 #ifndef __MVP_ORBITALIMAGECROP_H__
 #define __MVP_ORBITALIMAGECROP_H__
 
+#include <mvp/Config.h>
 #include <mvp/OrbitalImageFileDescriptor.pb.h>
 
 #include <vw/Image/ImageView.h>
@@ -22,6 +23,7 @@
 
 #if MVP_ENABLE_OCTAVE_SUPPORT
 #include <vw/Octave/Conversions.h>
+#include <octave/oct-map.h>
 #endif
 
 namespace mvp {
@@ -120,6 +122,14 @@ class OrbitalImageCropCollection : public std::vector<OrbitalImageCrop> {
         push_back(image);
       }
     }
+
+    void add_image(std::string const& image_path, std::string const& camera_path) {
+      // TODO: change construct_from_descriptor to construct_from_paths
+      OrbitalImageFileDescriptor d;
+      d.set_image_path(image_path);
+      d.set_camera_path(camera_path);
+      add_image(d);
+    }
     
     template <class CollectionT>
     void add_image_collection(CollectionT const& orbital_images) {
@@ -127,24 +137,24 @@ class OrbitalImageCropCollection : public std::vector<OrbitalImageCrop> {
         add_image(o);
       }
     }
+
+    #if MVP_ENABLE_OCTAVE_SUPPORT
+    ::octave_map to_octave() const {
+      ::octave_value_list datas;
+      ::octave_value_list cameras;
+
+      BOOST_FOREACH(OrbitalImageCrop const& o, *this) {
+        datas.append(vw::octave::imageview_to_octave(o));
+        cameras.append(vw::octave::pinhole_to_octave(o.camera()));
+      }
+
+      ::octave_map result;
+      result.assign("data", datas);
+      result.assign("camera", cameras);
+      return result;
+    }
+    #endif
 };
-
-#if MVP_ENABLE_OCTAVE_SUPPORT
-class OrbitalImageCropOctave {
-  ::Matrix m_camera;
-  ::Matrix m_image;
-
-  public:
-    OrbitalImageCropOctave(OrbitalImageCrop const& oic) :
-      m_camera(vw::octave::pinhole_to_octave(oic.camera())),
-      m_image(vw::octave::imageview_to_octave(oic.image())) {}
-
-    ::Matrix camera() const {return m_camera;}
-    ::Matrix image() const {return m_image;}
-
-    // octave_value_list struct
-}
-#endif
 
 } // namespace mvp
 
