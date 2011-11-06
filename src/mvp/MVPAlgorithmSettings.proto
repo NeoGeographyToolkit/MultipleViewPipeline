@@ -6,5 +6,4 @@ message MVPAlgorithmSettings {
 
   optional bool use_octave = 3 [default=false];
   optional bool test_algorithm = 4 [default=true];
-  optional string octave_function = 5;
 }
