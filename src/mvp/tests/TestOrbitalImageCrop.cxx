@@ -18,7 +18,7 @@ TEST(HelperFunction, offset_pinhole) {
   EXPECT_VECTOR_NEAR(cam.pixel_to_vector(Vector2(20, 30)), cam_off.pixel_to_vector(Vector2(10, 10)), 1e-6);
 }
 
-TEST(OrbtialImageCrop, construct_from_descriptor) {
+TEST(OrbtialImageCrop, construct_from_paths) {
 /* Footprint for synth.0.pinhole with alt +-10000
 
     Vector2(56.1474,9.90343)
@@ -41,17 +41,15 @@ Vector2(55.9392,9.4308)
   const int num_pts = 20;
 
   // Set up test space
-  OrbitalImageFileDescriptor image_file;
-  image_file.set_image_path(SrcName("synth.0.tif"));
-  image_file.set_camera_path(SrcName("synth.0.pinhole"));
-
+  string image_path(SrcName("synth.0.tif"));
+  string camera_path(SrcName("synth.0.pinhole"));
   Datum datum("D_MOON");
   Vector2 alt_range(-10000, 10000);
   Vector2 radius_range(alt_range + Vector2(datum.semi_major_axis(), datum.semi_major_axis()));
 
   // Reference image, not cropped
-  ImageView<PixelMask<PixelGray<float32> > > image_nocrop(DiskImageView<PixelGray<float32> >(image_file.image_path()));
-  PinholeModel camera_nocrop(image_file.camera_path());
+  ImageView<PixelMask<PixelGray<float32> > > image_nocrop = DiskImageView<PixelGray<float32> >(image_path);
+  PinholeModel camera_nocrop(camera_path);
 
   // Bounding boxes to test
   vector<BBox2> boxes(4);
@@ -64,7 +62,7 @@ Vector2(55.9392,9.4308)
   // num_pts points and make sure the crop and reference give
   // the same values
   BOOST_FOREACH(BBox2 const& b, boxes) {
-    OrbitalImageCrop image_crop(OrbitalImageCrop::construct_from_descriptor(image_file, b, datum, alt_range));
+    OrbitalImageCrop image_crop(OrbitalImageCrop::construct_from_paths(image_path, camera_path, b, datum, alt_range));
 
     for (int i = 0; i < num_pts; i++) {
       for (int j = 0; j < num_pts; j++) {
@@ -89,11 +87,11 @@ Vector2(55.9392,9.4308)
     }
   }
 
-  OrbitalImageCrop empty_image(OrbitalImageCrop::construct_from_descriptor(image_file, boxes[0], datum, alt_range));
+  OrbitalImageCrop empty_image(OrbitalImageCrop::construct_from_paths(image_path, camera_path, boxes[0], datum, alt_range));
   EXPECT_EQ(empty_image.cols(), 0);
   EXPECT_EQ(empty_image.rows(), 0);
 
-  OrbitalImageCrop entire_image(OrbitalImageCrop::construct_from_descriptor(image_file, boxes[3], datum, alt_range));
+  OrbitalImageCrop entire_image(OrbitalImageCrop::construct_from_paths(image_path, camera_path, boxes[3], datum, alt_range));
   EXPECT_EQ(entire_image.cols(), image_nocrop.cols());
   EXPECT_EQ(entire_image.rows(), image_nocrop.rows());
 }
