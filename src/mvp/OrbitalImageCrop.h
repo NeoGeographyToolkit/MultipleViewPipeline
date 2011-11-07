@@ -36,7 +36,24 @@ vw::camera::PinholeModel offset_pinhole(vw::camera::PinholeModel const& cam, vw:
 class OrbitalImageCrop : public vw::ImageView<vw::PixelMask<vw::PixelGray<vw::float32> > > {
   vw::camera::PinholeModel m_camera;
 
+  static vw::ImageViewRef<vw::PixelMask<vw::PixelGray<vw::float32> > > rsrc_helper(boost::shared_ptr<vw::DiskImageResource> rsrc) {
+    switch(rsrc->format().pixel_format) {
+      case vw::VW_PIXEL_GRAYA:
+        return vw::DiskImageView<vw::PixelMask<vw::PixelGray<vw::float32> > >(rsrc);
+        break;
+      case vw::VW_PIXEL_GRAY:
+        return vw::pixel_cast<vw::PixelMask<vw::PixelGray<vw::float32> > >(vw::DiskImageView<vw::PixelGray<vw::float32> >(rsrc));
+        break;
+      default:
+        vw::vw_throw(vw::ArgumentErr() << "Unsupported orbital image pixel format: " << vw::pixel_format_name(rsrc->format().pixel_format));
+    }
+  }
   public:
+    static OrbitalImageCrop construct_from_paths(std::string const& image_path,
+                                                 std::string const& camera_path) {
+      boost::shared_ptr<vw::DiskImageResource> rsrc(vw::DiskImageResource::open(image_path));
+      return OrbitalImageCrop(rsrc_helper(rsrc), vw::camera::PinholeModel(camera_path));
+    }
 
     static OrbitalImageCrop construct_from_paths(std::string const& image_path,
                                                  std::string const& camera_path,
@@ -44,7 +61,7 @@ class OrbitalImageCrop : public vw::ImageView<vw::PixelMask<vw::PixelGray<vw::fl
                                                  vw::cartography::Datum const& datum,
                                                  vw::Vector2 const& post_height_limits) {
 
-      boost::scoped_ptr<vw::DiskImageResource> rsrc(vw::DiskImageResource::open(image_path));
+      boost::shared_ptr<vw::DiskImageResource> rsrc(vw::DiskImageResource::open(image_path));
 
       VW_ASSERT(datum.semi_major_axis() == datum.semi_minor_axis(), vw::LogicErr() << "Spheroid datums not supported");
       vw::Vector2 radius_range(post_height_limits + vw::Vector2(datum.semi_major_axis(), datum.semi_major_axis()));
@@ -76,20 +93,7 @@ class OrbitalImageCrop : public vw::ImageView<vw::PixelMask<vw::PixelGray<vw::fl
 
       cropbox = vw::grow_bbox_to_int(cropbox);
 
-      vw::ImageView<vw::PixelMask<vw::PixelGray<vw::float32> > > image;
-
-      switch(rsrc->format().pixel_format) {
-        case vw::VW_PIXEL_GRAYA:
-          image = vw::crop(vw::DiskImageView<vw::PixelMask<vw::PixelGray<vw::float32> > >(image_path), cropbox);
-          break;
-        case vw::VW_PIXEL_GRAY:
-          image = vw::crop(vw::DiskImageView<vw::PixelGray<vw::float32> >(image_path), cropbox);
-          break;
-        default:
-          vw::vw_throw(vw::ArgumentErr() << "Unsupported orbital image pixel format: " << vw::pixel_format_name(rsrc->format().pixel_format));
-      }
-
-      return OrbitalImageCrop(image, offset_pinhole(camera, cropbox.min()));
+      return OrbitalImageCrop(vw::crop(rsrc_helper(rsrc), cropbox), offset_pinhole(camera, cropbox.min()));
     }
 
     vw::camera::PinholeModel camera() const {return m_camera;}
@@ -110,7 +114,10 @@ class OrbitalImageCropCollection : public std::vector<OrbitalImageCrop> {
   vw::Vector2 m_post_height_limits;
 
   public:
-    
+
+    // This constructor constructs an OrbitalImageCropCollection that doesn't crop the images  
+    OrbitalImageCropCollection() : m_lonlat_bbox(), m_datum(), m_post_height_limits() {} 
+
     OrbitalImageCropCollection(vw::BBox2 const& lonlat_bbox, vw::cartography::Datum const& datum, vw::Vector2 const& post_height_limits) : 
       m_lonlat_bbox(lonlat_bbox), m_datum(datum), m_post_height_limits(post_height_limits) {
       VW_ASSERT(m_datum.semi_major_axis() == m_datum.semi_minor_axis(), vw::LogicErr() << "Spheroid datums not supported");
@@ -121,9 +128,14 @@ class OrbitalImageCropCollection : public std::vector<OrbitalImageCrop> {
     }
 
     void add_image(std::string const& image_path, std::string const& camera_path) {
-      OrbitalImageCrop image(OrbitalImageCrop::construct_from_paths(image_path, camera_path, m_lonlat_bbox, m_datum, m_post_height_limits));
-      if (image.cols() > 0 && image.rows() > 0) {
-        push_back(image);
+      if (m_lonlat_bbox.empty()) {
+        // If the lonlat bbox is empty, we don't crop the images
+        push_back(OrbitalImageCrop::construct_from_paths(image_path, camera_path));
+      } else {
+        OrbitalImageCrop image(OrbitalImageCrop::construct_from_paths(image_path, camera_path, m_lonlat_bbox, m_datum, m_post_height_limits));
+        if (image.cols() > 0 && image.rows() > 0) {
+          push_back(image);
+        }
       }
     }
     

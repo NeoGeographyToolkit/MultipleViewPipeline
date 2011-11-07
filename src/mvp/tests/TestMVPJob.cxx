@@ -49,13 +49,8 @@ void process_tile_test(bool use_octave) {
   MVPTileResult result = mvpjob_process_tile(job_request);
 
   // Set up variables for the reference calculation
-  vector<ImageView<PixelMask<PixelGray<float32> > > > orbital_images;
-  vector<PinholeModel> cameras;
-
-  BOOST_FOREACH(OrbitalImageFileDescriptor d, job_request.orbital_images()) {
-    orbital_images.push_back(DiskImageView<PixelGray<float32> >(d.image_path()));
-    cameras.push_back(PinholeModel(d.camera_path()));
-  }
+  OrbitalImageCropCollection orbital_images;
+  orbital_images.add_image_collection(job_request.orbital_images());
 
   GeoReference georef(plate_georef.tile_georef(col_row[0], col_row[1], level));
   EXPECT_EQ(georef.build_desc().DebugString(), result.georef.build_desc().DebugString());
@@ -71,9 +66,9 @@ void process_tile_test(bool use_octave) {
       Vector3 xyz = lon_lat_radius_to_xyz(llr);
 
       int overlaps = 0;
-      for (unsigned k = 0; k < orbital_images.size(); k++) {
-        Vector2 px = cameras[k].point_to_pixel(xyz);
-        if (bounding_box(orbital_images[k]).contains(px)) {
+      BOOST_FOREACH(OrbitalImageCrop o, orbital_images) {
+        Vector2 px = o.camera().point_to_pixel(xyz);
+        if (bounding_box(o).contains(px)) {
           overlaps++;
         }
       }

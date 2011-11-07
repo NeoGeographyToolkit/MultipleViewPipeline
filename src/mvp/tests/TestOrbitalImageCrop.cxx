@@ -48,8 +48,7 @@ Vector2(55.9392,9.4308)
   Vector2 radius_range(alt_range + Vector2(datum.semi_major_axis(), datum.semi_major_axis()));
 
   // Reference image, not cropped
-  ImageView<PixelMask<PixelGray<float32> > > image_nocrop = DiskImageView<PixelGray<float32> >(image_path);
-  PinholeModel camera_nocrop(camera_path);
+  OrbitalImageCrop image_nocrop(OrbitalImageCrop::construct_from_paths(image_path, camera_path));
 
   // Bounding boxes to test
   vector<BBox2> boxes(4);
@@ -74,7 +73,7 @@ Vector2(55.9392,9.4308)
           Vector3 xyz(lon_lat_radius_to_xyz(llr));
 
           Vector2 px_crop(image_crop.camera().point_to_pixel(xyz));
-          Vector2 px_nocrop(camera_nocrop.point_to_pixel(xyz));
+          Vector2 px_nocrop(image_nocrop.camera().point_to_pixel(xyz));
 
           // If the uncropped image contains the pixel, then the crop MUST have it, and be the same value
           // If the uncropped image doesn't contain the pixel, the crop can have it or not.
@@ -114,6 +113,30 @@ TEST(OrbtialImageCropCollection, add_image) {
     OrbitalImageCropCollection collect(BBox2(55, 9, 2, 1), datum, alt_range);
     collect.add_image(SrcName("synth.0.tif"), SrcName("synth.0.pinhole"));
     EXPECT_EQ(collect.size(), 1u);
+  }
+}
+
+void no_crop_helper(OrbitalImageCropCollection &collect, vector<Vector2i> &image_sizes, 
+                    std::string const& image_path, std::string const& camera_path) {
+  boost::scoped_ptr<vw::DiskImageResource> rsrc(vw::DiskImageResource::open(image_path));
+  image_sizes.push_back(Vector2i(rsrc->cols(), rsrc->rows()));
+
+  collect.add_image(image_path, camera_path);
+}
+
+TEST(OrbitalImageCropCollection, no_crop) {
+  vector<Vector2i> image_sizes;
+
+  OrbitalImageCropCollection collect;
+
+  no_crop_helper(collect, image_sizes, SrcName("synth.0.tif"), SrcName("synth.0.pinhole"));
+  no_crop_helper(collect, image_sizes, SrcName("synth.1.tif"), SrcName("synth.1.pinhole"));
+  no_crop_helper(collect, image_sizes, SrcName("synth.2.tif"), SrcName("synth.2.pinhole"));
+  no_crop_helper(collect, image_sizes, SrcName("synth.3.tif"), SrcName("synth.3.pinhole"));
+  EXPECT_EQ(collect.size(), 4u);
+
+  for (unsigned i = 0; i < collect.size(); i++) {
+    EXPECT_VECTOR_EQ(image_sizes[i], Vector2i(collect[i].cols(), collect[i].rows()));
   }
 }
 
