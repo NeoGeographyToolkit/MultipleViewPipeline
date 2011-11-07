@@ -2,6 +2,8 @@
 \#*\#
 papers/proposal/amvp_proposal.pdf
 papers/brainstorm/amvp_brainstorm.pdf
+examples/synth/result.plate
+examples/synth/internal-result.plate
 *.asv
 
 build
