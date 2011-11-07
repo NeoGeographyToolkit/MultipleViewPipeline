@@ -19,6 +19,13 @@ using namespace mvp;
 
 namespace po = boost::program_options;
 
+template <class BBoxT, class RealT, size_t DimN>
+void print_bbox_helper(math::BBoxBase<BBoxT, RealT, DimN> const& bbox) {
+  cout << "BBox = " << bbox << endl;
+  cout << "width, height = " << bbox.width() << ", " << bbox.height() << endl;
+}
+
+
 int main(int argc, char* argv[])
 {
   #if MVP_ENABLE_OCTAVE_SUPPORT
@@ -30,10 +37,24 @@ int main(int argc, char* argv[])
     ("help,h", "Print this message")
     ("silent", "Run without outputting status")
     ("config-file,f", po::value<string>()->default_value("mvp.conf"), "Specify a pipeline configuration file")
+    ("print-workspace,p", "Print information about the workspace and exit")
+    ("dump-job", "Dump a jobfile")
+    ("col,c", po::value<int>(), "When dumping a jobfile, column of tile to dump")
+    ("row,r", po::value<int>(), "When dumping a jobfile, row of tile to dump")
+    ("level,l", po::value<int>(), "When dumping a jobfile or printing the workspace, level to operate at")
+    ;
+
+  po::options_description render_opts("Render Options");
+  render_opts.add_options()
+    ("col-start", po::value<int>(), "Col to start rendering at")
+    ("col-end", po::value<int>(), "One past last col to render")
+    ("row-start", po::value<int>(), "Row to start rendering at")
+    ("row-end", po::value<int>(), "One past last row to render")
+    ("render-level", po::value<int>(), "Level to render at")
     ;
 
   po::options_description mvp_opts;
-  mvp_opts.add(MVPWorkspace::program_options());
+  mvp_opts.add(MVPWorkspace::program_options()).add(render_opts);
 
   po::options_description all_opts;
   all_opts.add(cmd_opts).add(mvp_opts);
@@ -55,27 +76,94 @@ int main(int argc, char* argv[])
 
   MVPWorkspace work(MVPWorkspace::construct_from_program_options(vm)); 
 
+  if (!vm.count("silent")) {
+    cout << boolalpha << endl;
+    cout << "-------------------------------------" << endl;
+    cout << "Welcome to the Multiple View Pipeline" << endl;
+    cout << "-------------------------------------" << endl;
+    cout << endl;
+    cout << "Number of images loaded = " << work.num_images() << endl;
+    cout << " Equal resolution level = " << work.equal_resolution_level() << endl;
+    cout << "    Equal density level = " << work.equal_density_level() << endl;
+    cout << endl;
+    cout << "# Workspace lonlat BBox #" << endl;
+    print_bbox_helper(work.lonlat_work_area());
+    cout << endl;
+    cout << "# Workspace tile BBox (@ equal density level) #" << endl;
+    print_bbox_helper(work.tile_work_area(work.equal_density_level()));
+    if (vm.count("level")) {
+      int print_level = vm["level"].as<int>();
+      cout << endl;
+      cout << "# Workspace tile BBox (@ level " << print_level << ") #" << endl;
+      print_bbox_helper(work.tile_work_area(print_level));
+    }
+    cout << endl;
+  } 
+
+  if (vm.count("print-workspace")) {
+    return 0;
+  }
+
   int render_level = work.equal_resolution_level();
+  if (vm.count("render-level")) {
+    render_level = vm["render-level"].as<int>();
+  }
 
   BBox2i tile_bbox(work.tile_work_area(render_level));
 
+  if (vm.count("col-start")) {
+    VW_ASSERT(vm.count("col-end"), ArgumentErr() << "col-start specified, but col-end not");
+    tile_bbox.min()[0] = vm["col-start"].as<int>();
+    tile_bbox.max()[1] = vm["col-end"].as<int>();
+  }
+
+  if (vm.count("row-start")) {
+    VW_ASSERT(vm.count("row-end"), ArgumentErr() << "row-start specified, but col-end not");
+    tile_bbox.min()[0] = vm["row-start"].as<int>();
+    tile_bbox.max()[1] = vm["row-end"].as<int>();
+  }
+
+  if (!vm.count("silent")) {
+    cout << "-------------------------------------" << endl;
+    cout << "        Rendering Information" << endl;
+    cout << "-------------------------------------" << endl;
+    cout << endl;
+    cout << "Render level = " << render_level << endl;
+    cout << "  Use octave = " << vm["use-octave"].as<bool>() << endl;
+    cout << endl;
+    cout << "# Render tile BBox #" << endl;
+    print_bbox_helper(tile_bbox);
+    cout << endl;
+    cout << "-------------------------------------" << endl;
+    cout << "              Status" << endl;
+    cout << "-------------------------------------" << endl;
+    cout << endl;
+  }
+
   boost::shared_ptr<PlateFile> pf(new PlateFile(work.result_platefile(),
                                                 work.plate_georef().map_proj(),
-                                                "desc",
+                                                "MVP Result Plate",
                                                 work.plate_georef().tile_size(),
                                                 "tif", VW_PIXEL_GRAYA, VW_CHANNEL_FLOAT32));
 
-  Transaction tid = pf->transaction_request("tdesc", -1);
+  Transaction tid = pf->transaction_request("Post Heights", -1);
 
   int curr_tile = 0;
   int num_tiles = tile_bbox.width() * tile_bbox.height();
   float32 plate_min_val = numeric_limits<float32>::max(), plate_max_val = numeric_limits<float32>::min();
   for (int col = tile_bbox.min().x(); col < tile_bbox.max().x(); col++) {
     for (int row = tile_bbox.min().y(); row < tile_bbox.max().y(); row++) {
-      ostringstream status;
-      status << "Tile: " << ++curr_tile << "/" << num_tiles << " Location: [" << col << ", " << row << "] @" << render_level << " ";
+      boost::shared_ptr<ProgressCallback> progress;
 
-      MVPTileResult result = mvpjob_process_tile(work.assemble_job(col, row, render_level), TerminalProgressCallback("mvp", status.str()));
+      if (!vm.count("silent")) {
+        ostringstream status;
+        status << "Tile: " << ++curr_tile << "/" << num_tiles << " Location: [" << col << ", " << row << "] @" << render_level << " ";
+        progress.reset(new TerminalProgressCallback("mvp", status.str()));
+      } else {
+        progress.reset(new ProgressCallback);
+      }
+
+      MVPTileResult result = mvpjob_process_tile(work.assemble_job(col, row, render_level), *progress);
       
       ImageView<PixelGrayA<float32> > rendered_tile = mask_to_alpha(pixel_cast<PixelMask<PixelGray<float32> > >(result.post_height));
 
@@ -106,7 +194,10 @@ int main(int argc, char* argv[])
     }
   }
 
-  cout << "Plate (min, max): (" << plate_min_val << ", " << plate_max_val << ")" << endl;
+  if (!vm.count("silent")) {
+    cout << "Plate (min, max): (" << plate_min_val << ", " << plate_max_val << ")" << endl;
+    cout << endl;
+  }
 
   return 0;
 }
