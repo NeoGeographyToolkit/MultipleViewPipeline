@@ -13,20 +13,20 @@ set(MVP_HDRS MVPJob.h
              ${PROTO_HDRS})
 set(MVP_SRCS ${PROTO_SRCS})
 
-add_library(mvp ${MVP_SRCS})
+add_library(mvpcommon ${MVP_SRCS})
 
-add_executable(mvp_solo mvp_solo.cc)
-target_link_libraries(mvp_solo mvp
-                               ${PROTOBUF_LIBRARIES}
-                               ${VW_LIBRARIES})
+add_executable(mvp mvp.cc)
+target_link_libraries(mvp mvpcommon
+                          ${PROTOBUF_LIBRARIES}
+                          ${VW_LIBRARIES})
 if (ENABLE_OCTAVE_SUPPORT)
-  target_link_libraries(mvp_solo ${OCTAVE_LIBRARIES})
+  target_link_libraries(mvp ${OCTAVE_LIBRARIES})
 endif()
 #set_target_properties(mvp_solo PROPERTIES COMPILE_FLAGS "-DTEST_SRCDIR\\\"${CMAKE_CURRENT_SOURCE_DIR}\\\"")
 
 configure_file(Config.h.in Config.h)
 
-install(TARGETS mvp_solo DESTINATION bin)
+install(TARGETS mvp DESTINATION bin)
 install(FILES ${MVP_HDRS} DESTINATION include/mvp)
 
 if (ENABLE_OCTAVE_SUPPORT)
