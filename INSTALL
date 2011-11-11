@@ -1,58 +1,26 @@
+#
+# Configure the MVP
+#
 
-Installing MVP on OSX
+mkdir build
+export VW_ROOT=<path_to_vw_build_dir>
+ccmake ..
+[Press 'c' to configure]
+[Select option 'BINARY_DIR_INSTALL']
+[Optionally select option 'BUILD_TESTS']
+[Press 'c' to reconfigure]
+[Press 'g' to generate]
 
-1)
+#
+# Compile and install the MVP
+#
 
-Install MacPorts https://trac.macports.org/wiki/InstallingMacPorts#RequirementsfortheMacPortsshellenvironment
-    Don’t forget to add /opt/local/bin to your path in ~/.bashrc!
-    Ensure you have the latest version: sudo port -v selfupdate
-Install VW deps
-    sudo port –v install qt4-mac boost proj gdal git-core protobuf-cpp zmq
-Install additional MVP deps
-    sudo port -v install cmake [octave-devel] [google-test]
+make -j4 && make install
 
-2)
+#
+# Test the MVP
+#
 
-Check out my ‘mvp’ VW branch
-    git clone git://github.com/khusmann/visionworkbench.git VisionWorkbench
-    cd VisionWorkbench
-    git checkout -b mvp origin/mvp
-Edit/create config.options
-    #! /bin/sh
-    # Compile options
-    #ENABLE_CCACHE=yes
-    ENABLE_DEBUG=yes
-    ENABLE_OPTIMIZE=yes
-
-    # This is where vw will be installed.
-    PREFIX=`pwd`/build
-
-    # Specific modules to enable
-    ENABLE_MODULE_PLATE=yes
-    ENABLE_MODULE_GUI=yes
-    #ENABLE_MODULE_TOOLS=no
-Configure VW, verify that modules PLATE and GUI will be compiled:
-    ./autogen && ./configure
-Compile and install VW
-    make -j4 && make install
-
-3)
-
-Check out the MVP
-    git clone ssh://<user>@m.arc.nasa.gov/home/khusmann/MultipleViewPipeline.git
-Configure the MVP
-    cd MultipleViewPipeline
-    mkdir build
-    export VW_ROOT=<path_to_vw_build_dir>
-    ccmake ..
-    [Press 'c' to configure]
-    [Select option 'BINARY_DIR_INSTALL']
-    [Optionally select option 'BUILD_TESTS']
-    [Press 'c' to reconfigure]
-    [Press 'g' to generate]
-Compile and install the MVP
-    make -j4 && make install
-Test the MVP
-    cd MultipleViewPipeline/examples/synth
-    ../../build/usr/bin/mvp
-    ../../build/usr/bin/mvp --use-octave true
+cd MultipleViewPipeline/examples/synth
+../../build/usr/bin/mvp
+../../build/usr/bin/mvp --use-octave true
