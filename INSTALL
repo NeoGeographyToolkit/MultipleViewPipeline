@@ -9,7 +9,7 @@ Install MacPorts https://trac.macports.org/wiki/InstallingMacPorts#Requirementsf
 Install VW deps
     sudo port –v install qt4-mac boost proj gdal git-core protobuf-cpp zmq
 Install additional MVP deps
-    sudo port -v install cmake [octave] [google-test]
+    sudo port -v install cmake [octave-devel] [google-test]
 
 2)
 
