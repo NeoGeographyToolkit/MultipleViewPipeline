@@ -1,14 +1,10 @@
-find_package(GTest REQUIRED)
-include_directories(${GTEST_INCLUDE_DIRS})
-
 PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS TestProto.proto)
 
 macro(add_vwoctave_test test_name)
   add_executable(${test_name} ${test_name}.cxx 
-                              ${CMAKE_SOURCE_DIR}/src/test/test_main.cc
                               ${PROTO_SRCS})
   target_link_libraries(${test_name} mvpcommon
-                                     ${GTEST_LIBRARIES}
+                                     gtest_main
                                      ${VW_LIBRARIES}
                                      ${OCTAVE_LIBRARIES})
   set_target_properties(${test_name} PROPERTIES COMPILE_FLAGS 

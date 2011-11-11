@@ -1,11 +1,8 @@
-find_package(GTest REQUIRED)
-include_directories(${GTEST_INCLUDE_DIRS})
-
 macro(add_mvp_test test_name)
-  add_executable(${test_name} ${test_name}.cxx 
-                               ${CMAKE_SOURCE_DIR}/src/test/test_main.cc)
+  add_executable(${test_name} ${test_name}.cxx )
 
   target_link_libraries(${test_name} mvpcommon
+                                     gtest_main
                                      ${GTEST_LIBRARIES}
                                      ${VW_LIBRARIES})
   if (ENABLE_OCTAVE_SUPPORT)

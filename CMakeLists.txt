@@ -4,7 +4,6 @@ project (MVP)
 include(CMakeDependentOption)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules")
-set(GTEST_ROOT ${CMAKE_SOURCE_DIR}/thirdparty/gtest/build)
 
 # This is to avoid the bug http://public.kitware.com/Bug/view.php?id=12442
 # Otherwise, if /packages version does not have MT but the system distribution
@@ -78,6 +77,11 @@ option(BUILD_TESTS "Build tests" OFF)
 
 if (BUILD_TESTS)
   enable_testing()
+  include_directories(${CMAKE_SOURCE_DIR}/thirdparty/gtest)
+  include_directories(${CMAKE_SOURCE_DIR}/thirdparty/gtest/include)
+  add_library(gtest ${CMAKE_SOURCE_DIR}/thirdparty/gtest/src/gtest-all.cc)
+  add_library(gtest_main ${CMAKE_SOURCE_DIR}/src/test/test_main.cc)
+  target_link_libraries(gtest_main gtest)
 endif()
 
 ###

@@ -4,6 +4,9 @@
 // All Rights Reserved.
 // __END_LICENSE__
 
+// Dummy definitions to avoid error
+#define TEST_OBJDIR ""
+#define TEST_SRCDIR ""
 
 #include <gtest/gtest.h>
 #include <test/Helpers.h>

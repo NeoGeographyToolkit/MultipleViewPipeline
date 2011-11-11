@@ -1,1 +1,4 @@
-Helpers.h and test_main.cc were both exactly copied from https://github.com/NeoGeographyToolkit/PhotometryTK
+Helpers.h and test_main.cc were both taken from VW
+
+Then SrcName was added from the Helpers.h in:
+https://github.com/NeoGeographyToolkit/PhotometryTK
