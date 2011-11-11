@@ -5,19 +5,21 @@ include(CMakeDependentOption)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules")
 
+# TODO:
 # This is to avoid the bug http://public.kitware.com/Bug/view.php?id=12442
 # Otherwise, if /packages version does not have MT but the system distribution
 # does, it will incorrectly use the system version. It would be a good idea
 # to periodically check which boost libs the programs are linking to by running
 # ldd on them...
-set(Boost_USE_MULTITHREADED OFF)
+# set(Boost_USE_MULTITHREADED OFF)
 
 set(CMAKE_CXX_FLAGS "-Wall")
 
 ###
 ### Find Packages
 ###
-find_package(VW REQUIRED COMPONENTS Cartography Camera Plate)
+find_package(VW REQUIRED COMPONENTS Cartography Camera Plate Image Math FileIO Core)
+find_package(Boost REQUIRED COMPONENTS program_options)
 find_package(Protobuf REQUIRED)
 find_package(Octave)
 

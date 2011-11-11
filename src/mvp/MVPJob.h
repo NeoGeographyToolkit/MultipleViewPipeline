@@ -21,7 +21,7 @@ namespace mvp {
 struct MVPJob : public MVPJobBase<MVPJob> {
 
   MVPJob(vw::cartography::GeoReference const& georef, int tile_size, OrbitalImageCropCollection const& crops, MVPAlgorithmSettings const& settings) :
-    MVPJobBase(georef, tile_size, crops, settings) {}
+    MVPJobBase<MVPJob>(georef, tile_size, crops, settings) {}
 
   inline MVPPixelResult process_pixel(MVPAlgorithmVar const& seed, vw::cartography::GeoReference const& georef) const {
     using namespace vw;
@@ -35,7 +35,7 @@ struct MVPJob : public MVPJobBase<MVPJob> {
 struct MVPJobTest : public MVPJobBase<MVPJobTest> {
 
   MVPJobTest(vw::cartography::GeoReference const& georef, int tile_size, OrbitalImageCropCollection const& crops, MVPAlgorithmSettings const& settings) :
-    MVPJobBase(georef, tile_size, crops, settings) {}
+    MVPJobBase<MVPJobTest>(georef, tile_size, crops, settings) {}
 
   inline MVPPixelResult process_pixel(MVPAlgorithmVar const& seed, vw::cartography::GeoReference const& georef) const {
     using namespace vw;
@@ -64,7 +64,7 @@ struct MVPJobOctave : public MVPJobBase<MVPJobOctave> {
   ::octave_scalar_map m_octave_settings;
 
   MVPJobOctave(vw::cartography::GeoReference const& georef, int tile_size, OrbitalImageCropCollection const& crops, MVPAlgorithmSettings const& settings) :
-    MVPJobBase(georef, tile_size, crops, settings) 
+    MVPJobBase<MVPJobOctave>(georef, tile_size, crops, settings) 
   {
     m_octave_crops = m_crops.to_octave();
     m_octave_settings = vw::octave::protobuf_to_octave(&settings); 

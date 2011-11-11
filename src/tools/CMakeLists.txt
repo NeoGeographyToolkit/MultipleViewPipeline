@@ -1,8 +1,3 @@
-# Find VW packages
-find_package(VW REQUIRED)
-find_package(VW COMPONENTS Cartography Camera)
-include_directories(${VW_INCLUDE_DIRS})
-
 if (VW_CARTOGRAPHY_FOUND AND VW_CAMERA_FOUND)
   add_executable(gen_synth_scene gen_synth_scene.cc)
   target_link_libraries(gen_synth_scene ${VW_LIBRARIES})

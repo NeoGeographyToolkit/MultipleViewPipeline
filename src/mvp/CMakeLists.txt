@@ -18,7 +18,8 @@ add_library(mvpcommon ${MVP_SRCS})
 add_executable(mvp mvp.cc)
 target_link_libraries(mvp mvpcommon
                           ${PROTOBUF_LIBRARIES}
-                          ${VW_LIBRARIES})
+                          ${VW_LIBRARIES}
+                          ${Boost_LIBRARIES})
 if (ENABLE_OCTAVE_SUPPORT)
   target_link_libraries(mvp ${OCTAVE_LIBRARIES})
 endif()
