@@ -101,7 +101,7 @@ TEST(MVPJob, process_tile) {
 
 #if MVP_ENABLE_OCTAVE_SUPPORT
 TEST(MVPJob, process_tile_octave) {
-  MVPJobOctave::start_interpreter();
+  MVPJobOctave::start_interpreter(SrcName("../octave"), SrcName("../octave"));
   process_tile_test(true);
 }
 
