@@ -168,7 +168,13 @@ int main(int argc, char* argv[])
       ImageView<PixelGrayA<float32> > rendered_tile = mask_to_alpha(pixel_cast<PixelMask<PixelGray<float32> > >(result.post_height));
 
       float32 tile_min_val, tile_max_val;
-      min_max_channel_values(result.post_height, tile_min_val, tile_max_val);
+      try {
+        min_max_channel_values(result.post_height, tile_min_val, tile_max_val);
+      } catch (ArgumentErr& e) {
+        tile_min_val = numeric_limits<float32>::max();
+        tile_max_val = numeric_limits<float32>::min(); 
+      }
+
       plate_min_val = min(plate_min_val, tile_min_val);
       plate_max_val = max(plate_max_val, tile_max_val);
 
