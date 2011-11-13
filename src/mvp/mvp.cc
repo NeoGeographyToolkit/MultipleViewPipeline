@@ -104,7 +104,7 @@ int main(int argc, char* argv[])
     return 0;
   }
 
-  int render_level = work.equal_resolution_level();
+  int render_level = work.equal_density_level();
   if (vm.count("render-level")) {
     render_level = vm["render-level"].as<int>();
   }
