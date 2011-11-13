@@ -114,12 +114,12 @@ int main(int argc, char* argv[])
   if (vm.count("col-start")) {
     VW_ASSERT(vm.count("col-end"), ArgumentErr() << "col-start specified, but col-end not");
     tile_bbox.min()[0] = vm["col-start"].as<int>();
-    tile_bbox.max()[1] = vm["col-end"].as<int>();
+    tile_bbox.max()[0] = vm["col-end"].as<int>();
   }
 
   if (vm.count("row-start")) {
     VW_ASSERT(vm.count("row-end"), ArgumentErr() << "row-start specified, but col-end not");
-    tile_bbox.min()[0] = vm["row-start"].as<int>();
+    tile_bbox.min()[1] = vm["row-start"].as<int>();
     tile_bbox.max()[1] = vm["row-end"].as<int>();
   }
 
