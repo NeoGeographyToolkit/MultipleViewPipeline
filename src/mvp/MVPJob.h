@@ -9,6 +9,7 @@
 #define __MVP_MVPJOB_H__
 
 #include <mvp/MVPJobBase.h>
+#include <boost/filesystem.hpp>
 
 #if MVP_ENABLE_OCTAVE_SUPPORT
 #include <octave/parse.h>
@@ -102,6 +103,61 @@ inline MVPTileResult mvpjob_process_tile(MVPJobRequest const& job_request, vw::P
   } else {
     return MVPJob::construct_from_job_request(job_request).process_tile(progress);
   }
+}
+
+std::string save_job_file(MVPJobRequest const& job_request, std::string const& out_dir = ".") {
+  namespace fs = boost::filesystem;
+  int col = job_request.col();
+  int row = job_request.row();
+  int level = job_request.level();
+
+  vw::platefile::PlateGeoReference plate_georef(job_request.plate_georef());
+
+  vw::cartography::GeoReference georef(plate_georef.tile_georef(col, row, level));
+
+  vw::BBox2 tile_bbox(plate_georef.tile_lonlat_bbox(col, row, level));
+  vw::Vector2 post_height_limits(job_request.algorithm_settings().post_height_limit_min(), job_request.algorithm_settings().post_height_limit_max());
+
+  OrbitalImageCropCollection crops(tile_bbox, georef.datum(), post_height_limits);
+  crops.add_image_collection(job_request.orbital_images());
+
+  std::string job_filename;
+
+  {
+    std::stringstream stream;
+    stream << out_dir << "/" << col << "_" << row << "_" << level << ".job";
+    job_filename = stream.str();
+  }
+
+  // TODO: check IO errors
+  fs::create_directory(job_filename);
+
+  MVPJobRequest job_request_mod(job_request);
+  for (unsigned curr_image = 0; curr_image < crops.size(); curr_image++) {
+    std::stringstream stream;
+    stream << curr_image;
+    std::string str_num(stream.str());
+
+    std::string image_name("image" + str_num + ".tif");
+    std::string camera_name("camera" + str_num + ".pinhole");
+
+    job_request_mod.mutable_orbital_images(curr_image)->set_camera_path(camera_name);
+    job_request_mod.mutable_orbital_images(curr_image)->set_image_path(image_name);
+
+    write_image(job_filename + "/" + image_name, crops[curr_image]);
+    crops[curr_image].camera().write(job_filename + "/" + camera_name);
+
+    curr_image++;
+  }
+
+  {
+    std::fstream output((job_filename + "/job").c_str(), std::ios::out | std::ios::trunc | std::ios::binary);
+    if (!job_request.SerializeToOstream(&output)) {
+      vw_throw(vw::IOErr() << "Failed to serialize jobfile");
+    }
+  }
+
+  return job_filename;
 }
 
 } // namespace mvp

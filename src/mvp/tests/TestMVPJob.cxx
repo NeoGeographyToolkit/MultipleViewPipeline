@@ -19,10 +19,7 @@ TEST(Helpers, offset_georef) {
   EXPECT_VECTOR_EQ(geo.pixel_to_lonlat(Vector2(120, 230)), crop_geo.pixel_to_lonlat(Vector2(20, 30)));
 }
 
-void process_tile_test(bool use_octave) {
-  // Don't verify all pixels in result, only verify every fourth one for speed
-  const int validation_divisor = 4;
-
+MVPJobRequest create_job_request(bool use_octave = true) {
   // Set up workspace
   const int tile_size = 64;
   const Datum datum("D_MOON");
@@ -43,10 +40,25 @@ void process_tile_test(bool use_octave) {
   int level = work.equal_resolution_level();
   Vector2 col_row = work.tile_work_area(level).min();
 
-  MVPJobRequest job_request = work.assemble_job(col_row[0], col_row[1], level);
- 
+  return work.assemble_job(col_row[0], col_row[1], level);
+}
+
+TEST(MVPJob, save_job_file) {
+  // TODO: Finish test here
+  MVPJobRequest job_request(create_job_request());
+  string job_file = save_job_file(job_request);
+}
+
+void process_tile_test(MVPJobRequest job_request) {
+  // Don't verify all pixels in result, only verify every fourth one for speed
+  const int validation_divisor = 4;
+
   // Process the tile 
   MVPTileResult result = mvpjob_process_tile(job_request);
+
+  PlateGeoReference plate_georef(job_request.plate_georef());
+  Vector2 col_row = Vector2(job_request.col(), job_request.row());
+  int level = job_request.level();
 
   // Set up variables for the reference calculation
   OrbitalImageCropCollection orbital_images;
@@ -96,13 +108,13 @@ void process_tile_test(bool use_octave) {
 }
 
 TEST(MVPJob, process_tile) {
-  process_tile_test(false);
+  process_tile_test(create_job_request(false));
 }
 
 #if MVP_ENABLE_OCTAVE_SUPPORT
 TEST(MVPJob, process_tile_octave) {
   MVPJobOctave::start_interpreter(SrcName("../octave"), SrcName("../octave"));
-  process_tile_test(true);
+  process_tile_test(create_job_request(true));
   do_octave_atexit();
 }
 
