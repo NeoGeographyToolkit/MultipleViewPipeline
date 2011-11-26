@@ -205,5 +205,10 @@ int main(int argc, char* argv[])
     cout << endl;
   }
 
+
+  #if MVP_ENABLE_OCTAVE_SUPPORT
+  do_octave_atexit();
+  #endif
+
   return 0;
 }

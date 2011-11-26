@@ -103,6 +103,7 @@ TEST(MVPJob, process_tile) {
 TEST(MVPJob, process_tile_octave) {
   MVPJobOctave::start_interpreter(SrcName("../octave"), SrcName("../octave"));
   process_tile_test(true);
+  do_octave_atexit();
 }
 
 TEST(MVPAlgorithmVar, to_octave) {

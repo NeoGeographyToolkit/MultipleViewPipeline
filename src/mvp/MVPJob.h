@@ -14,6 +14,7 @@
 #include <octave/parse.h>
 #include <octave/octave.h>
 #include <octave/load-path.h>
+#include <octave/toplev.h>
 #endif
 
 namespace mvp {
