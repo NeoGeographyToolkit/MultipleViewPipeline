@@ -4,22 +4,33 @@
 // All Rights Reserved.
 // __END_LICENSE__
 
-// Dummy definitions to avoid error
-#define TEST_OBJDIR ""
-#define TEST_SRCDIR ""
-
 #include <gtest/gtest.h>
 #include <test/Helpers.h>
 #include <vw/Core/Settings.h>
+#include <mvp/Config.h>
+
+#if MVP_ENABLE_OCTAVE_SUPPORT
+#include <vw/Octave/Main.h>
+#endif
 
 #include <boost/filesystem/operations.hpp>
 namespace fs = boost::filesystem;
 
 int main(int argc, char **argv) {
+  #if MVP_ENABLE_OCTAVE_SUPPORT
+  vw::octave::start_octave_interpreter(vw::test::BinName("loadtestenv.m"));
+  #endif
+
   // Disable the user's config file
   vw::vw_settings().set_rc_filename("");
   testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
+  int status = RUN_ALL_TESTS();
+
+  #if MVP_ENABLE_OCTAVE_SUPPORT
+  do_octave_atexit();
+  #endif
+
+  return status;
 }
 
 namespace vw {

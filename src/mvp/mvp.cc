@@ -4,6 +4,7 @@
 #include <vw/Image/UtilityViews.h>
 #include <vw/Plate/PlateFile.h>
 #include <vw/Image/MaskViews.h>
+#include <vw/Octave/Main.h>
 
 #include <mvp/Config.h>
 #include <mvp/MVPWorkspace.h>
@@ -14,6 +15,7 @@
 using namespace vw;
 using namespace vw::cartography;
 using namespace vw::platefile;
+using namespace vw::octave;
 using namespace std;
 using namespace mvp;
 
@@ -29,7 +31,7 @@ void print_bbox_helper(math::BBoxBase<BBoxT, RealT, DimN> const& bbox) {
 int main(int argc, char* argv[])
 {
   #if MVP_ENABLE_OCTAVE_SUPPORT
-  MVPJobOctave::start_interpreter();
+  start_octave_interpreter();
   #endif
 
   po::options_description cmd_opts("Command line options");

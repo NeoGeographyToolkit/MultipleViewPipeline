@@ -1,7 +1,4 @@
-addpath("@CMAKE_CURRENT_SOURCE_DIR@");
-addpath("@CMAKE_BINARY_DIR@/src/mvp/octave");
-addpath("@CMAKE_SOURCE_DIR@/src/mvp/octave");
-addpath("@CMAKE_BINARY_DIR@/src/vw/Octave");
+loadtestenv;
 
 testjob = "@CMAKE_CURRENT_SOURCE_DIR@/335_242_9.job";
 ground_dem_file = "@CMAKE_CURRENT_SOURCE_DIR@/synth-ground-DEM.tif";

@@ -13,9 +13,6 @@
 
 #if MVP_ENABLE_OCTAVE_SUPPORT
 #include <octave/parse.h>
-#include <octave/octave.h>
-#include <octave/load-path.h>
-#include <octave/toplev.h>
 #endif
 
 namespace mvp {
@@ -80,13 +77,6 @@ struct MVPJobOctave : public MVPJobBase<MVPJobOctave> {
     args.append(m_octave_settings);
 
     return MVPPixelResult(::feval(MVP_OCTAVE_ALGORITHM_FCN, args, 1));
-  }
-
-  static void start_interpreter(std::string const& mfile_dir = MVP_MFILE_INSTALL_DIR, std::string const& octfile_dir = MVP_OCTFILE_INSTALL_DIR) {
-    const char * argvv [] = {"", "--silent"};
-    ::octave_main (2, (char **) argvv, true);
-    ::load_path::append(mfile_dir);
-    ::load_path::append(octfile_dir);
   }
 };
 #endif

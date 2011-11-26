@@ -74,6 +74,18 @@ public:
     : std::string(directory + "/" + base) {}
 };
 
+// Create a filename that auto applies the directory to the binary
+// directory. This allows us to link back to files in the test
+// directory that are not in the build directory.
+class BinName : public std::string {
+public:
+  BinName() {}
+  BinName(const std::string& base, const std::string& directory=TEST_OBJDIR)
+    : std::string(directory + "/" + base) {}
+  BinName(const char *base,        const std::string& directory=TEST_OBJDIR)
+    : std::string(directory + "/" + base) {}
+};
+
 // A getenv with a default value
 std::string getenv2(const char *key, const std::string& Default);
 
