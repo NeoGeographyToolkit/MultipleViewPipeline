@@ -1,3 +1,6 @@
+add_definitions(-DTEST_SRCDIR=\"${CMAKE_CURRENT_SOURCE_DIR}\")
+add_definitions(-DTEST_OBJDIR=\"${CMAKE_CURRENT_BINARY_DIR}\")
+
 PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS TestProto.proto)
 
 add_library(vwoctave_test ${PROTO_SRCS})
@@ -10,9 +13,6 @@ macro(add_vwoctave_test test_name)
                                      ${VW_LIBRARIES}
                                      ${OCTAVE_LIBRARIES}
                                      ${PROTOBUF_LIBRARIES})
-
-  set_target_properties(${test_name} PROPERTIES COMPILE_FLAGS 
-                        "-DTEST_SRCDIR=\\\"${CMAKE_CURRENT_SOURCE_DIR}\\\" -DTEST_OBJDIR=\\\"${CMAKE_CURRENT_BINARY_DIR}\\\"")
 
   add_test(vw/Octave/${test_name} ${test_name})
 endmacro()
