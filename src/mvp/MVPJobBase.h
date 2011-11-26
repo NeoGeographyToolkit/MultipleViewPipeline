@@ -112,11 +112,16 @@ template <class ImplT>
 struct MVPJobBase {
 
   static ImplT construct_from_job_request(MVPJobRequest const& job_request) {
+    // TODO: This is common code
+    int col = job_request.col();
+    int row = job_request.row();
+    int level = job_request.level();
+
     vw::platefile::PlateGeoReference plate_georef(job_request.plate_georef());
 
-    vw::cartography::GeoReference georef(plate_georef.tile_georef(job_request.col(), job_request.row(), job_request.level()));
+    vw::cartography::GeoReference georef(plate_georef.tile_georef(col, row, level));
 
-    vw::BBox2 tile_bbox(plate_georef.tile_lonlat_bbox(job_request.col(), job_request.row(), job_request.level()));
+    vw::BBox2 tile_bbox(plate_georef.tile_lonlat_bbox(col, row, level));
     vw::Vector2 post_height_limits(job_request.algorithm_settings().post_height_limit_min(), job_request.algorithm_settings().post_height_limit_max());
 
     OrbitalImageCropCollection crops(tile_bbox, georef.datum(), post_height_limits);

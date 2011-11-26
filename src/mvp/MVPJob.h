@@ -107,6 +107,8 @@ inline MVPTileResult mvpjob_process_tile(MVPJobRequest const& job_request, vw::P
 
 std::string save_job_file(MVPJobRequest const& job_request, std::string const& out_dir = ".") {
   namespace fs = boost::filesystem;
+
+  // TODO: This is common code
   int col = job_request.col();
   int row = job_request.row();
   int level = job_request.level();
@@ -146,13 +148,11 @@ std::string save_job_file(MVPJobRequest const& job_request, std::string const& o
 
     write_image(job_filename + "/" + image_name, crops[curr_image]);
     crops[curr_image].camera().write(job_filename + "/" + camera_name);
-
-    curr_image++;
   }
 
   {
     std::fstream output((job_filename + "/job").c_str(), std::ios::out | std::ios::trunc | std::ios::binary);
-    if (!job_request.SerializeToOstream(&output)) {
+    if (!job_request_mod.SerializeToOstream(&output)) {
       vw_throw(vw::IOErr() << "Failed to serialize jobfile");
     }
   }
