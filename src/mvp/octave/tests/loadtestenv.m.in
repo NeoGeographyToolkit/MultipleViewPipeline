@@ -1,0 +1,13 @@
+addpath("@CMAKE_CURRENT_SOURCE_DIR@");
+addpath("@CMAKE_BINARY_DIR@/src/mvp/octave");
+addpath("@CMAKE_SOURCE_DIR@/src/mvp/octave");
+addpath("@CMAKE_BINARY_DIR@/src/vw/Octave");
+
+testjob = "@CMAKE_CURRENT_SOURCE_DIR@/335_242_9.job";
+ground_dem_file = "@CMAKE_CURRENT_SOURCE_DIR@/synth-ground-DEM.tif";
+ground_drg_file = "@CMAKE_CURRENT_SOURCE_DIR@/synth-ground-DRG.tif";
+
+[tile_georef images settings] = loadjobfile(testjob);
+
+[ground_dem ground_georef] = imread_vw(ground_dem_file);
+[ground_drg] = imread_vw(ground_drg_file);

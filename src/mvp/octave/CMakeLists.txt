@@ -11,3 +11,5 @@ target_link_libraries(loadjobfile mvpcommon
 install(TARGETS loadjobfile
                 DESTINATION ${OCTFILE_INSTALL_DIR})
 install(FILES ${MFILES} DESTINATION ${MFILE_INSTALL_DIR})
+
+add_subdirectory(tests)
