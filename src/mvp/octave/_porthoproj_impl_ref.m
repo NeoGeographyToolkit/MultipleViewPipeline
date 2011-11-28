@@ -1,15 +1,11 @@
 function [xw, yw] = _porthoproj_impl_ref(camera, planeNormal, planeD, georef, hWin)
-  if (isscalar(hWin))
-    hWin = [hWin hWin];
-  endif
+  dim = fliplr(hWin * 2 + 1);
 
-  dim = hWin * 2 + 1;
+  xw = zeros(dim);
+  yw = zeros(dim);
 
-  xw = zeros(fliplr(dim));
-  yw = zeros(fliplr(dim));
-
-  for r = 1:dim(2)
-    for c = 2:dim(1)
+  for r = 1:dim(1)
+    for c = 1:dim(2)
       px = c - hWin(1);
       py = r - hWin(2);
 
@@ -43,6 +39,6 @@ endfunction
 %! camera = [-3.9162e+03,  3.0436e+02, -1.8351e+03, 3.8275e+09;
 %!            1.5020e+03, -5.3986e+02, -3.4544e+03, 3.6555e+08;
 %!           -5.3071e-01, -8.3578e-01, -1.4081e-01, 1.8546e+06];
-%! [xw, yw] = _porthoproj_impl_ref(camera, planeNormal, planeD, georef, 5);
+%! [xw, yw] = _porthoproj_impl_ref(camera, planeNormal, planeD, georef, [5 7]);
 
 % vim:set syntax=octave:
