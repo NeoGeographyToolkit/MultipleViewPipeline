@@ -1,50 +1,12 @@
-% seed: scalar struct
-% seed.post_height
-% seed.orientation
-% seed.windows
+function [result, variance, converged, num_iterations] = mvpalgorithm(seed, georef, images, settings)
+  if (settings.test_algorithm)
+    [result, variance, converged, num_iterations] = mvptestalgorithm(seed, georef, images, settings);
+    return;
+  endif
 
-% result: scalar struct
-% result.variance
-% result.converged
-% result.num_iterations_to_converge
+  result = seed;
+  variance = 0;
+  converged = 1;
+  num_iterations = 0;
 
-% settings: scalar struct
-% settings.post_height_limits
-% settings.fix_orientation
-% settings.fix_windows
-
-
-% all octave images have 1,1 as upper left pixel.
-% Note for cameras and georefs
-
-% so (1, 1) for the georef is the center of the patch
-
-% images: struct array
-% images[x].camera
-% images[x].data
-
-function [result, variance, converged, num_iterations]  = mvpalgorithm(seed, georef, images, settings)
-  lonlat_h = georef.transform * [1; 1; 1];
-  lonlat = lonlat_h(1:2) / lonlat_h(3);
-
-  xyz = lonlatalt2xyz(georef.datum, lonlat, 0);
-  xyz_h = [xyz; 1];
-
-  overlap = 0;
-
-  for img = images
-    px_h = img.camera * xyz_h;
-    px = px_h(1:2) /  px_h(3);
-
-    if (px > [1; 1] && px < flipud(size(img.data)'))
-      overlap++;
-    endif
-  endfor
-
-  result.post_height = overlap;
-  result.orientation = [overlap; overlap; overlap];
-  result.windows = [overlap; overlap; overlap];
-  variance = overlap;
-  converged = overlap > 0;
-  num_iterations = overlap;
 endfunction
