@@ -23,14 +23,14 @@ MVPJobRequest create_job_request(bool use_octave = true) {
   // Set up workspace
   const int tile_size = 64;
   const Datum datum("D_MOON");
-  const Vector2 post_height_limits(0, 0);
+  const Vector2 alt_limits(0, 0);
 
   PlateGeoReference plate_georef(datum, "equi", tile_size, GeoReference::PixelAsPoint);
   MVPAlgorithmSettings settings;
   settings.set_test_algorithm(true);
   settings.set_use_octave(use_octave);
-  settings.set_post_height_limit_min(post_height_limits[0]);
-  settings.set_post_height_limit_max(post_height_limits[1]);
+  settings.set_alt_min(alt_limits[0]);
+  settings.set_alt_max(alt_limits[1]);
 
   MVPWorkspace work("", "", plate_georef, settings);
   work.add_image_pattern(SrcName("synth.%d.tif"), SrcName("synth.%d.pinhole"), 0, 3);
@@ -71,8 +71,8 @@ void process_tile_test(MVPJobRequest job_request) {
   int max_overlap = 0;
 
   // Manually calculate overlaps, and compare to the result from MVPJob
-  for (int i = 0; i < result.post_height.cols(); i += validation_divisor) {
-    for (int j = 0; j < result.post_height.rows(); j += validation_divisor) {
+  for (int i = 0; i < result.alt.cols(); i += validation_divisor) {
+    for (int j = 0; j < result.alt.rows(); j += validation_divisor) {
       Vector2 ll = georef.pixel_to_lonlat(Vector2(i, j));
       Vector3 llr(ll[0], ll[1], georef.datum().radius(ll[0], ll[1]));
       Vector3 xyz = lon_lat_radius_to_xyz(llr);
@@ -92,7 +92,7 @@ void process_tile_test(MVPJobRequest job_request) {
         px_result3.invalidate();
       }
 
-      EXPECT_TYPE_EQ(px_result, result.post_height(i, j));
+      EXPECT_TYPE_EQ(px_result, result.alt(i, j));
       EXPECT_TYPE_EQ(px_result, result.variance(i, j));
       EXPECT_TYPE_EQ(px_result3, result.orientation(i, j));
       EXPECT_TYPE_EQ(px_result3, result.windows(i, j));
@@ -123,7 +123,7 @@ TEST(MVPAlgorithmVar, to_octave) {
 
   MVPAlgorithmVar var2(oct_var);
 
-  EXPECT_EQ(var.post_height, var2.post_height);
+  EXPECT_EQ(var.alt, var2.alt);
   EXPECT_VECTOR_NEAR(var.orientation, var2.orientation, 1e-6);
   EXPECT_VECTOR_NEAR(var.windows, var2.windows, 1e-6);
 }
@@ -139,7 +139,7 @@ TEST(MVPPixelResult, octave_construct) {
 
   MVPPixelResult result(oct_result);
 
-  EXPECT_EQ(result.post_height, var.post_height);
+  EXPECT_EQ(result.alt, var.alt);
   EXPECT_VECTOR_NEAR(result.orientation, var.orientation, 1e-6);
   EXPECT_VECTOR_NEAR(result.windows, var.windows, 1e-6);
   EXPECT_EQ(result.variance, 8);

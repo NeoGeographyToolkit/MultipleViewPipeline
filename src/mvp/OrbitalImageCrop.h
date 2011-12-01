@@ -59,12 +59,12 @@ class OrbitalImageCrop : public vw::ImageView<vw::PixelMask<vw::PixelGray<vw::fl
                                                  std::string const& camera_path,
                                                  vw::BBox2 const& lonlat_bbox,
                                                  vw::cartography::Datum const& datum,
-                                                 vw::Vector2 const& post_height_limits) {
+                                                 vw::Vector2 const& alt_limits) {
 
       boost::shared_ptr<vw::DiskImageResource> rsrc(vw::DiskImageResource::open(image_path));
 
       VW_ASSERT(datum.semi_major_axis() == datum.semi_minor_axis(), vw::LogicErr() << "Spheroid datums not supported");
-      vw::Vector2 radius_range(post_height_limits + vw::Vector2(datum.semi_major_axis(), datum.semi_major_axis()));
+      vw::Vector2 radius_range(alt_limits + vw::Vector2(datum.semi_major_axis(), datum.semi_major_axis()));
 
       vw::camera::PinholeModel camera(camera_path);
 
@@ -111,15 +111,15 @@ class OrbitalImageCropCollection : public std::vector<OrbitalImageCrop> {
 
   vw::BBox2 m_lonlat_bbox;
   vw::cartography::Datum m_datum;
-  vw::Vector2 m_post_height_limits;
+  vw::Vector2 m_alt_limits;
 
   public:
 
     // This constructor constructs an OrbitalImageCropCollection that doesn't crop the images  
-    OrbitalImageCropCollection() : m_lonlat_bbox(), m_datum(), m_post_height_limits() {} 
+    OrbitalImageCropCollection() : m_lonlat_bbox(), m_datum(), m_alt_limits() {} 
 
-    OrbitalImageCropCollection(vw::BBox2 const& lonlat_bbox, vw::cartography::Datum const& datum, vw::Vector2 const& post_height_limits) : 
-      m_lonlat_bbox(lonlat_bbox), m_datum(datum), m_post_height_limits(post_height_limits) {
+    OrbitalImageCropCollection(vw::BBox2 const& lonlat_bbox, vw::cartography::Datum const& datum, vw::Vector2 const& alt_limits) : 
+      m_lonlat_bbox(lonlat_bbox), m_datum(datum), m_alt_limits(alt_limits) {
       VW_ASSERT(m_datum.semi_major_axis() == m_datum.semi_minor_axis(), vw::LogicErr() << "Spheroid datums not supported");
     }
 
@@ -132,7 +132,7 @@ class OrbitalImageCropCollection : public std::vector<OrbitalImageCrop> {
         // If the lonlat bbox is empty, we don't crop the images
         push_back(OrbitalImageCrop::construct_from_paths(image_path, camera_path));
       } else {
-        OrbitalImageCrop image(OrbitalImageCrop::construct_from_paths(image_path, camera_path, m_lonlat_bbox, m_datum, m_post_height_limits));
+        OrbitalImageCrop image(OrbitalImageCrop::construct_from_paths(image_path, camera_path, m_lonlat_bbox, m_datum, m_alt_limits));
         if (image.cols() > 0 && image.rows() > 0) {
           push_back(image);
         }

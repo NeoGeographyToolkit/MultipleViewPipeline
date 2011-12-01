@@ -54,7 +54,7 @@ class OrbitalImageFootprint : public ConvexPolygon
     static OrbitalImageFootprint construct_from_paths(std::string const& image_path, 
                                                       std::string const& camera_path, 
                                                       vw::cartography::Datum const& datum, 
-                                                      vw::Vector2 const& post_height_limits)
+                                                      vw::Vector2 const& alt_limits)
     {
       OrbitalImageFileDescriptor image_file;
       image_file.set_camera_path(camera_path);
@@ -66,14 +66,14 @@ class OrbitalImageFootprint : public ConvexPolygon
       std::vector<vw::Vector2> fp_points(8);
 
       vw::camera::PinholeModel camera(image_file.camera_path());
-      fp_points[0] = backproj_px(camera, vw::Vector2i(0, 0), datum, post_height_limits[0]);
-      fp_points[1] = backproj_px(camera, vw::Vector2i(image_size.x(), 0), datum, post_height_limits[0]);
-      fp_points[2] = backproj_px(camera, vw::Vector2i(image_size.x(), image_size.y()), datum, post_height_limits[0]);
-      fp_points[3] = backproj_px(camera, vw::Vector2i(0, image_size.y()), datum, post_height_limits[0]);
-      fp_points[4] = backproj_px(camera, vw::Vector2i(0, 0), datum, post_height_limits[1]);
-      fp_points[5] = backproj_px(camera, vw::Vector2i(image_size.x(), 0), datum, post_height_limits[1]);
-      fp_points[6] = backproj_px(camera, vw::Vector2i(image_size.x(), image_size.y()), datum, post_height_limits[1]);
-      fp_points[7] = backproj_px(camera, vw::Vector2i(0, image_size.y()), datum, post_height_limits[1]);
+      fp_points[0] = backproj_px(camera, vw::Vector2i(0, 0), datum, alt_limits[0]);
+      fp_points[1] = backproj_px(camera, vw::Vector2i(image_size.x(), 0), datum, alt_limits[0]);
+      fp_points[2] = backproj_px(camera, vw::Vector2i(image_size.x(), image_size.y()), datum, alt_limits[0]);
+      fp_points[3] = backproj_px(camera, vw::Vector2i(0, image_size.y()), datum, alt_limits[0]);
+      fp_points[4] = backproj_px(camera, vw::Vector2i(0, 0), datum, alt_limits[1]);
+      fp_points[5] = backproj_px(camera, vw::Vector2i(image_size.x(), 0), datum, alt_limits[1]);
+      fp_points[6] = backproj_px(camera, vw::Vector2i(image_size.x(), image_size.y()), datum, alt_limits[1]);
+      fp_points[7] = backproj_px(camera, vw::Vector2i(0, image_size.y()), datum, alt_limits[1]);
 
       // TODO: Need to take care of wrapping around poles!
       vw::BBox2 maxbounds(-180,-180,360,360);
@@ -122,17 +122,17 @@ class OrbitalImageFootprint : public ConvexPolygon
 
 class OrbitalImageFootprintCollection : public std::vector<OrbitalImageFootprint> {
   vw::cartography::Datum m_datum;
-  vw::Vector2 m_post_height_limits;
+  vw::Vector2 m_alt_limits;
 
   public:
-    OrbitalImageFootprintCollection(vw::cartography::Datum const& datum, vw::Vector2 const& post_height_limits) :
-      m_datum(datum), m_post_height_limits(post_height_limits) {}
+    OrbitalImageFootprintCollection(vw::cartography::Datum const& datum, vw::Vector2 const& alt_limits) :
+      m_datum(datum), m_alt_limits(alt_limits) {}
 
-    OrbitalImageFootprintCollection(vw::cartography::Datum const& datum, double post_height_limit_min, double post_height_limit_max) :
-      m_datum(datum), m_post_height_limits(vw::Vector2(post_height_limit_min, post_height_limit_max)) {}
+    OrbitalImageFootprintCollection(vw::cartography::Datum const& datum, double alt_min, double alt_max) :
+      m_datum(datum), m_alt_limits(vw::Vector2(alt_min, alt_max)) {}
 
     void add_image(std::string const& image_path, std::string const& camera_path) {
-      this->push_back(OrbitalImageFootprint::construct_from_paths(image_path, camera_path, m_datum, m_post_height_limits));
+      this->push_back(OrbitalImageFootprint::construct_from_paths(image_path, camera_path, m_datum, m_alt_limits));
     }
 
     void add_image_pattern(std::string const& image_pattern, std::string const& camera_pattern, int start, int end) {

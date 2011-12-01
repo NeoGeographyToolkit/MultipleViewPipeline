@@ -52,7 +52,7 @@ class MVPWorkspace {
                  MVPAlgorithmSettings const& algorithm_settings) :
       m_result_platefile(result_platefile), m_internal_result_platefile(internal_result_platefile),
       m_plate_georef(plate_georef), m_algorithm_settings(algorithm_settings),
-      m_footprints(plate_georef.datum(), algorithm_settings.post_height_limit_min(), algorithm_settings.post_height_limit_max()) {}
+      m_footprints(plate_georef.datum(), algorithm_settings.alt_min(), algorithm_settings.alt_max()) {}
 
     static boost::program_options::options_description program_options() {
       namespace po = boost::program_options;
@@ -68,8 +68,8 @@ class MVPWorkspace {
         ("tile-size", po::value<int>()->default_value(256), "Plate tile size")
         ("result-platefile", po::value<std::string>()->required(), "Result plate filename")
         ("internal-result-platefile", po::value<std::string>(), "Internal result plate filename")
-        ("post-height-limit-min", po::value<double>()->required(), "Min DEM post height to search")
-        ("post-height-limit-max", po::value<double>()->required(), "Man DEM post height to search")
+        ("alt-min", po::value<double>()->required(), "Min DEM altitude to search")
+        ("alt-max", po::value<double>()->required(), "Man DEM altitude to search")
         ("use-octave", po::value<bool>()->default_value(false), "Use octave in processing")
         ("test-algorithm", po::value<bool>()->default_value(false), "Run the test algorithm that draws footprints instead of creating a DEM")
         ;
@@ -84,8 +84,8 @@ class MVPWorkspace {
                                                     vw::cartography::GeoReference::PixelAsPoint);
 
       MVPAlgorithmSettings settings;
-      settings.set_post_height_limit_min(vm["post-height-limit-min"].as<double>());
-      settings.set_post_height_limit_max(vm["post-height-limit-max"].as<double>());
+      settings.set_alt_min(vm["alt-min"].as<double>());
+      settings.set_alt_max(vm["alt-max"].as<double>());
       settings.set_use_octave(vm["use-octave"].as<bool>());
       settings.set_test_algorithm(vm["test-algorithm"].as<bool>());
       // TODO: Add 'octave_function'

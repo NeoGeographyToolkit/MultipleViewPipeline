@@ -108,9 +108,9 @@ std::string save_job_file(MVPJobRequest const& job_request, std::string const& o
   vw::cartography::GeoReference georef(plate_georef.tile_georef(col, row, level));
 
   vw::BBox2 tile_bbox(plate_georef.tile_lonlat_bbox(col, row, level));
-  vw::Vector2 post_height_limits(job_request.algorithm_settings().post_height_limit_min(), job_request.algorithm_settings().post_height_limit_max());
+  vw::Vector2 alt_limits(job_request.algorithm_settings().alt_min(), job_request.algorithm_settings().alt_max());
 
-  OrbitalImageCropCollection crops(tile_bbox, georef.datum(), post_height_limits);
+  OrbitalImageCropCollection crops(tile_bbox, georef.datum(), alt_limits);
   crops.add_image_collection(job_request.orbital_images());
 
   std::string job_filename;

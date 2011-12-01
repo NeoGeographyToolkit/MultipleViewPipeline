@@ -37,23 +37,23 @@ inline vw::cartography::GeoReference offset_georef(vw::cartography::GeoReference
 
 
 struct MVPAlgorithmVar {
-  vw::float32 post_height;
+  vw::float32 alt;
 
   vw::Vector3f orientation;
   vw::Vector3f windows;
 
-  MVPAlgorithmVar(vw::float32 h = 0, vw::Vector3f const& o = vw::Vector3f(), vw::Vector3f const& w = vw::Vector3f()) :
-    post_height(h), orientation(o), windows(w) {}
+  MVPAlgorithmVar(vw::float32 a = 0, vw::Vector3f const& o = vw::Vector3f(), vw::Vector3f const& w = vw::Vector3f()) :
+    alt(a), orientation(o), windows(w) {}
 
   #if MVP_ENABLE_OCTAVE_SUPPORT
   MVPAlgorithmVar(::octave_scalar_map const& oct_map) : 
-    post_height(oct_map.getfield("post_height").float_value()),
+    alt(oct_map.getfield("alt").float_value()),
     orientation(vw::octave::octave_to_vector(oct_map.getfield("orientation").matrix_value())),
     windows(vw::octave::octave_to_vector(oct_map.getfield("windows").matrix_value())) {}
 
   ::octave_scalar_map to_octave() const {
     ::octave_scalar_map result;
-    result.setfield("post_height", post_height);
+    result.setfield("alt", alt);
     result.setfield("orientation", vw::octave::vector_to_octave(orientation));
     result.setfield("windows", vw::octave::vector_to_octave(windows));
     return result;
@@ -82,25 +82,25 @@ struct MVPPixelResult : public MVPAlgorithmVar {
 struct MVPTileResult {
   vw::cartography::GeoReference georef;
 
-  vw::ImageView<vw::PixelMask<vw::float32> > post_height;
+  vw::ImageView<vw::PixelMask<vw::float32> > alt;
   vw::ImageView<vw::PixelMask<vw::float32> > variance;
 
   vw::ImageView<vw::PixelMask<vw::Vector3f> > orientation;
   vw::ImageView<vw::PixelMask<vw::Vector3f> > windows;
 
   MVPTileResult(vw::cartography::GeoReference g, int tile_size) : georef(g),
-    post_height(tile_size, tile_size), variance(tile_size, tile_size), 
+    alt(tile_size, tile_size), variance(tile_size, tile_size), 
     orientation(tile_size, tile_size), windows(tile_size, tile_size) {}
 
   inline void update(int col, int row, MVPPixelResult const& px_result) {
-    post_height(col, row) = px_result.post_height;
+    alt(col, row) = px_result.alt;
     variance(col, row) = px_result.variance;
 
     orientation(col, row) = px_result.orientation;
     windows(col, row) = px_result.windows;
 
     if (!px_result.converged) {
-      post_height(col, row).invalidate();
+      alt(col, row).invalidate();
       variance(col, row).invalidate();
       orientation(col, row).invalidate();
       windows(col, row).invalidate();
@@ -122,9 +122,9 @@ struct MVPJobBase {
     vw::cartography::GeoReference georef(plate_georef.tile_georef(col, row, level));
 
     vw::BBox2 tile_bbox(plate_georef.tile_lonlat_bbox(col, row, level));
-    vw::Vector2 post_height_limits(job_request.algorithm_settings().post_height_limit_min(), job_request.algorithm_settings().post_height_limit_max());
+    vw::Vector2 alt_limits(job_request.algorithm_settings().alt_min(), job_request.algorithm_settings().alt_max());
 
-    OrbitalImageCropCollection crops(tile_bbox, georef.datum(), post_height_limits);
+    OrbitalImageCropCollection crops(tile_bbox, georef.datum(), alt_limits);
     crops.add_image_collection(job_request.orbital_images());
 
     return ImplT(georef, plate_georef.tile_size(), crops, job_request.algorithm_settings());

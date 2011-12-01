@@ -16,7 +16,7 @@ function [result, variance, converged, num_iterations] = mvptestalgorithm(seed, 
     endif
   endfor
 
-  result.post_height = overlap;
+  result.alt = overlap;
   result.orientation = [overlap; overlap; overlap];
   result.windows = [overlap; overlap; overlap];
   variance = overlap;

@@ -17,15 +17,15 @@ function [result, variance, converged, num_iterations] = mvpalgorithm(seed, geor
   opts = optimset("MaxIter", 60, "FunValCheck", "on");
 
   try
-    [result.post_height variance info output] = fminbnd(@(a) mvpobj(images, georef, a, planeNormal, windows), 
-                                                        settings.post_height_limit_min, settings.post_height_limit_max, opts);
+    [result.alt variance info output] = fminbnd(@(a) mvpobj(images, georef, a, planeNormal, windows), 
+                                                            settings.alt_min, settings.alt_max, opts);
     result.orientation = planeNormal;
     result.windows = windows;
 
     converged = (info == 1);
     num_iterations = output.iterations;
   catch
-    result.post_height = NA;
+    result.alt = NA;
     variance = NA;
     info = 0;
 
