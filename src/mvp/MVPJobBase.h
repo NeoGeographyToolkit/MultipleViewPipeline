@@ -64,17 +64,17 @@ struct MVPAlgorithmVar {
 struct MVPPixelResult : public MVPAlgorithmVar {
   vw::float32 variance;
   bool converged;
-  int num_iterations_to_converge; //TODO: rename to num_iterations
+  int num_iterations;
 
   MVPPixelResult(MVPAlgorithmVar const& mav = MVPAlgorithmVar(), vw::float32 v = 0, bool c = true, int n = 0) :
-    MVPAlgorithmVar(mav), variance(v), converged(c), num_iterations_to_converge(n) {}
+    MVPAlgorithmVar(mav), variance(v), converged(c), num_iterations(n) {}
 
   #if MVP_ENABLE_OCTAVE_SUPPORT
   MVPPixelResult(::octave_value_list oct_val_list) :
     MVPAlgorithmVar(oct_val_list(0).scalar_map_value()),
     variance(oct_val_list(1).float_value()),
     converged(oct_val_list(2).bool_value()),
-    num_iterations_to_converge(oct_val_list(3).int_value()) {}
+    num_iterations(oct_val_list(3).int_value()) {}
   #endif
 };
 

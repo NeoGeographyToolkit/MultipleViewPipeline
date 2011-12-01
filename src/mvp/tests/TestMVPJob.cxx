@@ -144,6 +144,6 @@ TEST(MVPPixelResult, octave_construct) {
   EXPECT_VECTOR_NEAR(result.windows, var.windows, 1e-6);
   EXPECT_EQ(result.variance, 8);
   EXPECT_TRUE(result.converged);
-  EXPECT_EQ(result.num_iterations_to_converge, 9);
+  EXPECT_EQ(result.num_iterations, 9);
 }
 #endif
