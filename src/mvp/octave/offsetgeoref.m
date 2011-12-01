@@ -13,4 +13,13 @@ endfunction
 %! offgeo = offsetgeoref(georef, [100 200]);
 %! pt = georef.transform * [100; 200; 1];
 %! offpt = offgeo.transform * [1; 1; 1];
-%! assert(pt, offpt, 1e-6)
+%! assert(pt, offpt, 1e-4)
+
+%!test
+%! georef.transform = [0.00002,  0.00000, 0.98145;
+%!                     0.00000, -0.00002, 0.16900;
+%!                     0.00000,  0.00000, 1.00000];
+%! offgeo = offsetgeoref(georef, [100 200]);
+%! pt = georef.transform * [200; 300; 1];
+%! offpt = offgeo.transform * [100; 100; 1];
+%! assert(pt, offpt, 1e-4)
