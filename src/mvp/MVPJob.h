@@ -81,7 +81,7 @@ struct MVPJobOctave : public MVPJobBase<MVPJobOctave> {
 };
 #endif
 
-inline MVPTileResult mvpjob_process_tile(MVPJobRequest const& job_request, vw::ProgressCallback const& progress = vw::ProgressCallback::dummy_instance()) {
+MVPTileResult mvpjob_process_tile(MVPJobRequest const& job_request, vw::ProgressCallback const& progress = vw::ProgressCallback::dummy_instance()) {
   if (job_request.algorithm_settings().use_octave()) {
     #if MVP_ENABLE_OCTAVE_SUPPORT
       return MVPJobOctave::construct_from_job_request(job_request).process_tile(progress);
@@ -93,6 +93,28 @@ inline MVPTileResult mvpjob_process_tile(MVPJobRequest const& job_request, vw::P
   } else {
     return MVPJob::construct_from_job_request(job_request).process_tile(progress);
   }
+}
+
+mvp::MVPJobRequest load_job_file(std::string const& filename) {
+  mvp::MVPJobRequest job_request;
+
+  std::fstream input((filename + "/job").c_str(), std::ios::in | std::ios::binary);      
+  if (!input) {
+    vw_throw(vw::IOErr() << "Missing: /job");
+  } else if (!job_request.ParseFromIstream(&input)) {
+    vw_throw(vw::IOErr() << "Unable to process /job");
+  }
+
+  BOOST_FOREACH(mvp::OrbitalImageFileDescriptor& o, *job_request.mutable_orbital_images()) {
+    o.set_image_path(filename + "/" + o.image_path());
+    o.set_camera_path(filename + "/" + o.camera_path());
+  }
+
+  return job_request;
+}
+
+MVPTileResult mvpjob_process_tile(std::string  const& job_filename, vw::ProgressCallback const& progress = vw::ProgressCallback::dummy_instance()) {
+  return mvpjob_process_tile(load_job_file(job_filename), progress);
 }
 
 std::string save_job_file(MVPJobRequest const& job_request, std::string const& out_dir = ".") {
@@ -149,6 +171,8 @@ std::string save_job_file(MVPJobRequest const& job_request, std::string const& o
 
   return job_filename;
 }
+
+
 
 } // namespace mvp
 

@@ -30,20 +30,11 @@ DEFUN_DLD(loadjobfile, args, nargout, "Load an MVP Job File")
   }
 
   mvp::MVPJobRequest job_request;
-  {
-    std::fstream input((filename + "/job").c_str(), std::ios::in | std::ios::binary);      
-    if (!input) {
-      error("Missing: /job");
-      return retval;
-    } else if (!job_request.ParseFromIstream(&input)) {
-      error("Unable to process /job");
-      return retval;
-    }
-  }
 
-  BOOST_FOREACH(mvp::OrbitalImageFileDescriptor& o, *job_request.mutable_orbital_images()) {
-    o.set_image_path(filename + "/" + o.image_path());
-    o.set_camera_path(filename + "/" + o.camera_path());
+  try {
+    job_request = mvp::load_job_file(filename);
+  } catch (vw::Exception& e) {
+    error(e.what());
   }
 
   // TODO: this is common code 
