@@ -10,8 +10,13 @@ function obj = mvpobj(images, georef, alt, planeNormal, windows)
     valid{k} = find(!isnan(patches{k}));
     if (sum(valid{k}) == 0)
       continue;
-    endif 
-    patches{k} = (patches{k} - mean(patches{k}(valid{k}))) / std(patches{k}(valid{k}));
+    endif
+    stddev = std(patches{k}(valid{k}));
+    if (stddev == 0)
+      patches{k} = zeros(size(patches{k}));
+    else
+      patches{k} = (patches{k} - mean(patches{k}(valid{k}))) / stddev;
+    endif
     albedo(valid{k}) += patches{k}(valid{k});
     numValidPatches++;
   endfor
