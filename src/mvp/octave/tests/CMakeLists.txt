@@ -1,1 +1,2 @@
-configure_file(loadtestjob.m.in loadtestjob.m)
+configure_file(loadrealjob.m.in loadrealjob.m)
+configure_file(loadsynthjob.m.in loadsynthjob.m)

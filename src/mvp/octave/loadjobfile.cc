@@ -18,8 +18,8 @@ DEFUN_DLD(loadjobfile, args, nargout, "Load an MVP Job File")
     return retval;
   }
 
-  if (nargout != 3) {
-    error("Must supply three output args");
+  if (nargout != 4) {
+    error("Must supply four output args");
     return retval;
   }
 
@@ -49,6 +49,8 @@ DEFUN_DLD(loadjobfile, args, nargout, "Load an MVP Job File")
   vw::BBox2 tile_bbox(plate_georef.tile_lonlat_bbox(col, row, level));
   vw::Vector2 alt_limits(job_request.algorithm_settings().alt_min(), job_request.algorithm_settings().alt_max());
 
+  int tile_size = plate_georef.tile_size();
+
   // TODO: Catch exception when images are not found
   mvp::OrbitalImageCropCollection crops(tile_bbox, georef.datum(), alt_limits);
   crops.add_image_collection(job_request.orbital_images());
@@ -56,6 +58,7 @@ DEFUN_DLD(loadjobfile, args, nargout, "Load an MVP Job File")
   retval.append(vw::octave::georef_to_octave(georef));
   retval.append(crops.to_octave());
   retval.append(vw::octave::protobuf_to_octave(&job_request.algorithm_settings()));
+  retval.append(tile_size);
 
   return retval;
 }
