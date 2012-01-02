@@ -6,3 +6,5 @@ function xyz = lonlatalt2xyz(datum, lonlat, alt)
   xyz = (datum.semi_major_axis + alt) * lonlat2normal(lonlat);
 
 endfunction
+
+% vim:set syntax=octave:

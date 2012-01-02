@@ -23,3 +23,5 @@ endfunction
 %! pt = georef.transform * [200; 300; 1];
 %! offpt = offgeo.transform * [100; 100; 1];
 %! assert(pt, offpt, 1e-4)
+
+% vim:set syntax=octave:

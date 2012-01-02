@@ -12,3 +12,5 @@ function result = geotrans(image, from_georef, to_georef, sz)
 endfunction
 
 %% TODO: test me
+
+% vim:set syntax=octave:

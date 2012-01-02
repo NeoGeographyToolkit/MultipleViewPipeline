@@ -23,3 +23,5 @@ function [result, variance, converged, num_iterations] = mvptestalgorithm(seed, 
   converged = overlap > 0;
   num_iterations = overlap;
 endfunction
+
+% vim:set syntax=octave:
