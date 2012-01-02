@@ -10,3 +10,6 @@ ground_drg_file = "@CMAKE_CURRENT_SOURCE_DIR@/synth-ground-DRG.tif";
 [ground_drg] = imread_vw(ground_drg_file);
 
 tile_dem = geotrans(ground_dem, ground_georef, tile_georef, [tile_size tile_size]);
+tile_drg = geotrans(ground_drg, ground_georef, tile_georef, [tile_size tile_size]);
+
+% vim:set syntax=octave:

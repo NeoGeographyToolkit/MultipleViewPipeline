@@ -4,6 +4,10 @@ testjob = "@CMAKE_CURRENT_SOURCE_DIR@/5380_3875_13.job";
 
 [tile_georef images settings tile_size] = loadjobfile(testjob);
 
-load @CMAKE_CURRENT_SOURCE_DIR@/real-ground-DEM.mat
+load "@CMAKE_CURRENT_SOURCE_DIR@/real-ground-DEM.mat";
+
+ground_georef = tile_georef;
 
 % real-ground-DEM was created using geotrans like in loadsynthjob
+
+% vim:set syntax=octave:
