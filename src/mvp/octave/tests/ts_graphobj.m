@@ -5,8 +5,10 @@ objs = arrayfun(@(a) mvpobj(images, patch_georef, a, seed.orientation, seed.wind
 
 if (nargout == 0)
   plot(alts, objs);
+  axis("tight");
 elseif (nargout == 1)
   plot(alts, objs);
+  axis("tight");
   printf("\nClick to select a new seed alt (right click to cancel)\n\n");
   fflush(stdout);
   [locX locY btn] = ginput(1);
