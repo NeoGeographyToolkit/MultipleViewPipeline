@@ -1,8 +1,8 @@
 source("@CMAKE_BINARY_DIR@/src/test/loadtestenv.m");
 
-testjob = "@CMAKE_CURRENT_SOURCE_DIR@/1345_970_11.job";
-ground_dem_file = "@CMAKE_CURRENT_SOURCE_DIR@/synth-ground-DEM.tif";
-ground_drg_file = "@CMAKE_CURRENT_SOURCE_DIR@/synth-ground-DRG.tif";
+testjob = "@CMAKE_CURRENT_SOURCE_DIR@/data/1345_970_11.job";
+ground_dem_file = "@CMAKE_CURRENT_SOURCE_DIR@/data/synth-ground-DEM.tif";
+ground_drg_file = "@CMAKE_CURRENT_SOURCE_DIR@/data/synth-ground-DRG.tif";
 
 [tile_georef images settings tile_size] = loadjobfile(testjob);
 
