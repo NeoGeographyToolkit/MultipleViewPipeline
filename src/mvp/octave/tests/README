@@ -1,0 +1,7 @@
+ts_loadsynthjob
+[seed patch_georef] = ts_gengseed([25 25], tile_georef, tile_dem);
+
+ts_graphobj(seed, patch_georef, images)
+ts_showpatches(seed, patch_georef, images)
+ts_showpatchprints(seed, patch_georef, images)
+
