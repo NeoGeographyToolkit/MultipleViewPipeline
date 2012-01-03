@@ -11,7 +11,7 @@ function ts_showpatchprints(seed, patch_georef, images)
   numImages = numel(images);
 
   currImage = 1;
-  while (currImage != -1)
+  while (true);
     printf("Current image: %d\n\n", currImage);
     fflush(stdout);
 
@@ -25,7 +25,7 @@ function ts_showpatchprints(seed, patch_georef, images)
     [locX locY btn] = ginput(1);
     if (btn == 1)
       currImage += 1;
-    elseif (btn == 2)
+    elseif (btn == 3)
       currImage -= 1;
     else
       break;
