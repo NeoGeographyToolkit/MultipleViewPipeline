@@ -6,10 +6,10 @@ function [result, variance, converged, num_iterations] = mvpalgorithm(seed, geor
     return;
   endif
 
-  % Choose a planeNormal normal to the planet's surface
+  % Choose a orientation normal to the planet's surface
   lonlatPt_H = georef.transform * ones(3, 1);
   lonlatPt = lonlatPt_H(1:2) ./ lonlatPt_H(3);
-  planeNormal = lonlat2normal(lonlatPt);
+  orientation = lonlat2normal(lonlatPt);
 
   % TODO: Windows should actually come from the seed
   windows = [10; 10; 1];
@@ -17,9 +17,9 @@ function [result, variance, converged, num_iterations] = mvpalgorithm(seed, geor
   opts = optimset("MaxIter", 60, "FunValCheck", "on");
 
   try
-    [result.alt variance info output] = fminbnd(@(a) mvpobj(images, georef, a, planeNormal, windows), 
+    [result.alt variance info output] = fminbnd(@(a) mvpobj(images, georef, a, orientation, windows), 
                                                             settings.alt_min, settings.alt_max, opts);
-    result.orientation = planeNormal;
+    result.orientation = orientation;
     result.windows = windows;
 
     converged = (info == 1);
@@ -29,7 +29,7 @@ function [result, variance, converged, num_iterations] = mvpalgorithm(seed, geor
     variance = NA;
     info = 0;
 
-    result.orientation = planeNormal;
+    result.orientation = orientation;
     result.windows = windows;
 
     converged = false;
