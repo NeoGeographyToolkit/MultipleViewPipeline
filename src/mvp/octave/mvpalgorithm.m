@@ -7,8 +7,8 @@ function [result, variance, converged, num_iterations] = mvpalgorithm(seed, geor
   endif
 
   % Choose a orientation normal to the planet's surface
-  lonlatPt_H = georef.transform * ones(3, 1);
-  lonlatPt = lonlatPt_H(1:2) ./ lonlatPt_H(3);
+  lonlatPt_h = georef.transform * ones(3, 1);
+  lonlatPt = lonlatPt_h(1:2) ./ lonlatPt_h(3);
   orientation = lonlat2normal(lonlatPt);
 
   % TODO: Windows should actually come from the seed

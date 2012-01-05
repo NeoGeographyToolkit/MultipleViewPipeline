@@ -9,20 +9,20 @@ function [xw, yw] = _porthoproj_impl_ref(camera, planeNormal, planeD, georef, hW
       px = c - hWin(1);
       py = r - hWin(2);
 
-      lonlat_H = georef.transform * [px; py; 1];
-      lonlat = lonlat_H(1:2) / lonlat_H(3);
+      lonlat_h = georef.transform * [px; py; 1];
+      lonlat = lonlat_h(1:2) / lonlat_h(3);
 
       % TODO: Make this calc work for non-spheroid datums
       radius = planeD / dot(planeNormal, lonlat2normal(lonlat));
       alt = radius - georef.datum.semi_major_axis;
 
-      xyz_H = [lonlatalt2xyz(georef.datum, lonlat, alt); 1];
+      xyz_h = [lonlatalt2xyz(georef.datum, lonlat, alt); 1];
 
       % The point in the orbital image      
-      op_H = camera * xyz_H;
+      op_h = camera * xyz_h;
 
-      xw(r, c) = op_H(1) / op_H(3);
-      yw(r, c) = op_H(2) / op_H(3);
+      xw(r, c) = op_h(1) / op_h(3);
+      yw(r, c) = op_h(2) / op_h(3);
     endfor
   endfor
 endfunction
