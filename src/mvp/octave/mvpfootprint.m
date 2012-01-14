@@ -1,4 +1,4 @@
-function [result, variance, converged, num_iterations] = mvptestalgorithm(seed, georef, images, settings)
+function [result, variance, converged, num_iterations] = mvpfootprint(seed, georef, images, settings)
   lonlat_h = georef.transform * [1; 1; 1];
   lonlat = lonlat_h(1:2) / lonlat_h(3);
 
@@ -11,7 +11,7 @@ function [result, variance, converged, num_iterations] = mvptestalgorithm(seed, 
     px_h = img.camera * xyz_h;
     px = px_h(1:2) /  px_h(3);
 
-    if (px > [1; 1] && px < flipud(size(img.data)'))
+    if (px >= [1; 1] && px <= flipud(size(img.data)'))
       overlap++;
     endif
   endfor

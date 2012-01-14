@@ -22,7 +22,7 @@ struct MVPJob : public MVPJobBase<MVPJob> {
   MVPJob(vw::cartography::GeoReference const& georef, int tile_size, OrbitalImageCropCollection const& crops, MVPUserSettings const& settings) :
     MVPJobBase<MVPJob>(georef, tile_size, crops, settings) {}
 
-  inline MVPPixelResult process_pixel(MVPAlgorithmVar const& seed, vw::cartography::GeoReference const& georef) const {
+  inline MVPPixelResult process_pixel(MVPAlgorithmVar const& seed, vw::cartography::GeoReference const& georef, MVPAlgorithmOptions const& options) const {
     using namespace vw;
 
     // TODO: MVP Algorithm implementation goes here...
@@ -37,11 +37,12 @@ struct MVPJobTest : public MVPJobBase<MVPJobTest> {
   MVPJobTest(vw::cartography::GeoReference const& georef, int tile_size, OrbitalImageCropCollection const& crops, MVPUserSettings const& settings) :
     MVPJobBase<MVPJobTest>(georef, tile_size, crops, settings) {}
 
-  inline MVPPixelResult process_pixel(MVPAlgorithmVar const& seed, vw::cartography::GeoReference const& georef) const {
+  inline MVPPixelResult process_pixel(MVPAlgorithmVar const& seed, vw::cartography::GeoReference const& georef, MVPAlgorithmOptions const& options) const {
+    VW_ASSERT(georef.datum().semi_major_axis() == georef.datum().semi_minor_axis(), vw::NoImplErr() << "Spheroid datums not supported"); 
     using namespace vw;
 
     Vector2 ll = georef.pixel_to_lonlat(Vector2(0, 0));
-    Vector3 llr(ll[0], ll[1], georef.datum().radius(ll[0], ll[1]));
+    Vector3 llr(ll[0], ll[1], georef.datum().semi_major_axis());
     Vector3 xyz = cartography::lon_lat_radius_to_xyz(llr);
 
     int overlaps = 0;
@@ -61,23 +62,25 @@ struct MVPJobTest : public MVPJobBase<MVPJobTest> {
 #if MVP_ENABLE_OCTAVE_SUPPORT
 struct MVPJobOctave : public MVPJobBase<MVPJobOctave> {
   ::octave_map m_octave_crops;
-  ::octave_scalar_map m_octave_settings;
 
   MVPJobOctave(vw::cartography::GeoReference const& georef, int tile_size, OrbitalImageCropCollection const& crops, MVPUserSettings const& settings) :
     MVPJobBase<MVPJobOctave>(georef, tile_size, crops, settings) 
   {
     m_octave_crops = m_crops.to_octave();
-    m_octave_settings = vw::octave::protobuf_to_octave(&settings); 
   }
 
-  inline MVPPixelResult process_pixel(MVPAlgorithmVar const& seed, vw::cartography::GeoReference const& georef) const {
+  inline MVPPixelResult process_pixel(MVPAlgorithmVar const& seed, vw::cartography::GeoReference const& georef, MVPAlgorithmOptions const& options) const {
     ::octave_value_list args;
     args.append(seed.to_octave());
     args.append(vw::octave::georef_to_octave(georef));
     args.append(m_octave_crops);
-    args.append(m_octave_settings);
+    args.append(vw::octave::protobuf_to_octave(&options));
 
-    return MVPPixelResult(::feval(MVP_OCTAVE_ALGORITHM_FCN, args, 1));
+    if (m_settings.test_algorithm()) {
+      return MVPPixelResult(::feval(MVP_OCTAVE_FOOTPRINT_FCN, args, 1));
+    } else {
+      return MVPPixelResult(::feval(MVP_OCTAVE_ALGORITHM_FCN, args, 1));
+    }
   }
 };
 #endif

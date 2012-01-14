@@ -15,7 +15,7 @@ struct MVPJobSeedTest : public MVPJobBase<MVPJobSeedTest> {
   MVPJobSeedTest(vw::cartography::GeoReference const& georef, int tile_size, OrbitalImageCropCollection const& crops, MVPUserSettings const& settings) :
     MVPJobBase<MVPJobSeedTest>(georef, tile_size, crops, settings) {}
 
-  inline MVPPixelResult process_pixel(MVPAlgorithmVar const& seed, vw::cartography::GeoReference const& georef) const {
+  inline MVPPixelResult process_pixel(MVPAlgorithmVar const& seed, vw::cartography::GeoReference const& georef, MVPAlgorithmOptions const& options) const {
     static int num_calls = 0;
     // int col = georef.transform()(0, 2) - m_georef.transform()(0, 2);
     // int row = georef.transform()(1, 2) - m_georef.transform()(1, 2);
@@ -24,7 +24,7 @@ struct MVPJobSeedTest : public MVPJobBase<MVPJobSeedTest> {
 };
 
 TEST(MVPJob, seeding) {
-  MVPJobSeedTest job(GeoReference(), 256, OrbitalImageCropCollection(), MVPUserSettings());
+  MVPJobSeedTest job(GeoReference(Datum("D_MOON")), 256, OrbitalImageCropCollection(), MVPUserSettings());
   MVPTileResult result(job.process_tile());
 }
 
@@ -36,18 +36,20 @@ TEST(Helpers, offset_georef) {
   EXPECT_VECTOR_EQ(geo.pixel_to_lonlat(Vector2(120, 230)), crop_geo.pixel_to_lonlat(Vector2(20, 30)));
 }
 
-MVPJobRequest create_job_request(bool use_octave = true) {
+MVPJobRequest create_job_request(bool use_octave = false) {
   // Set up workspace
   const int tile_size = 64;
   const Datum datum("D_MOON");
-  const Vector2 alt_limits(0, 0);
 
   PlateGeoReference plate_georef(datum, "equi", tile_size, GeoReference::PixelAsPoint);
   MVPUserSettings settings;
+  settings.set_alt_min(0);
+  settings.set_alt_max(0);
+  settings.set_alt_search_range(-1);
+  settings.set_seed_window_size(-1);
+  settings.set_seed_window_smooth_size(-1);
   settings.set_test_algorithm(true);
   settings.set_use_octave(use_octave);
-  settings.set_alt_min(alt_limits[0]);
-  settings.set_alt_max(alt_limits[1]);
 
   MVPWorkspace work("", "", plate_georef, settings);
   work.add_image_pattern(SrcName("synth.%d.tif"), SrcName("synth.%d.pinhole"), 0, 3);
@@ -55,8 +57,7 @@ MVPJobRequest create_job_request(bool use_octave = true) {
 
   // Determine work levels, create the job request
   int level = work.equal_resolution_level();
-  Vector2 col_row = work.tile_work_area(level).min();
-
+  Vector2 col_row = work.tile_work_area(level).min() + Vector2(1, 0);
   return work.assemble_job(col_row[0], col_row[1], level);
 }
 

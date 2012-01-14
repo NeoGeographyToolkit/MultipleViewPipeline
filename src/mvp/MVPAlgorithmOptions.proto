@@ -1,0 +1,8 @@
+package mvp;
+
+message MVPAlgorithmOptions {
+  required double alt_range = 1;
+  optional bool fix_orientation = 2 [default=false];
+  optional bool fix_windows = 3 [default=false];
+  optional int32 max_iterations = 4 [default=60];
+}

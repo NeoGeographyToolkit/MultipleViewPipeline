@@ -70,6 +70,9 @@ class MVPWorkspace {
         ("internal-result-platefile", po::value<std::string>(), "Internal result plate filename")
         ("alt-min", po::value<double>()->required(), "Min DEM altitude to search")
         ("alt-max", po::value<double>()->required(), "Man DEM altitude to search")
+        ("alt-search-range", po::value<double>()->required(), "+/- altitude to search")
+        ("seed-window-size", po::value<double>()->required(), "Seed window size")
+        ("seed-window-smooth-size", po::value<double>()->required(), "Seed window smoothing kernel size")
         ("use-octave", po::value<bool>()->default_value(false), "Use octave in processing")
         ("test-algorithm", po::value<bool>()->default_value(false), "Run the test algorithm that draws footprints instead of creating a DEM")
         ;
@@ -86,9 +89,11 @@ class MVPWorkspace {
       MVPUserSettings settings;
       settings.set_alt_min(vm["alt-min"].as<double>());
       settings.set_alt_max(vm["alt-max"].as<double>());
+      settings.set_alt_search_range(vm["alt-search-range"].as<double>());
+      settings.set_seed_window_size(vm["seed-window-size"].as<double>());
+      settings.set_seed_window_smooth_size(vm["seed-window-smooth-size"].as<double>());
       settings.set_use_octave(vm["use-octave"].as<bool>());
       settings.set_test_algorithm(vm["test-algorithm"].as<bool>());
-      // TODO: Add 'octave_function'
 
       MVPWorkspace work(vm["result-platefile"].as<std::string>(), vm["internal-result-platefile"].as<std::string>(), plate_georef, settings);
       work.add_image_pattern(vm["orbital-image-pattern"].as<std::string>(), 

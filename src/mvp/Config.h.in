@@ -15,6 +15,7 @@
   #define MVP_MFILE_INSTALL_DIR "@MFILE_INSTALL_DIR@"
   #define MVP_OCTFILE_INSTALL_DIR "@OCTFILE_INSTALL_DIR@"
   #define MVP_OCTAVE_ALGORITHM_FCN "mvpalgorithm"
+  #define MVP_OCTAVE_FOOTPRINT_FCN "mvpfootprint"
 #endif
 
 #endif

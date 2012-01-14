@@ -3,7 +3,10 @@ package mvp;
 message MVPUserSettings {
   required double alt_min = 1;
   required double alt_max = 2;
+  required double alt_search_range = 3;
+  required double seed_window_size = 4;
+  required double seed_window_smooth_size = 5;
 
-  optional bool use_octave = 3 [default=false];
-  optional bool test_algorithm = 4 [default=true];
+  optional bool use_octave = 6 [default=false];
+  optional bool test_algorithm = 7 [default=true];
 }

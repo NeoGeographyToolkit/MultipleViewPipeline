@@ -15,6 +15,7 @@
 
 #include <mvp/Config.h>
 #include <mvp/MVPJobRequest.pb.h>
+#include <mvp/MVPAlgorithmOptions.pb.h>
 #include <mvp/OrbitalImageCrop.h>
 
 #include <boost/foreach.hpp>
@@ -74,7 +75,7 @@ struct MVPPixelResult : public MVPAlgorithmVar {
     MVPAlgorithmVar(oct_val_list(0).scalar_map_value()),
     variance(oct_val_list(1).float_value()),
     converged(oct_val_list(2).bool_value()),
-    num_iterations(oct_val_list(3).int_value()) {}
+    num_iterations(int(oct_val_list(3).double_value())) {}
   #endif
 };
 
@@ -133,23 +134,53 @@ struct MVPJobBase {
   inline ImplT& impl() {return static_cast<ImplT&>(*this);}
   inline ImplT const& impl() const {return static_cast<ImplT const&>(*this);}
 
-  inline MVPPixelResult process_pixel(MVPAlgorithmVar const& seed, vw::cartography::GeoReference const& georef) const 
-    {return impl().process_pixel(seed, georef);}
+  inline MVPPixelResult process_pixel(MVPAlgorithmVar const& seed, vw::cartography::GeoReference const& georef, MVPAlgorithmOptions const& options) const 
+    {return impl().process_pixel(seed, georef, options);}
 
-  inline MVPPixelResult process_pixel(MVPAlgorithmVar const& seed, int col, int row) const
-    {return impl().process_pixel(seed, offset_georef(m_georef, col, row));}
+  inline MVPPixelResult process_pixel(MVPAlgorithmVar const& seed, int col, int row, MVPAlgorithmOptions const& options) const
+    {return impl().process_pixel(seed, offset_georef(m_georef, col, row), options);}
+
+  inline MVPPixelResult generate_seed() const {
+    int seed_col = m_tile_size / 2;
+    int seed_row = m_tile_size / 2;
+
+    vw::Vector2 seed_lonlat = m_georef.pixel_to_lonlat(vw::Vector2(seed_col, seed_row));
+
+    MVPAlgorithmVar pre_seed;
+    pre_seed.alt = (m_settings.alt_min() + m_settings.alt_max()) / 2;
+    VW_ASSERT(m_georef.datum().semi_major_axis() == m_georef.datum().semi_minor_axis(), vw::NoImplErr() << "Spheroid datums not supported"); 
+    // TODO: The following calculation assumes spherical datum
+    pre_seed.orientation = vw::cartography::lon_lat_radius_to_xyz(vw::Vector3(seed_lonlat[0], seed_lonlat[1], 1));
+    pre_seed.windows = vw::Vector3(m_settings.seed_window_size(), m_settings.seed_window_size(), m_settings.seed_window_smooth_size());
+
+    MVPAlgorithmOptions options;
+    options.set_alt_range(m_settings.alt_max() - m_settings.alt_min());
+    options.set_fix_orientation(true);
+    options.set_fix_windows(true);
+    // TODO: set num_iterations?
+
+    return process_pixel(pre_seed, m_tile_size / 2, m_tile_size / 2, options);
+  }
 
   inline MVPTileResult process_tile(vw::ProgressCallback const& progress = vw::ProgressCallback::dummy_instance()) const {
-    // TODO: Seed propigation
     MVPTileResult tile_result(m_georef, m_tile_size);
-    MVPAlgorithmVar seed;
+
+    MVPPixelResult seed(generate_seed());
+
+    if (!seed.converged) {
+      return tile_result;
+    }
+
+    MVPAlgorithmOptions options;
+    options.set_alt_range(m_settings.alt_search_range());
+    // TODO: set num_iterations?
 
     int curr_px_num = 0;
     int num_px_to_process = m_tile_size * m_tile_size;
     progress.report_progress(0);
     for (int col = 0; col < m_tile_size; col++) {
       for (int row = 0; row < m_tile_size; row++) {
-        tile_result.update(col, row, process_pixel(seed, col, row));
+        tile_result.update(col, row, process_pixel(seed, col, row, options));
         progress.report_progress(double(++curr_px_num) / num_px_to_process);
       }
     }
