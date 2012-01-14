@@ -136,6 +136,9 @@ struct MVPJobBase {
   inline MVPPixelResult process_pixel(MVPAlgorithmVar const& seed, vw::cartography::GeoReference const& georef) const 
     {return impl().process_pixel(seed, georef);}
 
+  inline MVPPixelResult process_pixel(MVPAlgorithmVar const& seed, int col, int row) const
+    {return impl().process_pixel(seed, offset_georef(m_georef, col, row));}
+
   inline MVPTileResult process_tile(vw::ProgressCallback const& progress = vw::ProgressCallback::dummy_instance()) const {
     // TODO: Seed propigation
     MVPTileResult tile_result(m_georef, m_tile_size);
@@ -146,7 +149,7 @@ struct MVPJobBase {
     progress.report_progress(0);
     for (int col = 0; col < m_tile_size; col++) {
       for (int row = 0; row < m_tile_size; row++) {
-        tile_result.update(col, row, process_pixel(seed, offset_georef(m_georef, col, row)));
+        tile_result.update(col, row, process_pixel(seed, col, row));
         progress.report_progress(double(++curr_px_num) / num_px_to_process);
       }
     }

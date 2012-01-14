@@ -31,6 +31,7 @@ struct MVPJob : public MVPJobBase<MVPJob> {
   }
 };
 
+// TODO: Rename to MVPJobFootprint?
 struct MVPJobTest : public MVPJobBase<MVPJobTest> {
 
   MVPJobTest(vw::cartography::GeoReference const& georef, int tile_size, OrbitalImageCropCollection const& crops, MVPAlgorithmSettings const& settings) :

@@ -11,6 +11,23 @@ using namespace vw::platefile;
 using namespace vw::camera;
 using namespace mvp;
 
+struct MVPJobSeedTest : public MVPJobBase<MVPJobSeedTest> {
+  MVPJobSeedTest(vw::cartography::GeoReference const& georef, int tile_size, OrbitalImageCropCollection const& crops, MVPAlgorithmSettings const& settings) :
+    MVPJobBase<MVPJobSeedTest>(georef, tile_size, crops, settings) {}
+
+  inline MVPPixelResult process_pixel(MVPAlgorithmVar const& seed, vw::cartography::GeoReference const& georef) const {
+    static int num_calls = 0;
+    // int col = georef.transform()(0, 2) - m_georef.transform()(0, 2);
+    // int row = georef.transform()(1, 2) - m_georef.transform()(1, 2);
+    return MVPPixelResult(seed, ++num_calls);
+  }
+};
+
+TEST(MVPJob, seeding) {
+  MVPJobSeedTest job(GeoReference(), 256, OrbitalImageCropCollection(), MVPAlgorithmSettings());
+  MVPTileResult result(job.process_tile());
+}
+
 TEST(Helpers, offset_georef) {
   GeoReference geo = PlateGeoReference().tile_georef(1, 2, 3);
   GeoReference crop_geo = offset_georef(geo, 100, 200);
@@ -54,7 +71,7 @@ void process_tile_test(MVPJobRequest job_request) {
   const int validation_divisor = 4;
 
   // Process the tile 
-  MVPTileResult result = mvpjob_process_tile(job_request);
+  MVPTileResult result(mvpjob_process_tile(job_request));
 
   PlateGeoReference plate_georef(job_request.plate_georef());
   Vector2 col_row = Vector2(job_request.col(), job_request.row());
