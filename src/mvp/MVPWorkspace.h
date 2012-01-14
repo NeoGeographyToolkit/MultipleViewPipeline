@@ -29,7 +29,7 @@
 #ifndef __MVP_MVPWORKSPACE_H__
 #define __MVP_MVPWORKSPACE_H__
 
-#include <mvp/MVPAlgorithmSettings.pb.h>
+#include <mvp/MVPUserSettings.pb.h>
 #include <mvp/MVPJobRequest.pb.h>
 #include <mvp/OrbitalImageFootprint.h>
 
@@ -43,16 +43,16 @@ namespace mvp {
 class MVPWorkspace {
   std::string m_result_platefile, m_internal_result_platefile;
   vw::platefile::PlateGeoReference m_plate_georef;
-  MVPAlgorithmSettings m_algorithm_settings;
+  MVPUserSettings m_user_settings;
   OrbitalImageFootprintCollection m_footprints;
  
   public:
     MVPWorkspace(std::string const& result_platefile, std::string const& internal_result_platefile,
                  vw::platefile::PlateGeoReference const& plate_georef, 
-                 MVPAlgorithmSettings const& algorithm_settings) :
+                 MVPUserSettings const& user_settings) :
       m_result_platefile(result_platefile), m_internal_result_platefile(internal_result_platefile),
-      m_plate_georef(plate_georef), m_algorithm_settings(algorithm_settings),
-      m_footprints(plate_georef.datum(), algorithm_settings.alt_min(), algorithm_settings.alt_max()) {}
+      m_plate_georef(plate_georef), m_user_settings(user_settings),
+      m_footprints(plate_georef.datum(), user_settings.alt_min(), user_settings.alt_max()) {}
 
     static boost::program_options::options_description program_options() {
       namespace po = boost::program_options;
@@ -83,7 +83,7 @@ class MVPWorkspace {
                                                     vm["tile-size"].as<int>(), 
                                                     vw::cartography::GeoReference::PixelAsPoint);
 
-      MVPAlgorithmSettings settings;
+      MVPUserSettings settings;
       settings.set_alt_min(vm["alt-min"].as<double>());
       settings.set_alt_max(vm["alt-max"].as<double>());
       settings.set_use_octave(vm["use-octave"].as<bool>());
@@ -165,7 +165,7 @@ class MVPWorkspace {
       request.set_result_platefile(m_result_platefile);
       request.set_internal_result_platefile(m_internal_result_platefile);
       *request.mutable_plate_georef() = m_plate_georef.build_desc();
-      *request.mutable_algorithm_settings() = m_algorithm_settings;
+      *request.mutable_user_settings() = m_user_settings;
 
       std::vector<OrbitalImageFileDescriptor> image_matches(images_at_tile(col, row, level));
       std::copy(image_matches.begin(), image_matches.end(), RepeatedFieldBackInserter(request.mutable_orbital_images()));

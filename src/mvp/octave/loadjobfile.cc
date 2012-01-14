@@ -47,7 +47,7 @@ DEFUN_DLD(loadjobfile, args, nargout, "Load an MVP Job File")
   vw::cartography::GeoReference georef(plate_georef.tile_georef(col, row, level));
 
   vw::BBox2 tile_bbox(plate_georef.tile_lonlat_bbox(col, row, level));
-  vw::Vector2 alt_limits(job_request.algorithm_settings().alt_min(), job_request.algorithm_settings().alt_max());
+  vw::Vector2 alt_limits(job_request.user_settings().alt_min(), job_request.user_settings().alt_max());
 
   int tile_size = plate_georef.tile_size();
 
@@ -57,7 +57,7 @@ DEFUN_DLD(loadjobfile, args, nargout, "Load an MVP Job File")
 
   retval.append(vw::octave::georef_to_octave(georef));
   retval.append(crops.to_octave());
-  retval.append(vw::octave::protobuf_to_octave(&job_request.algorithm_settings()));
+  retval.append(vw::octave::protobuf_to_octave(&job_request.user_settings()));
   retval.append(tile_size);
 
   return retval;

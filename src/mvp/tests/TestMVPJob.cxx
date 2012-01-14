@@ -12,7 +12,7 @@ using namespace vw::camera;
 using namespace mvp;
 
 struct MVPJobSeedTest : public MVPJobBase<MVPJobSeedTest> {
-  MVPJobSeedTest(vw::cartography::GeoReference const& georef, int tile_size, OrbitalImageCropCollection const& crops, MVPAlgorithmSettings const& settings) :
+  MVPJobSeedTest(vw::cartography::GeoReference const& georef, int tile_size, OrbitalImageCropCollection const& crops, MVPUserSettings const& settings) :
     MVPJobBase<MVPJobSeedTest>(georef, tile_size, crops, settings) {}
 
   inline MVPPixelResult process_pixel(MVPAlgorithmVar const& seed, vw::cartography::GeoReference const& georef) const {
@@ -24,7 +24,7 @@ struct MVPJobSeedTest : public MVPJobBase<MVPJobSeedTest> {
 };
 
 TEST(MVPJob, seeding) {
-  MVPJobSeedTest job(GeoReference(), 256, OrbitalImageCropCollection(), MVPAlgorithmSettings());
+  MVPJobSeedTest job(GeoReference(), 256, OrbitalImageCropCollection(), MVPUserSettings());
   MVPTileResult result(job.process_tile());
 }
 
@@ -43,7 +43,7 @@ MVPJobRequest create_job_request(bool use_octave = true) {
   const Vector2 alt_limits(0, 0);
 
   PlateGeoReference plate_georef(datum, "equi", tile_size, GeoReference::PixelAsPoint);
-  MVPAlgorithmSettings settings;
+  MVPUserSettings settings;
   settings.set_test_algorithm(true);
   settings.set_use_octave(use_octave);
   settings.set_alt_min(alt_limits[0]);

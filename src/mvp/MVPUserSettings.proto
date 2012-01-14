@@ -1,6 +1,6 @@
 package mvp;
 
-message MVPAlgorithmSettings {
+message MVPUserSettings {
   required double alt_min = 1;
   required double alt_max = 2;
 

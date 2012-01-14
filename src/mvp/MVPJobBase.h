@@ -122,12 +122,12 @@ struct MVPJobBase {
     vw::cartography::GeoReference georef(plate_georef.tile_georef(col, row, level));
 
     vw::BBox2 tile_bbox(plate_georef.tile_lonlat_bbox(col, row, level));
-    vw::Vector2 alt_limits(job_request.algorithm_settings().alt_min(), job_request.algorithm_settings().alt_max());
+    vw::Vector2 alt_limits(job_request.user_settings().alt_min(), job_request.user_settings().alt_max());
 
     OrbitalImageCropCollection crops(tile_bbox, georef.datum(), alt_limits);
     crops.add_image_collection(job_request.orbital_images());
 
-    return ImplT(georef, plate_georef.tile_size(), crops, job_request.algorithm_settings());
+    return ImplT(georef, plate_georef.tile_size(), crops, job_request.user_settings());
   }
 
   inline ImplT& impl() {return static_cast<ImplT&>(*this);}
@@ -161,12 +161,12 @@ struct MVPJobBase {
     vw::cartography::GeoReference m_georef;
     int m_tile_size;
     OrbitalImageCropCollection m_crops;
-    MVPAlgorithmSettings m_settings;
+    MVPUserSettings m_settings;
     // TODO: A seed object...
 
     // This is defined here to prevent the user from accidently
     // constructing an MVPJobBase
-    MVPJobBase(vw::cartography::GeoReference const& georef, int tile_size, OrbitalImageCropCollection const& crops, MVPAlgorithmSettings const& settings) :
+    MVPJobBase(vw::cartography::GeoReference const& georef, int tile_size, OrbitalImageCropCollection const& crops, MVPUserSettings const& settings) :
       m_georef(georef), m_tile_size(tile_size), m_crops(crops), m_settings(settings) {}
     MVPJobBase(MVPJobBase const& job) : m_georef(job.m_georef), m_tile_size(job.m_tile_size), m_crops(job.m_crops), m_settings(job.m_settings) {}
 

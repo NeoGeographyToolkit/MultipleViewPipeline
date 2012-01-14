@@ -1,7 +1,7 @@
 package mvp;
 
 import "OrbitalImageFileDescriptor.proto";
-import "MVPAlgorithmSettings.proto";
+import "MVPUserSettings.proto";
 import "vw/Plate/PlateGeoReferenceDesc.proto";
 
 message MVPJobRequest {
@@ -12,6 +12,6 @@ message MVPJobRequest {
   required string result_platefile = 5;
   required string internal_result_platefile = 6;
   required vw.platefile.PlateGeoReferenceDesc plate_georef = 7;
-  required MVPAlgorithmSettings algorithm_settings = 8;
+  required MVPUserSettings user_settings = 8;
   repeated OrbitalImageFileDescriptor orbital_images = 9;
 }

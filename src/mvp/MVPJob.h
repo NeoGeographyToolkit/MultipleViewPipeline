@@ -19,7 +19,7 @@ namespace mvp {
 
 struct MVPJob : public MVPJobBase<MVPJob> {
 
-  MVPJob(vw::cartography::GeoReference const& georef, int tile_size, OrbitalImageCropCollection const& crops, MVPAlgorithmSettings const& settings) :
+  MVPJob(vw::cartography::GeoReference const& georef, int tile_size, OrbitalImageCropCollection const& crops, MVPUserSettings const& settings) :
     MVPJobBase<MVPJob>(georef, tile_size, crops, settings) {}
 
   inline MVPPixelResult process_pixel(MVPAlgorithmVar const& seed, vw::cartography::GeoReference const& georef) const {
@@ -34,7 +34,7 @@ struct MVPJob : public MVPJobBase<MVPJob> {
 // TODO: Rename to MVPJobFootprint?
 struct MVPJobTest : public MVPJobBase<MVPJobTest> {
 
-  MVPJobTest(vw::cartography::GeoReference const& georef, int tile_size, OrbitalImageCropCollection const& crops, MVPAlgorithmSettings const& settings) :
+  MVPJobTest(vw::cartography::GeoReference const& georef, int tile_size, OrbitalImageCropCollection const& crops, MVPUserSettings const& settings) :
     MVPJobBase<MVPJobTest>(georef, tile_size, crops, settings) {}
 
   inline MVPPixelResult process_pixel(MVPAlgorithmVar const& seed, vw::cartography::GeoReference const& georef) const {
@@ -63,7 +63,7 @@ struct MVPJobOctave : public MVPJobBase<MVPJobOctave> {
   ::octave_map m_octave_crops;
   ::octave_scalar_map m_octave_settings;
 
-  MVPJobOctave(vw::cartography::GeoReference const& georef, int tile_size, OrbitalImageCropCollection const& crops, MVPAlgorithmSettings const& settings) :
+  MVPJobOctave(vw::cartography::GeoReference const& georef, int tile_size, OrbitalImageCropCollection const& crops, MVPUserSettings const& settings) :
     MVPJobBase<MVPJobOctave>(georef, tile_size, crops, settings) 
   {
     m_octave_crops = m_crops.to_octave();
@@ -83,13 +83,13 @@ struct MVPJobOctave : public MVPJobBase<MVPJobOctave> {
 #endif
 
 MVPTileResult mvpjob_process_tile(MVPJobRequest const& job_request, vw::ProgressCallback const& progress = vw::ProgressCallback::dummy_instance()) {
-  if (job_request.algorithm_settings().use_octave()) {
+  if (job_request.user_settings().use_octave()) {
     #if MVP_ENABLE_OCTAVE_SUPPORT
       return MVPJobOctave::construct_from_job_request(job_request).process_tile(progress);
     #else
       vw::vw_throw(vw::NoImplErr() << "Cannot use octave algorithm, as the MVP was not compled with it!");
     #endif
-  } else if (job_request.algorithm_settings().test_algorithm()) {
+  } else if (job_request.user_settings().test_algorithm()) {
     return MVPJobTest::construct_from_job_request(job_request).process_tile(progress);
   } else {
     return MVPJob::construct_from_job_request(job_request).process_tile(progress);
@@ -131,7 +131,7 @@ std::string save_job_file(MVPJobRequest const& job_request, std::string const& o
   vw::cartography::GeoReference georef(plate_georef.tile_georef(col, row, level));
 
   vw::BBox2 tile_bbox(plate_georef.tile_lonlat_bbox(col, row, level));
-  vw::Vector2 alt_limits(job_request.algorithm_settings().alt_min(), job_request.algorithm_settings().alt_max());
+  vw::Vector2 alt_limits(job_request.user_settings().alt_min(), job_request.user_settings().alt_max());
 
   OrbitalImageCropCollection crops(tile_bbox, georef.datum(), alt_limits);
   crops.add_image_collection(job_request.orbital_images());
