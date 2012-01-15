@@ -11,7 +11,16 @@ function [result, variance, converged, num_iterations] = mvpfootprint(seed, geor
     px_h = img.camera * xyz_h;
     px = px_h(1:2) /  px_h(3);
 
-    if (px >= [1; 1] && px <= flipud(size(img.data)'))
+    % Note that VW labels the upper left hand corner of the upper left hand pixel 
+    % (0, 0) So the lower right hand corner of the that same pixel is (0.999.., 0.999...). 
+    % Thus, a coordinate is "contained" in that pixel if (0, 0) <= (x, y) < (1, 1).
+    %
+    % For Octave, the upper left hand corner of the upper left hand pixel is (1, 1) 
+    % The lower right hand of that same pixel is (1.999...,1.999...). Thus, a
+    % coordinate "contained" in that pixel will be (1, 1) <= (x, y) < (2, 2).
+    %
+    % This is why we must add [1; 1] to the image size before comparing it.
+    if (px >= [1; 1] && px < (fliplr(size(img.data))' + [1; 1]))
       overlap++;
     endif
   endfor
