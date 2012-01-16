@@ -1,5 +1,5 @@
-function obj = mvpobj(images, georef, alt, planeNormal, windows)
-  patches = mvppatches(images, georef, alt, planeNormal, windows);
+function obj = mvpobj(alt, orientation, windows, georef, images, mvpoptions)
+  patches = mvppatches(images, georef, alt, orientation, windows);
 
   numPatches = numel(patches);
 

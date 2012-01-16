@@ -1,11 +1,16 @@
-set(MFILES _porthoproj_impl.m
+set(MFILES _mvpalgorithm_alt.m
+           _mvpalgorithm_orientation.m
+           _mvpalgorithm_windows.m
+           _porthoproj_impl.m
            _porthoproj_impl_ref.m
+           geotrans.m
+           loadjobfile.cc
            lonlat2normal.m
            lonlatalt2xyz.m
            mvpalgorithm.m
+           mvpfootprint.m
            mvpobj.m
            mvppatches.m
-           mvptestalgorithm.m
            offsetgeoref.m
            porthoproj.m)
 

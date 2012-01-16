@@ -1,7 +1,7 @@
-function variance = _mvpalgorithm_windows(alt, orientation, windows, georef, images, settings)
+function variance = _mvpalgorithm_windows(alt, orientation, windows, georef, images, mvpoptions)
   global gResult;
 
-  variance = mvpobj(alt, orientation, windows, georef, images, settings);
+  variance = mvpobj(alt, orientation, windows, georef, images, mvpoptions);
 
   if (variance < gVariance)
     gVariance = variance;
