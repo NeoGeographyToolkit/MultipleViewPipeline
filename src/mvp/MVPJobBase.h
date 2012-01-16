@@ -175,6 +175,12 @@ struct MVPJobBase {
     options.set_alt_range(m_settings.alt_search_range());
     // TODO: set num_iterations?
 
+    // TODO: orientation and windows are fixed for testing.
+    // window size is also explicitly set.
+    options.set_fix_orientation(true); 
+    options.set_fix_windows(true);
+    seed.windows = vw::Vector3(10, 10, 1);
+
     int curr_px_num = 0;
     int num_px_to_process = m_tile_size * m_tile_size;
     progress.report_progress(0);
