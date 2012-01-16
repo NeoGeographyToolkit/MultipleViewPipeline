@@ -10,13 +10,16 @@ function [result, variance, converged, num_iterations] = mvpalgorithm(seed, geor
 
   opts = optimset("MaxIter", mvpoptions.max_iterations, "FunValCheck", "on");
 
+  altMin = seed.alt - mvpoptions.alt_range;
+  altMax = seed.alt + mvpoptions.alt_range;
+
   try
     if (mvpoptions.fix_orientation && mvpoptions.fix_windows)
       [gResult.alt gVariance info output] = fminbnd(@(a) mvpobj(a, gResult.orientation, gResult.windows, georef, images, mvpoptions), 
-                                                                mvpoptions.alt_min, mvpoptions.alt_max, opts);
+                                                                altMin, altMax, opts);
     else
       [alt variance info output] = fminbnd(@(a) _mvpalgorithm_alt(a, georef, images, mvpoptions),
-                                                                  mvpoptions.alt_min, mvpoptions.alt_max, opts);
+                                                                  altMin, altMax, opts);
     endif
 
     result = gResult;
