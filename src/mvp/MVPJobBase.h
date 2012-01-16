@@ -159,7 +159,7 @@ struct MVPJobBase {
     options.set_fix_windows(true);
     // TODO: set num_iterations?
 
-    return process_pixel(pre_seed, m_tile_size / 2, m_tile_size / 2, options);
+    return process_pixel(pre_seed, seed_col, seed_row, options);
   }
 
   inline MVPTileResult process_tile(vw::ProgressCallback const& progress = vw::ProgressCallback::dummy_instance()) const {
