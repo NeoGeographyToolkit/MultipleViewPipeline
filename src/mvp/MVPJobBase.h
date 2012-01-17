@@ -154,7 +154,7 @@ struct MVPJobBase {
     pre_seed.windows = vw::Vector3(m_settings.seed_window_size(), m_settings.seed_window_size(), m_settings.seed_window_smooth_size());
 
     MVPAlgorithmOptions options;
-    options.set_alt_range(m_settings.alt_max() - m_settings.alt_min());
+    options.set_alt_range((m_settings.alt_max() - m_settings.alt_min()) / 2);
     options.set_fix_orientation(true);
     options.set_fix_windows(true);
     // TODO: set num_iterations?
