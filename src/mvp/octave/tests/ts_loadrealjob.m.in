@@ -1,6 +1,6 @@
 source("@CMAKE_BINARY_DIR@/src/test/loadtestenv.m");
 
-testjob = "@CMAKE_CURRENT_SOURCE_DIR@/data/5380_3875_13.job";
+testjob = "@CMAKE_CURRENT_SOURCE_DIR@/data/2682_1937_12.real.job";
 
 [tile_georef images settings tile_size] = loadjobfile(testjob);
 
