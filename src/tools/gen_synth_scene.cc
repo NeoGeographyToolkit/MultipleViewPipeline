@@ -56,7 +56,7 @@ int main( int argc, char *argv[] ) {
 
   // Create ground-DRG.tif
   {
-    ImageViewRef<float32> out = pixel_cast<float32>(gaussian_filter(uniform_noise_view(
+    ImageViewRef<PixelGrayA<float32> > out = pixel_cast<PixelGrayA<float32> >(gaussian_filter(uniform_noise_view(
                                 gen, dem_width, dem_height), 1.5));
     // Don't block write. If we block write, threading
     // will make the texture different every runtime
@@ -64,12 +64,12 @@ int main( int argc, char *argv[] ) {
   }
 
   // Create Orbital Images
-  DiskImageView<float32> drg_ground(output_folder + "/ground-DRG.tif");
+  DiskImageView<PixelGrayA<float32> > drg_ground(output_folder + "/ground-DRG.tif");
   for (unsigned i = 0; i < camera_list.size(); i++) {
     std::stringstream ss;
     ss << i;
     {
-      ImageViewRef<float32> out = backproject_plane(interpolate(drg_ground, 
+      ImageView<PixelGrayA<float32> > out = backproject_plane(interpolate(drg_ground, 
         BilinearInterpolation(), ZeroEdgeExtension()) , georef, camera_list[i],
         dem_ground_plane, orbit_width, orbit_height);
      
