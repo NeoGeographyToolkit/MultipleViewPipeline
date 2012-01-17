@@ -1,6 +1,6 @@
 source("@CMAKE_BINARY_DIR@/src/test/loadtestenv.m");
 
-testjob = "@CMAKE_CURRENT_SOURCE_DIR@/data/1345_970_11.job";
+testjob = "@CMAKE_CURRENT_SOURCE_DIR@/data/2688_1938_12.job";
 ground_dem_file = "@CMAKE_CURRENT_SOURCE_DIR@/data/synth-ground-DEM.tif";
 ground_drg_file = "@CMAKE_CURRENT_SOURCE_DIR@/data/synth-ground-DRG.tif";
 
