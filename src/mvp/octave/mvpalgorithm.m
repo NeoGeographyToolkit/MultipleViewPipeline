@@ -8,7 +8,7 @@ function [result, variance, converged, num_iterations] = mvpalgorithm(seed, geor
   global gVariance;
   gVariance = Inf;
 
-  opts = optimset("MaxIter", mvpoptions.max_iterations, "FunValCheck", "on");
+  opts = optimset("MaxIter", mvpoptions.max_iterations, "FunValCheck", "on", "TolX", mvpoptions.alt_tolerance);
 
   altMin = seed.alt - mvpoptions.alt_range;
   altMax = seed.alt + mvpoptions.alt_range;
