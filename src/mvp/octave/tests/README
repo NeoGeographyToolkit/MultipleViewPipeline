@@ -1,7 +1,22 @@
 ts_loadsynthjob
 [seed patch_georef] = ts_gengseed([25 25], tile_georef, tile_dem);
 
-ts_graphobj(seed, patch_georef, images)
+ts_plotobj(seed, patch_georef, images)
 ts_showpatches(seed, patch_georef, images)
 ts_showpatchprints(seed, patch_georef, images)
 
+
+Interesting feature in 2682_1937_12.real.job:
+
+[seed georef] = ts_genseed([32 32], tile_georef, -1091, "tangent", [10 10 1]);
+options = mvpoptimset(2000);
+
+Vary seed from [7 50] to [14 50] to see the discontinuity:
+
+[trash georef] = ts_genseed([7 50], tile_georef, -1091, "tangent", [10 10 1]);
+ts_plotobj(seed, georef, images, options)
+[trash georef] = ts_genseed([8 50], tile_georef, -1091, "tangent", [10 10 1]);
+ts_plotobj(seed, georef, images, options)
+  ... and so on
+
+This feature becomes invisible at window size 13 or so.
