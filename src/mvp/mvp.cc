@@ -162,11 +162,13 @@ int main(int argc, char* argv[])
                                                   work.plate_georef().tile_size(),
                                                   "tif", VW_PIXEL_GRAYA, VW_CHANNEL_FLOAT32));
 
-    Transaction tid = pf->transaction_request("Post Heights", -1);
+    pf->transaction_begin("Post Heights", -1);
+    pf->write_request();
 
     int curr_tile = 0;
     int num_tiles = tile_bbox.width() * tile_bbox.height();
     float32 plate_min_val = numeric_limits<float32>::max(), plate_max_val = numeric_limits<float32>::min();
+
     for (int col = tile_bbox.min().x(); col < tile_bbox.max().x(); col++) {
       for (int row = tile_bbox.min().y(); row < tile_bbox.max().y(); row++) {
         boost::shared_ptr<ProgressCallback> progress;
@@ -194,10 +196,8 @@ int main(int argc, char* argv[])
         plate_min_val = min(plate_min_val, tile_min_val);
         plate_max_val = max(plate_max_val, tile_max_val);
 
-        pf->write_request();
-        pf->write_update(rendered_tile, col, row, render_level, tid);
+        pf->write_update(rendered_tile, col, row, render_level);
         pf->sync();
-        pf->write_complete();
       }
     }
 
@@ -208,13 +208,14 @@ int main(int argc, char* argv[])
         for (int row = tile_bbox.min().y() >> divisor; row <= tile_bbox.max().y() >> divisor; row++) {
           ImageView<PixelGrayA<float32> > rendered_tile(constant_view(PixelGrayA<float32>(), 
                                                                       work.plate_georef().tile_size(), work.plate_georef().tile_size()));
-          pf->write_request();
-          pf->write_update(rendered_tile, col, row, level, tid);
-          pf->sync();
-          pf->write_complete();
+          pf->write_update(rendered_tile, col, row, level);
         }
       }
     }
+
+    pf->sync();
+    pf->write_complete();
+    pf->transaction_end(true);
 
     if (!vm.count("silent")) {
       cout << "Plate (min, max): (" << plate_min_val << ", " << plate_max_val << ")" << endl;
