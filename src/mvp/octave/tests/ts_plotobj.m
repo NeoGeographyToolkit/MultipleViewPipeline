@@ -1,6 +1,6 @@
-function [alts_out objs_out] = ts_plotobj(seed, patch_georef, images, half_range = 500, num_pts = 20)
+function [alts_out objs_out] = ts_plotobj(seed, patch_georef, images, mvpoptions, num_pts = 20)
 
-alts = linspace(seed.alt - half_range, seed.alt + half_range, num_pts);
+alts = linspace(seed.alt - mvpoptions.alt_range, seed.alt + mvpoptions.alt_range, num_pts);
 objs = arrayfun(@(a) mvpobj(a, seed.orientation, seed.windows, patch_georef, images), alts);
 
 if (nargout < 2)
