@@ -22,12 +22,20 @@ find_package(VW REQUIRED COMPONENTS Cartography Camera Plate Image Math FileIO C
 find_package(Boost REQUIRED COMPONENTS program_options)
 find_package(Protobuf REQUIRED)
 find_package(Octave)
+find_package(Gearman)
 
 ###
 ### Set Options
 ###
 option(BINARY_DIR_INSTALL "Install in the build directory" OFF)
 option(CMAKE_INSTALL_RPATH_USE_LINK_PATH "Use the link path as the rpath in the install" ON)
+
+# ENABLE_GEARMAN_SUPPORT
+if (GEARMAN_FOUND)
+  option(ENABLE_GEARMAN_SUPPORT "Build the MVP with gearman support" ON)
+else()
+  option(ENABLE_GEARMAN_SUPPORT "Build the MVP with gearman support" OFF)
+endif()
 
 # ENABLE_OCTAVE_SUPPORT
 if (OCTAVE_FOUND)
