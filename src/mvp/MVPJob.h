@@ -10,6 +10,8 @@
 
 #include <mvp/MVPJobBase.h>
 #include <boost/filesystem.hpp>
+#include <vw/Image/MaskViews.h>
+#include <vw/Plate/PlateFile.h>
 
 #if MVP_ENABLE_OCTAVE_SUPPORT
 #include <octave/parse.h>
@@ -85,7 +87,9 @@ struct MVPJobOctave : public MVPJobBase<MVPJobOctave> {
 };
 #endif
 
-MVPTileResult mvpjob_process_tile(MVPJobRequest const& job_request, vw::ProgressCallback const& progress = vw::ProgressCallback::dummy_instance()) {
+MVPTileResult mvpjob_process_tile(MVPJobRequest const& job_request, 
+                                  vw::ProgressCallback const& progress = vw::ProgressCallback::dummy_instance())
+{
   if (job_request.user_settings().use_octave()) {
     #if MVP_ENABLE_OCTAVE_SUPPORT
       return MVPJobOctave::construct_from_job_request(job_request).process_tile(progress);
@@ -97,6 +101,29 @@ MVPTileResult mvpjob_process_tile(MVPJobRequest const& job_request, vw::Progress
   } else {
     return MVPJob::construct_from_job_request(job_request).process_tile(progress);
   }
+}
+
+MVPTileResult mvpjob_process_and_write_tile(MVPJobRequest const& job_request, 
+                                            vw::ProgressCallback const& progress = vw::ProgressCallback::dummy_instance())
+{
+  MVPTileResult result = mvpjob_process_tile(job_request, progress);
+
+  vw::ImageViewRef<vw::PixelGrayA<vw::float32> > rendered_tile = vw::mask_to_alpha(vw::pixel_cast<vw::PixelMask<vw::PixelGray<vw::float32> > >(result.alt));
+
+  boost::scoped_ptr<vw::platefile::PlateFile> pf(new vw::platefile::PlateFile(job_request.result_platefile(),
+                                                                              job_request.plate_georef().map_proj(),
+                                                                              "MVP Result Plate",
+                                                                              job_request.plate_georef().tile_size(),
+                                                                              "tif", vw::VW_PIXEL_GRAYA, vw::VW_CHANNEL_FLOAT32));
+
+  pf->transaction_begin("Post Heights", 1);
+  pf->write_request();
+  pf->write_update(rendered_tile, job_request.col(), job_request.row(), job_request.level());
+  pf->sync();
+  pf->write_complete();
+  pf->transaction_end(true);
+
+  return result;
 }
 
 mvp::MVPJobRequest load_job_file(std::string const& filename) {
@@ -117,7 +144,8 @@ mvp::MVPJobRequest load_job_file(std::string const& filename) {
   return job_request;
 }
 
-MVPTileResult mvpjob_process_tile(std::string  const& job_filename, vw::ProgressCallback const& progress = vw::ProgressCallback::dummy_instance()) {
+MVPTileResult mvpjob_process_tile(std::string  const& job_filename, 
+                                  vw::ProgressCallback const& progress = vw::ProgressCallback::dummy_instance()) {
   return mvpjob_process_tile(load_job_file(job_filename), progress);
 }
 
