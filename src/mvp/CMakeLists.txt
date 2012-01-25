@@ -24,6 +24,11 @@ target_link_libraries(mvp mvpcommon
 if (ENABLE_OCTAVE_SUPPORT)
   target_link_libraries(mvp ${OCTAVE_LIBRARIES})
 endif()
+
+if (ENABLE_GEARMAN_SUPPORT)
+  target_link_libraries(mvp ${GEARMAN_LIBRARIES})
+endif()
+
 #set_target_properties(mvp_solo PROPERTIES COMPILE_FLAGS "-DTEST_SRCDIR\\\"${CMAKE_CURRENT_SOURCE_DIR}\\\"")
 
 configure_file(Config.h.in Config.h)

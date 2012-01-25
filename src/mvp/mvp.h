@@ -24,6 +24,13 @@ using namespace mvp;
 
 namespace po = boost::program_options;
 
+
+#if MVP_ENABLE_GEARMAN_SUPPORT
+#include <libgearman/gearman.h>
+
+
+#endif
+
 void add_nongearman_task(MVPJobRequest const& job_request, int curr_tile, int num_tiles, bool silent = false) {
   boost::shared_ptr<ProgressCallback> progress;
   if (!silent) {

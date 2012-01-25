@@ -66,6 +66,7 @@ class MVPWorkspace {
         ("datum", po::value<std::string>()->required(), "Datum name")
         ("map-projection", po::value<std::string>()->default_value("equi"), "Plate map projection type")
         ("tile-size", po::value<int>()->default_value(256), "Plate tile size")
+        ("platefile-server", po::value<std::string>()->default_value("."), "Platefile server")
         ("result-platefile", po::value<std::string>()->required(), "Result plate filename")
         ("internal-result-platefile", po::value<std::string>(), "Internal result plate filename")
         ("alt-min", po::value<double>()->required(), "Min DEM altitude to search")
@@ -95,7 +96,10 @@ class MVPWorkspace {
       settings.set_use_octave(vm["use-octave"].as<bool>());
       settings.set_test_algorithm(vm["test-algorithm"].as<bool>());
 
-      MVPWorkspace work(vm["result-platefile"].as<std::string>(), vm["internal-result-platefile"].as<std::string>(), plate_georef, settings);
+      MVPWorkspace work(vm["platefile-server"].as<std::string>() + "/" + vm["result-platefile"].as<std::string>(), 
+                        vm["platefile-server"].as<std::string>() + "/" + vm["internal-result-platefile"].as<std::string>(), 
+                        plate_georef, settings);
+
       work.add_image_pattern(vm["orbital-image-pattern"].as<std::string>(), 
                              vm["camera-pattern"].as<std::string>(),
                              vm["pattern-index-start"].as<int>(),

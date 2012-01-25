@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
     ("col,c", po::value<int>(), "When dumping a jobfile, column of tile to dump")
     ("row,r", po::value<int>(), "When dumping a jobfile, row of tile to dump")
     ("level,l", po::value<int>(), "When dumping a jobfile or printing the workspace, level to operate at")
-    ("job", po::value<string>(), "Render a jobfile")
+    ("job,j", po::value<string>(), "Render a jobfile")
     ;
 
   po::options_description render_opts("Render Options");
@@ -30,6 +30,14 @@ int main(int argc, char* argv[])
 
   po::options_description mvp_opts;
   mvp_opts.add(MVPWorkspace::program_options()).add(render_opts);
+
+  #if MVP_ENABLE_GEARMAN_SUPPORT
+  po::options_description gearman_opts("Gearman Options");
+  gearman_opts.add_options()
+    ("gearman-servers", po::value<string>(), "gearmand server list")
+    ;
+  mvp_opts.add(gearman_opts);
+  #endif
 
   po::options_description all_opts;
   all_opts.add(cmd_opts).add(mvp_opts);
@@ -48,6 +56,13 @@ int main(int argc, char* argv[])
   }
 
   notify(vm);
+
+  #if MVP_ENABLE_GEARMAN_SUPPORT
+  if (!vm.count("gearman-servers") && vm["platefile-server"].as<string>() == ".") {
+    cout << "Error: when using gearman, you must also specify a platefile-server!" << endl;
+    return 0;
+  }
+  #endif
 
   MVPWorkspace work(MVPWorkspace::construct_from_program_options(vm)); 
 
@@ -132,22 +147,56 @@ int main(int argc, char* argv[])
 
     int curr_tile = 0;
     int num_tiles = tile_bbox.width() * tile_bbox.height();
-    bool gearman = false;
+
+    #if MVP_ENABLE_GEARMAN_SUPPORT
+    gearman_client_st *client;
+
+    bool use_gearman = vm.count("gearman-servers");
+
+    if (use_gearman) {
+      gearman_return_t ret;
+
+      client = gearman_client_create(NULL);
+      if (!client) {
+        cout << "Unable to create gearman client" << endl;
+        return 1;
+      }
+  
+      ret = gearman_client_add_servers(client, vm["gearman-servers"].as<string>().c_str());
+      if (gearman_failed(ret)) {
+        cout << "Gearman Error: " << gearman_client_error(client) << endl;
+        return 1;
+      }
+
+      //TODO: Set client timeout?
+    }
+
+    std::list<gearman_task_st *> tasks;
+    #endif
 
     for (int col = tile_bbox.min().x(); col < tile_bbox.max().x(); col++) {
       for (int row = tile_bbox.min().y(); row < tile_bbox.max().y(); row++) {
-        if (gearman) {
-//          add_gearman_task(work.assemble_job(col, row, render_level), curr_tile, num_tiles, vm.count("silent"));
+        #if MVP_ENABLE_GEARMAN_SUPPORT
+        if (use_gearman) {
+          //add_gearman_task(client, tasks, work.assemble_job(col, row, render_level), curr_tile, num_tiles, vm.count("silent"));
         } else {
-            add_nongearman_task(work.assemble_job(col, row, render_level), curr_tile, num_tiles, vm.count("silent"));
+          add_nongearman_task(work.assemble_job(col, row, render_level), curr_tile, num_tiles, vm.count("silent"));
         }
+        #else
+        add_nongearman_task(work.assemble_job(col, row, render_level), curr_tile, num_tiles, vm.count("silent"));
+        #endif
         curr_tile++;
       }
     }
+
+    #if MVP_ENABLE_GEARMAN_SUPPORT
+    //wait_on_gearman_tasks(client, tasks, UNTIL_EVERYTHING_IS_DONE);
+    gearman_client_free(client);
+    #endif
   }
 
-  if (!vm.count"silent") {
-    cout << endl << "Done." << endl;
+  if (!vm.count("silent")) {
+    cout << endl << "Done." << endl << endl;
   }
 
   #if MVP_ENABLE_OCTAVE_SUPPORT
