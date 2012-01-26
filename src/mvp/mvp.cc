@@ -58,7 +58,7 @@ int main(int argc, char* argv[])
   notify(vm);
 
   #if MVP_ENABLE_GEARMAN_SUPPORT
-  if (!vm.count("gearman-servers") && vm["platefile-server"].as<string>() == ".") {
+  if (vm.count("gearman-servers") && vm["platefile-server"].as<string>() == ".") {
     cout << "Error: when using gearman, you must also specify a platefile-server!" << endl;
     return 0;
   }
@@ -178,7 +178,7 @@ int main(int argc, char* argv[])
       for (int row = tile_bbox.min().y(); row < tile_bbox.max().y(); row++) {
         #if MVP_ENABLE_GEARMAN_SUPPORT
         if (use_gearman) {
-          //add_gearman_task(client, tasks, work.assemble_job(col, row, render_level), curr_tile, num_tiles, vm.count("silent"));
+          add_gearman_task(client, &tasks, work.assemble_job(col, row, render_level), curr_tile, num_tiles, vm.count("silent"));
         } else {
           add_nongearman_task(work.assemble_job(col, row, render_level), curr_tile, num_tiles, vm.count("silent"));
         }
@@ -190,7 +190,7 @@ int main(int argc, char* argv[])
     }
 
     #if MVP_ENABLE_GEARMAN_SUPPORT
-    //wait_on_gearman_tasks(client, tasks, UNTIL_EVERYTHING_IS_DONE);
+    wait_on_gearman_tasks(client, tasks, UNTIL_EVERYTHING_IS_DONE);
     gearman_client_free(client);
     #endif
   }

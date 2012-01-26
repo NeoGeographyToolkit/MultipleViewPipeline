@@ -28,7 +28,108 @@ namespace po = boost::program_options;
 #if MVP_ENABLE_GEARMAN_SUPPORT
 #include <libgearman/gearman.h>
 
+void print_statuses(std::list<gearman_task_st *> const& tasks, std::list<gearman_task_st *> const& statuses) {
+  assert(tasks.size() == statuses.size());
+  static int last_print_size = 0;
+  std::stringstream stream;
 
+  std::list<gearman_task_st *>::const_iterator task_iterator = tasks.begin();
+  std::list<gearman_task_st *>::const_iterator status_iterator = statuses.begin();
+  while (task_iterator != tasks.end()) {
+    gearman_task_st *t = *(task_iterator++);
+    gearman_task_st *s = *(status_iterator++);
+
+    if (gearman_task_denominator(s)) {
+      double percent = 100 * gearman_task_numerator(s) / gearman_task_denominator(s);
+      stream << "Task #" << gearman_task_unique(t) << ": [" << percent << "%] ";
+    }
+  }
+  std::cout << std::setw(last_print_size) << std::left << stream.str() << "\r" << std::flush;
+  last_print_size = stream.str().size();
+}
+
+enum TaskWaitType {
+  UNTIL_EVERYTHING_IS_RUNNING,
+  UNTIL_EVERYTHING_IS_DONE
+};
+
+std::list<gearman_task_st *> wait_on_gearman_tasks(gearman_client_st *client, std::list<gearman_task_st *> const& tasks, TaskWaitType wait_type) {
+  bool keep_looping;
+  std::list<gearman_task_st *> statuses;
+  gearman_return_t ret;
+
+  do {
+    BOOST_FOREACH(gearman_task_st *t, tasks) {
+      statuses.push_back(gearman_client_add_task_status(client, 0, 0, gearman_task_job_handle(t), &ret));
+    }
+    gearman_client_run_tasks(client);
+    
+    print_statuses(tasks, statuses);
+
+    keep_looping = false;
+
+    BOOST_FOREACH(gearman_task_st *s, statuses) {
+      switch (wait_type) {
+        case UNTIL_EVERYTHING_IS_RUNNING:
+          if (gearman_task_is_known(s) && !gearman_task_is_running(s)) {
+            keep_looping = true;
+          }
+          break;
+        case UNTIL_EVERYTHING_IS_DONE:
+          if (gearman_task_is_known(s)) {
+            keep_looping = true;
+          }
+          break;
+        default:
+          assert(0);
+      }
+    }
+
+    if (keep_looping) {
+      BOOST_FOREACH(gearman_task_st *s, statuses) {
+        gearman_task_free(s);
+      }
+      statuses.clear();
+      sleep(1);
+    }
+  } while (keep_looping);
+
+  return statuses;
+}
+
+void add_gearman_task(gearman_client_st *client, std::list<gearman_task_st *> *tasks, 
+                      MVPJobRequest const& job_request, int curr_tile, int num_tiles, bool silent = false) 
+{
+  gearman_return_t ret;
+
+  // TODO: Need a better unique, otherwise will clash if multiple mvp clients are running...
+  stringstream ss;
+  ss << curr_tile;
+
+  string message;
+  job_request.SerializeToString(&message);
+
+  tasks->push_back(gearman_client_add_task_background(client, 0, 0, "mvpalgorithm", ss.str().c_str(), message.c_str(), message.size(), &ret));
+  gearman_client_run_tasks(client);
+
+  std::list<gearman_task_st *> statuses = wait_on_gearman_tasks(client, *tasks, UNTIL_EVERYTHING_IS_RUNNING);
+
+  assert(statuses.size() == tasks->size());
+
+  std::list<gearman_task_st *>::iterator task_iterator = tasks->begin();
+  std::list<gearman_task_st *>::const_iterator status_iterator = statuses.begin();
+
+  while (task_iterator != tasks->end()) {
+    if (!gearman_task_is_known(*status_iterator)) {
+      gearman_task_free(*task_iterator);
+      task_iterator = tasks->erase(task_iterator);
+    } else {
+      task_iterator++;
+    }
+    gearman_task_free(*status_iterator);
+    status_iterator++;
+  }
+}
 #endif
 
 void add_nongearman_task(MVPJobRequest const& job_request, int curr_tile, int num_tiles, bool silent = false) {
