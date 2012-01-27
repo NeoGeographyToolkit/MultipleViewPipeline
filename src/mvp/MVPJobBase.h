@@ -183,11 +183,10 @@ struct MVPJobBase {
 
     int curr_px_num = 0;
     int num_px_to_process = m_tile_size * m_tile_size;
-    progress.report_progress(0);
     for (int col = 0; col < m_tile_size; col++) {
       for (int row = 0; row < m_tile_size; row++) {
+        progress.report_fractional_progress(curr_px_num++, num_px_to_process);
         tile_result.update(col, row, process_pixel(seed, col, row, options));
-        progress.report_progress(double(++curr_px_num) / num_px_to_process);
       }
     }
     progress.report_finished();
