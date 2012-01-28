@@ -15,6 +15,11 @@
 
 #include <boost/program_options.hpp>
 
+#if MVP_ENABLE_GEARMAN_SUPPORT
+#include <mvp/GearmanWrappers.h>
+#endif
+
+
 using namespace vw;
 using namespace vw::cartography;
 using namespace vw::platefile;
@@ -24,177 +29,11 @@ using namespace mvp;
 
 namespace po = boost::program_options;
 
-void do_task_local(MVPJobRequest const& job_request, int curr_tile, int num_tiles, bool silent = false) {
-  boost::shared_ptr<ProgressCallback> progress;
-  if (!silent) {
-    ostringstream status;
-    status << "Tile: " << curr_tile << "/" << num_tiles << " Location: [" << job_request.col() << ", " << job_request.row() << "] @" << job_request.level() << " ";
-    progress.reset(new TerminalProgressCallback("mvp", status.str()));
-  } else {
-    progress.reset(new ProgressCallback);
-  }
-  mvpjob_process_and_write_tile(job_request, *progress);
+void do_task_local(MVPJobRequest const& job_request, int curr_tile, int num_tiles) {
+  ostringstream status;
+  status << "Tile: " << curr_tile << "/" << num_tiles << " Location: [" << job_request.col() << ", " << job_request.row() << "] @" << job_request.level() << " ";
+  mvpjob_process_and_write_tile(job_request, TerminalProgressCallback("mvp", status.str()));
 }
-
-#if MVP_ENABLE_GEARMAN_SUPPORT
-#include <libgearman/gearman.h>
-
-namespace vw {
-  VW_DEFINE_EXCEPTION(GearmanErr, Exception);
-}
-
-class GearmanClientWrapper {
-  gearman_client_st *m_client;
-  bool m_has_servers;
-
-  public:
-    GearmanClientWrapper() : m_has_servers(false) {
-      m_client = gearman_client_create(NULL);
-      if (!m_client) {
-        throw bad_alloc();
-      }
-    }
-
-    GearmanClientWrapper(GearmanClientWrapper const& other)
-      : m_has_servers(other.m_has_servers) {
-      m_client = gearman_client_clone(NULL, other.m_client);
-      if (!m_client) {
-        throw bad_alloc();
-      }
-    }
-
-    void add_servers(string const& servers) {
-      gearman_return_t ret;
-      ret = gearman_client_add_servers(m_client, servers.c_str());
-      if (gearman_failed(ret)) {
-        vw_throw(vw::GearmanErr() << gearman_client_error(m_client));
-      }
-      m_has_servers = true;
-    }
-
-    bool has_servers() const {
-      return m_has_servers;
-    }
-
-    gearman_client_st *client() const {
-      return m_client;
-    }
-  
-    ~GearmanClientWrapper() {
-      gearman_client_free(m_client);
-    }
-};
-
-
-void print_statuses(std::list<gearman_task_st *> const& tasks, std::list<gearman_task_st *> const& statuses) {
-  assert(tasks.size() == statuses.size());
-  static int last_print_size = 0;
-  std::stringstream stream;
-
-  std::list<gearman_task_st *>::const_iterator task_iterator = tasks.begin();
-  std::list<gearman_task_st *>::const_iterator status_iterator = statuses.begin();
-  while (task_iterator != tasks.end()) {
-    gearman_task_st *t = *(task_iterator++);
-    gearman_task_st *s = *(status_iterator++);
-
-    if (gearman_task_denominator(s)) {
-      double percent = 100 * gearman_task_numerator(s) / gearman_task_denominator(s);
-      stream << "Task #" << gearman_task_unique(t) << ": [" << percent << "%] ";
-    }
-  }
-  std::cout << std::setw(last_print_size) << std::left << stream.str() << "\r" << std::flush;
-  last_print_size = stream.str().size();
-}
-
-enum TaskWaitType {
-  UNTIL_EVERYTHING_IS_RUNNING,
-  UNTIL_EVERYTHING_IS_DONE
-};
-
-std::list<gearman_task_st *> wait_on_gearman_tasks(gearman_client_st *client, std::list<gearman_task_st *> const& tasks, TaskWaitType wait_type) {
-  bool keep_looping;
-  std::list<gearman_task_st *> statuses;
-  gearman_return_t ret;
-
-  do {
-    BOOST_FOREACH(gearman_task_st *t, tasks) {
-      statuses.push_back(gearman_client_add_task_status(client, 0, 0, gearman_task_job_handle(t), &ret));
-    }
-    gearman_client_run_tasks(client);
-    
-    print_statuses(tasks, statuses);
-
-    keep_looping = false;
-
-    BOOST_FOREACH(gearman_task_st *s, statuses) {
-      switch (wait_type) {
-        case UNTIL_EVERYTHING_IS_RUNNING:
-          if (gearman_task_is_known(s) && !gearman_task_is_running(s)) {
-            keep_looping = true;
-          }
-          break;
-        case UNTIL_EVERYTHING_IS_DONE:
-          if (gearman_task_is_known(s)) {
-            keep_looping = true;
-          }
-          break;
-        default:
-          assert(0);
-      }
-    }
-
-    if (keep_looping) {
-      BOOST_FOREACH(gearman_task_st *s, statuses) {
-        gearman_task_free(s);
-      }
-      statuses.clear();
-      sleep(1);
-    }
-  } while (keep_looping);
-
-  return statuses;
-}
-
-void add_task_gearman(GearmanClientWrapper const& gclient, std::list<gearman_task_st *> *tasks, 
-                      MVPJobRequest const& job_request, int curr_tile, int num_tiles, bool silent = false) 
-{
-  if (!gclient.has_servers()) {
-    do_task_local(job_request, curr_tile, num_tiles, silent);
-    return;
-  }
-
-  gearman_client_st *client = gclient.client();
-  gearman_return_t ret;
-
-  // TODO: Need a better unique, otherwise will clash if multiple mvp clients are running...
-  stringstream ss;
-  ss << curr_tile;
-
-  string message;
-  job_request.SerializeToString(&message);
-
-  tasks->push_back(gearman_client_add_task_background(client, 0, 0, "mvpalgorithm", ss.str().c_str(), message.c_str(), message.size(), &ret));
-  gearman_client_run_tasks(client);
-
-  std::list<gearman_task_st *> statuses = wait_on_gearman_tasks(client, *tasks, UNTIL_EVERYTHING_IS_RUNNING);
-
-  assert(statuses.size() == tasks->size());
-
-  std::list<gearman_task_st *>::iterator task_iterator = tasks->begin();
-  std::list<gearman_task_st *>::const_iterator status_iterator = statuses.begin();
-
-  while (task_iterator != tasks->end()) {
-    if (!gearman_task_is_known(*status_iterator)) {
-      gearman_task_free(*task_iterator);
-      task_iterator = tasks->erase(task_iterator);
-    } else {
-      task_iterator++;
-    }
-    gearman_task_free(*status_iterator);
-    status_iterator++;
-  }
-}
-#endif
 
 void plate_tunnel(MVPWorkspace const& work, BBox2i const& tile_bbox, int render_level) {
   boost::scoped_ptr<PlateFile> pf(new PlateFile(work.result_platefile(),

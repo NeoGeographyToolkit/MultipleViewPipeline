@@ -149,10 +149,8 @@ int main(int argc, char* argv[])
     }
   }
 
-  // TODO: GearmanTaskList tasks(gclient);
-  std::list<gearman_task_st *> tasks;
+  GearmanTaskList tasks(gclient);
   #endif
-
 
   plate_tunnel(work, opts.tile_bbox, opts.render_level);
 
@@ -162,16 +160,21 @@ int main(int argc, char* argv[])
   for (int col = opts.tile_bbox.min().x(); col < opts.tile_bbox.max().x(); col++) {
     for (int row = opts.tile_bbox.min().y(); row < opts.tile_bbox.max().y(); row++) {
       #if MVP_ENABLE_GEARMAN_SUPPORT
-      add_task_gearman(gclient, &tasks, work.assemble_job(col, row, opts.render_level), curr_tile, num_tiles, false);
+      if (gclient.has_servers()) {
+        tasks.add_task(work.assemble_job(col, row, opts.render_level), curr_tile, num_tiles);
+        tasks.wait_until_everything_is_running();
+      } else {
+        do_task_local(work.assemble_job(col, row, opts.render_level), curr_tile, num_tiles);
+      }
       #else
-      do_task_local(work.assemble_job(col, row, opts.render_level), curr_tile, num_tiles, false);
+      do_task_local(work.assemble_job(col, row, opts.render_level), curr_tile, num_tiles);
       #endif
       curr_tile++;
     }
   }
 
   #if MVP_ENABLE_GEARMAN_SUPPORT
-  wait_on_gearman_tasks(gclient.client(), tasks, UNTIL_EVERYTHING_IS_DONE);
+  tasks.wait_until_everything_is_done();
   #endif
 
   vw_out() << endl << "Done." << endl << endl;
