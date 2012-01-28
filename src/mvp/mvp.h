@@ -24,9 +24,67 @@ using namespace mvp;
 
 namespace po = boost::program_options;
 
+void do_task_local(MVPJobRequest const& job_request, int curr_tile, int num_tiles, bool silent = false) {
+  boost::shared_ptr<ProgressCallback> progress;
+  if (!silent) {
+    ostringstream status;
+    status << "Tile: " << curr_tile << "/" << num_tiles << " Location: [" << job_request.col() << ", " << job_request.row() << "] @" << job_request.level() << " ";
+    progress.reset(new TerminalProgressCallback("mvp", status.str()));
+  } else {
+    progress.reset(new ProgressCallback);
+  }
+  mvpjob_process_and_write_tile(job_request, *progress);
+}
 
 #if MVP_ENABLE_GEARMAN_SUPPORT
 #include <libgearman/gearman.h>
+
+namespace vw {
+  VW_DEFINE_EXCEPTION(GearmanErr, Exception);
+}
+
+class GearmanClientWrapper {
+  gearman_client_st *m_client;
+  bool m_has_servers;
+
+  public:
+    GearmanClientWrapper() : m_has_servers(false) {
+      m_client = gearman_client_create(NULL);
+      if (!m_client) {
+        throw bad_alloc();
+      }
+    }
+
+    GearmanClientWrapper(GearmanClientWrapper const& other)
+      : m_has_servers(other.m_has_servers) {
+      m_client = gearman_client_clone(NULL, other.m_client);
+      if (!m_client) {
+        throw bad_alloc();
+      }
+    }
+
+    void add_servers(string const& servers) {
+      gearman_return_t ret;
+      ret = gearman_client_add_servers(m_client, servers.c_str());
+      if (gearman_failed(ret)) {
+        vw_throw(vw::GearmanErr() << gearman_client_error(m_client));
+      }
+      m_has_servers = true;
+    }
+
+    bool has_servers() const {
+      return m_has_servers;
+    }
+
+    gearman_client_st *client() const {
+      return m_client;
+    }
+  
+    ~GearmanClientWrapper() {
+      gearman_client_free(m_client);
+    }
+};
+
 
 void print_statuses(std::list<gearman_task_st *> const& tasks, std::list<gearman_task_st *> const& statuses) {
   assert(tasks.size() == statuses.size());
@@ -97,9 +155,15 @@ std::list<gearman_task_st *> wait_on_gearman_tasks(gearman_client_st *client, st
   return statuses;
 }
 
-void add_gearman_task(gearman_client_st *client, std::list<gearman_task_st *> *tasks, 
+void add_task_gearman(GearmanClientWrapper const& gclient, std::list<gearman_task_st *> *tasks, 
                       MVPJobRequest const& job_request, int curr_tile, int num_tiles, bool silent = false) 
 {
+  if (!gclient.has_servers()) {
+    do_task_local(job_request, curr_tile, num_tiles, silent);
+    return;
+  }
+
+  gearman_client_st *client = gclient.client();
   gearman_return_t ret;
 
   // TODO: Need a better unique, otherwise will clash if multiple mvp clients are running...
@@ -131,18 +195,6 @@ void add_gearman_task(gearman_client_st *client, std::list<gearman_task_st *> *t
   }
 }
 #endif
-
-void add_nongearman_task(MVPJobRequest const& job_request, int curr_tile, int num_tiles, bool silent = false) {
-  boost::shared_ptr<ProgressCallback> progress;
-  if (!silent) {
-    ostringstream status;
-    status << "Tile: " << curr_tile << "/" << num_tiles << " Location: [" << job_request.col() << ", " << job_request.row() << "] @" << job_request.level() << " ";
-    progress.reset(new TerminalProgressCallback("mvp", status.str()));
-  } else {
-    progress.reset(new ProgressCallback);
-  }
-  mvpjob_process_and_write_tile(job_request, *progress);
-}
 
 void plate_tunnel(MVPWorkspace const& work, BBox2i const& tile_bbox, int render_level) {
   boost::scoped_ptr<PlateFile> pf(new PlateFile(work.result_platefile(),

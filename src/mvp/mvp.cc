@@ -137,34 +137,19 @@ int main(int argc, char* argv[])
   }
 
   #if MVP_ENABLE_GEARMAN_SUPPORT
-  // TODO: put in class GearmanClientWrapper
-  /*
-  GearmanClientWrapper gclient(opts.gearman_servers);
-  */
-  gearman_client_st *client;
-
-  bool use_gearman = !opts.gearman_servers.empty();
-
-  if (use_gearman) {
-    gearman_return_t ret;
-
-    client = gearman_client_create(NULL);
-    if (!client) {
-      // TODO: throw here instead
-      cout << "Unable to create gearman client" << endl;
+  GearmanClientWrapper gclient;
+ 
+  if (!opts.gearman_servers.empty()) {
+    try {
+      gclient.add_servers(opts.gearman_servers);
+      //TODO: Set client timeout?
+    } catch (vw::GearmanErr const& e) {
+      vw_out() << e.what() << endl;
       return 1;
     }
-
-    ret = gearman_client_add_servers(client, opts.gearman_servers.c_str());
-    if (gearman_failed(ret)) {
-      // TODO: throw here instead
-      cout << "Gearman Error: " << gearman_client_error(client) << endl;
-      return 1;
-    }
-
-    //TODO: Set client timeout?
   }
 
+  // TODO: GearmanTaskList tasks(gclient);
   std::list<gearman_task_st *> tasks;
   #endif
 
@@ -177,21 +162,16 @@ int main(int argc, char* argv[])
   for (int col = opts.tile_bbox.min().x(); col < opts.tile_bbox.max().x(); col++) {
     for (int row = opts.tile_bbox.min().y(); row < opts.tile_bbox.max().y(); row++) {
       #if MVP_ENABLE_GEARMAN_SUPPORT
-      if (use_gearman) {
-        add_gearman_task(client, &tasks, work.assemble_job(col, row, opts.render_level), curr_tile, num_tiles, false);
-      } else {
-        add_nongearman_task(work.assemble_job(col, row, opts.render_level), curr_tile, num_tiles, false);
-      }
+      add_task_gearman(gclient, &tasks, work.assemble_job(col, row, opts.render_level), curr_tile, num_tiles, false);
       #else
-      add_nongearman_task(work.assemble_job(col, row, opts.render_level), curr_tile, num_tiles, false);
+      do_task_local(work.assemble_job(col, row, opts.render_level), curr_tile, num_tiles, false);
       #endif
       curr_tile++;
     }
   }
 
   #if MVP_ENABLE_GEARMAN_SUPPORT
-  wait_on_gearman_tasks(client, tasks, UNTIL_EVERYTHING_IS_DONE);
-  gearman_client_free(client);
+  wait_on_gearman_tasks(gclient.client(), tasks, UNTIL_EVERYTHING_IS_DONE);
   #endif
 
   vw_out() << endl << "Done." << endl << endl;
