@@ -1,22 +1,19 @@
 #include <mvp/mvp.h>
 
-int main(int argc, char* argv[])
-{
-  #if MVP_ENABLE_OCTAVE_SUPPORT
-  start_octave_interpreter();
-  #endif
+struct Options {
+  po::variables_map vm;
+  int render_level;
+  string gearman_servers;
+  bool dry_run;
+  BBox2i tile_bbox;
+};
 
+void handle_arguments(int argc, char* argv[], Options *opts) {
   po::options_description cmd_opts("Command line options");
   cmd_opts.add_options()
     ("help,h", "Print this message")
-    ("silent", "Run without outputting status")
     ("config-file,f", po::value<string>()->default_value("mvp.conf"), "Specify a pipeline configuration file")
-    ("print-workspace,p", "Print information about the workspace and exit")
-    ("dump-job", "Dump a jobfile")
-    ("col,c", po::value<int>(), "When dumping a jobfile, column of tile to dump")
-    ("row,r", po::value<int>(), "When dumping a jobfile, row of tile to dump")
-    ("level,l", po::value<int>(), "When dumping a jobfile or printing the workspace, level to operate at")
-    ("job,j", po::value<string>(), "Render a jobfile")
+    ("dry-run", "Print information about the workspace and then exit")
     ;
 
   po::options_description render_opts("Render Options");
@@ -25,7 +22,7 @@ int main(int argc, char* argv[])
     ("col-end", po::value<int>(), "One past last col to render")
     ("row-start", po::value<int>(), "Row to start rendering at")
     ("row-end", po::value<int>(), "One past last row to render")
-    ("render-level", po::value<int>(), "Level to render at")
+    ("render-level", po::value<int>(&opts->render_level)->default_value(-1), "Level to render at")
     ;
 
   po::options_description mvp_opts;
@@ -34,7 +31,7 @@ int main(int argc, char* argv[])
   #if MVP_ENABLE_GEARMAN_SUPPORT
   po::options_description gearman_opts("Gearman Options");
   gearman_opts.add_options()
-    ("gearman-servers", po::value<string>(), "gearmand server list")
+    ("gearman-servers", po::value<string>(&opts->gearman_servers), "gearmand server list")
     ;
   mvp_opts.add(gearman_opts);
   #endif
@@ -42,162 +39,162 @@ int main(int argc, char* argv[])
   po::options_description all_opts;
   all_opts.add(cmd_opts).add(mvp_opts);
 
-  po::variables_map vm;
-  store(po::command_line_parser(argc, argv).options(all_opts).run(), vm);
+  store(po::command_line_parser(argc, argv).options(all_opts).run(), opts->vm);
 
-  if (vm.count("help")) {
-    cout << all_opts << endl;
-    return 0;
+  if (opts->vm.count("help")) {
+    vw_throw(vw::ArgumentErr() << all_opts);
   }
 
-  ifstream ifs(vm["config-file"].as<string>().c_str());
+  ifstream ifs(opts->vm["config-file"].as<string>().c_str());
   if (ifs) {
-    store(parse_config_file(ifs, mvp_opts), vm);
+    store(parse_config_file(ifs, mvp_opts), opts->vm);
   }
 
-  notify(vm);
+  notify(opts->vm);
 
   #if MVP_ENABLE_GEARMAN_SUPPORT
-  if (vm.count("gearman-servers") && vm["platefile-server"].as<string>() == ".") {
-    cout << "Error: when using gearman, you must also specify a platefile-server!" << endl;
-    return 0;
+  if (opts->vm.count("gearman-servers") && opts->vm["platefile-server"].as<string>() == ".") {
+    vw_throw(vw::ArgumentErr() << "Error: When using gearman, you must also specify a platefile-server!");
   }
   #endif
 
-  MVPWorkspace work(MVPWorkspace::construct_from_program_options(vm)); 
+  opts->dry_run = opts->vm.count("dry-run");
 
-  if (!vm.count("silent")) {
-    cout << boolalpha << endl;
-    cout << "-------------------------------------" << endl;
-    cout << "Welcome to the Multiple View Pipeline" << endl;
-    cout << "-------------------------------------" << endl;
-    cout << endl;
-    cout << "Number of images loaded = " << work.num_images() << endl;
-    cout << " Equal resolution level = " << work.equal_resolution_level() << endl;
-    cout << "    Equal density level = " << work.equal_density_level() << endl;
-    cout << endl;
-    cout << "# Workspace lonlat BBox #" << endl;
-    print_bbox_helper(work.lonlat_work_area());
-    cout << endl;
-    cout << "# Workspace tile BBox (@ equal density level) #" << endl;
-    print_bbox_helper(work.tile_work_area(work.equal_density_level()));
-    if (vm.count("level")) {
-      int print_level = vm["level"].as<int>();
-      cout << endl;
-      cout << "# Workspace tile BBox (@ level " << print_level << ") #" << endl;
-      print_bbox_helper(work.tile_work_area(print_level));
+  if (opts->vm.count("col-start") || opts->vm.count("col-end") || opts->vm.count("row-start") || opts->vm.count("row-end")) {
+    if (opts->vm.count("col-start") && opts->vm.count("col-end") && opts->vm.count("row-start") && opts->vm.count("row-end")) {
+      opts->tile_bbox.min()[0] = opts->vm["col-start"].as<int>();
+      opts->tile_bbox.max()[0] = opts->vm["col-end"].as<int>();
+      opts->tile_bbox.min()[1] = opts->vm["row-start"].as<int>();
+      opts->tile_bbox.max()[1] = opts->vm["row-end"].as<int>();
+    } else {
+      vw_throw(vw::ArgumentErr() << "Error: missing col/row start/end");
     }
-    cout << endl;
+  }
+}
+
+void print_welcome(MVPWorkspace const& work, Options const& opts) {
+  cout << boolalpha << endl;
+  cout << "-------------------------------------" << endl;
+  cout << "Welcome to the Multiple View Pipeline" << endl;
+  cout << "-------------------------------------" << endl;
+  cout << endl;
+  cout << "Number of images loaded = " << work.num_images() << endl;
+  cout << " Equal resolution level = " << work.equal_resolution_level() << endl;
+  cout << "    Equal density level = " << work.equal_density_level() << endl;
+  cout << endl;
+  cout << "# Workspace lonlat BBox #" << endl;
+  print_bbox_helper(work.lonlat_work_area());
+  cout << endl;
+  cout << "# Workspace tile BBox (@ level " << opts.render_level << ") #" << endl;
+  print_bbox_helper(work.tile_work_area(work.equal_density_level()));
+  cout << endl;
+  cout << "-------------------------------------" << endl;
+  cout << "        Rendering Information" << endl;
+  cout << "-------------------------------------" << endl;
+  cout << endl;
+  cout << "Render level = " << opts.render_level << endl;
+  cout << "  Use octave = " << work.user_settings().use_octave() << endl;
+  cout << endl;
+  cout << "# Render tile BBox #" << endl;
+  print_bbox_helper(opts.tile_bbox);
+  cout << endl;
+  cout << "-------------------------------------" << endl;
+  cout << "              Status" << endl;
+  cout << "-------------------------------------" << endl;
+  cout << endl;
+}
+
+int main(int argc, char* argv[])
+{
+  #if MVP_ENABLE_OCTAVE_SUPPORT
+  start_octave_interpreter();
+  #endif
+
+  Options opts;
+
+  try {
+    handle_arguments(argc, argv, &opts); 
+  } catch (const vw::ArgumentErr& e) {
+    vw_out() << e.what() << endl;
+    return 1;
   } 
 
-  if (vm.count("print-workspace")) {
+  MVPWorkspace work(MVPWorkspace::construct_from_program_options(opts.vm));
+
+  if (opts.render_level < 1) {
+    opts.render_level = work.equal_density_level();
+  }
+
+  if (opts.tile_bbox.empty()) {
+    opts.tile_bbox = work.tile_work_area(opts.render_level);
+  }
+
+  print_welcome(work, opts);
+
+  if (opts.dry_run) {
+    vw_out() << "Dry run requested. Exiting..." << endl;
     return 0;
   }
 
-  if (vm.count("dump-job")) {
-    if (!vm.count("col") || !vm.count("row") || !vm.count("level")) {
-      cerr << "Error: Must specify a col, row, and level to dump" << endl;
+  #if MVP_ENABLE_GEARMAN_SUPPORT
+  // TODO: put in class GearmanClientWrapper
+  /*
+  GearmanClientWrapper gclient(opts.gearman_servers);
+  */
+  gearman_client_st *client;
+
+  bool use_gearman = !opts.gearman_servers.empty();
+
+  if (use_gearman) {
+    gearman_return_t ret;
+
+    client = gearman_client_create(NULL);
+    if (!client) {
+      // TODO: throw here instead
+      cout << "Unable to create gearman client" << endl;
       return 1;
     }
-    save_job_file(work.assemble_job(vm["col"].as<int>(), vm["row"].as<int>(), vm["level"].as<int>()));
-    return 0;
-  }
 
-  int render_level = work.equal_density_level();
-  if (vm.count("render-level")) {
-    render_level = vm["render-level"].as<int>();
-  }
-
-  BBox2i tile_bbox(work.tile_work_area(render_level));
-
-  if (vm.count("col-start")) {
-    VW_ASSERT(vm.count("col-end"), ArgumentErr() << "col-start specified, but col-end not");
-    tile_bbox.min()[0] = vm["col-start"].as<int>();
-    tile_bbox.max()[0] = vm["col-end"].as<int>();
-  }
-
-  if (vm.count("row-start")) {
-    VW_ASSERT(vm.count("row-end"), ArgumentErr() << "row-start specified, but col-end not");
-    tile_bbox.min()[1] = vm["row-start"].as<int>();
-    tile_bbox.max()[1] = vm["row-end"].as<int>();
-  }
-
-  if (!vm.count("silent")) {
-    cout << "-------------------------------------" << endl;
-    cout << "        Rendering Information" << endl;
-    cout << "-------------------------------------" << endl;
-    cout << endl;
-    cout << "Render level = " << render_level << endl;
-    cout << "  Use octave = " << vm["use-octave"].as<bool>() << endl;
-    cout << endl;
-    cout << "# Render tile BBox #" << endl;
-    print_bbox_helper(tile_bbox);
-    cout << endl;
-    cout << "-------------------------------------" << endl;
-    cout << "              Status" << endl;
-    cout << "-------------------------------------" << endl;
-    cout << endl;
-  }
-
-  if (vm.count("job")) {
-    MVPTileResult result = mvpjob_process_tile(vm["job"].as<string>(), TerminalProgressCallback("mvp", "Processing job: "));
-    write_georeferenced_image(vm["job"].as<string>() + ".tif", result.alt, result.georef);
-  } else {
-    plate_tunnel(work, tile_bbox, render_level);
-
-    int curr_tile = 0;
-    int num_tiles = tile_bbox.width() * tile_bbox.height();
-
-    #if MVP_ENABLE_GEARMAN_SUPPORT
-    gearman_client_st *client;
-
-    bool use_gearman = vm.count("gearman-servers");
-
-    if (use_gearman) {
-      gearman_return_t ret;
-
-      client = gearman_client_create(NULL);
-      if (!client) {
-        cout << "Unable to create gearman client" << endl;
-        return 1;
-      }
-  
-      ret = gearman_client_add_servers(client, vm["gearman-servers"].as<string>().c_str());
-      if (gearman_failed(ret)) {
-        cout << "Gearman Error: " << gearman_client_error(client) << endl;
-        return 1;
-      }
-
-      //TODO: Set client timeout?
+    ret = gearman_client_add_servers(client, opts.gearman_servers.c_str());
+    if (gearman_failed(ret)) {
+      // TODO: throw here instead
+      cout << "Gearman Error: " << gearman_client_error(client) << endl;
+      return 1;
     }
 
-    std::list<gearman_task_st *> tasks;
-    #endif
+    //TODO: Set client timeout?
+  }
 
-    for (int col = tile_bbox.min().x(); col < tile_bbox.max().x(); col++) {
-      for (int row = tile_bbox.min().y(); row < tile_bbox.max().y(); row++) {
-        #if MVP_ENABLE_GEARMAN_SUPPORT
-        if (use_gearman) {
-          add_gearman_task(client, &tasks, work.assemble_job(col, row, render_level), curr_tile, num_tiles, vm.count("silent"));
-        } else {
-          add_nongearman_task(work.assemble_job(col, row, render_level), curr_tile, num_tiles, vm.count("silent"));
-        }
-        #else
-        add_nongearman_task(work.assemble_job(col, row, render_level), curr_tile, num_tiles, vm.count("silent"));
-        #endif
-        curr_tile++;
+  std::list<gearman_task_st *> tasks;
+  #endif
+
+
+  plate_tunnel(work, opts.tile_bbox, opts.render_level);
+
+  int curr_tile = 0;
+  int num_tiles = opts.tile_bbox.width() * opts.tile_bbox.height();
+
+  for (int col = opts.tile_bbox.min().x(); col < opts.tile_bbox.max().x(); col++) {
+    for (int row = opts.tile_bbox.min().y(); row < opts.tile_bbox.max().y(); row++) {
+      #if MVP_ENABLE_GEARMAN_SUPPORT
+      if (use_gearman) {
+        add_gearman_task(client, &tasks, work.assemble_job(col, row, opts.render_level), curr_tile, num_tiles, false);
+      } else {
+        add_nongearman_task(work.assemble_job(col, row, opts.render_level), curr_tile, num_tiles, false);
       }
+      #else
+      add_nongearman_task(work.assemble_job(col, row, opts.render_level), curr_tile, num_tiles, false);
+      #endif
+      curr_tile++;
     }
-
-    #if MVP_ENABLE_GEARMAN_SUPPORT
-    wait_on_gearman_tasks(client, tasks, UNTIL_EVERYTHING_IS_DONE);
-    gearman_client_free(client);
-    #endif
   }
 
-  if (!vm.count("silent")) {
-    cout << endl << "Done." << endl << endl;
-  }
+  #if MVP_ENABLE_GEARMAN_SUPPORT
+  wait_on_gearman_tasks(client, tasks, UNTIL_EVERYTHING_IS_DONE);
+  gearman_client_free(client);
+  #endif
+
+  vw_out() << endl << "Done." << endl << endl;
 
   #if MVP_ENABLE_OCTAVE_SUPPORT
   do_octave_atexit();

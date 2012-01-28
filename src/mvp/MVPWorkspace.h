@@ -117,6 +117,10 @@ class MVPWorkspace {
       m_footprints.add_image_pattern(image_pattern, camera_pattern, start, end);
     }
 
+    /// Return the user settings associated with this workspace
+    //TODO: add const& to other attributes?
+    MVPUserSettings user_settings() const {return m_user_settings;}
+
     /// Return the name of the result platefile for this workspace
     std::string result_platefile() const {return m_result_platefile;}
 
