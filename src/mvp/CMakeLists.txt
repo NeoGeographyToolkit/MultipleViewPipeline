@@ -22,8 +22,15 @@ target_link_libraries(mvp mvpcommon
                           ${VW_LIBRARIES}
                           ${Boost_LIBRARIES})
 
+add_executable(mvp_dumpjob mvp_dumpjob.cc)
+target_link_libraries(mvp_dumpjob mvpcommon
+                                  ${PROTOBUF_LIBRARIES}
+                                  ${VW_LIBRARIES}
+                                  ${Boost_LIBRARIES})
+
 if (ENABLE_OCTAVE_SUPPORT)
   target_link_libraries(mvp ${OCTAVE_LIBRARIES})
+  target_link_libraries(mvp_dumpjob ${OCTAVE_LIBRARIES})
 endif()
 
 if (ENABLE_GEARMAN_SUPPORT)
@@ -45,7 +52,7 @@ endif()
 
 configure_file(Config.h.in Config.h)
 
-install(TARGETS mvp mvp_worker DESTINATION bin)
+install(TARGETS mvp mvp_dumpjob mvp_worker DESTINATION bin)
 install(FILES ${MVP_HDRS} DESTINATION include/mvp)
 
 if (ENABLE_OCTAVE_SUPPORT)
