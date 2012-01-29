@@ -29,7 +29,7 @@ namespace po = boost::program_options;
 struct Options {
   po::variables_map vm;
   int render_level;
-  string gearman_servers;
+  string gearman_server;
   bool dry_run;
   BBox2i tile_bbox;
 };
@@ -57,7 +57,7 @@ void handle_arguments(int argc, char* argv[], Options *opts) {
   #if MVP_ENABLE_GEARMAN_SUPPORT
   po::options_description gearman_opts("Gearman Options");
   gearman_opts.add_options()
-    ("gearman-servers", po::value<string>(&opts->gearman_servers), "gearmand server list")
+    ("gearman-server", po::value<string>(&opts->gearman_server), "Host running gearmand")
     ;
   mvp_opts.add(gearman_opts);
   #endif
@@ -79,7 +79,7 @@ void handle_arguments(int argc, char* argv[], Options *opts) {
   notify(opts->vm);
 
   #if MVP_ENABLE_GEARMAN_SUPPORT
-  if (opts->vm.count("gearman-servers") && opts->vm["platefile-server"].as<string>() == ".") {
+  if (opts->vm.count("gearman-server") && opts->vm["platefile-server"].as<string>() == ".") {
     vw_throw(vw::ArgumentErr() << "Error: When using gearman, you must also specify a platefile-server!");
   }
   #endif
@@ -204,9 +204,9 @@ int main(int argc, char* argv[])
   #if MVP_ENABLE_GEARMAN_SUPPORT
   GearmanClientWrapper gclient;
  
-  if (!opts.gearman_servers.empty()) {
+  if (!opts.gearman_server.empty()) {
     try {
-      gclient.add_servers(opts.gearman_servers);
+      gclient.add_servers(opts.gearman_server);
       //TODO: Set client timeout?
     } catch (vw::GearmanErr const& e) {
       vw_out() << e.what() << endl;
@@ -225,7 +225,7 @@ int main(int argc, char* argv[])
   for (int col = opts.tile_bbox.min().x(); col < opts.tile_bbox.max().x(); col++) {
     for (int row = opts.tile_bbox.min().y(); row < opts.tile_bbox.max().y(); row++) {
       #if MVP_ENABLE_GEARMAN_SUPPORT
-      if (gclient.has_servers()) {
+      if (gclient.is_connected()) {
         tasks.add_task(work.assemble_job(col, row, opts.render_level), curr_tile, num_tiles);
         tasks.wait_until_everything_is_running();
       } else {

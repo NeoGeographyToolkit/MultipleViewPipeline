@@ -10,10 +10,10 @@ namespace vw {
 
 class GearmanClientWrapper {
   gearman_client_st *m_client;
-  bool m_has_servers;
+  bool m_is_connected;
 
   public:
-    GearmanClientWrapper() : m_has_servers(false) {
+    GearmanClientWrapper() : m_is_connected(false) {
       m_client = gearman_client_create(NULL);
       if (!m_client) {
         throw std::bad_alloc();
@@ -21,7 +21,7 @@ class GearmanClientWrapper {
     }
 
     GearmanClientWrapper(GearmanClientWrapper const& other)
-      : m_has_servers(other.m_has_servers) {
+      : m_is_connected(other.m_is_connected) {
       m_client = gearman_client_clone(NULL, other.m_client);
       if (!m_client) {
         throw std::bad_alloc();
@@ -34,11 +34,11 @@ class GearmanClientWrapper {
       if (gearman_failed(ret)) {
         vw::vw_throw(vw::GearmanErr() << gearman_client_error(m_client));
       }
-      m_has_servers = true;
+      m_is_connected = true;
     }
 
-    bool has_servers() const {
-      return m_has_servers;
+    bool is_connected() const {
+      return m_is_connected;
     }
 
     gearman_client_st *client() const {

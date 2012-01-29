@@ -63,7 +63,7 @@ int main(int argc, char *argv[]) {
   po::options_description cmd_opts("Options");
   cmd_opts.add_options()
     ("help,h", "Print this message")
-    ("gearman-servers", po::value<string>()->default_value("localhost"), "Host of gearmand")
+    ("gearman-server", po::value<string>()->default_value("localhost"), "Host running gearmand")
     ;
 
   po::variables_map vm;
@@ -86,7 +86,7 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  ret = gearman_worker_add_servers(worker, vm["gearman-servers"].as<string>().c_str());
+  ret = gearman_worker_add_servers(worker, vm["gearman-server"].as<string>().c_str());
   if (gearman_failed(ret)) {
     cout << "Gearman error: " << gearman_worker_error(worker) << endl;
     return 1;
