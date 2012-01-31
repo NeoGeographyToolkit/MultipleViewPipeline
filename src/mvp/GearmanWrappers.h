@@ -92,30 +92,6 @@ class GearmanTaskList {
     }
   }
 
-  void print_statuses() const {
-    std::list<gearman_task_st *> statuses = this->get_statuses();
-
-    static int last_print_size = 0;
-    std::stringstream stream;
-
-    std::list<gearman_task_st *>::const_iterator task_iterator = m_tasks.begin();
-    std::list<gearman_task_st *>::const_iterator status_iterator = statuses.begin();
-    while (task_iterator != m_tasks.end()) {
-      gearman_task_st *t = *(task_iterator++);
-      gearman_task_st *s = *(status_iterator++);
-
-      if (gearman_task_denominator(s)) {
-        double percent = 100 * gearman_task_numerator(s) / gearman_task_denominator(s);
-        stream << "Task #" << gearman_task_unique(t) << ": [" << percent << "%] ";
-      }
-
-      gearman_task_free(s);
-    }
-
-    std::cout << std::setw(last_print_size) << std::left << stream.str() << "\r" << std::flush;
-    last_print_size = stream.str().size();
-  }
-
   public:
     GearmanTaskList(GearmanClientWrapper const& gclient)
       : m_client(gclient.client()), m_tasks() {}
@@ -145,46 +121,56 @@ class GearmanTaskList {
       this->prune();
     }
 
-    void wait_until_everything_is_running() const {
-      bool waiting;
+    bool has_queued_tasks() const {
+      bool ret = false;
 
-      do {
-        this->print_statuses();
-
-        waiting = false;
-        std::list<gearman_task_st *> statuses = this->get_statuses();
-        BOOST_FOREACH(gearman_task_st *s, statuses) {
-          if (gearman_task_is_known(s) && !gearman_task_is_running(s)) {
-            waiting = true;
-          }
-          gearman_task_free(s);
+      std::list<gearman_task_st *> statuses = this->get_statuses();
+      BOOST_FOREACH(gearman_task_st *s, statuses) {
+        if (gearman_task_is_known(s) && !gearman_task_is_running(s)) {
+          ret = true;
         }
+        gearman_task_free(s);
+      }
 
-        if (waiting) {
-          sleep(1);
-        }
-      } while (waiting);
+      return ret;
     }
 
-    void wait_until_everything_is_done() const {
-      bool waiting;
+    bool has_running_tasks() const {
+      bool ret = false;
 
-      do {
-        this->print_statuses();
-       
-        waiting = false; 
-        std::list<gearman_task_st *> statuses = this->get_statuses();
-        BOOST_FOREACH(gearman_task_st *s, statuses) {
-          if (gearman_task_is_known(s)) {
-            waiting = true;
-          }
-          gearman_task_free(s);
+      std::list<gearman_task_st *> statuses = this->get_statuses();
+      BOOST_FOREACH(gearman_task_st *s, statuses) {
+        if (gearman_task_is_known(s)) {
+          ret = true;
+        }
+        gearman_task_free(s);
+      }
+
+      return ret;
+    }
+
+    void print_statuses() const {
+      std::list<gearman_task_st *> statuses = this->get_statuses();
+
+      static int last_print_size = 0;
+      std::stringstream stream;
+
+      std::list<gearman_task_st *>::const_iterator task_iterator = m_tasks.begin();
+      std::list<gearman_task_st *>::const_iterator status_iterator = statuses.begin();
+      while (task_iterator != m_tasks.end()) {
+        gearman_task_st *t = *(task_iterator++);
+        gearman_task_st *s = *(status_iterator++);
+
+        if (gearman_task_denominator(s)) {
+          double percent = 100 * gearman_task_numerator(s) / gearman_task_denominator(s);
+          stream << "Task #" << gearman_task_unique(t) << ": [" << percent << "%] ";
         }
 
-        if (waiting) {
-          sleep(1);
-        }
-      } while (waiting);
+        gearman_task_free(s);
+      }
+
+      std::cout << std::setw(last_print_size) << std::left << stream.str() << "\r" << std::flush;
+      last_print_size = stream.str().size();
     }
 };
 

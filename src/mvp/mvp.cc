@@ -227,7 +227,10 @@ int main(int argc, char* argv[])
       #if MVP_ENABLE_GEARMAN_SUPPORT
       if (gclient.is_connected()) {
         tasks.add_task(work.assemble_job(col, row, opts.render_level), curr_tile, num_tiles);
-        tasks.wait_until_everything_is_running();
+        while (tasks.has_queued_tasks()) {
+          tasks.print_statuses();
+          sleep(1);
+        }
       } else {
         do_task_local(work.assemble_job(col, row, opts.render_level), curr_tile, num_tiles);
       }
@@ -239,7 +242,10 @@ int main(int argc, char* argv[])
   }
 
   #if MVP_ENABLE_GEARMAN_SUPPORT
-  tasks.wait_until_everything_is_done();
+  while (tasks.has_running_tasks()) {
+    tasks.print_statuses();
+    sleep(1);
+  }
   #endif
 
   vw_out() << endl << "Done." << endl << endl;
