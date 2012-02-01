@@ -10,3 +10,10 @@ if (VW_CAMERA_FOUND)
   add_executable(print_pinhole print_pinhole.cc)
   target_link_libraries(print_pinhole ${VW_LIBRARIES})
 endif()
+
+if (VW_PLATE_FOUND)
+  add_executable(plate2image plate2image.cc)
+  target_link_libraries(plate2image ${VW_LIBRARIES} ${Boost_LIBRARIES})
+endif()
+
+install(TARGETS gen_synth_scene vwconvert print_pinhole plate2image DESTINATION bin)
