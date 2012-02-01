@@ -25,13 +25,20 @@
 #include <vw/Octave/Conversions.h>
 #endif
 
-namespace mvp {
-
-vw::camera::PinholeModel offset_pinhole(vw::camera::PinholeModel const& cam, vw::Vector2 const& offset) {
-  vw::camera::PinholeModel result(cam);
-  result.set_point_offset(result.point_offset() - offset);
+// TODO: These functions should be in vw::camera
+namespace vw {
+namespace camera {
+PinholeModel crop(PinholeModel const& cam, int32 x, int32 y, int32 width = 0, int32 height = 0) {
+  PinholeModel result(cam);
+  result.set_point_offset(result.point_offset() - Vector2(x, y));
   return result;
 }
+PinholeModel crop(PinholeModel const& cam, BBox2i const& bbox) {
+  return crop(cam, bbox.min().x(), bbox.min().y(), bbox.width(), bbox.height());
+}
+}} // vw::camera
+
+namespace mvp {
 
 class OrbitalImageCrop : public vw::ImageView<vw::PixelMask<vw::PixelGray<vw::float32> > > {
   vw::camera::PinholeModel m_camera;
@@ -93,7 +100,7 @@ class OrbitalImageCrop : public vw::ImageView<vw::PixelMask<vw::PixelGray<vw::fl
 
       cropbox = vw::grow_bbox_to_int(cropbox);
 
-      return OrbitalImageCrop(vw::crop(rsrc_helper(rsrc), cropbox), offset_pinhole(camera, cropbox.min()));
+      return OrbitalImageCrop(vw::crop(rsrc_helper(rsrc), cropbox), vw::camera::crop(camera, cropbox));
     }
 
     vw::camera::PinholeModel camera() const {return m_camera;}
