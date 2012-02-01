@@ -28,9 +28,11 @@ TEST(MVPJob, seeding) {
   MVPTileResult result(job.process_tile());
 }
 
-TEST(Helpers, offset_georef) {
+TEST(Helpers, crop_georef) {
+  // Make sure the crop function in VW is working the way
+  // we expect it to
   GeoReference geo = PlateGeoReference().tile_georef(1, 2, 3);
-  GeoReference crop_geo = offset_georef(geo, 100, 200);
+  GeoReference crop_geo = crop(geo, 100, 200);
 
   EXPECT_VECTOR_EQ(geo.pixel_to_lonlat(Vector2(100, 200)), crop_geo.pixel_to_lonlat(Vector2(0, 0)));
   EXPECT_VECTOR_EQ(geo.pixel_to_lonlat(Vector2(120, 230)), crop_geo.pixel_to_lonlat(Vector2(20, 30)));

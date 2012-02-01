@@ -22,21 +22,6 @@
 
 namespace mvp {
 
-// TODO: This should be replaced by a function in VW
-inline vw::cartography::GeoReference offset_georef(vw::cartography::GeoReference const& georef, int cols, int rows) {
-  vw::Matrix3x3 offset;
-
-  offset.set_identity();
-  offset(0, 2) = cols;
-  offset(1, 2) = rows;
-
-  vw::cartography::GeoReference result(georef);
-  // TODO: This is slow...
-  result.set_transform(georef.transform() * offset);
-  return result; 
-}
-
-
 struct MVPAlgorithmVar {
   vw::float32 alt;
 
@@ -138,7 +123,7 @@ struct MVPJobBase {
     {return impl().process_pixel(seed, georef, options);}
 
   inline MVPPixelResult process_pixel(MVPAlgorithmVar const& seed, int col, int row, MVPAlgorithmOptions const& options) const
-    {return impl().process_pixel(seed, offset_georef(m_georef, col, row), options);}
+    {return impl().process_pixel(seed, vw::cartography::crop(m_georef, col, row), options);}
 
   inline MVPPixelResult generate_seed() const {
     int seed_col = m_tile_size / 2;
