@@ -110,11 +110,7 @@ MVPTileResult mvpjob_process_and_write_tile(MVPJobRequest const& job_request,
 
   vw::ImageViewRef<vw::PixelGrayA<vw::float32> > rendered_tile = vw::mask_to_alpha(vw::pixel_cast<vw::PixelMask<vw::PixelGray<vw::float32> > >(result.alt));
 
-  boost::scoped_ptr<vw::platefile::PlateFile> pf(new vw::platefile::PlateFile(job_request.result_platefile(),
-                                                                              job_request.plate_georef().map_proj(),
-                                                                              "MVP Result Plate",
-                                                                              job_request.plate_georef().tile_size(),
-                                                                              "tif", vw::VW_PIXEL_GRAYA, vw::VW_CHANNEL_FLOAT32));
+  boost::scoped_ptr<vw::platefile::PlateFile> pf(new vw::platefile::PlateFile(job_request.result_platefile()));
 
   pf->transaction_begin("Post Heights", 1);
   pf->write_request();

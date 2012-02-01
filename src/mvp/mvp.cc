@@ -137,6 +137,7 @@ void print_welcome(MVPWorkspace const& work, Options const& opts) {
 }
 
 void plate_tunnel(MVPWorkspace const& work, Options const& opts) {
+  //TODO: create platefile in a seperate function
   boost::scoped_ptr<PlateFile> pf(new PlateFile(work.result_platefile(),
                                                 work.plate_georef().map_proj(),
                                                 "MVP Result Plate",
