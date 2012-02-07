@@ -52,8 +52,7 @@ void handle_arguments(int argc, char *argv[], Options *opts) {
   all_opts.add(cmd_opts).add(hidden_opts);
 
   po::positional_options_description p;
-  p.add("url", 1);
-  p.add("output", 1);
+  p.add("url", 1).add("output", 1);
 
   store(po::command_line_parser(argc, argv).options(all_opts).positional(p).run(), opts->vm);
 
@@ -75,7 +74,7 @@ BBox2 parse_region_string(string const& region_string) {
   boost::char_separator<char> sep(",:@");
 
   if (region_string.empty()) {
-    vw_throw(ArgumentErr() << "Invalid region string: " << region_string);
+    return BBox2();
   }
 
   tokenizer tokens(region_string, sep);
