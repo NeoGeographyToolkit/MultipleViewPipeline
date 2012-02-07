@@ -122,13 +122,20 @@ void plate2image(boost::shared_ptr<PlateFile> platefile, Options const& opts) {
   PlateView<PixelT> plateview(platefile);
   plateview.set_level(level);
 
+
+  BBox2i tile_bbox;
+  std::list<TileHeader> hdrs = platefile->search_by_region(level, BBox2i(0, 0, 1 << level, 1 << level), TransactionRange(-1));
+  BOOST_FOREACH(TileHeader const& h, hdrs) {
+    tile_bbox.grow(Vector2i(h.col(), h.row()));
+  }
+
+  vw_out() << "Valid plate area (in tiles, inclusive range): " << tile_bbox << endl;
+  vw_out() << "Valid plate area width: " << tile_bbox.width() + 1 << " height: " << tile_bbox.height() + 1 << endl;
+
   BBox2i crop_region;
   if (opts.region_string.empty()) {
-    BBox2i level_bbox(0, 0, 1 << level, 1 << level);
-    std::list<TileHeader> hdrs = platefile->search_by_region(level, level_bbox, TransactionRange(-1));
-    BOOST_FOREACH(TileHeader const& h, hdrs) {
-      crop_region.grow(plate_geo.tile_pixel_bbox(h.col(), h.row(), h.level()));
-    }
+    crop_region.grow(plate_geo.tile_pixel_bbox(tile_bbox.min().x(), tile_bbox.min().y(), level));
+    crop_region.grow(plate_geo.tile_pixel_bbox(tile_bbox.max().x(), tile_bbox.max().y(), level));
   } else {
     BBox2 parsed_region = parse_region_string(opts.region_string);
 
@@ -149,8 +156,8 @@ void plate2image(boost::shared_ptr<PlateFile> platefile, Options const& opts) {
     }
   }
 
-  vw_out() << "Region (in px): " << crop_region << endl;
-  vw_out() << "Region width: " << crop_region.width() << " height: " << crop_region.height() << endl;
+  vw_out() << "Crop region (in px): " << crop_region << endl;
+  vw_out() << "Crop region width: " << crop_region.width() << " height: " << crop_region.height() << endl;
 
   if (opts.dry_run) {
     vw_out() << "Write to: " << opts.output_filename << endl;
