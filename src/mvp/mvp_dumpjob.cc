@@ -28,17 +28,8 @@ void handle_arguments(int argc, char* argv[], Options *opts) {
     ("level,l", po::value<int>(&opts->level)->required(), "When dumping a jobfile or printing the workspace, level to operate at")
     ;
 
-  po::options_description render_opts("Render Options");
-  render_opts.add_options()
-    ("col-start", po::value<int>(), "Col to start rendering at")
-    ("col-end", po::value<int>(), "One past last col to render")
-    ("row-start", po::value<int>(), "Row to start rendering at")
-    ("row-end", po::value<int>(), "One past last row to render")
-    ("render-level", po::value<int>()->default_value(-1), "Level to render at")
-    ;
-
   po::options_description mvp_opts;
-  mvp_opts.add(MVPWorkspace::program_options()).add(render_opts);
+  mvp_opts.add(MVPWorkspace::program_options());
 
   po::options_description all_opts;
   all_opts.add(cmd_opts).add(mvp_opts);

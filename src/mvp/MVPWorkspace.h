@@ -36,9 +36,50 @@
 #include <vw/Cartography/GeoReference.h>
 #include <vw/Plate/PlateGeoReference.h>
 
+#include <boost/tokenizer.hpp>
+#include <boost/lexical_cast.hpp>
 #include <boost/program_options.hpp>
 
 namespace mvp {
+
+vw::BBox2 parse_region_string(std::string const& region_string) {
+  vw::BBox2 result;
+  
+  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+  boost::char_separator<char> sep(",:@");
+
+  if (region_string.empty()) {
+    vw::vw_throw(vw::ArgumentErr() << "Invalid region string: " << region_string);
+  }
+
+  tokenizer tokens(region_string, sep);
+  tokenizer::iterator tok_iter = tokens.begin();
+
+  if (tok_iter == tokens.end()) {
+    vw::vw_throw(vw::ArgumentErr() << "Invalid region string: " << region_string);
+  }
+
+  for (int i = 0; i < 2; i++) {
+    double x, y;
+
+    x = boost::lexical_cast<double>(*tok_iter++);
+
+    if (tok_iter == tokens.end()) {
+      vw::vw_throw(vw::ArgumentErr() << "Invalid region string: " << region_string);
+    }
+
+    y = boost::lexical_cast<double>(*tok_iter++);
+
+    result.grow(vw::Vector2(x, y));
+
+    if (tok_iter == tokens.end()) {
+      return result;
+    }
+  }
+
+  // If got here, there are still tokens left 
+  vw::vw_throw(vw::ArgumentErr() << "Invalid region string: " << region_string);
+}
 
 class MVPWorkspace {
   std::string m_result_platefile, m_internal_result_platefile;
@@ -76,12 +117,15 @@ class MVPWorkspace {
         ("seed-window-smooth-size", po::value<double>()->required(), "Seed window smoothing kernel size")
         ("use-octave", po::value<bool>()->default_value(false), "Use octave in processing")
         ("test-algorithm", po::value<bool>()->default_value(false), "Run the test algorithm that draws footprints instead of creating a DEM")
+        ("render-region", po::value<std::string>(), "Region to render as ul_x,ul_y:lr_x,lr_y")
+        ("render-level", po::value<int>()->default_value(-1), "Level to render at")
         ;
 
       return options;
     }
 
-    static MVPWorkspace construct_from_program_options(boost::program_options::variables_map const& vm) {
+    static MVPWorkspace construct_from_program_options(boost::program_options::variables_map const& vm,
+                                                       vw::BBox2i *render_bbox = NULL, int *render_level = NULL) {
       vw::platefile::PlateGeoReference plate_georef(vw::cartography::Datum(vm["datum"].as<std::string>()), 
                                                     vm["map-projection"].as<std::string>(), 
                                                     vm["tile-size"].as<int>(), 
@@ -104,6 +148,25 @@ class MVPWorkspace {
                              vm["camera-pattern"].as<std::string>(),
                              vm["pattern-index-start"].as<int>(),
                              vm["pattern-index-end"].as<int>());
+
+      int level = vm["render-level"].as<int>();
+
+      if (level < 0) {
+        level = work.equal_density_level();
+      } 
+
+      if (render_bbox) {
+        if (vm.count("render-region")) {
+          *render_bbox = vw::grow_bbox_to_int(parse_region_string(vm["render-region"].as<std::string>()));
+        } else {
+          *render_bbox = work.tile_work_area(level);
+        }
+      }
+
+      if (render_level) {
+        *render_level = level;
+      }
+
       return work;
     }
 

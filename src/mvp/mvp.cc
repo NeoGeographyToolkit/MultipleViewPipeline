@@ -28,10 +28,8 @@ namespace po = boost::program_options;
 
 struct Options {
   po::variables_map vm;
-  int render_level;
   string gearman_server;
   bool dry_run;
-  BBox2i tile_bbox;
 };
 
 void handle_arguments(int argc, char* argv[], Options *opts) {
@@ -42,17 +40,8 @@ void handle_arguments(int argc, char* argv[], Options *opts) {
     ("dry-run", "Print information about the workspace and then exit")
     ;
 
-  po::options_description render_opts("Render Options");
-  render_opts.add_options()
-    ("col-start", po::value<int>(), "Col to start rendering at")
-    ("col-end", po::value<int>(), "One past last col to render")
-    ("row-start", po::value<int>(), "Row to start rendering at")
-    ("row-end", po::value<int>(), "One past last row to render")
-    ("render-level", po::value<int>(&opts->render_level)->default_value(-1), "Level to render at")
-    ;
-
   po::options_description mvp_opts;
-  mvp_opts.add(MVPWorkspace::program_options()).add(render_opts);
+  mvp_opts.add(MVPWorkspace::program_options());
 
   #if MVP_ENABLE_GEARMAN_SUPPORT
   po::options_description gearman_opts("Gearman Options");
@@ -85,17 +74,6 @@ void handle_arguments(int argc, char* argv[], Options *opts) {
   #endif
 
   opts->dry_run = opts->vm.count("dry-run");
-
-  if (opts->vm.count("col-start") || opts->vm.count("col-end") || opts->vm.count("row-start") || opts->vm.count("row-end")) {
-    if (opts->vm.count("col-start") && opts->vm.count("col-end") && opts->vm.count("row-start") && opts->vm.count("row-end")) {
-      opts->tile_bbox.min()[0] = opts->vm["col-start"].as<int>();
-      opts->tile_bbox.max()[0] = opts->vm["col-end"].as<int>();
-      opts->tile_bbox.min()[1] = opts->vm["row-start"].as<int>();
-      opts->tile_bbox.max()[1] = opts->vm["row-end"].as<int>();
-    } else {
-      vw_throw(vw::ArgumentErr() << "Error: missing col/row start/end");
-    }
-  }
 }
 
 template <class BBoxT, class RealT, size_t DimN>
@@ -104,7 +82,7 @@ void print_bbox_helper(math::BBoxBase<BBoxT, RealT, DimN> const& bbox) {
   cout << "width, height = " << bbox.width() << ", " << bbox.height() << endl;
 }
 
-void print_welcome(MVPWorkspace const& work, Options const& opts) {
+void print_welcome(MVPWorkspace const& work, BBox2i const& render_bbox, int render_level) {
   cout << boolalpha << endl;
   cout << "-------------------------------------" << endl;
   cout << "Welcome to the Multiple View Pipeline" << endl;
@@ -117,18 +95,18 @@ void print_welcome(MVPWorkspace const& work, Options const& opts) {
   cout << "# Workspace lonlat BBox #" << endl;
   print_bbox_helper(work.lonlat_work_area());
   cout << endl;
-  cout << "# Workspace tile BBox (@ level " << opts.render_level << ") #" << endl;
+  cout << "# Workspace tile BBox (@ level " << render_level << ") #" << endl;
   print_bbox_helper(work.tile_work_area(work.equal_density_level()));
   cout << endl;
   cout << "-------------------------------------" << endl;
   cout << "        Rendering Information" << endl;
   cout << "-------------------------------------" << endl;
   cout << endl;
-  cout << "Render level = " << opts.render_level << endl;
+  cout << "Render level = " << render_level << endl;
   cout << "  Use octave = " << work.user_settings().use_octave() << endl;
   cout << endl;
   cout << "# Render tile BBox #" << endl;
-  print_bbox_helper(opts.tile_bbox);
+  print_bbox_helper(render_bbox);
   cout << endl;
   cout << "-------------------------------------" << endl;
   cout << "              Status" << endl;
@@ -136,7 +114,7 @@ void print_welcome(MVPWorkspace const& work, Options const& opts) {
   cout << endl;
 }
 
-void plate_tunnel(MVPWorkspace const& work, Options const& opts) {
+void plate_tunnel(MVPWorkspace const& work, BBox2i const& render_bbox, int render_level) {
   //TODO: create platefile in a seperate function
   boost::scoped_ptr<PlateFile> pf(new PlateFile(work.result_platefile(),
                                                 work.plate_georef().map_proj(),
@@ -148,10 +126,10 @@ void plate_tunnel(MVPWorkspace const& work, Options const& opts) {
   pf->write_request();
 
   // This way that tile is easy to find...
-  for (int level = 2; level < opts.render_level; level++) {
-    int divisor = opts.render_level - level;
-    for (int col = opts.tile_bbox.min().x() >> divisor; col <= opts.tile_bbox.max().x() >> divisor; col++) {
-      for (int row = opts.tile_bbox.min().y() >> divisor; row <= opts.tile_bbox.max().y() >> divisor; row++) {
+  for (int level = 2; level < render_level; level++) {
+    int divisor = render_level - level;
+    for (int col = render_bbox.min().x() >> divisor; col <= render_bbox.max().x() >> divisor; col++) {
+      for (int row = render_bbox.min().y() >> divisor; row <= render_bbox.max().y() >> divisor; row++) {
         ImageView<PixelGrayA<float32> > rendered_tile(constant_view(PixelGrayA<float32>(), 
                                                                     work.plate_georef().tile_size(), work.plate_georef().tile_size()));
         pf->write_update(rendered_tile, col, row, level);
@@ -185,17 +163,12 @@ int main(int argc, char* argv[])
     return 1;
   } 
 
-  MVPWorkspace work(MVPWorkspace::construct_from_program_options(opts.vm));
+  int render_level;
+  BBox2i render_bbox;
 
-  if (opts.render_level < 1) {
-    opts.render_level = work.equal_density_level();
-  }
+  MVPWorkspace work(MVPWorkspace::construct_from_program_options(opts.vm, &render_bbox, &render_level));
 
-  if (opts.tile_bbox.empty()) {
-    opts.tile_bbox = work.tile_work_area(opts.render_level);
-  }
-
-  print_welcome(work, opts);
+  print_welcome(work, render_bbox, render_level);
 
   if (opts.dry_run) {
     vw_out() << "Dry run requested. Exiting..." << endl;
@@ -218,25 +191,25 @@ int main(int argc, char* argv[])
   GearmanTaskList tasks(gclient);
   #endif
 
-  plate_tunnel(work, opts);
+  plate_tunnel(work, render_bbox, render_level);
 
   int curr_tile = 0;
-  int num_tiles = opts.tile_bbox.width() * opts.tile_bbox.height();
+  int num_tiles = render_bbox.width() * render_bbox.height();
 
-  for (int col = opts.tile_bbox.min().x(); col < opts.tile_bbox.max().x(); col++) {
-    for (int row = opts.tile_bbox.min().y(); row < opts.tile_bbox.max().y(); row++) {
+  for (int col = render_bbox.min().x(); col < render_bbox.max().x(); col++) {
+    for (int row = render_bbox.min().y(); row < render_bbox.max().y(); row++) {
       #if MVP_ENABLE_GEARMAN_SUPPORT
       if (gclient.is_connected()) {
-        tasks.add_task(work.assemble_job(col, row, opts.render_level), curr_tile, num_tiles);
+        tasks.add_task(work.assemble_job(col, row, render_level), curr_tile, num_tiles);
         while (tasks.has_queued_tasks()) {
           tasks.print_statuses();
           sleep(1);
         }
       } else {
-        do_task_local(work.assemble_job(col, row, opts.render_level), curr_tile, num_tiles);
+        do_task_local(work.assemble_job(col, row, render_level), curr_tile, num_tiles);
       }
       #else
-      do_task_local(work.assemble_job(col, row, opts.render_level), curr_tile, num_tiles);
+      do_task_local(work.assemble_job(col, row, render_level), curr_tile, num_tiles);
       #endif
       curr_tile++;
     }
