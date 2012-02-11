@@ -17,7 +17,6 @@ endfunction
 %! n2 = lonlat2normal(lonlat + dlonlat);
 %! dn = grad * dlonlat;
 %! dn_actual = n2 - n1;
-%! pct_diff = norm((dn - dn_actual) ./ dn_actual);
-%! assert(pct_diff, 0, 1e-3);
+%! assert(dn, dn_actual, 1e-8);
 
 % vim:set syntax=octave:
