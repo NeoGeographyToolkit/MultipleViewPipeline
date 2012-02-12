@@ -1,13 +1,14 @@
-function [xw, yw] = _porthoproj_impl_ref(camera, planeNormal, planeD, georef, hWin)
-  dim = fliplr(hWin * 2 + 1);
+function [xw, yw] = _porthoproj_impl_ref(camera, planeNormal, planeD, georef, win)
+  dim = fliplr(win);
+  hWin = (win - 1) / 2;
 
   xw = zeros(dim);
   yw = zeros(dim);
 
   for r = 1:dim(1)
     for c = 1:dim(2)
-      px = c - hWin(1);
-      py = r - hWin(2);
+      px = (c - 1) - hWin(1);
+      py = (r - 1) - hWin(2);
 
       lonlat_h = georef.transform * [px; py; 1];
       lonlat = lonlat_h(1:2) / lonlat_h(3);
@@ -39,6 +40,6 @@ endfunction
 %! camera = [-3.9162e+03,  3.0436e+02, -1.8351e+03, 3.8275e+09;
 %!            1.5020e+03, -5.3986e+02, -3.4544e+03, 3.6555e+08;
 %!           -5.3071e-01, -8.3578e-01, -1.4081e-01, 1.8546e+06];
-%! [xw, yw] = _porthoproj_impl_ref(camera, planeNormal, planeD, georef, [5 7]);
+%! [xw, yw] = _porthoproj_impl_ref(camera, planeNormal, planeD, georef, [11 14]);
 
 % vim:set syntax=octave:

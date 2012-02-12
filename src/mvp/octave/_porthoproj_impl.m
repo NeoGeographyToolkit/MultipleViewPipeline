@@ -1,5 +1,6 @@
-function [xw, yw] = _porthoproj_impl(camera, planeNormal, planeD, georef, hWin)
-  dim = fliplr(hWin * 2 + 1);
+function [xw, yw] = _porthoproj_impl(camera, planeNormal, planeD, georef, win)
+  dim = fliplr(win);
+  hWin = (win - 1) / 2;
 
   cntrPtLonLatH = georef.transform * ones(3, 1);
   cntrPtLonLat = cntrPtLonLatH(1:2) / cntrPtLonLatH(3);
@@ -9,7 +10,9 @@ function [xw, yw] = _porthoproj_impl(camera, planeNormal, planeD, georef, hWin)
 
   P = camera * [eye(3,3);planeNormal'/planeD] * [de_d0 deltaE] * georef.transform;
 
-  [X, Y] = meshgrid((-hWin(1):hWin(1))+1, (-hWin(2):hWin(2))+1);
+  [X, Y] = meshgrid(0:win(1)-1, 0:win(2)-1);
+  X -= hWin(1);
+  Y -= hWin(2);
   D = [X(:), Y(:), ones(prod(dim), 1)]';
   PD = P * D;
 
@@ -28,8 +31,8 @@ endfunction
 %! camera = [-3.9162e+03,  3.0436e+02, -1.8351e+03, 3.8275e+09;
 %!            1.5020e+03, -5.3986e+02, -3.4544e+03, 3.6555e+08;
 %!           -5.3071e-01, -8.3578e-01, -1.4081e-01, 1.8546e+06];
-%! [xw yw] = _porthoproj_impl(camera, planeNormal, planeD, georef, [7 8]);
-%! [xw1 yw1] = _porthoproj_impl_ref(camera, planeNormal, planeD, georef, [7 8]);
+%! [xw yw] = _porthoproj_impl(camera, planeNormal, planeD, georef, [15 17]);
+%! [xw1 yw1] = _porthoproj_impl_ref(camera, planeNormal, planeD, georef, [15 17]);
 %! errX = norm(xw1(:) - xw(:));
 %! errY = norm(yw1(:) - yw(:));
 %! assert(errX, 0, 0.01);
