@@ -1,7 +1,7 @@
 function [alts_out objs_out] = ts_plotobj(seed, patch_georef, images, mvpoptions, num_pts = 20)
 
 alts = linspace(seed.alt - mvpoptions.alt_range, seed.alt + mvpoptions.alt_range, num_pts);
-objs = arrayfun(@(a) mvpobj(a, seed.orientation, seed.windows, patch_georef, images), alts);
+objs = arrayfun(@(a) mvpobj(a, seed.orientation, seed.windows, patch_georef, images, mvpoptions), alts);
 
 if (nargout < 2)
   plot(alts, objs);

@@ -1,7 +1,7 @@
 function [patches weights] = mvppatches(projs, windows)
   % Given projections, smooth them, create weight images
 
-  if (isstr(projs) && projs == "projsize")
+  if (ischar(projs) && projs == "projsize")
     patchSize = gausskernel("kernsize", windows(1:2));
     paddingSize = gausskernel("kernsize", windows(3));
     patches = patchSize + (paddingSize - 1);

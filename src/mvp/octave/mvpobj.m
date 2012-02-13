@@ -13,7 +13,11 @@ function obj = mvpobj(alt, orientation, windows, georef, images, mvpoptions)
     return;
   endif
 
-  obj = mvprefl(patches, weights);
+  if (mvpoptions.alt_range == -1)
+    obj = mvprefl(patches, weights);
+  else
+    obj = mvprefl_fast(patches, weights);
+  endif
 endfunction
 
 % vim:set syntax=octave:

@@ -1,5 +1,36 @@
 1; % Prevent octave from thinking this is a function .m
 
+function obj = mvprefl_fast_ref(patches, weights)
+  sz = size(patches);
+  dim = sz(1:2);
+  numPatches = sz(3);
+
+  albedo = zeros(dim);
+  for i = 1:numPatches
+    currPatch = patches(:, :, i);
+    currWeight = weights(:, :, i);
+    weightSum = sum(currWeight(:));
+
+    meanVal = sum(currPatch(:) .* currWeight(:)) / weightSum;
+
+    sqDevPatch = (currPatch - meanVal) .^ 2;
+
+    stddev = sqrt(sum(sqDevPatch(:) .* currWeight(:)) / weightSum);
+
+    patches(:, :, i)  = (currPatch - meanVal) ./ stddev;
+    albedo += patches(:, :, i) .* currWeight;
+  endfor
+  
+  albedo ./= sum(weights, 3);
+
+  diffs = zeros(dim);
+  for i = 1:numPatches
+    diffs += abs(albedo - patches(:, :, i)) .* weights(:, :, i);
+  endfor
+
+  obj = sum(diffs(:)) / sum(weights(:));
+endfunction
+
 function e = objscat(patches, weights, a, b)
   sz = size(patches);
   dim = sz(1:2);
