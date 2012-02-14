@@ -1,7 +1,13 @@
 function kern = gausskernel(sigma, sz)
   if (sigma == "kernsize")
     % A gaussian kernel needs 6sigma - 1 values
-    kern = 6 * sz - 1;
+    kern = ceil(6 * sz - 1);
+    kern(find(kern<=0)) = 1;
+    return;
+  endif
+
+  if (sigma <= 0)
+    kern = 1;
     return;
   endif
 
