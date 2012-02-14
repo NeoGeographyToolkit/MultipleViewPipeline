@@ -12,18 +12,21 @@ function [e a b] = mvprefl(patches, weights)
 
   [a e flag] = eigs(E, 1, "sm");
   if (flag != 0)
-    warning("Warning, eigs did not converge");
+    e = NA;
+    a = NA;
+    b = NA;
+    return;
   endif
 
   if (sum(a) < 0)
     a = -a;
   endif
 
-  idx = find(a < 0);
-  if (!isempty(idx))
-    a(idx) = 0;
-    e = a' * E * a;
-    warning("Negative gain found, replacing with zero");
+  if (any(find(a <= 0)))
+    e = NA;
+    a = NA;
+    b = NA;
+    return;
   endif
 
   if (nargout > 2)
