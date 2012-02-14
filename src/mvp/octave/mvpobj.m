@@ -13,10 +13,10 @@ function obj = mvpobj(alt, orientation, windows, georef, images, mvpoptions)
     return;
   endif
 
-  if (mvpoptions.alt_range == -1)
-    obj = mvprefl(patches, weights);
-  else
+  if (mvpoptions.fast_reflectance)
     obj = mvprefl_fast(patches, weights);
+  else
+    obj = mvprefl(patches, weights);
   endif
 endfunction
 
