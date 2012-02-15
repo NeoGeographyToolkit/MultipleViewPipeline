@@ -122,7 +122,7 @@ struct MVPJobBase {
   inline MVPPixelResult process_pixel(MVPAlgorithmVar const& seed, vw::cartography::GeoReference const& georef, MVPAlgorithmOptions const& options) const 
     {return impl().process_pixel(seed, georef, options);}
 
-  inline MVPPixelResult process_pixel(MVPAlgorithmVar const& seed, int col, int row, MVPAlgorithmOptions const& options) const
+  inline MVPPixelResult process_pixel(MVPAlgorithmVar const& seed, double col, double row, MVPAlgorithmOptions const& options) const
     {return impl().process_pixel(seed, vw::cartography::crop(m_georef, col, row), options);}
 
   inline MVPPixelResult generate_seed() const {
