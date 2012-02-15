@@ -12,20 +12,48 @@ using namespace vw::camera;
 using namespace mvp;
 
 struct MVPJobSeedTest : public MVPJobBase<MVPJobSeedTest> {
-  MVPJobSeedTest(vw::cartography::GeoReference const& georef, int tile_size, OrbitalImageCropCollection const& crops, MVPUserSettings const& settings) :
-    MVPJobBase<MVPJobSeedTest>(georef, tile_size, crops, settings) {}
+  ImageView<float32> m_dem;
+
+  MVPJobSeedTest() :
+    MVPJobBase<MVPJobSeedTest>(GeoReference(Datum("D_MOON")), 256, OrbitalImageCropCollection(), MVPUserSettings()),
+    m_dem(m_tile_size, m_tile_size) 
+  {
+    m_settings.set_alt_min(0);
+    m_settings.set_alt_max(0);
+    m_settings.set_alt_search_range(1);
+    m_settings.set_seed_window_size(20);
+    m_settings.set_seed_window_smooth_size(4);
+
+    fill(crop(m_dem, 145, 81, 32, 32), 1);
+    fill(crop(m_dem, 209, 145, 32, 16), 1);
+
+    write_image("test.png", m_dem);
+  }
 
   inline MVPPixelResult process_pixel(MVPAlgorithmVar const& seed, vw::cartography::GeoReference const& georef, MVPAlgorithmOptions const& options) const {
-    static int num_calls = 0;
-    // int col = georef.transform()(0, 2) - m_georef.transform()(0, 2);
-    // int row = georef.transform()(1, 2) - m_georef.transform()(1, 2);
-    return MVPPixelResult(seed, ++num_calls);
+    // Multiply window size (in sigma) by 6 to get window size in pixels
+    Vector2 pixelWinSize = Vector2(seed.windows.x(), seed.windows.y()) * 6;
+    
+    BBox2 patchWin(0, 0, pixelWinSize.x(), pixelWinSize.y());
+    patchWin -= (pixelWinSize - Vector2(1, 1)) / 2;
+
+    Vector2 patchCenter = Vector2(georef.transform()(0, 2), georef.transform()(1, 2)) -
+                          Vector2(m_georef.transform()(0, 2), m_georef.transform()(1, 2));
+
+    BBox2 demWinPre = patchWin + patchCenter;
+  
+    BBox2i demWin(round(demWinPre.min().x()), round(demWinPre.min().y()),
+                  round(demWinPre.width()), round(demWinPre.height()));
+
+    float32 sum = sum_of_pixel_values(crop(m_dem, demWin));
+
+    return MVPPixelResult(MVPAlgorithmVar(sum), 0, sum > 0);
   }
 };
 
 TEST(MVPJob, seeding) {
-  MVPJobSeedTest job(GeoReference(Datum("D_MOON")), 256, OrbitalImageCropCollection(), MVPUserSettings());
-  MVPTileResult result(job.process_tile());
+  MVPJobSeedTest job;
+  //MVPTileResult result(job.process_tile());
 }
 
 TEST(Helpers, crop_georef) {
