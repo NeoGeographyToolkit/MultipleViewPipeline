@@ -133,27 +133,74 @@ struct MVPJobBase {
   inline MVPPixelResult process_pixel(MVPAlgorithmVar const& seed, double col, double row, MVPAlgorithmOptions const& options) const
     {return impl().process_pixel(seed, vw::cartography::crop(m_georef, col, row), options);}
 
-  inline std::list<MVPSeedBBox> generate_seeds() const {
-    int seed_col = m_tile_size / 2;
-    int seed_row = m_tile_size / 2;
-
-    vw::Vector2 seed_lonlat = m_georef.pixel_to_lonlat(vw::Vector2(seed_col, seed_row));
-
-    MVPAlgorithmVar pre_seed;
-    pre_seed.alt = (m_settings.alt_min() + m_settings.alt_max()) / 2;
+  inline MVPPixelResult process_tangent_seed(vw::BBox2 bbox, double alt, double alt_range) const {
     VW_ASSERT(m_georef.datum().semi_major_axis() == m_georef.datum().semi_minor_axis(), vw::NoImplErr() << "Spheroid datums not supported"); 
-    // TODO: The following calculation assumes spherical datum
-    pre_seed.orientation = vw::cartography::lon_lat_radius_to_xyz(vw::Vector3(seed_lonlat[0], seed_lonlat[1], 1));
-    pre_seed.windows = vw::Vector3(m_settings.seed_window_size(), m_settings.seed_window_size(), m_settings.seed_window_smooth_size());
 
-    MVPAlgorithmOptions options;
-    options.set_alt_range((m_settings.alt_max() - m_settings.alt_min()) / 2);
-    options.set_fix_orientation(true);
-    options.set_fix_windows(true);
-    // TODO: set num_iterations?
+    vw::Vector2 center_pt = (bbox.min() + bbox.max() - vw::Vector2(1, 1)) / 2;
+    vw::Vector2 seed_lonlat = m_georef.pixel_to_lonlat(vw::Vector2(center_pt.x(), center_pt.y()));
+    vw::Vector3f orientation = vw::cartography::lon_lat_radius_to_xyz(vw::Vector3(seed_lonlat[0], seed_lonlat[1], 1));
+    vw::Vector3f windows = vw::Vector3f(bbox.width(), bbox.height(), m_settings.seed_window_smooth_size()) / 6;
 
-    //return process_pixel(pre_seed, seed_col, seed_row, options);
-    return std::list<MVPSeedBBox>();
+    MVPAlgorithmVar seed(alt, orientation, windows);
+
+    MVPAlgorithmOptions opts;
+    opts.set_alt_range(alt_range);
+
+    return process_pixel(seed, center_pt.x(), center_pt.y(), opts);
+  }
+
+  inline std::list<MVPSeedBBox> generate_seeds() const {
+
+    int num_levels = 0;
+    for (int i = m_tile_size; i > m_settings.seed_window_size(); i /= 2) {
+      num_levels++;
+    }
+
+    double top_level_alt_range = (1 << num_levels) * m_settings.alt_search_range();
+
+    std::list<MVPSeedBBox> seed_list;
+    for (int level = 0; level < num_levels; level++) {
+      if (level == 0) {
+        vw::BBox2 first_bbox(0, 0, m_tile_size, m_tile_size);
+
+        double first_alt = (m_settings.alt_min() + m_settings.alt_max()) / 2;
+        double first_alt_range = (m_settings.alt_max() - m_settings.alt_min()) / 2;
+
+        MVPPixelResult first_result(process_tangent_seed(first_bbox, first_alt, first_alt_range));
+
+        if (!first_result.converged) {
+          break;        
+        }
+
+        // TODO: switch seed and bbox
+        seed_list.push_back(MVPSeedBBox(first_result, first_bbox, top_level_alt_range / 2));
+      } else {
+        std::list<MVPSeedBBox> new_seed_list;
+
+        BOOST_FOREACH(MVPSeedBBox const& sb, seed_list) {
+          vw::Vector2 bbox_center = (sb.bbox.min() + sb.bbox.max()) / 2;
+
+          std::list<vw::BBox2> subdivide_bboxes;
+          subdivide_bboxes.push_back(vw::BBox2(sb.bbox.min(), bbox_center));
+          subdivide_bboxes.push_back(vw::BBox2(bbox_center, sb.bbox.max()));
+          subdivide_bboxes.push_back(vw::BBox2(vw::Vector2(sb.bbox.min().x(), bbox_center.y()), vw::Vector2(bbox_center.x(), sb.bbox.max().y())));
+          subdivide_bboxes.push_back(vw::BBox2(vw::Vector2(bbox_center.x(), sb.bbox.min().y()), vw::Vector2(sb.bbox.max().x(), bbox_center.y())));
+
+          BOOST_FOREACH(vw::BBox2 const& b, subdivide_bboxes) {
+            MVPPixelResult subbox_result(process_tangent_seed(b, sb.seed.alt, sb.alt_range));
+            if (subbox_result.converged) {
+              new_seed_list.push_back(MVPSeedBBox(subbox_result, b, sb.alt_range / 2));
+            }
+          }
+        }
+        seed_list = new_seed_list;
+
+        // TODO: warn if seed_list is empty here, because there should be at least one valid
+        // bbox if the parent bbox converged...
+      }
+    }
+
+    return seed_list;
   }
 
   inline MVPTileResult process_tile(vw::ProgressCallback const& progress = vw::ProgressCallback::dummy_instance()) const {

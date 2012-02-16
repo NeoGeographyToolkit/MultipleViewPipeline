@@ -2,9 +2,9 @@ package mvp;
 
 message MVPAlgorithmOptions {
   required double alt_range = 1;
-  optional bool fix_orientation = 2 [default=false];
-  optional bool fix_windows = 3 [default=false];
+  optional bool fix_orientation = 2 [default=true];
+  optional bool fix_windows = 3 [default=true];
   optional int32 max_iterations = 4 [default=60];
   optional double alt_tolerance = 5 [default=0.5];
-  optional bool fast_reflectance = 6 [default=false];
+  optional bool fast_reflectance = 6 [default=true];
 }

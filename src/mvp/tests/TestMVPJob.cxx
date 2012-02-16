@@ -56,13 +56,13 @@ struct MVPJobSeedTest : public MVPJobBase<MVPJobSeedTest> {
   list<MVPSeedBBox> expected_seeds() {
     list<MVPSeedBBox> result;
 
-    result.push_back(MVPSeedBBox(MVPAlgorithmVar(16*16), BBox2i(128, 64, 32, 32), 1));
-    result.push_back(MVPSeedBBox(MVPAlgorithmVar(16*16), BBox2i(160, 64, 32, 32), 1));
-    result.push_back(MVPSeedBBox(MVPAlgorithmVar(16*16), BBox2i(128, 96, 32, 32), 1));
-    result.push_back(MVPSeedBBox(MVPAlgorithmVar(16*16), BBox2i(160, 96, 32, 32), 1));
-
     result.push_back(MVPSeedBBox(MVPAlgorithmVar(16*16), BBox2i(192, 128, 32, 32), 1));
     result.push_back(MVPSeedBBox(MVPAlgorithmVar(16*16), BBox2i(224, 128, 32, 32), 1));
+
+    result.push_back(MVPSeedBBox(MVPAlgorithmVar(16*16), BBox2i(128, 64, 32, 32), 1));
+    result.push_back(MVPSeedBBox(MVPAlgorithmVar(16*16), BBox2i(160, 96, 32, 32), 1));
+    result.push_back(MVPSeedBBox(MVPAlgorithmVar(16*16), BBox2i(128, 96, 32, 32), 1));
+    result.push_back(MVPSeedBBox(MVPAlgorithmVar(16*16), BBox2i(160, 64, 32, 32), 1));
 
     return result;
   }
@@ -76,9 +76,9 @@ TEST(MVPJobSeedTest, process_pixel) {
   BOOST_FOREACH(MVPSeedBBox const& es, expected_seeds) {
     MVPAlgorithmVar seed(0, Vector3f(), Vector3f(32, 32, 0) / 6);
 
-    Vector2 centerPt = (es.bbox.min() + es.bbox.max() - Vector2(1, 1)) / 2;
+    Vector2 center_pt = (es.bbox.min() + es.bbox.max() - Vector2(1, 1)) / 2;
 
-    EXPECT_EQ(job.process_pixel(seed, centerPt.x(), centerPt.y(), MVPAlgorithmOptions()).alt, es.seed.alt);
+    EXPECT_EQ(job.process_pixel(seed, center_pt.x(), center_pt.y(), MVPAlgorithmOptions()).alt, es.seed.alt);
   }
 
   MVPAlgorithmVar seed(0, Vector3f(), Vector3f(64, 64, 0) / 6);
@@ -100,9 +100,10 @@ TEST(MVPJob, generate_seeds) {
 
   for (iter1 = seeds.begin(), iter2 = expected_seeds.begin();
        iter1 != seeds.end(); iter1++, iter2++) {
-    EXPECT_EQ((*iter1).seed.alt, (*iter2).seed.alt);
-    EXPECT_EQ((*iter1).bbox, (*iter2).bbox);
-    EXPECT_EQ((*iter1).alt_range, (*iter2).alt_range);
+    EXPECT_EQ(iter1->seed.alt, iter2->seed.alt);
+    EXPECT_VECTOR_EQ(iter1->bbox.min(), iter2->bbox.min());
+    EXPECT_VECTOR_EQ(iter1->bbox.max(), iter2->bbox.max());
+    EXPECT_EQ(iter1->alt_range, iter2->alt_range);
   }
 }
 
