@@ -30,6 +30,8 @@ function [result, variance, converged, num_iterations] = mvpalgorithm(seed, geor
       args{6} = mvpoptions;
 
       control{1} = mvpoptions.max_iterations;
+      control{2} = 0; % verbosity level
+      control{3} = 0; % 0 for weak convergance
 
       [gResult.alt gVariance info iters] = bfgsmin("mvpobj", args, control);
 
