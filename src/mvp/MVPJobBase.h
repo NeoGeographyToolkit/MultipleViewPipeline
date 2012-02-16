@@ -200,39 +200,47 @@ struct MVPJobBase {
       }
     }
 
+    // Set seed windows to their final size
+    BOOST_FOREACH(MVPSeedBBox& sb, seed_list) {
+      sb.seed.windows = vw::Vector3f(m_settings.seed_window_size(), m_settings.seed_window_size(), m_settings.seed_window_smooth_size()) / 6;
+    }
+
     return seed_list;
   }
 
-  inline MVPTileResult process_tile(vw::ProgressCallback const& progress = vw::ProgressCallback::dummy_instance()) const {
+  inline MVPTileResult process_tile(std::list<MVPSeedBBox> const& seed_list, 
+                                    vw::ProgressCallback const& progress = vw::ProgressCallback::dummy_instance()) const {
     MVPTileResult tile_result(m_georef, m_tile_size);
 
-    //MVPPixelResult seed(generate_seed());
-    MVPPixelResult seed;
+    std::cout << seed_list.size() << std::endl;
 
-    if (!seed.converged) {
-      return tile_result;
+    // Calcualte total # of pixels
+    int num_px_to_process = 0; 
+    BOOST_FOREACH(MVPSeedBBox const& sb, seed_list) {
+      num_px_to_process += sb.bbox.width() * sb.bbox.height(); 
     }
-
-    MVPAlgorithmOptions options;
-    options.set_alt_range(m_settings.alt_search_range());
-    // TODO: set num_iterations?
-
-    // TODO: orientation and windows are fixed for testing.
-    // window size is also explicitly set.
-    options.set_fix_orientation(true); 
-    options.set_fix_windows(true);
-    seed.windows = vw::Vector3(10, 10, 1);
 
     int curr_px_num = 0;
-    int num_px_to_process = m_tile_size * m_tile_size;
-    for (int col = 0; col < m_tile_size; col++) {
-      for (int row = 0; row < m_tile_size; row++) {
-        progress.report_fractional_progress(curr_px_num++, num_px_to_process);
-        tile_result.update(col, row, process_pixel(seed, col, row, options));
+    BOOST_FOREACH(MVPSeedBBox const& sb, seed_list) {
+      MVPAlgorithmOptions opts;
+      opts.set_alt_range(sb.alt_range);
+      //opts.set_fix_orientation(false);
+      //opts.set_fix_windows(false);
+      //opts.set_fast_reflectance(false);
+
+      for (int col = sb.bbox.min().x(); col < sb.bbox.max().x(); col++) {
+        for (int row = sb.bbox.min().y(); row < sb.bbox.max().y(); row++) {
+          progress.report_fractional_progress(curr_px_num++, num_px_to_process);
+          tile_result.update(col, row, process_pixel(sb.seed, col, row, opts));
+        }
       }
-    }
+    } 
     progress.report_finished();
     return tile_result;
+  }
+
+  inline MVPTileResult process_tile(vw::ProgressCallback const& progress = vw::ProgressCallback::dummy_instance()) const {
+    return process_tile(generate_seeds(), progress);
   }
 
   protected:
