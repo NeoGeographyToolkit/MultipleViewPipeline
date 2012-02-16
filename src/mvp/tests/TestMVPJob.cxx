@@ -26,8 +26,10 @@ struct MVPJobSeedTest : public MVPJobBase<MVPJobSeedTest> {
 
     fill(crop(m_dem, 145, 81, 32, 32), 1);
     fill(crop(m_dem, 209, 145, 32, 16), 1);
+  }
 
-    write_image("test.png", m_dem);
+  inline MVPPixelResult process_pixel(MVPAlgorithmVar const& seed, double col, double row, MVPAlgorithmOptions const& options) const {
+    return MVPJobBase::process_pixel(seed, col, row, options);
   }
 
   inline MVPPixelResult process_pixel(MVPAlgorithmVar const& seed, vw::cartography::GeoReference const& georef, MVPAlgorithmOptions const& options) const {
@@ -45,15 +47,37 @@ struct MVPJobSeedTest : public MVPJobBase<MVPJobSeedTest> {
     BBox2i demWin(round(demWinPre.min().x()), round(demWinPre.min().y()),
                   round(demWinPre.width()), round(demWinPre.height()));
 
+    // Calculate the sum of pixel values of m_dem inside the patch window.
     float32 sum = sum_of_pixel_values(crop(m_dem, demWin));
 
     return MVPPixelResult(MVPAlgorithmVar(sum), 0, sum > 0);
   }
 };
 
+TEST(MVPJob, MVPJobSeedTest) {
+  MVPJobSeedTest job;
+
+  MVPAlgorithmVar seed(0, Vector3f(), Vector3f(32, 32, 0) / 6);
+
+  EXPECT_EQ(job.process_pixel(seed, 145, 81, MVPAlgorithmOptions()).alt, 16*16);
+  EXPECT_EQ(job.process_pixel(seed, 177, 81, MVPAlgorithmOptions()).alt, 16*16);
+  EXPECT_EQ(job.process_pixel(seed, 145, 113, MVPAlgorithmOptions()).alt, 16*16);
+  EXPECT_EQ(job.process_pixel(seed, 177, 113, MVPAlgorithmOptions()).alt, 16*16);
+
+  EXPECT_EQ(job.process_pixel(seed, 209, 145, MVPAlgorithmOptions()).alt, 16*16);
+  EXPECT_EQ(job.process_pixel(seed, 241, 145, MVPAlgorithmOptions()).alt, 16*16);
+
+  seed.windows = Vector3f(64, 64, 0) / 6;
+  
+  EXPECT_EQ(job.process_pixel(seed, 161, 97, MVPAlgorithmOptions()).alt, 32*32);
+  EXPECT_EQ(job.process_pixel(seed, 161, 33, MVPAlgorithmOptions()).alt, 0);
+
+}
+
 TEST(MVPJob, seeding) {
   MVPJobSeedTest job;
   //MVPTileResult result(job.process_tile());
+  //job.generate_seed();
 }
 
 TEST(Helpers, crop_georef) {
