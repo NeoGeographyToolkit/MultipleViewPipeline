@@ -152,7 +152,7 @@ struct MVPJobBase {
   inline std::list<MVPSeedBBox> generate_seeds() const {
 
     int num_levels = 0;
-    for (int i = m_tile_size; i > m_settings.seed_window_size(); i /= 2) {
+    for (int i = m_tile_size; i >= m_settings.seed_window_size(); i /= 2) {
       num_levels++;
     }
 
@@ -212,8 +212,6 @@ struct MVPJobBase {
                                     vw::ProgressCallback const& progress = vw::ProgressCallback::dummy_instance()) const {
     MVPTileResult tile_result(m_georef, m_tile_size);
 
-    std::cout << seed_list.size() << std::endl;
-
     // Calcualte total # of pixels
     int num_px_to_process = 0; 
     BOOST_FOREACH(MVPSeedBBox const& sb, seed_list) {
@@ -232,6 +230,7 @@ struct MVPJobBase {
         for (int row = sb.bbox.min().y(); row < sb.bbox.max().y(); row++) {
           progress.report_fractional_progress(curr_px_num++, num_px_to_process);
           tile_result.update(col, row, process_pixel(sb.seed, col, row, opts));
+          //tile_result.update(col, row, MVPPixelResult(sb.seed, 0, true));
         }
       }
     } 
