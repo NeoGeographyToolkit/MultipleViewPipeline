@@ -56,13 +56,13 @@ struct MVPJobSeedTest : public MVPJobBase<MVPJobSeedTest> {
   list<MVPSeedBBox> expected_seeds() {
     list<MVPSeedBBox> result;
 
-    result.push_back(MVPSeedBBox(MVPAlgorithmVar(16*16), BBox2i(128, 64, 32, 32)));    
-    result.push_back(MVPSeedBBox(MVPAlgorithmVar(16*16), BBox2i(160, 64, 32, 32)));
-    result.push_back(MVPSeedBBox(MVPAlgorithmVar(16*16), BBox2i(128, 96, 32, 32)));
-    result.push_back(MVPSeedBBox(MVPAlgorithmVar(16*16), BBox2i(160, 96, 32, 32)));
+    result.push_back(MVPSeedBBox(MVPAlgorithmVar(16*16), BBox2i(128, 64, 32, 32), 1));
+    result.push_back(MVPSeedBBox(MVPAlgorithmVar(16*16), BBox2i(160, 64, 32, 32), 1));
+    result.push_back(MVPSeedBBox(MVPAlgorithmVar(16*16), BBox2i(128, 96, 32, 32), 1));
+    result.push_back(MVPSeedBBox(MVPAlgorithmVar(16*16), BBox2i(160, 96, 32, 32), 1));
 
-    result.push_back(MVPSeedBBox(MVPAlgorithmVar(16*16), BBox2i(192, 128, 32, 32)));
-    result.push_back(MVPSeedBBox(MVPAlgorithmVar(16*16), BBox2i(224, 128, 32, 32)));
+    result.push_back(MVPSeedBBox(MVPAlgorithmVar(16*16), BBox2i(192, 128, 32, 32), 1));
+    result.push_back(MVPSeedBBox(MVPAlgorithmVar(16*16), BBox2i(224, 128, 32, 32), 1));
 
     return result;
   }
@@ -93,10 +93,17 @@ TEST(MVPJob, generate_seeds) {
   list<MVPSeedBBox> seeds(job.generate_seeds());
   list<MVPSeedBBox> expected_seeds(job.expected_seeds());
 
-  EXPECT_EQ(seeds.size(), expected_seeds.size());
+  // Assert here so that if they're not equal the for loop doesn't run
+  ASSERT_EQ(seeds.size(), expected_seeds.size());
 
-  //MVPTileResult result(job.process_tile());
-  //job.generate_seed();
+  list<MVPSeedBBox>::const_iterator iter1, iter2;
+
+  for (iter1 = seeds.begin(), iter2 = expected_seeds.begin();
+       iter1 != seeds.end(); iter1++, iter2++) {
+    EXPECT_EQ((*iter1).seed.alt, (*iter2).seed.alt);
+    EXPECT_EQ((*iter1).bbox, (*iter2).bbox);
+    EXPECT_EQ((*iter1).alt_range, (*iter2).alt_range);
+  }
 }
 
 TEST(Helpers, crop_georef) {

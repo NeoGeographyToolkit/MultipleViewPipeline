@@ -97,8 +97,9 @@ struct MVPTileResult {
 struct MVPSeedBBox {
   MVPAlgorithmVar seed;
   vw::BBox2i bbox;
+  double alt_range;
 
-  MVPSeedBBox(MVPAlgorithmVar s, vw::BBox2i b) : seed(s), bbox(b) {}
+  MVPSeedBBox(MVPAlgorithmVar s, vw::BBox2i b, double a) : seed(s), bbox(b), alt_range(a) {}
 };
 
 template <class ImplT>
