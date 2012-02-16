@@ -8,24 +8,37 @@ function [result, variance, converged, num_iterations] = mvpalgorithm(seed, geor
   global gVariance;
   gVariance = Inf;
 
-  opts = optimset("MaxIter", mvpoptions.max_iterations, "FunValCheck", "on", "TolX", mvpoptions.alt_tolerance);
-
-  altMin = seed.alt - mvpoptions.alt_range;
-  altMax = seed.alt + mvpoptions.alt_range;
-
   try
-    if (mvpoptions.fix_orientation && mvpoptions.fix_windows)
+    if (mvpoptions.alt_range > 0)
+      opts = optimset("MaxIter", mvpoptions.max_iterations, "FunValCheck", "on", "TolX", mvpoptions.alt_tolerance);
+
+      altMin = seed.alt - mvpoptions.alt_range;
+      altMax = seed.alt + mvpoptions.alt_range;
+
       [gResult.alt gVariance info output] = fminbnd(@(a) mvpobj(a, gResult.orientation, gResult.windows, georef, images, mvpoptions), 
                                                                 altMin, altMax, opts);
+      result = gResult;
+      variance = gVariance;
+      converged = (info == 1);
+      num_iterations = output.iterations;
     else
-      [alt variance info output] = fminbnd(@(a) _mvpalgorithm_alt(a, georef, images, mvpoptions),
-                                                                  altMin, altMax, opts);
+      args{1} = seed.alt;
+      args{2} = gResult.orientation;
+      args{3} = gResult.windows;
+      args{4} = georef;
+      args{5} = images;
+      args{6} = mvpoptions;
+
+      control{1} = mvpoptions.max_iterations;
+
+      [gResult.alt gVariance info iters] = bfgsmin("mvpobj", args, control);
+
+      result = gResult;
+      variance = gVariance;
+      converged = (info == 1);
+      num_iterations = iters;
     endif
 
-    result = gResult;
-    variance = gVariance;
-    converged = (info == 1);
-    num_iterations = output.iterations;
   catch
     result.alt = NA;
     result.orientation = [NA NA NA];
