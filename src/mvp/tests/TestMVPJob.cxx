@@ -24,8 +24,8 @@ struct MVPJobSeedTest : public MVPJobBase<MVPJobSeedTest> {
     m_settings.set_seed_window_size(20);
     m_settings.set_seed_window_smooth_size(4);
 
-    fill(crop(m_dem, 145, 81, 32, 32), 1);
-    fill(crop(m_dem, 209, 145, 32, 16), 1);
+    fill(crop(m_dem, 144, 80, 32, 32), 1);
+    fill(crop(m_dem, 208, 144, 32, 16), 1);
   }
 
   inline MVPPixelResult process_pixel(MVPAlgorithmVar const& seed, double col, double row, MVPAlgorithmOptions const& options) const {
@@ -52,30 +52,49 @@ struct MVPJobSeedTest : public MVPJobBase<MVPJobSeedTest> {
 
     return MVPPixelResult(MVPAlgorithmVar(sum), 0, sum > 0);
   }
+
+  list<MVPSeedBBox> expected_seeds() {
+    list<MVPSeedBBox> result;
+
+    result.push_back(MVPSeedBBox(MVPAlgorithmVar(16*16), BBox2i(128, 64, 32, 32)));    
+    result.push_back(MVPSeedBBox(MVPAlgorithmVar(16*16), BBox2i(160, 64, 32, 32)));
+    result.push_back(MVPSeedBBox(MVPAlgorithmVar(16*16), BBox2i(128, 96, 32, 32)));
+    result.push_back(MVPSeedBBox(MVPAlgorithmVar(16*16), BBox2i(160, 96, 32, 32)));
+
+    result.push_back(MVPSeedBBox(MVPAlgorithmVar(16*16), BBox2i(192, 128, 32, 32)));
+    result.push_back(MVPSeedBBox(MVPAlgorithmVar(16*16), BBox2i(224, 128, 32, 32)));
+
+    return result;
+  }
 };
 
-TEST(MVPJob, MVPJobSeedTest) {
+TEST(MVPJobSeedTest, process_pixel) {
   MVPJobSeedTest job;
 
-  MVPAlgorithmVar seed(0, Vector3f(), Vector3f(32, 32, 0) / 6);
+  list<MVPSeedBBox> expected_seeds(job.expected_seeds());
 
-  EXPECT_EQ(job.process_pixel(seed, 145, 81, MVPAlgorithmOptions()).alt, 16*16);
-  EXPECT_EQ(job.process_pixel(seed, 177, 81, MVPAlgorithmOptions()).alt, 16*16);
-  EXPECT_EQ(job.process_pixel(seed, 145, 113, MVPAlgorithmOptions()).alt, 16*16);
-  EXPECT_EQ(job.process_pixel(seed, 177, 113, MVPAlgorithmOptions()).alt, 16*16);
+  BOOST_FOREACH(MVPSeedBBox const& es, expected_seeds) {
+    MVPAlgorithmVar seed(0, Vector3f(), Vector3f(32, 32, 0) / 6);
 
-  EXPECT_EQ(job.process_pixel(seed, 209, 145, MVPAlgorithmOptions()).alt, 16*16);
-  EXPECT_EQ(job.process_pixel(seed, 241, 145, MVPAlgorithmOptions()).alt, 16*16);
+    Vector2 centerPt = (es.bbox.min() + es.bbox.max() - Vector2(1, 1)) / 2;
 
-  seed.windows = Vector3f(64, 64, 0) / 6;
+    EXPECT_EQ(job.process_pixel(seed, centerPt.x(), centerPt.y(), MVPAlgorithmOptions()).alt, es.seed.alt);
+  }
+
+  MVPAlgorithmVar seed(0, Vector3f(), Vector3f(64, 64, 0) / 6);
   
-  EXPECT_EQ(job.process_pixel(seed, 161, 97, MVPAlgorithmOptions()).alt, 32*32);
-  EXPECT_EQ(job.process_pixel(seed, 161, 33, MVPAlgorithmOptions()).alt, 0);
-
+  EXPECT_EQ(job.process_pixel(seed, 160, 96, MVPAlgorithmOptions()).alt, 32*32);
+  EXPECT_EQ(job.process_pixel(seed, 160, 32, MVPAlgorithmOptions()).alt, 0);
 }
 
-TEST(MVPJob, seeding) {
+TEST(MVPJob, generate_seeds) {
   MVPJobSeedTest job;
+
+  list<MVPSeedBBox> seeds(job.generate_seeds());
+  list<MVPSeedBBox> expected_seeds(job.expected_seeds());
+
+  EXPECT_EQ(seeds.size(), expected_seeds.size());
+
   //MVPTileResult result(job.process_tile());
   //job.generate_seed();
 }

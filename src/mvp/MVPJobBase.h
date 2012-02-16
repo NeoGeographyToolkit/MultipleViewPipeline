@@ -94,6 +94,13 @@ struct MVPTileResult {
   }
 };
 
+struct MVPSeedBBox {
+  MVPAlgorithmVar seed;
+  vw::BBox2i bbox;
+
+  MVPSeedBBox(MVPAlgorithmVar s, vw::BBox2i b) : seed(s), bbox(b) {}
+};
+
 template <class ImplT>
 struct MVPJobBase {
 
@@ -125,7 +132,7 @@ struct MVPJobBase {
   inline MVPPixelResult process_pixel(MVPAlgorithmVar const& seed, double col, double row, MVPAlgorithmOptions const& options) const
     {return impl().process_pixel(seed, vw::cartography::crop(m_georef, col, row), options);}
 
-  inline MVPPixelResult generate_seed() const {
+  inline std::list<MVPSeedBBox> generate_seeds() const {
     int seed_col = m_tile_size / 2;
     int seed_row = m_tile_size / 2;
 
@@ -144,13 +151,15 @@ struct MVPJobBase {
     options.set_fix_windows(true);
     // TODO: set num_iterations?
 
-    return process_pixel(pre_seed, seed_col, seed_row, options);
+    //return process_pixel(pre_seed, seed_col, seed_row, options);
+    return std::list<MVPSeedBBox>();
   }
 
   inline MVPTileResult process_tile(vw::ProgressCallback const& progress = vw::ProgressCallback::dummy_instance()) const {
     MVPTileResult tile_result(m_georef, m_tile_size);
 
-    MVPPixelResult seed(generate_seed());
+    //MVPPixelResult seed(generate_seed());
+    MVPPixelResult seed;
 
     if (!seed.converged) {
       return tile_result;
