@@ -14,6 +14,7 @@ function [patches weights] = mvppatches(projs, windows)
   smoothKernel = gausskernel(windows(3));
 
   numPatches = 0;
+  patches = zeros(0, 0, 0);
   for i = 1:numProjs
     if (all(isnan(projs{i})))
       continue;
