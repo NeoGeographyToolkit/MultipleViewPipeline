@@ -22,23 +22,14 @@ function [result, variance, converged, num_iterations] = mvpalgorithm(seed, geor
       converged = (info == 1);
       num_iterations = output.iterations;
     else
-      args{1} = seed.alt;
-      args{2} = gResult.orientation;
-      args{3} = gResult.windows;
-      args{4} = georef;
-      args{5} = images;
-      args{6} = mvpoptions;
+      opts = optimset("MaxIter", mvpoptions.max_iterations, "FunValCheck", "on");
+      opts = optimset(opts, "TolX", 1e-8, "TolFun", 1e-8);
 
-      control{1} = mvpoptions.max_iterations;
-      control{2} = 0; % verbosity level
-      control{3} = 0; % 0 for weak convergance
-
-      [gResult.alt gVariance info iters] = bfgsmin("mvpobj", args, control);
-
+      [gResult.alt gVariance info output] = fminunc(@(a) mvpobj(a, gResult.orientation, gResult.windows, georef, images, mvpoptions), seed.alt, opts);
       result = gResult;
       variance = gVariance;
-      converged = (info == 1);
-      num_iterations = iters;
+      converged = (info > 0);
+      num_iterations = output.iterations;
     endif
 
   catch
