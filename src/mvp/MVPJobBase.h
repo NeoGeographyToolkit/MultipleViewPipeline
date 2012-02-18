@@ -39,7 +39,7 @@ struct MVPAlgorithmVar {
 
   ::octave_scalar_map to_octave() const {
     ::octave_scalar_map result;
-    result.setfield("alt", alt);
+    result.setfield("alt", double(alt));
     result.setfield("orientation", vw::octave::vector_to_octave(orientation));
     result.setfield("windows", vw::octave::vector_to_octave(windows));
     return result;
