@@ -27,3 +27,9 @@ Weak convergance point:
 
 [seed georef] = ts_genseed([24 24], tile_georef, -1085, "tangent", [16 16 8] / 6);
 opts = mvpoptimset(-1);
+
+-------------
+
+Smoothing kernel bad:
+ [seed georef] = ts_genseed([8.5 65-8.5], tile_georef, -691.18, "tangent", [16 16 0] / 6);
+ [seed georef] = ts_genseed([8.5 65-8.5], tile_georef, -691.18, "tangent", [16 16 4] / 6);
