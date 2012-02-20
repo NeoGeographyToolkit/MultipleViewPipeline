@@ -137,7 +137,7 @@ struct MVPJobBase {
     VW_ASSERT(m_georef.datum().semi_major_axis() == m_georef.datum().semi_minor_axis(), vw::NoImplErr() << "Spheroid datums not supported"); 
 
     vw::Vector2 center_pt = (bbox.min() + bbox.max() - vw::Vector2(1, 1)) / 2;
-    vw::Vector2 seed_lonlat = m_georef.pixel_to_lonlat(vw::Vector2(center_pt.x(), center_pt.y()));
+    vw::Vector2 seed_lonlat = m_georef.pixel_to_lonlat(center_pt);
     vw::Vector3f orientation = vw::cartography::lon_lat_radius_to_xyz(vw::Vector3(seed_lonlat[0], seed_lonlat[1], 1));
     vw::Vector3f windows = vw::Vector3f(bbox.width(), bbox.height(), m_settings.seed_window_smooth_size()) / 6;
 
@@ -146,6 +146,8 @@ struct MVPJobBase {
     MVPAlgorithmOptions opts;
     opts.set_alt_range(alt_range);
 
+    // for debugging pyramid...
+    //std::cout << "center: " << center_pt << " alt:" << alt << " orientation:" << orientation << " windows:" << windows << std::endl;
     return process_pixel(seed, center_pt.x(), center_pt.y(), opts);
   }
 
@@ -172,7 +174,7 @@ struct MVPJobBase {
           break;        
         }
 
-        // TODO: switch seed and bbox
+        // TODO: switch seed and bbox in function call
         seed_list.push_back(MVPSeedBBox(first_result, first_bbox, top_level_alt_range / 2));
       } else {
         std::list<MVPSeedBBox> new_seed_list;
@@ -187,7 +189,7 @@ struct MVPJobBase {
           subdivide_bboxes.push_back(vw::BBox2(vw::Vector2(bbox_center.x(), sb.bbox.min().y()), vw::Vector2(sb.bbox.max().x(), bbox_center.y())));
 
           BOOST_FOREACH(vw::BBox2 const& b, subdivide_bboxes) {
-            MVPPixelResult subbox_result(process_tangent_seed(b, sb.seed.alt, sb.alt_range));
+            MVPPixelResult subbox_result(process_tangent_seed(b, sb.seed.alt, sb.alt_range / 2));
             if (subbox_result.converged) {
               new_seed_list.push_back(MVPSeedBBox(subbox_result, b, sb.alt_range / 2));
             }
