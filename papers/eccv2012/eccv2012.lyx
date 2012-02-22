@@ -151,104 +151,75 @@ ECCV12SubNumber
 \begin_layout Abstract
 The abstract should summarize the contents of the paper and should contain
  at least 70 and at most 300 words.
- It should be set in 9-point font size and should be inset 1.0~cm from the
- right and left margins.
+ It should be set in 9-point font size and should be inset 1.0
+\begin_inset space ~
+\end_inset
+
+cm from the right and left margins.
 \end_layout
 
 \begin_layout Section
 Introduction
 \end_layout
 
-\begin_layout Standard
-Please follow the steps outlined below when submitting your manuscript.
+\begin_layout Subsection
+Objective Function 
 \end_layout
 
 \begin_layout Subsection
-Language
-\end_layout
-
-\begin_layout Standard
-All manuscripts must be in English.
+Image formation model
 \end_layout
 
 \begin_layout Subsection
-Paper length
-\end_layout
-
-\begin_layout Standard
-The basic length is 12 pages, but up to two additional pages may be purchased
- in the final printed proceedings.
- This brings the 
-\emph on
-maximum
-\emph default
- length for submission to 14 pages.
- Overlength papers will simply not be reviewed.
- This includes papers where the margins and formatting are deemed to have
- been significantly altered from those laid down by this style guide.
- The reason such papers will not be reviewed is that there is no provision
- for supervised revisions of manuscripts.
- The reviewing process cannot determine the suitability of the paper for
- presentation in 14 pages if it is reviewed in 16.
- 
+Altitude Objective Function Formulation
 \end_layout
 
 \begin_layout Subsection
-Dual submission
-\end_layout
-
-\begin_layout Standard
-By submitting a manuscript to ECCV, the author(s) assert that it has not
- been previously published in substantially similar form.
- Furthermore, no paper which contains significant overlap with the contributions
- of this paper either has been or will be submitted during the ECCV 2012
- review period to either a journal or a conference.
-\end_layout
-
-\begin_layout Standard
-If there are any papers that may appear to the reviewers to violate this
- condition, then it is your responsibility to (1) cite these papers (preserving
- anonymity as described in section
-\begin_inset space ~
-\end_inset
-
-
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "sec:blind"
-
-\end_inset
-
- of this example paper, (2) argue in the body of your paper why your ECCV
- paper is nontrivially different from these concurrent submissions, and
- (3) include anonymized versions of those papers in the supplemental material.
+Reflectance optimization - eig / normalization (for seeding)
 \end_layout
 
 \begin_layout Subsection
-Supplemental Material
-\end_layout
-
-\begin_layout Standard
-Authors may optionally upload supplemental material.
- Typically, this material might include videos of results that cannot be
- included in the main paper, anonymized related submissions to other conferences
- and journals, and appendices or technical reports containing extended proofs
- and mathematical derivations that are not essential for understanding of
- the paper.
- Note that the contents of the supplemental material should be referred
- to appropriately in the paper and that reviewers are not obliged to look
- at it.
-\end_layout
-
-\begin_layout Standard
-All supplemental material must be zipped or tarred into a single file.
- There is a 50MB limit on the size of this file.
- The deadline for supplemental material is five days after the main paper
- deadline.
+Reconstruction Error
 \end_layout
 
 \begin_layout Subsection
-Examples
+Note about orientation
+\end_layout
+
+\begin_layout Section
+Implementation
+\end_layout
+
+\begin_layout Subsection
+Determining overlap
+\end_layout
+
+\begin_layout Subsection
+Pyramid Seeding
+\end_layout
+
+\begin_layout Subsection
+Distributed approach (platefiles)
+\end_layout
+
+\begin_layout Section
+Results
+\end_layout
+
+\begin_layout Subsection
+Results - DEM + confidence + 3D terrain
+\end_layout
+
+\begin_layout Subsection
+Comparison to ASP Conclusion
+\end_layout
+
+\begin_layout Section
+Conclusion
+\end_layout
+
+\begin_layout Subsection
+Example formattings
 \end_layout
 
 \begin_layout Standard
@@ -267,7 +238,7 @@ And an example figure:
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \align center
