@@ -1,0 +1,273 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass eccv2012
+\begin_preamble
+\usepackage{eccv2012-ruler}
+\usepackage{color}
+\end_preamble
+\options runningheads
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package none
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize custom
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\paperwidth 146mm
+\paperheight 217mm
+\leftmargin 12mm
+\topmargin 12mm
+\rightmargin 12mm
+\bottommargin 12mm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle headings
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+def
+\backslash
+ECCV12SubNumber{***}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+The Ames Multiple View Pipeline
+\end_layout
+
+\begin_layout Running LaTeX Title
+ECCV-12 submission ID 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ECCV12SubNumber
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author Running
+ECCV-12 submission ID 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ECCV12SubNumber
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+Anonymous ECCV submission
+\end_layout
+
+\begin_layout Institute
+Paper ID 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ECCV12SubNumber
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Abstract
+The abstract should summarize the contents of the paper and should contain
+ at least 70 and at most 300 words.
+ It should be set in 9-point font size and should be inset 1.0~cm from the
+ right and left margins.
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+Please follow the steps outlined below when submitting your manuscript.
+\end_layout
+
+\begin_layout Subsection
+Language
+\end_layout
+
+\begin_layout Standard
+All manuscripts must be in English.
+\end_layout
+
+\begin_layout Subsection
+Paper length
+\end_layout
+
+\begin_layout Standard
+The basic length is 12 pages, but up to two additional pages may be purchased
+ in the final printed proceedings.
+ This brings the 
+\emph on
+maximum
+\emph default
+ length for submission to 14 pages.
+ Overlength papers will simply not be reviewed.
+ This includes papers where the margins and formatting are deemed to have
+ been significantly altered from those laid down by this style guide.
+ The reason such papers will not be reviewed is that there is no provision
+ for supervised revisions of manuscripts.
+ The reviewing process cannot determine the suitability of the paper for
+ presentation in 14 pages if it is reviewed in 16.
+ 
+\end_layout
+
+\begin_layout Subsection
+Dual submission
+\end_layout
+
+\begin_layout Standard
+By submitting a manuscript to ECCV, the author(s) assert that it has not
+ been previously published in substantially similar form.
+ Furthermore, no paper which contains significant overlap with the contributions
+ of this paper either has been or will be submitted during the ECCV 2012
+ review period to either a journal or a conference.
+\end_layout
+
+\begin_layout Standard
+If there are any papers that may appear to the reviewers to violate this
+ condition, then it is your responsibility to (1) cite these papers (preserving
+ anonymity as described in section
+\begin_inset space ~
+\end_inset
+
+
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:blind"
+
+\end_inset
+
+ of this example paper, (2) argue in the body of your paper why your ECCV
+ paper is nontrivially different from these concurrent submissions, and
+ (3) include anonymized versions of those papers in the supplemental material.
+\end_layout
+
+\begin_layout Subsection
+Supplemental Material
+\end_layout
+
+\begin_layout Standard
+Authors may optionally upload supplemental material.
+ Typically, this material might include videos of results that cannot be
+ included in the main paper, anonymized related submissions to other conferences
+ and journals, and appendices or technical reports containing extended proofs
+ and mathematical derivations that are not essential for understanding of
+ the paper.
+ Note that the contents of the supplemental material should be referred
+ to appropriately in the paper and that reviewers are not obliged to look
+ at it.
+\end_layout
+
+\begin_layout Standard
+All supplemental material must be zipped or tarred into a single file.
+ There is a 50MB limit on the size of this file.
+ The deadline for supplemental material is five days after the main paper
+ deadline.
+\end_layout
+
+\begin_layout Standard
+Citation: 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "asp-broxton2008"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "../amvp"
+options "eccv2012"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
