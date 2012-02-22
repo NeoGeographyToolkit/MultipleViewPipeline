@@ -247,8 +247,12 @@ All supplemental material must be zipped or tarred into a single file.
  deadline.
 \end_layout
 
+\begin_layout Subsection
+Examples
+\end_layout
+
 \begin_layout Standard
-Citation: 
+Here is an example citation: 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "asp-broxton2008"
@@ -256,6 +260,54 @@ key "asp-broxton2008"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+And an example figure: 
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/tan_plane_image.svg
+	lyxscale 50
+	height 7cm
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+An example figure!
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+more text is going here...
+\end_layout
+
+\begin_layout Standard
+If you are making a submission to another conference at the same time, which
+ covers similar or overlapping material, you may need to refer to that submissio
+n in order to explain the differences, just as you would if you had previously
+ published related work.
+ In such cases, include the anonymized parallel
 \end_layout
 
 \begin_layout Standard
