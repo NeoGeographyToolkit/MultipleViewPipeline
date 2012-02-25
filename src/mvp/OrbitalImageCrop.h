@@ -56,24 +56,13 @@ class OrbitalImageCrop : public vw::ImageView<vw::PixelMask<vw::PixelGray<vw::fl
     }
   }
   public:
-    static OrbitalImageCrop construct_from_paths(std::string const& image_path,
-                                                 std::string const& camera_path) {
-      boost::shared_ptr<vw::DiskImageResource> rsrc(vw::DiskImageResource::open(image_path));
-      return OrbitalImageCrop(rsrc_helper(rsrc), vw::camera::PinholeModel(camera_path));
-    }
-
-    static OrbitalImageCrop construct_from_paths(std::string const& image_path,
-                                                 std::string const& camera_path,
-                                                 vw::BBox2 const& lonlat_bbox,
-                                                 vw::cartography::Datum const& datum,
-                                                 vw::Vector2 const& alt_limits) {
-
-      boost::shared_ptr<vw::DiskImageResource> rsrc(vw::DiskImageResource::open(image_path));
+    static vw::BBox2i find_crop_bbox(vw::camera::PinholeModel const& camera, 
+                                     vw::BBox2 const& lonlat_bbox,
+                                     vw::cartography::Datum const& datum, 
+                                     vw::Vector2 const& alt_limits) {
 
       VW_ASSERT(datum.semi_major_axis() == datum.semi_minor_axis(), vw::LogicErr() << "Spheroid datums not supported");
       vw::Vector2 radius_range(alt_limits + vw::Vector2(datum.semi_major_axis(), datum.semi_major_axis()));
-
-      vw::camera::PinholeModel camera(camera_path);
 
       std::vector<vw::Vector3> llr_bound_pts(8);
       llr_bound_pts[0] = vw::Vector3(lonlat_bbox.min()[0], lonlat_bbox.min()[1], radius_range[0]);
@@ -91,6 +80,25 @@ class OrbitalImageCrop : public vw::ImageView<vw::PixelMask<vw::PixelGray<vw::fl
         cropbox.grow(camera.point_to_pixel(xyz));
       }
 
+      return cropbox;
+    }
+
+    static OrbitalImageCrop construct_from_paths(std::string const& image_path,
+                                                 std::string const& camera_path) {
+      boost::shared_ptr<vw::DiskImageResource> rsrc(vw::DiskImageResource::open(image_path));
+      return OrbitalImageCrop(rsrc_helper(rsrc), vw::camera::PinholeModel(camera_path));
+    }
+
+    static OrbitalImageCrop construct_from_paths(std::string const& image_path,
+                                                 std::string const& camera_path,
+                                                 vw::BBox2 const& lonlat_bbox,
+                                                 vw::cartography::Datum const& datum,
+                                                 vw::Vector2 const& alt_limits) {
+
+      boost::shared_ptr<vw::DiskImageResource> rsrc(vw::DiskImageResource::open(image_path));
+      vw::camera::PinholeModel camera(camera_path);
+
+      vw::BBox2i cropbox(find_crop_bbox(camera, lonlat_bbox, datum, alt_limits));
       cropbox.crop(vw::BBox2i(0, 0, rsrc->cols(), rsrc->rows()));
 
       // Return empty if smaller than a pixel

@@ -18,6 +18,10 @@ TEST(HelperFunction, crop_pinhole) {
   EXPECT_VECTOR_NEAR(cam.pixel_to_vector(Vector2(20, 30)), crop_cam.pixel_to_vector(Vector2(10, 10)), 1e-6);
 }
 
+TEST(OrbitalImageCrop, find_crop_bbox) {
+  // TODO: write me
+}
+
 TEST(OrbtialImageCrop, construct_from_paths) {
 /* Footprint for synth.0.pinhole with alt +-10000
 
