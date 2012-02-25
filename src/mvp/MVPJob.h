@@ -43,6 +43,11 @@ struct MVPJobTest : public MVPJobBase<MVPJobTest> {
     VW_ASSERT(georef.datum().semi_major_axis() == georef.datum().semi_minor_axis(), vw::NoImplErr() << "Spheroid datums not supported"); 
     using namespace vw;
 
+    if (abs(3 - seed.windows[0] * 6) > 1e-6) {
+      // Pyramid seeding, return valid pixel
+      return MVPPixelResult(seed, 0, true);
+    }
+
     Vector2 ll = georef.pixel_to_lonlat(Vector2(0, 0));
     Vector3 llr(ll[0], ll[1], georef.datum().semi_major_axis());
     Vector3 xyz = cartography::lon_lat_radius_to_xyz(llr);

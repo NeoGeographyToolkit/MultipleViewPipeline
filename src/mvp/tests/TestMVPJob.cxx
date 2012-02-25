@@ -127,7 +127,7 @@ MVPJobRequest create_job_request(bool use_octave = false) {
   settings.set_alt_min(0);
   settings.set_alt_max(0);
   settings.set_alt_search_range(-1);
-  settings.set_seed_window_size(-1);
+  settings.set_seed_window_size(3);
   settings.set_seed_window_smooth_size(-1);
   settings.set_test_algorithm(true);
   settings.set_use_octave(use_octave);
@@ -149,6 +149,10 @@ TEST(MVPJob, save_job_file) {
 }
 
 void process_tile_test(MVPJobRequest job_request) {
+  // TODO: rewrite so seeding doesn't happen and calls are placed
+  // manually to process_pixel. This will mean this function should
+  // be templatized I think.
+
   // Don't verify all pixels in result, only verify every fourth one for speed
   const int validation_divisor = 4;
 
@@ -190,7 +194,6 @@ void process_tile_test(MVPJobRequest job_request) {
         px_result.invalidate();
         px_result3.invalidate();
       }
-
       EXPECT_TYPE_EQ(px_result, result.alt(i, j));
       EXPECT_TYPE_EQ(px_result, result.variance(i, j));
       EXPECT_TYPE_EQ(px_result3, result.orientation(i, j));
