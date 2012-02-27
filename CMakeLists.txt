@@ -103,4 +103,8 @@ if (ENABLE_OCTAVE_SUPPORT)
   link_directories(${OCTAVE_LIBRARY_DIRS})
 endif()
 
+if (ENABLE_GEARMAN_SUPPORT)
+  include_directories(${GEARMAN_INCLUDE_DIRS})
+endif() 
+
 add_subdirectory(src)
