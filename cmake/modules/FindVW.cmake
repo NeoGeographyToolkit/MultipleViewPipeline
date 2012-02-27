@@ -19,7 +19,10 @@ macro(vw_not_found_err _msg)
   endif()
 endmacro()
 
-set(VW_ROOT $ENV{VW_ROOT})
+if (NOT "$ENV{VW_ROOT}" STREQUAL "")
+  set(VW_ROOT $ENV{VW_ROOT})
+endif()
+
 set(VW_FOUND false)
 
 if (NOT VW_LIBRARY)
