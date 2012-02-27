@@ -87,6 +87,7 @@ option(BUILD_TESTS "Build tests" OFF)
 
 if (BUILD_TESTS)
   enable_testing()
+  include_directories(${CMAKE_SOURCE_DIR}/thirdparty/gtest/include)
 endif()
 
 ###

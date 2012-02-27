@@ -1,5 +1,4 @@
 include_directories(${CMAKE_SOURCE_DIR}/thirdparty/gtest)
-include_directories(${CMAKE_SOURCE_DIR}/thirdparty/gtest/include)
 add_library(gtest ${CMAKE_SOURCE_DIR}/thirdparty/gtest/src/gtest-all.cc)
 
 add_library(gtest_main test_main.cc)
