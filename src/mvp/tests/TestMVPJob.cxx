@@ -29,7 +29,7 @@ struct MVPJobSeedTest : public MVPJobBase<MVPJobSeedTest> {
   }
 
   inline MVPPixelResult process_pixel(MVPAlgorithmVar const& seed, double col, double row, MVPAlgorithmOptions const& options) const {
-    return MVPJobBase::process_pixel(seed, col, row, options);
+    return MVPJobBase<MVPJobSeedTest>::process_pixel(seed, col, row, options);
   }
 
   inline MVPPixelResult process_pixel(MVPAlgorithmVar const& seed, vw::cartography::GeoReference const& georef, MVPAlgorithmOptions const& options) const {
