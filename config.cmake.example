@@ -1,8 +1,16 @@
+# TODO: Make script for cmake -C BuildSetup.cmake instead
+
 set(BINARY_DIR_INSTALL ON CACHE BOOL "Install to the build dir")
 set(BUILD_TESTS ON CACHE BOOL "Build tests")
 
 set(VW_ROOT /byss/khusmann/projects/VisionWorkbench/build)
 set(GEARMAN_ROOT /byss/khusmann/projects/BinaryBuilder/build)
+
 set(BOOST_ROOT /byss/khusmann/projects/BinaryBuilder/build)
 set(Boost_NO_SYSTEM_PATHS TRUE)
 set(Boost_NO_BOOST_CMAKE TRUE)
+
+set(PROTOBUF_ROOT /byss/khusmann/projects/BinaryBuilder/build)
+set(PROTOBUF_LIBRARY ${PROTOBUF_ROOT}/lib/libprotobuf.so)
+set(PROTOBUF_INCLUDE_DIR ${PROTOBUF_ROOT}/include)
+set(PROTOBUF_PROTOC_EXECUTABLE ${PROTOBUF_ROOT}/bin/protoc)
