@@ -1,19 +1,15 @@
-cmake_minimum_required (VERSION 2.6)
+cmake_minimum_required (VERSION 2.8)
 project (MVP)
 
-include(CMakeDependentOption)
-
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules")
-
-# TODO:
-# This is to avoid the bug http://public.kitware.com/Bug/view.php?id=12442
-# Otherwise, if /packages version does not have MT but the system distribution
-# does, it will incorrectly use the system version. It would be a good idea
-# to periodically check which boost libs the programs are linking to by running
-# ldd on them...
-# set(Boost_USE_MULTITHREADED OFF)
-
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fPIC")
+
+###
+### Load configuration
+###
+if (EXISTS ${CMAKE_BINARY_DIR}/config.cmake)
+  include (${CMAKE_BINARY_DIR}/config.cmake)
+endif()
 
 ###
 ### Find Packages
