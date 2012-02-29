@@ -228,6 +228,11 @@ class MVPWorkspace {
       return m_footprints.images_in_region(m_plate_georef.tile_lonlat_bbox(col, row, level));
     }
 
+    /// Return all orbital images overlapping a tile bbox region
+    std::vector<OrbitalImageFileDescriptor> images_at_tile_bbox(vw::BBox2i tile_bbox, int level) const {
+      return m_footprints.images_in_region(m_plate_georef.tile_lonlat_bbox(tile_bbox, level));
+    }
+
     /// Return an MVPJobRequest for a given tile at a given level.
     MVPJobRequest assemble_job(int col, int row, int level) const {
       using google::protobuf::RepeatedFieldBackInserter;
