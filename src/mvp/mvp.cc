@@ -114,6 +114,31 @@ void print_welcome(MVPWorkspace const& work, BBox2i const& render_bbox, int rend
   cout << endl;
 }
 
+void print_crop_info(MVPWorkspace const& work, BBox2i const& render_bbox, int render_level) {
+  vector<OrbitalImageFileDescriptor> images(work.images_at_tile_bbox(render_bbox, render_level));
+  BBox2 lonlat_bbox(work.plate_georef().tile_lonlat_bbox(render_bbox, render_level));
+
+  BOOST_FOREACH(OrbitalImageFileDescriptor const& o, images) {
+    boost::shared_ptr<vw::DiskImageResource> rsrc(vw::DiskImageResource::open(o.image_path()));
+    camera::PinholeModel camera(o.camera_path());
+
+    cartography::Datum datum(work.plate_georef().datum());
+    Vector2i alt_limits(work.user_settings().alt_min(), work.user_settings().alt_max());
+
+    BBox2i cropbox(OrbitalImageCrop::find_crop_bbox(camera, lonlat_bbox, datum, alt_limits));
+    cropbox.crop(vw::BBox2i(0, 0, rsrc->cols(), rsrc->rows()));
+
+    if (cropbox.width() < 1 || cropbox.height() < 1) {
+      continue;
+    }
+
+    cropbox = grow_bbox_to_int(cropbox);
+
+    cout << o.image_path() << ": " << cropbox.min().x() << ", " << cropbox.min().y() 
+         << " width: " << cropbox.width() << " height: " << cropbox.height() << endl;
+  }
+}
+
 void plate_tunnel(MVPWorkspace const& work, BBox2i const& render_bbox, int render_level) {
   //TODO: create platefile in a seperate function
   boost::scoped_ptr<PlateFile> pf(new PlateFile(work.result_platefile(),
@@ -171,6 +196,7 @@ int main(int argc, char* argv[])
   print_welcome(work, render_bbox, render_level);
 
   if (opts.dry_run) {
+    //print_crop_info(work, render_bbox, render_level);
     vw_out() << "Dry run requested. Exiting..." << endl;
     return 0;
   }
