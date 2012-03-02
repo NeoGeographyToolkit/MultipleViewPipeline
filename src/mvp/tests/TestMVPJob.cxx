@@ -33,8 +33,8 @@ struct MVPJobSeedTest : public MVPJobBase<MVPJobSeedTest> {
   }
 
   inline MVPPixelResult process_pixel(MVPAlgorithmVar const& seed, vw::cartography::GeoReference const& georef, MVPAlgorithmOptions const& options) const {
-    // Multiply window size (in sigma) by 6 to get window size in pixels
-    Vector2 pixelWinSize = Vector2(seed.windows.x(), seed.windows.y()) * 6;
+    // Multiply window size (in sigma) by GAUSS_DIVISOR to get window size in pixels
+    Vector2 pixelWinSize = Vector2(seed.windows.x(), seed.windows.y()) * GAUSS_DIVISOR;
     
     BBox2 patchWin(0, 0, pixelWinSize.x(), pixelWinSize.y());
     patchWin -= (pixelWinSize - Vector2(1, 1)) / 2;
@@ -74,14 +74,14 @@ TEST(MVPJobSeedTest, process_pixel) {
   list<MVPSeedBBox> expected_seeds(job.expected_seeds());
 
   BOOST_FOREACH(MVPSeedBBox const& es, expected_seeds) {
-    MVPAlgorithmVar seed(0, Vector3f(), Vector3f(32, 32, 0) / 6);
+    MVPAlgorithmVar seed(0, Vector3f(), Vector3f(32, 32, 0) / GAUSS_DIVISOR);
 
     Vector2 center_pt = (es.bbox.min() + es.bbox.max() - Vector2(1, 1)) / 2;
 
     EXPECT_EQ(job.process_pixel(seed, center_pt.x(), center_pt.y(), MVPAlgorithmOptions()).alt, es.seed.alt);
   }
 
-  MVPAlgorithmVar seed(0, Vector3f(), Vector3f(64, 64, 0) / 6);
+  MVPAlgorithmVar seed(0, Vector3f(), Vector3f(64, 64, 0) / GAUSS_DIVISOR);
   
   EXPECT_EQ(job.process_pixel(seed, 160, 96, MVPAlgorithmOptions()).alt, 32*32);
   EXPECT_EQ(job.process_pixel(seed, 160, 32, MVPAlgorithmOptions()).alt, 0);

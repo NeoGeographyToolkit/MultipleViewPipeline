@@ -102,6 +102,9 @@ struct MVPSeedBBox {
   MVPSeedBBox(MVPAlgorithmVar s, vw::BBox2i b, double a) : seed(s), bbox(b), alt_range(a) {}
 };
 
+// TODO: Put this in the options
+#define GAUSS_DIVISOR 6.0
+
 template <class ImplT>
 struct MVPJobBase {
 
@@ -139,7 +142,7 @@ struct MVPJobBase {
     vw::Vector2 center_pt = (bbox.min() + bbox.max() - vw::Vector2(1, 1)) / 2;
     vw::Vector2 seed_lonlat = m_georef.pixel_to_lonlat(center_pt);
     vw::Vector3f orientation = vw::cartography::lon_lat_radius_to_xyz(vw::Vector3(seed_lonlat[0], seed_lonlat[1], 1));
-    vw::Vector3f windows = vw::Vector3f(bbox.width(), bbox.height(), m_settings.seed_window_smooth_size()) / 6;
+    vw::Vector3f windows = vw::Vector3f(bbox.width(), bbox.height(), m_settings.seed_window_smooth_size()) / GAUSS_DIVISOR;
 
     MVPAlgorithmVar seed(alt, orientation, windows);
 
@@ -204,7 +207,7 @@ struct MVPJobBase {
 
     // Set seed windows to their final size
     BOOST_FOREACH(MVPSeedBBox& sb, seed_list) {
-      sb.seed.windows = vw::Vector3f(m_settings.seed_window_size(), m_settings.seed_window_size(), m_settings.seed_window_smooth_size()) / 6;
+      sb.seed.windows = vw::Vector3f(m_settings.seed_window_size(), m_settings.seed_window_size(), m_settings.seed_window_smooth_size()) / GAUSS_DIVISOR;
     }
 
     return seed_list;
