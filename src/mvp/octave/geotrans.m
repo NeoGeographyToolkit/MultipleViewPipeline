@@ -1,7 +1,7 @@
 function result = geotrans(image, from_georef, to_georef, sz)
   %% Draw DEM on tile
   P = inv(from_georef.transform) * to_georef.transform;
-  [X Y] = meshgrid(1:sz(2), 1:sz(1));
+  [X Y] = meshgrid(1:sz(1), 1:sz(2));
   D = [X(:) Y(:) ones(prod(sz), 1)]';
   PD = P * D;
 
