@@ -3,21 +3,20 @@ function ts_showpatches(seed, georef, images)
 
   numPatches = numel(patches);
 
-  currPatch = 1;
-  while (true)
-    printf("Current patch: %d\n\n", currPatch);
-    imagesc(patches{currPatch});
-    fflush(stdout);
-    [locX locY btn] = ginput(1);
-    if (btn == 1)
-      currPatch += 1;
-    elseif (btn == 3)
-      currPatch -= 1;
-    else
+  gridWidth = ceil(sqrt(numPatches));
+  gridHeight = ceil(numPatches / gridWidth);
+
+  for currPatch = 1:numPatches
+    if (currPatch > numPatches)
       break;
-    endif
-    currPatch = mod(currPatch - 1, numPatches) + 1;
-  endwhile
+    endif 
+
+    subplot(gridHeight, gridWidth, currPatch);
+    imagesc(patches{currPatch});
+    title(["Patch " num2str(currPatch)]);
+    axis("square");
+    currPatch++;
+  endfor
 endfunction
 
 % vim:set syntax=octave:
