@@ -7,10 +7,6 @@ function ts_showpatches(seed, georef, images)
   gridHeight = ceil(numPatches / gridWidth);
 
   for currPatch = 1:numPatches
-    if (currPatch > numPatches)
-      break;
-    endif 
-
     subplot(gridHeight, gridWidth, currPatch);
     imagesc(patches{currPatch});
     title(["Patch " num2str(currPatch)]);
