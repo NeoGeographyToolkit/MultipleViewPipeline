@@ -28,27 +28,23 @@ target_link_libraries(mvp_dumpjob mvpcommon
                                   ${VW_LIBRARIES}
                                   ${Boost_LIBRARIES})
 
+add_executable(mvp_worker mvp_worker.cc)
+target_link_libraries(mvp_worker mvpcommon
+                                 ${PROTOBUF_LIBRARIES}
+                                 ${VW_LIBRARIES}
+                                 ${Boost_LIBRARIES})
+
 if (ENABLE_OCTAVE_SUPPORT)
   target_link_libraries(mvp ${OCTAVE_LIBRARIES})
   target_link_libraries(mvp_dumpjob ${OCTAVE_LIBRARIES})
+  target_link_libraries(mvp_worker ${OCTAVE_LIBRARIES})
 endif()
 
 if (ENABLE_GEARMAN_SUPPORT)
   target_link_libraries(mvp ${GEARMAN_LIBRARIES})
-
-  add_executable(mvp_worker mvp_worker.cc)
-  target_link_libraries(mvp_worker mvpcommon
-                                   ${PROTOBUF_LIBRARIES}
-                                   ${VW_LIBRARIES}
-                                   ${Boost_LIBRARIES}
-                                   ${GEARMAN_LIBRARIES})
-
-  if (ENABLE_OCTAVE_SUPPORT)
-    target_link_libraries(mvp_worker ${OCTAVE_LIBRARIES})
-  endif()
+  target_link_libraries(mvp_dumpjob ${GEARMAN_LIBRARIES})
+  target_link_libraries(mvp_worker ${GEARMAN_LIBRARIES})
 endif()
-
-#set_target_properties(mvp_solo PROPERTIES COMPILE_FLAGS "-DTEST_SRCDIR\\\"${CMAKE_CURRENT_SOURCE_DIR}\\\"")
 
 configure_file(Config.h.in Config.h)
 
