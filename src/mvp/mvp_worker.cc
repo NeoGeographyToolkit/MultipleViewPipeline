@@ -7,35 +7,39 @@
 #include <mvp/MVPJob.h>
 #include <vw/Octave/Main.h>
 
+#if MVP_ENABLE_GEARMAN_SUPPORT
+#include <mvp/GearmanWrappers.h>
+#endif
+
 using namespace std;
 using namespace mvp;
+using namespace vw;
 namespace po = boost::program_options;
 
-class GearmanProgressCallback : public vw::ProgressCallback {
-  gearman_job_st *m_job;
-  vw::TerminalProgressCallback m_pc;
-
-  public:
-    GearmanProgressCallback(gearman_job_st *job, string const& message)
-      : m_job(job), m_pc("mvp", message) {}
-
-    virtual void report_progress(double progress) const {
-      m_pc.report_progress(progress);
-      //TODO: throw on error?
-      gearman_job_send_status(m_job, progress * 100, 100);
-    }
-
-    virtual void report_incremental_progress(double incremental_progress) const {
-      vw_throw(vw::NoImplErr() << "Incremental progress not supported by GearmanProgressCallback");
-    }
-
-    virtual void report_finished() const {
-      m_pc.report_finished();
-      //TODO: throw on error?
-      gearman_job_send_status(m_job, 100, 100);
-    }
+struct Options {
+  po::variables_map vm;
+  string gearman_server;
+  string job_filename;
 };
 
+void handle_arguments(int argc, char* argv[], Options *opts) {
+  po::options_description cmd_opts("Options");
+  cmd_opts.add_options()
+    ("help,h", "Print this message")
+    ("gearman-server", po::value<string>(&opts->gearman_server)->default_value("localhost"), "Host running gearmand")
+    ("job,j", po::value<string>(&opts->job_filename), "Process a jobfile")
+    ;
+
+  store(po::command_line_parser(argc, argv).options(cmd_opts).run(), opts->vm);
+  
+  if (opts->vm.count("help")) {
+    vw_throw(vw::ArgumentErr() << cmd_opts);
+  }
+
+  notify(opts->vm);
+}
+
+#if MVP_ENABLE_GEARMAN_SUPPORT
 static void *mvpalgorithm_gearman(gearman_job_st *job, void *context, 
                                   size_t *result_size, gearman_return_t *ret_ptr) 
 {
@@ -53,28 +57,21 @@ static void *mvpalgorithm_gearman(gearman_job_st *job, void *context,
   *result_size = 0;
   return NULL;
 }
-
+#endif
 
 int main(int argc, char *argv[]) {
   #if MVP_ENABLE_OCTAVE_SUPPORT
   vw::octave::start_octave_interpreter();
   #endif
 
-  po::options_description cmd_opts("Options");
-  cmd_opts.add_options()
-    ("help,h", "Print this message")
-    ("gearman-server", po::value<string>()->default_value("localhost"), "Host running gearmand")
-    ;
+  Options opts;
 
-  po::variables_map vm;
-  store(po::command_line_parser(argc, argv).options(cmd_opts).run(), vm);
-  
-  if (vm.count("help")) {
-    cout << cmd_opts << endl;
-    return 0;
+  try {
+    handle_arguments(argc, argv, &opts);
+  } catch (const vw::ArgumentErr& e) {
+    vw_out() << e.what() << endl;
+    return 1;
   }
-
-  notify(vm);
 
   gearman_return_t ret;
   gearman_worker_st *worker;
@@ -86,7 +83,7 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  ret = gearman_worker_add_servers(worker, vm["gearman-server"].as<string>().c_str());
+  ret = gearman_worker_add_servers(worker, opts.gearman_server.c_str());
   if (gearman_failed(ret)) {
     cout << "Gearman error: " << gearman_worker_error(worker) << endl;
     return 1;
@@ -113,7 +110,4 @@ int main(int argc, char *argv[]) {
   #endif
 
   return 0;
-
-
-
 }

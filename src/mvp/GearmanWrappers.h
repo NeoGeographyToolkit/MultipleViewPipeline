@@ -174,4 +174,30 @@ class GearmanTaskList {
     }
 };
 
+class GearmanProgressCallback : public vw::ProgressCallback {
+  gearman_job_st *m_job;
+  vw::TerminalProgressCallback m_pc;
+
+  public:
+    GearmanProgressCallback(gearman_job_st *job, std::string const& message)
+      : m_job(job), m_pc("mvp", message) {}
+
+    virtual void report_progress(double progress) const {
+      m_pc.report_progress(progress);
+      //TODO: throw GearmanErr on error?
+      //TODO: check abort
+      gearman_job_send_status(m_job, progress * 100, 100);
+    }
+
+    virtual void report_incremental_progress(double incremental_progress) const {
+      vw_throw(vw::NoImplErr() << "Incremental progress not supported by GearmanProgressCallback");
+    }
+
+    virtual void report_finished() const {
+      m_pc.report_finished();
+      //TODO: throw GearmanErr on error?
+      gearman_job_send_status(m_job, 100, 100);
+    }
+};
+
 #endif
