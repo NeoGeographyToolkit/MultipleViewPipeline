@@ -27,7 +27,7 @@ void handle_arguments(int argc, char* argv[], Options *opts) {
   cmd_opts.add_options()
     ("help,h", "Print this message")
     ("gearman-server", po::value<string>(&opts->gearman_server)->default_value("localhost"), "Host running gearmand")
-    ("job,j", po::value<string>(&opts->job_filename), "Process a jobfile")
+    ("job", po::value<string>(&opts->job_filename), "Process a jobfile")
     ;
 
   store(po::command_line_parser(argc, argv).options(cmd_opts).run(), opts->vm);
@@ -40,9 +40,8 @@ void handle_arguments(int argc, char* argv[], Options *opts) {
 }
 
 #if MVP_ENABLE_GEARMAN_SUPPORT
-static void *mvpalgorithm_gearman(gearman_job_st *job, void *context, 
-                                  size_t *result_size, gearman_return_t *ret_ptr) 
-{
+void *mvpalgorithm_gearman(gearman_job_st *job, void *context, 
+                           size_t *result_size, gearman_return_t *ret_ptr) {
   MVPJobRequest job_request;
   job_request.ParseFromString(string((const char *)gearman_job_workload(job), gearman_job_workload_size(job)));
 
@@ -73,37 +72,18 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  gearman_return_t ret;
-  gearman_worker_st *worker;
+  GearmanWorkerWrapper gworker;
 
-  worker = gearman_worker_create(NULL);
+  try {
+    gworker.add_servers(opts.gearman_server);
+    gworker.add_function("mvpalgorithm", mvpalgorithm_gearman);
 
-  if (!worker) {
-    cout << "Error creating gearman worker" << endl;
-    return 1;
-  }
-
-  ret = gearman_worker_add_servers(worker, opts.gearman_server.c_str());
-  if (gearman_failed(ret)) {
-    cout << "Gearman error: " << gearman_worker_error(worker) << endl;
-    return 1;
-  }
-
-  ret = gearman_worker_add_function(worker, "mvpalgorithm", 0, mvpalgorithm_gearman, 0);
-  if (gearman_failed(ret)) {
-    cout << "Gearman error: " << gearman_worker_error(worker) << endl;
-    return 1;
-  }
-
-  while (1) {
-    ret = gearman_worker_work(worker);
-    if (gearman_failed(ret)) {
-      std::cout << "Gearman error: " << gearman_worker_error(worker) << endl;
-      break;
+    while (1) {
+      gworker.work();
     }
+  } catch (const vw::GearmanErr& e) {
+    vw_out() << e.what() << endl;
   }
-
-  gearman_worker_free(worker);
 
   #if MVP_ENABLE_OCTAVE_SUPPORT
   do_octave_atexit();

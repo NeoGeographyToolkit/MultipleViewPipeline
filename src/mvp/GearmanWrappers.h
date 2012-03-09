@@ -28,6 +28,15 @@ class GearmanClientWrapper {
       }
     }
 
+    GearmanClientWrapper &operator=(GearmanClientWrapper const& other) {
+      m_is_connected = other.m_is_connected;
+      m_client = gearman_client_clone(NULL, other.m_client);
+      if (!m_client) {
+        throw std::bad_alloc();
+      }
+      return *this;
+    }
+
     void add_servers(std::string const& servers) {
       gearman_return_t ret;
       ret = gearman_client_add_servers(m_client, servers.c_str());
@@ -47,6 +56,73 @@ class GearmanClientWrapper {
   
     ~GearmanClientWrapper() {
       gearman_client_free(m_client);
+    }
+};
+
+class GearmanWorkerWrapper {
+  gearman_worker_st *m_worker;
+  bool m_is_connected;
+
+  public:
+    GearmanWorkerWrapper() : m_is_connected(false) {
+      m_worker = gearman_worker_create(NULL);
+      if (!m_worker) {
+        throw std::bad_alloc();
+      }
+    }
+
+    GearmanWorkerWrapper(GearmanWorkerWrapper const& other)
+      : m_is_connected(other.m_is_connected) {
+      m_worker = gearman_worker_clone(NULL, other.m_worker);
+      if (!m_worker) {
+        throw std::bad_alloc();
+      }
+    }
+
+    GearmanWorkerWrapper &operator=(GearmanWorkerWrapper const& other) {
+      m_is_connected = other.m_is_connected;
+      m_worker = gearman_worker_clone(NULL, other.m_worker);
+      if (!m_worker) {
+        throw std::bad_alloc();
+      }
+      return *this;
+    }
+
+    void add_servers(std::string const& servers) {
+      gearman_return_t ret;
+      ret = gearman_worker_add_servers(m_worker, servers.c_str());
+      if (gearman_failed(ret)) {
+        vw::vw_throw(vw::GearmanErr() << gearman_worker_error(m_worker));
+      }
+      m_is_connected = true;
+    }
+
+    void add_function(std::string const& function_name, gearman_worker_fn *function) {
+      gearman_return_t ret;
+      ret = gearman_worker_add_function(m_worker, function_name.c_str(), 0, function, 0);
+      if (gearman_failed(ret)) {
+        vw::vw_throw(vw::GearmanErr() << gearman_worker_error(m_worker));
+      }
+    }
+
+    void work() const {
+      gearman_return_t ret;
+      ret = gearman_worker_work(m_worker);
+      if (gearman_failed(ret)) {
+        vw::vw_throw(vw::GearmanErr() << gearman_worker_error(m_worker));
+      }
+    }
+
+    bool is_connected() const {
+      return m_is_connected;
+    }
+
+    gearman_worker_st *worker() const {
+      return m_worker;
+    }
+
+    ~GearmanWorkerWrapper() {
+      gearman_worker_free(m_worker);
     }
 };
 
@@ -183,20 +259,26 @@ class GearmanProgressCallback : public vw::ProgressCallback {
       : m_job(job), m_pc("mvp", message) {}
 
     virtual void report_progress(double progress) const {
-      m_pc.report_progress(progress);
-      //TODO: throw GearmanErr on error?
       //TODO: check abort
-      gearman_job_send_status(m_job, progress * 100, 100);
+      gearman_return_t ret;
+      ret = gearman_job_send_status(m_job, progress * 100, 100);
+      if (gearman_failed(ret)) {
+        vw::vw_throw(vw::GearmanErr() << gearman_strerror(ret));
+      }  
+      m_pc.report_progress(progress);
     }
 
     virtual void report_incremental_progress(double incremental_progress) const {
-      vw_throw(vw::NoImplErr() << "Incremental progress not supported by GearmanProgressCallback");
+      vw::vw_throw(vw::NoImplErr() << "Incremental progress not supported by GearmanProgressCallback");
     }
 
     virtual void report_finished() const {
+      gearman_return_t ret;
+      ret = gearman_job_send_status(m_job, 100, 100);
+      if (gearman_failed(ret)) {
+        vw::vw_throw(vw::GearmanErr() << gearman_strerror(ret));
+      }
       m_pc.report_finished();
-      //TODO: throw GearmanErr on error?
-      gearman_job_send_status(m_job, 100, 100);
     }
 };
 
