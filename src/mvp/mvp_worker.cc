@@ -23,20 +23,41 @@ struct Options {
 };
 
 void handle_arguments(int argc, char* argv[], Options *opts) {
+  po::options_description all_opts;
+
   po::options_description cmd_opts("Options");
   cmd_opts.add_options()
     ("help,h", "Print this message")
-    ("gearman-server", po::value<string>(&opts->gearman_server)->default_value("localhost"), "Host running gearmand")
     ("job", po::value<string>(&opts->job_filename), "Process a jobfile")
     ;
+  all_opts.add(cmd_opts);
 
-  store(po::command_line_parser(argc, argv).options(cmd_opts).run(), opts->vm);
+  #if MVP_ENABLE_GEARMAN_SUPPORT
+  po::options_description gearman_opts("Gearman Options");
+  gearman_opts.add_options()
+    ("gearman-server", po::value<string>(&opts->gearman_server), "Host running gearmand")
+    ;
+  all_opts.add(gearman_opts);
+  #endif
+
+  po::positional_options_description p;
+  p.add("job", 1);
+
+  store(po::command_line_parser(argc, argv).options(all_opts).positional(p).run(), opts->vm);
   
   if (opts->vm.count("help")) {
-    vw_throw(vw::ArgumentErr() << cmd_opts);
+    vw_throw(vw::ArgumentErr() << all_opts);
   }
 
   notify(opts->vm);
+
+  if (!opts->gearman_server.empty() && !opts->job_filename.empty()) {
+    vw_throw(vw::ArgumentErr() << "Specify either a gearman server OR a jobfile");
+  }
+
+  if (opts->gearman_server.empty() && opts->job_filename.empty()) {
+    vw_throw(vw::ArgumentErr() << "Specify either a gearman server OR a jobfile");
+  }
 }
 
 #if MVP_ENABLE_GEARMAN_SUPPORT
@@ -72,18 +93,28 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  GearmanWorkerWrapper gworker;
-
-  try {
-    gworker.add_servers(opts.gearman_server);
-    gworker.add_function("mvpalgorithm", mvpalgorithm_gearman);
-
-    while (1) {
-      gworker.work();
-    }
-  } catch (const vw::GearmanErr& e) {
-    vw_out() << e.what() << endl;
+  if (!opts.job_filename.empty()) {
+    MVPTileResult result = mvpjob_process_tile(opts.job_filename, 
+                                               TerminalProgressCallback("mvp", "Processing " + opts.job_filename));
+    write_image(opts.job_filename + ".tif", result.alt);
   }
+
+  #if MVP_ENABLE_GEARMAN_SUPPORT
+  if (!opts.gearman_server.empty()) {
+    GearmanWorkerWrapper gworker;
+
+    try {
+      gworker.add_servers(opts.gearman_server);
+      gworker.add_function("mvpalgorithm", mvpalgorithm_gearman);
+
+      while (1) {
+        gworker.work();
+      }
+    } catch (const vw::GearmanErr& e) {
+      vw_out() << e.what() << endl;
+    }
+  }
+  #endif
 
   #if MVP_ENABLE_OCTAVE_SUPPORT
   do_octave_atexit();
