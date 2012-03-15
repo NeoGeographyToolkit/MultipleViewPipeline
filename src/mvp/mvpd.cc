@@ -1,8 +1,10 @@
 #include <zmq.hpp>
 #include <string>
 #include <iostream>
+#include <mvp/MVPMessages.pb.h>
 
 using namespace std;
+using namespace mvp;
 
 string cmd_sock_url = "tcp://*:6677";
 string bcast_sock_url = "tcp://*:6678";
@@ -37,7 +39,10 @@ int main (int argc, char *argv[]) {
     if (items[0].revents & ZMQ_POLLIN) {
       cmd_sock.recv(&message);
       string str_message(static_cast<char*>(message.data()), message.size());
-      cout << "received command: " << str_message << " size: " << message.size() << endl;
+      MVPCommandMessage cmd;
+      cmd.ParseFromString(str_message);
+
+      cout << cmd.DebugString() << endl;
 
       zmq::message_t reply(2);
       memcpy(reply.data(), "OK", 2);

@@ -5,7 +5,7 @@ sys.path.append("@PYTHON_INSTALL_DIR@")
 
 import zmq
 from optparse import OptionParser
-from MVPMessages_pb2 import MVPCommand
+from MVPMessages_pb2 import MVPCommandMessage
 
 parser = OptionParser()
 parser.usage = "%prog [options] <mvpd server>"
@@ -33,24 +33,24 @@ poller = zmq.Poller()
 poller.register(cmd_sock, zmq.POLLIN)
 
 if options.cmd_abort:
-  cmd = MVPCommand()
-  cmd.cmd = MVPCommand.ABORT
+  cmd = MVPCommandMessage()
+  cmd.cmd = MVPCommandMessage.ABORT
   cmd_sock.send(cmd.SerializeToString())
   evts = poller.poll(timeout)
   if not(evts):
     print "Failed to receive reply from", cmd_sock_url
 
 if options.cmd_status:
-  cmd = MVPCommand()
-  cmd.cmd = MVPCommand.STATUS
+  cmd = MVPCommandMessage()
+  cmd.cmd = MVPCommandMessage.STATUS
   cmd_sock.send(cmd.SerializeToString())
   evts = poller.poll(timeout)
   if not(evts):
     print "Failed to receive reply from", cmd_sock_url
 
 if options.cmd_launch_filename:
-  cmd = MVPCommand()
-  cmd.cmd = MVPCommand.STATUS
+  cmd = MVPCommandMessage()
+  cmd.cmd = MVPCommandMessage.STATUS
   cmd.url = options.cmd_launch_filename
   cmd_sock.send(cmd.SerializeToString())
   evts = poller.poll(timeout)

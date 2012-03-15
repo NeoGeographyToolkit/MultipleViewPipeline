@@ -1,6 +1,6 @@
 package mvp;
 
-message MVPCommand {
+message MVPCommandMessage {
   enum CommandType {
     LAUNCH = 0;
     STATUS = 1;
