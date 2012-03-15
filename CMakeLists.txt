@@ -21,7 +21,11 @@ find_package(ZeroMQ REQUIRED)
 find_package(Octave)
 find_package(Gearman)
 
-# TODO: embed in protobuf python macro
+###
+### Python Protobuffers
+###
+include(ProtobufGeneratePython)
+# TODO: CACHE variable?
 set(PYTHON_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/share/mvp/python)
 
 ###

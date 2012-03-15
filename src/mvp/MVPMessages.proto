@@ -3,7 +3,7 @@ package mvp;
 message MVPCommand {
   enum CommandType {
     LAUNCH = 0;
-    GETSTATUS = 1;
+    STATUS = 1;
     ABORT = 2; 
   }
 

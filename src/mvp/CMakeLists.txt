@@ -55,12 +55,19 @@ if (ENABLE_GEARMAN_SUPPORT)
 endif()
 
 configure_file(Config.h.in Config.h)
-configure_file(mvpadmin.in mvpadmin)
 
+# Build mvpadmin
+PROTOBUF_GENERATE_PYTHON(PROTO_PYS MVPMessages.proto)
+configure_file(mvpadmin.in mvpadmin)
+add_custom_target(mvpadmin ALL DEPENDS ${PROTO_PYS})
+
+# Install executables / headers
 install(TARGETS mvp mvp_dumpjob mvp_worker DESTINATION bin)
-install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/mvpadmin  DESTINATION bin)
 install(FILES ${MVP_HDRS} DESTINATION include/mvp)
-#install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mvpadmin DESTINATION ${PYTHON_INSTALL_DIR})
+
+# Install python executables / support
+install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/mvpadmin  DESTINATION bin)
+install(FILES ${PROTO_PYS} DESTINATION ${PYTHON_INSTALL_DIR})
 
 if (ENABLE_OCTAVE_SUPPORT)
   add_subdirectory(octave)
