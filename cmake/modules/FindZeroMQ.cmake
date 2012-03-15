@@ -1,0 +1,18 @@
+# Find zeromq
+
+# ZEROMQ_FOUND
+# ZEROMQ_LIBRARIES
+# ZEROMQ_INCLUDE_DIRS
+
+include(FindPackageHandleStandardArgs)
+
+find_library(ZEROMQ_LIBRARY NAMES zmq HINTS ${ZEROMQ_ROOT}/lib)
+
+find_path(ZEROMQ_INCLUDE_DIR NAMES zmq.hpp HINTS ${ZEROMQ_ROOT}/include)
+
+mark_as_advanced(ZEROMQ_LIBRARY ZEROMQ_INCLUDE_DIR)
+
+set(ZEROMQ_INCLUDE_DIRS ${ZEROMQ_INCLUDE_DIR})
+set(ZEROMQ_LIBRARIES ${ZEROMQ_LIBRARY})
+
+find_package_handle_standard_args(ZeroMQ REQUIRED_VARS ZEROMQ_LIBRARY ZEROMQ_INCLUDE_DIR)
