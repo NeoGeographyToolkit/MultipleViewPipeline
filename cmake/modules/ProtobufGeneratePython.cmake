@@ -6,8 +6,23 @@ function(PROTOBUF_GENERATE_PYTHON SRCS)
     return()
   endif()
 
-  # TODO: add different paths?
-  set(_protobuf_include_path -I ${CMAKE_CURRENT_SOURCE_DIR})
+  if(NOT DEFINED PROTOBUF_GENERATE_PYTHON_APPEND_PATH)
+    set(PROTOBUF_GENERATE_PYTHON_APPEND_PATH TRUE)
+  endif()
+
+  if(PROTOBUF_GENERATE_PYTHON_APPEND_PATH)
+    # Create an include path for each file specified
+    foreach(FIL ${ARGN})
+      get_filename_component(ABS_FIL ${FIL} ABSOLUTE)
+      get_filename_component(ABS_PATH ${ABS_FIL} PATH)
+      list(FIND _protobuf_include_path ${ABS_PATH} _contains_already)
+      if (${_contains_already} EQUAL -1)
+        list(APPEND _protobuf_include_path -I ${ABS_PATH})
+      endif()
+    endforeach()
+  else()
+    set(_protobuf_include_path -I ${CMAKE_CURRENT_SOURCE_DIR})
+  endif()
 
   set(${SRCS})
   foreach(FIL ${ARGN})
