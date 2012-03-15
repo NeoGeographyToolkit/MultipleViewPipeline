@@ -4,7 +4,8 @@ set(_protobuf_include_path -I ${CMAKE_SOURCE_DIR}/thirdparty/vw_protobuf)
 PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS MVPJobRequest.proto
                                             OrbitalImageFileDescriptor.proto
                                             MVPUserSettings.proto
-                                            MVPAlgorithmOptions.proto)
+                                            MVPAlgorithmOptions.proto
+                                            MVPMessages.proto)
 
 set(MVP_HDRS MVPJob.h
              MVPWorkspace.h
@@ -54,9 +55,12 @@ if (ENABLE_GEARMAN_SUPPORT)
 endif()
 
 configure_file(Config.h.in Config.h)
+configure_file(mvpadmin.in mvpadmin)
 
 install(TARGETS mvp mvp_dumpjob mvp_worker DESTINATION bin)
+install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/mvpadmin  DESTINATION bin)
 install(FILES ${MVP_HDRS} DESTINATION include/mvp)
+#install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mvpadmin DESTINATION ${PYTHON_INSTALL_DIR})
 
 if (ENABLE_OCTAVE_SUPPORT)
   add_subdirectory(octave)

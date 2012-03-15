@@ -6,7 +6,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fPIC")
 
 ###
 ### Load configuration
-###
+### TODO: Do the right way
 if (EXISTS ${CMAKE_BINARY_DIR}/config.cmake)
   include (${CMAKE_BINARY_DIR}/config.cmake)
 endif()
@@ -20,6 +20,9 @@ find_package(Protobuf REQUIRED)
 find_package(ZeroMQ REQUIRED)
 find_package(Octave)
 find_package(Gearman)
+
+# TODO: embed in protobuf python macro
+set(PYTHON_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/share/mvp/python)
 
 ###
 ### Set Options
@@ -41,7 +44,7 @@ else()
   option(ENABLE_OCTAVE_SUPPORT "Build the MVP with octave support" OFF)
 endif()
 
-# If MFILE_INSTALL_DIR, OCTFILE_INSTALL_DIR
+# MFILE_INSTALL_DIR, OCTFILE_INSTALL_DIR
 if (ENABLE_OCTAVE_SUPPORT)
   set(MFILE_INSTALL_DIR ${OCTAVE_MFILE_DIR}/mvp CACHE PATH "Install prefix for octave m-files")
   set(OCTFILE_INSTALL_DIR ${OCTAVE_OCTFILE_DIR} CACHE PATH "Install prefix for octive oct-files")

@@ -1,0 +1,12 @@
+package mvp;
+
+message MVPCommand {
+  enum CommandType {
+    LAUNCH = 0;
+    GETSTATUS = 1;
+    ABORT = 2; 
+  }
+
+  required CommandType cmd = 1;
+  optional string url = 2;
+}
