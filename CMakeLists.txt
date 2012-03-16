@@ -24,9 +24,19 @@ find_package(Gearman)
 ###
 ### Python Protobuffers
 ###
-include(ProtobufGeneratePython)
+include(ProtobufGenerate)
 # TODO: CACHE variable?
 set(PYTHON_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/share/mvp/python)
+
+# Generate thirdparty vw_protobuf and install
+file(GLOB_RECURSE vw_protos RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/thirdparty/vw_protobuf/*.proto)
+PROTOBUF_GENERATE(PYOUT PROTO_PYS 
+                  IPATHS ${CMAKE_SOURCE_DIR}/thirdparty/vw_protobuf
+                  OUTPUT ${CMAKE_BINARY_DIR}/src
+                  PROTOS ${vw_protos})
+add_custom_target(vw_proto_python ALL DEPENDS ${PROTO_PYS})
+install(FILES ${PROTO_PYS} DESTINATION ${PYTHON_INSTALL_DIR})
+
 
 ###
 ### Set Options

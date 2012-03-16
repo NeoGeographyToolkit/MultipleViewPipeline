@@ -1,7 +1,7 @@
 package mvp;
 
-import "OrbitalImageFileDescriptor.proto";
-import "MVPUserSettings.proto";
+import "mvp/OrbitalImageFileDescriptor.proto";
+import "mvp/MVPUserSettings.proto";
 import "vw/Plate/PlateGeoReferenceDesc.proto";
 
 message MVPJobRequest {
