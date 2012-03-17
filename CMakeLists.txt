@@ -21,20 +21,12 @@ find_package(Boost REQUIRED COMPONENTS program_options)
 find_package(Protobuf REQUIRED)
 find_package(ZeroMQ REQUIRED)
 find_package(Octave)
-find_package(Gearman)
 
 ###
 ### Set Options
 ###
 option(BINARY_DIR_INSTALL "Install in the build directory" OFF)
 option(CMAKE_INSTALL_RPATH_USE_LINK_PATH "Use the link path as the rpath in the install" ON)
-
-# ENABLE_GEARMAN_SUPPORT
-if (GEARMAN_FOUND)
-  option(ENABLE_GEARMAN_SUPPORT "Build the MVP with gearman support" ON)
-else()
-  option(ENABLE_GEARMAN_SUPPORT "Build the MVP with gearman support" OFF)
-endif()
 
 # ENABLE_OCTAVE_SUPPORT
 if (OCTAVE_FOUND)
@@ -106,9 +98,5 @@ if (ENABLE_OCTAVE_SUPPORT)
   include_directories(${OCTAVE_INCLUDE_DIRS})
   link_directories(${OCTAVE_LIBRARY_DIRS})
 endif()
-
-if (ENABLE_GEARMAN_SUPPORT)
-  include_directories(${GEARMAN_INCLUDE_DIRS})
-endif() 
 
 add_subdirectory(src)
