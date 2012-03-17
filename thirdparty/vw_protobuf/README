@@ -3,7 +3,3 @@ into this dir and include them in our project.
 
 This should become obsolete when VW starts distributing their protobuf
 files.
-
-To add these to a project, simply add the following before a PROTOBUF_GENERATE_CPP:
-
-set(_protobuf_include_path -I ${CMAKE_SOURCE_DIR}/thirdparty/vw_protobuf)
