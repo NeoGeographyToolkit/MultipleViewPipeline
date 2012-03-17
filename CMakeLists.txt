@@ -4,6 +4,8 @@ project (MVP)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fPIC")
 
+include(ProtobufGenerate)
+
 ###
 ### Load configuration
 ### TODO: Do the right way
@@ -20,23 +22,6 @@ find_package(Protobuf REQUIRED)
 find_package(ZeroMQ REQUIRED)
 find_package(Octave)
 find_package(Gearman)
-
-###
-### Python Protobuffers
-###
-include(ProtobufGenerate)
-# TODO: CACHE variable?
-set(PYTHON_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/share/mvp/python)
-
-# Generate thirdparty vw_protobuf and install
-file(GLOB_RECURSE vw_protos RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/thirdparty/vw_protobuf/*.proto)
-PROTOBUF_GENERATE(PYOUT PROTO_PYS 
-                  IPATHS ${CMAKE_SOURCE_DIR}/thirdparty/vw_protobuf
-                  OUTPUT ${CMAKE_BINARY_DIR}/src
-                  PROTOS ${vw_protos})
-add_custom_target(vw_proto_python ALL DEPENDS ${PROTO_PYS})
-install(FILES ${PROTO_PYS} DESTINATION ${PYTHON_INSTALL_DIR})
-
 
 ###
 ### Set Options
@@ -57,6 +42,10 @@ if (OCTAVE_FOUND)
 else()
   option(ENABLE_OCTAVE_SUPPORT "Build the MVP with octave support" OFF)
 endif()
+
+# PYTHON_INSTALL_DIR
+# TODO: CACHE variable?
+set(PYTHON_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/share/mvp/python)
 
 # MFILE_INSTALL_DIR, OCTFILE_INSTALL_DIR
 if (ENABLE_OCTAVE_SUPPORT)
