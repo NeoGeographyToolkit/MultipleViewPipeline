@@ -58,7 +58,7 @@ function(PROTOBUF_GENERATE)
         COMMAND  ${PROTOBUF_PROTOC_EXECUTABLE}
         ARGS --cpp_out  ${PROTOBUF_GENERATE_OUTPUT} ${_include_list} ${ABS_FIL}
         DEPENDS ${ABS_FIL}
-        COMMENT "Running C++ protocol buffer compiler on ${FIL}"
+        COMMENT "Running C++ protocol buffer compiler on ${FIL_WE}.proto"
         VERBATIM )
     endif()
 
@@ -69,7 +69,7 @@ function(PROTOBUF_GENERATE)
         COMMAND ${PROTOBUF_PROTOC_EXECUTABLE}
         ARGS --python_out ${PROTOBUF_GENERATE_OUTPUT} ${_include_list} ${ABS_FIL}
         DEPENDS ${ABS_FIL}
-        COMMENT "Running Python protocol buffer compiler on ${FIL}"
+        COMMENT "Running Python protocol buffer compiler on ${FIL_WE}.proto"
         VERBATIM )
     endif()
   endforeach()
