@@ -2,7 +2,8 @@ set(MVP_PROTOS MVPJobRequest.proto
                OrbitalImageFileDescriptor.proto
                MVPUserSettings.proto
                MVPAlgorithmOptions.proto
-               MVPMessages.proto)
+               MVPMessages.proto
+               MVPWorkspaceDesc.proto)
 
 PROTOBUF_GENERATE(CPPOUT PROTO_SRCS 
                   HPPOUT PROTO_HDRS
@@ -43,8 +44,10 @@ install(TARGETS mvpd DESTINATION bin)
 install(FILES ${MVP_HDRS} DESTINATION include/mvp)
 
 # Install python executables / support
-install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/mvpadmin  DESTINATION bin)
-install(FILES ${PROTO_PYS} DESTINATION ${PYTHON_INSTALL_DIR})
+install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/mvpadmin DESTINATION bin)
+INSTALL_PROTOBUF_PYS(FILES ${PROTO_PYS} 
+                     BASEPATH ${CMAKE_BINARY_DIR}/src
+                     DESTINATION ${PYTHON_INSTALL_DIR})
 
 if (ENABLE_OCTAVE_SUPPORT)
   add_subdirectory(octave)
