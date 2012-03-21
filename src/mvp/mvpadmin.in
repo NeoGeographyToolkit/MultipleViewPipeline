@@ -6,7 +6,7 @@ sys.path.append("@PYTHON_INSTALL_DIR@")
 import zmq
 from optparse import OptionParser
 from mvp.MVPMessages_pb2 import MVPCommandMessage
-from mvp.MVPWorkspaceDesc_pb2 import MVPWorkspaceDesc
+from mvp.MVPWorkspaceRequest_pb2 import MVPWorkspaceRequest
 
 parser = OptionParser()
 parser.usage = "%prog [options] <mvpd server>"

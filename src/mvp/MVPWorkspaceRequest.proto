@@ -4,10 +4,11 @@ import "mvp/OrbitalImageFileDescriptor.proto";
 import "mvp/MVPUserSettings.proto";
 import "vw/Plate/PlateGeoReferenceDesc.proto";
 
-message MVPWorkspaceDesc {
+message MVPWorkspaceRequest {
   required string result_platefile = 1;
   required string internal_result_platefile = 2;
-  required vw.platefile.PlateGeoReferenceDesc plate_georef = 3;
-  required MVPUserSettings user_settings = 4;
-  repeated OrbitalImageFileDescriptor orbital_images = 5; 
+  repeated int32 render_bbox = 3;
+  required vw.platefile.PlateGeoReferenceDesc plate_georef = 4;
+  required MVPUserSettings user_settings = 5;
+  repeated OrbitalImageFileDescriptor orbital_images = 6;
 }

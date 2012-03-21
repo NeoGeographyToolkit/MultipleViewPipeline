@@ -3,7 +3,7 @@ set(MVP_PROTOS MVPJobRequest.proto
                MVPUserSettings.proto
                MVPAlgorithmOptions.proto
                MVPMessages.proto
-               MVPWorkspaceDesc.proto)
+               MVPWorkspaceRequest.proto)
 
 PROTOBUF_GENERATE(CPPOUT PROTO_SRCS 
                   HPPOUT PROTO_HDRS
