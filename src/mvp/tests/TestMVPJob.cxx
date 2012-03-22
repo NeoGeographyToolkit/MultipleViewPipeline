@@ -122,23 +122,36 @@ MVPJobRequest create_job_request(bool use_octave = false) {
   const int tile_size = 64;
   const Datum datum("D_MOON");
 
-  PlateGeoReference plate_georef(datum, "equi", tile_size, GeoReference::PixelAsPoint);
-  MVPUserSettings settings;
-  settings.set_alt_min(0);
-  settings.set_alt_max(0);
-  settings.set_alt_search_range(-1);
-  settings.set_seed_window_size(3);
-  settings.set_seed_window_smooth_size(-1);
-  settings.set_test_algorithm(true);
-  settings.set_use_octave(use_octave);
+  PlateGeoReference plate_geo(datum, "equi", tile_size, GeoReference::PixelAsPoint);
+  MVPUserSettings user_settings;
+  user_settings.set_alt_min(0);
+  user_settings.set_alt_max(0);
+  user_settings.set_alt_search_range(-1);
+  user_settings.set_seed_window_size(3);
+  user_settings.set_seed_window_smooth_size(-1);
+  user_settings.set_test_algorithm(true);
+  user_settings.set_use_octave(use_octave);
 
-  MVPWorkspace work("", "", plate_georef, settings);
-  work.add_image_pattern(SrcName("synth.%d.tif"), SrcName("synth.%d.pinhole"), 0, 3);
-  EXPECT_EQ(work.num_images(), 4);
+  MVPWorkspaceRequest work_request;
+  work_request.set_result_platefile("result");
+  work_request.set_internal_result_platefile("internal");
+  *work_request.mutable_plate_georef() = plate_geo.build_desc();
+  *work_request.mutable_user_settings() = user_settings;
+
+  for (int i = 0; i <= 3; i++) {
+    stringstream ss;
+    ss << "synth." << i;
+    OrbitalImageFileDescriptor image;
+    image.set_image_path(SrcName(ss.str() + ".tif"));
+    image.set_camera_path(SrcName(ss.str() + ".pinhole"));
+    *work_request.add_orbital_images() = image;
+  }
+
+  MVPWorkspace work(work_request);
 
   // Determine work levels, create the job request
-  int level = work.equal_resolution_level();
-  Vector2 col_row = work.tile_work_area(level).min() + Vector2(1, 0);
+  int level = work.render_level();
+  Vector2 col_row = work.render_bbox().min() + Vector2(3, 3);
   return work.assemble_job(col_row[0], col_row[1], level);
 }
 
@@ -158,6 +171,7 @@ void process_tile_test(MVPJobRequest job_request) {
 
   // Process the tile 
   MVPTileResult result(mvpjob_process_tile(job_request));
+  //write_image("result.tif", result.alt);
 
   PlateGeoReference plate_georef(job_request.plate_georef());
   Vector2 col_row = Vector2(job_request.col(), job_request.row());
@@ -206,7 +220,7 @@ void process_tile_test(MVPJobRequest job_request) {
 
   // Make sure we saw both no images AND all images
   EXPECT_EQ(min_overlap, 0);
-  EXPECT_EQ(max_overlap, 4);
+  EXPECT_GT(max_overlap, 1);
 }
 
 TEST(MVPJob, process_tile) {

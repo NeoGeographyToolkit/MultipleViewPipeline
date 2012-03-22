@@ -116,7 +116,7 @@ TEST(HelperFunction, backproj_px) {
 }
 
 TEST(OrbitalImageFootprint, bounding_box) {
-  OrbitalImageFootprint image_fp(OrbitalImageFootprint::construct_from_paths(SrcName("dummy_image.73.png"), 
+  OrbitalImageFootprint image_fp(OrbitalImageFootprint::construct_from_paths(SrcName("dummy_image.png"), 
                                                                              SrcName("AS15-M-0073.lev1.pinhole"), 
                                                                              Datum("D_MOON"), Vector2()));
 
@@ -127,7 +127,7 @@ TEST(OrbitalImageFootprint, bounding_box) {
 }
 
 TEST(OrbitalImageFootprint, equal_resolution_level) {
-  OrbitalImageFootprint image_fp(OrbitalImageFootprint::construct_from_paths(SrcName("dummy_image.73.png"), 
+  OrbitalImageFootprint image_fp(OrbitalImageFootprint::construct_from_paths(SrcName("dummy_image.png"), 
                                                                              SrcName("AS15-M-0073.lev1.pinhole"), 
                                                                              Datum("D_MOON"), Vector2()));
 
@@ -135,7 +135,7 @@ TEST(OrbitalImageFootprint, equal_resolution_level) {
 }
 
 TEST(OrbitalImageFootprint, equal_density_level) {
-  OrbitalImageFootprint image_fp(OrbitalImageFootprint::construct_from_paths(SrcName("dummy_image.73.png"), 
+  OrbitalImageFootprint image_fp(OrbitalImageFootprint::construct_from_paths(SrcName("dummy_image.png"), 
                                                                              SrcName("AS15-M-0073.lev1.pinhole"), 
                                                                              Datum("D_MOON"), Vector2()));
 
@@ -143,7 +143,7 @@ TEST(OrbitalImageFootprint, equal_density_level) {
 }
 
 TEST(OrbitalImageFootprint, intersects) {
-  OrbitalImageFootprint image_fp(OrbitalImageFootprint::construct_from_paths(SrcName("dummy_image.73.png"), 
+  OrbitalImageFootprint image_fp(OrbitalImageFootprint::construct_from_paths(SrcName("dummy_image.png"), 
                                                                              SrcName("AS15-M-0073.lev1.pinhole"), 
                                                                              Datum("D_MOON"), Vector2()));
 
@@ -165,7 +165,7 @@ TEST(OrbitalImageFootprint, intersects) {
 TEST(OrbitalImageFootprintCollection, add_image) {
   OrbitalImageFootprintCollection images(Datum("D_MOON"), Vector2());
 
-  images.add_image(SrcName("dummy_image.73.png"), SrcName("AS15-M-0073.lev1.pinhole"));
+  images.add_image(SrcName("dummy_image.png"), SrcName("AS15-M-0073.lev1.pinhole"));
 
   EXPECT_EQ(images.size(), 1u);
   EXPECT_EQ(images.equal_resolution_level(), 6);
@@ -173,20 +173,9 @@ TEST(OrbitalImageFootprintCollection, add_image) {
   EXPECT_VECTOR_NEAR(images.lonlat_bbox().min(), Vector2(172.639, -27.6722), 1e-3);
   EXPECT_VECTOR_NEAR(images.lonlat_bbox().max(), Vector2(179.133, -21.7811), 1e-3);
 
-  images.add_image(SrcName("dummy_image.74.png"), SrcName("AS15-M-0074.lev1.pinhole"));
-  images.add_image(SrcName("dummy_image.75.png"), SrcName("AS15-M-0075.lev1.pinhole"));
-  images.add_image(SrcName("dummy_image.76.png"), SrcName("AS15-M-0076.lev1.pinhole"));
-
-  EXPECT_EQ(images.size(), 4u);
-  EXPECT_EQ(images.equal_resolution_level(), 6);
-  EXPECT_EQ(images.equal_density_level(256), 11);
-  EXPECT_VECTOR_NEAR(images.lonlat_bbox().min(), Vector2(169.254, -27.6722), 1e-3);
-  EXPECT_VECTOR_NEAR(images.lonlat_bbox().max(), Vector2(179.133, -21.3673), 1e-3);
-}
-
-TEST(OrbitalImageFootprintCollection, add_image_pattern) {
-  OrbitalImageFootprintCollection images(Datum("D_MOON"), Vector2());
-  images.add_image_pattern(SrcName("dummy_image.%d.png"), SrcName("AS15-M-%04d.lev1.pinhole"), 73, 76);
+  images.add_image(SrcName("dummy_image.png"), SrcName("AS15-M-0074.lev1.pinhole"));
+  images.add_image(SrcName("dummy_image.png"), SrcName("AS15-M-0075.lev1.pinhole"));
+  images.add_image(SrcName("dummy_image.png"), SrcName("AS15-M-0076.lev1.pinhole"));
 
   EXPECT_EQ(images.size(), 4u);
   EXPECT_EQ(images.equal_resolution_level(), 6);

@@ -128,24 +128,21 @@ class OrbitalImageFootprintCollection : public std::vector<OrbitalImageFootprint
     OrbitalImageFootprintCollection(vw::cartography::Datum const& datum, vw::Vector2 const& alt_limits) :
       m_datum(datum), m_alt_limits(alt_limits) {}
 
-    OrbitalImageFootprintCollection(vw::cartography::Datum const& datum, double alt_min, double alt_max) :
-      m_datum(datum), m_alt_limits(vw::Vector2(alt_min, alt_max)) {}
+    OrbitalImageFootprintCollection(vw::cartography::Datum const& datum, double alt_limit_min, double alt_limit_max) :
+      m_datum(datum), m_alt_limits(alt_limit_min, alt_limit_max) {}
+
+    void add_image(OrbitalImageFileDescriptor const& image_file) {
+      add_image(image_file.image_path(), image_file.camera_path());
+    }
 
     void add_image(std::string const& image_path, std::string const& camera_path) {
       this->push_back(OrbitalImageFootprint::construct_from_paths(image_path, camera_path, m_datum, m_alt_limits));
     }
 
-    void add_image_pattern(std::string const& image_pattern, std::string const& camera_pattern, int start, int end) {
-      namespace fs = boost::filesystem;
-
-      for (int i = start; i <= end; i++) {
-        std::string camera_file = (boost::format(camera_pattern) % i).str();
-        std::string image_file = (boost::format(image_pattern) % i).str();
-        if (fs::exists(camera_file) && fs::exists(image_file)) {
-          add_image(image_file, camera_file);
-        } else {
-          vw::vw_out(vw::DebugMessage, "mvp") << "Couldn't find " << camera_file << " or " << image_file;
-        }
+    template <class CollectionT>
+    void add_image_collection(CollectionT const& orbital_images) {
+      BOOST_FOREACH(OrbitalImageFileDescriptor const& o, orbital_images) {
+        add_image(o);
       }
     }
 
