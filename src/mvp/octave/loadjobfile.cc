@@ -32,7 +32,7 @@ DEFUN_DLD(loadjobfile, args, nargout, "Load an MVP Job File")
   mvp::MVPJobRequest job_request;
 
   try {
-    job_request = mvp::load_job_file(filename);
+    job_request = mvp::MVPJob::load_job_file(filename);
   } catch (vw::Exception& e) {
     error(e.what());
   }

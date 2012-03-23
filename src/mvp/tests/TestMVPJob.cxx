@@ -1,7 +1,6 @@
 #include <gtest/gtest.h>
 #include <test/Helpers.h>
 #include <mvp/MVPJob.h>
-#include <mvp/MVPWorkspace.h>
 
 using namespace std;
 using namespace vw;
@@ -10,6 +9,8 @@ using namespace vw::cartography;
 using namespace vw::platefile;
 using namespace vw::camera;
 using namespace mvp;
+
+/*
 
 struct MVPJobSeedTest : public MVPJobBase<MVPJobSeedTest> {
   ImageView<float32> m_dem;
@@ -161,68 +162,6 @@ TEST(MVPJob, save_job_file) {
   string job_file = save_job_file(job_request);
 }
 
-void process_tile_test(MVPJobRequest job_request) {
-  // TODO: rewrite so seeding doesn't happen and calls are placed
-  // manually to process_pixel. This will mean this function should
-  // be templatized I think.
-
-  // Don't verify all pixels in result, only verify every fourth one for speed
-  const int validation_divisor = 4;
-
-  // Process the tile 
-  MVPTileResult result(mvpjob_process_tile(job_request));
-  //write_image("result.tif", result.alt);
-
-  PlateGeoReference plate_georef(job_request.plate_georef());
-  Vector2 col_row = Vector2(job_request.col(), job_request.row());
-  int level = job_request.level();
-
-  // Set up variables for the reference calculation
-  OrbitalImageCropCollection orbital_images;
-  orbital_images.add_image_collection(job_request.orbital_images());
-
-  GeoReference georef(plate_georef.tile_georef(col_row[0], col_row[1], level));
-  EXPECT_EQ(georef.build_desc().DebugString(), result.georef.build_desc().DebugString());
-
-  int min_overlap = numeric_limits<int>::max();
-  int max_overlap = 0;
-
-  // Manually calculate overlaps, and compare to the result from MVPJob
-  for (int i = 0; i < result.alt.cols(); i += validation_divisor) {
-    for (int j = 0; j < result.alt.rows(); j += validation_divisor) {
-      Vector2 ll = georef.pixel_to_lonlat(Vector2(i, j));
-      Vector3 llr(ll[0], ll[1], georef.datum().radius(ll[0], ll[1]));
-      Vector3 xyz = lon_lat_radius_to_xyz(llr);
-
-      int overlaps = 0;
-      BOOST_FOREACH(OrbitalImageCrop o, orbital_images) {
-        Vector2 px = o.camera().point_to_pixel(xyz);
-        if (bounding_box(o).contains(px)) {
-          overlaps++;
-        }
-      }
-
-      PixelMask<float32> px_result(overlaps);
-      PixelMask<Vector3f> px_result3(overlaps, overlaps, overlaps);
-      if (!overlaps) {
-        px_result.invalidate();
-        px_result3.invalidate();
-      }
-      EXPECT_TYPE_EQ(px_result, result.alt(i, j));
-      EXPECT_TYPE_EQ(px_result, result.variance(i, j));
-      EXPECT_TYPE_EQ(px_result3, result.orientation(i, j));
-      EXPECT_TYPE_EQ(px_result3, result.windows(i, j));
-
-      min_overlap = min(overlaps, min_overlap);
-      max_overlap = max(overlaps, max_overlap);
-    }
-  }
-
-  // Make sure we saw both no images AND all images
-  EXPECT_EQ(min_overlap, 0);
-  EXPECT_GT(max_overlap, 1);
-}
-
 TEST(MVPJob, process_tile) {
   process_tile_test(create_job_request(false));
 }
@@ -262,4 +201,7 @@ TEST(MVPPixelResult, octave_construct) {
   EXPECT_TRUE(result.converged);
   EXPECT_EQ(result.num_iterations, 9);
 }
+
 #endif
+
+*/

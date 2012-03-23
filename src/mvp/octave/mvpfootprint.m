@@ -1,12 +1,4 @@
 function [result, variance, converged, num_iterations] = mvpfootprint(seed, georef, images, settings)
-  if (gausskernel("kernsize", seed.windows(1)) != 3)
-    result = seed;
-    variance = 0;
-    converged = true;
-    num_iterations = 0;
-    return;
-  endif
-
   lonlat_h = georef.transform * [1; 1; 1];
   lonlat = lonlat_h(1:2) / lonlat_h(3);
 

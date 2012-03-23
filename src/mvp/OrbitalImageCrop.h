@@ -138,6 +138,11 @@ class OrbitalImageCropCollection : public std::vector<OrbitalImageCrop> {
       VW_ASSERT(m_datum.semi_major_axis() == m_datum.semi_minor_axis(), vw::LogicErr() << "Spheroid datums not supported");
     }
 
+    OrbitalImageCropCollection(vw::BBox2 const& lonlat_bbox, vw::cartography::Datum const& datum, double alt_limit_min, double alt_limit_max) : 
+      m_lonlat_bbox(lonlat_bbox), m_datum(datum), m_alt_limits(alt_limit_min, alt_limit_max) {
+      VW_ASSERT(m_datum.semi_major_axis() == m_datum.semi_minor_axis(), vw::LogicErr() << "Spheroid datums not supported");
+    }
+
     void add_image(OrbitalImageFileDescriptor const& image_file) {
       add_image(image_file.image_path(), image_file.camera_path());
     }
