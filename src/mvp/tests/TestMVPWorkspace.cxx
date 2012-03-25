@@ -9,49 +9,48 @@ using namespace vw::cartography;
 using namespace vw::platefile;
 using namespace mvp;
 
-MVPWorkspaceRequest test_workspace() {
-  PlateGeoReference plate_geo(Datum("D_MOON"));
-  MVPUserSettings user_settings;
+class MVPWorkspaceTest : public ::testing::Test {
+  protected:
+    virtual void SetUp() {
+      PlateGeoReference plate_georef(Datum("D_MOON"));
 
-  MVPWorkspaceRequest work_request;
-  work_request.set_result_platefile("result");
-  work_request.set_internal_result_platefile("internal");
-  *work_request.mutable_plate_georef() = plate_geo.build_desc();
-  *work_request.mutable_user_settings() = user_settings;
-  work_request.set_render_level(10);
+      work_request.set_result_platefile("result");
+      work_request.set_internal_result_platefile("internal");
+      *work_request.mutable_plate_georef() = plate_georef.build_desc();
+      *work_request.mutable_user_settings() = MVPUserSettings();
 
-  for (int i = 73; i <= 76; i++) {
-    stringstream ss;
-    ss << "AS15-M-00" << i << ".lev1.pinhole";
-    OrbitalImageFileDescriptor image;
-    image.set_image_path(SrcName("dummy_image.png"));
-    image.set_camera_path(SrcName(ss.str()));
-    *work_request.add_orbital_images() = image;
-  }
+      for (int i = 0; i <= 3; i++) {
+        stringstream ss;
+        ss << "synth." << i;
+        OrbitalImageFileDescriptor image;
+        image.set_image_path(SrcName(ss.str() + ".tif"));
+        image.set_camera_path(SrcName(ss.str() + ".pinhole"));
+        *work_request.add_orbital_images() = image;
+      }
+    }
 
-  return work_request;
+    MVPWorkspaceRequest work_request;
+}; 
+
+TEST_F(MVPWorkspaceTest, render_defaults) {
+  MVPWorkspace work(work_request);
+
+  EXPECT_EQ(work.render_level(), 11);
+
+  EXPECT_VECTOR_EQ(work.render_bbox().min(), Vector2i(1342, 968));
+  EXPECT_VECTOR_EQ(work.render_bbox().max(), Vector2i(1347, 972));
+
+  EXPECT_VECTOR_NEAR(work.render_lonlat_bbox().min(), Vector2(55.8988, 9.14028), 1e-3);
+  EXPECT_VECTOR_NEAR(work.render_lonlat_bbox().max(), Vector2(56.7777, 9.84341), 1e-3);
+
+  EXPECT_VECTOR_NEAR(work.footprints().lonlat_bbox().min(), Vector2(56.0486, 9.18129), 1e-3);
+  EXPECT_VECTOR_NEAR(work.footprints().lonlat_bbox().max(), Vector2(56.7642, 9.84013), 1e-3);
 }
 
-
-TEST(MVPWorkspace, render_defaults) {
-  MVPWorkspace work(test_workspace());
-
-  EXPECT_EQ(work.render_level(), 10);
-
-  EXPECT_VECTOR_EQ(work.render_bbox().min(), Vector2i(993, 572));
-  EXPECT_VECTOR_EQ(work.render_bbox().max(), Vector2i(1022, 591));
-
-  EXPECT_VECTOR_NEAR(work.render_lonlat_bbox().min(), Vector2(169.102, -27.7741), 1e-3);
-  EXPECT_VECTOR_NEAR(work.render_lonlat_bbox().max(), Vector2(179.298, -21.0944), 1e-3);
-
-  EXPECT_VECTOR_NEAR(work.footprints().lonlat_bbox().min(), Vector2(169.254, -27.6722), 1e-3);
-  EXPECT_VECTOR_NEAR(work.footprints().lonlat_bbox().max(), Vector2(179.133, -21.3673), 1e-3);
-}
-
-TEST(MVPWorkspace, images_at_tile) {
-  vector<OrbitalImageFileDescriptor> images;
+TEST_F(MVPWorkspaceTest, images_at_tile) {
+  MVPWorkspace work(work_request);
   
-  MVPWorkspace work(test_workspace());
+  vector<OrbitalImageFileDescriptor> images;
  
   images = work.images_at_tile(0, 0, 0);
   EXPECT_EQ(images.size(), 4u);
@@ -62,12 +61,13 @@ TEST(MVPWorkspace, images_at_tile) {
   images = work.images_at_tile(0, 0, 1);
   EXPECT_EQ(images.size(), 0u);
 
-  images = work.images_at_tile(996, 578, 10);
-  EXPECT_EQ(images.size(), 1u);
+  // Same as tile in TestMVPJobImpl
+  images = work.images_at_tile(5374, 3875, 13);
+  EXPECT_EQ(images.size(), 2u);
 }
 
-TEST(MVPWorkspace, assemble_job) {
-  MVPWorkspace work(test_workspace());
+TEST_F(MVPWorkspaceTest, assemble_job) {
+  MVPWorkspace work(work_request);
 
   MVPJobRequest job;
   
