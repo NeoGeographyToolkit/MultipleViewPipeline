@@ -93,9 +93,6 @@ struct MVPTileResult {
   }
 };
 
-// TODO: Put this in the options
-#define GAUSS_DIVISOR 6.0
-
 class MVPJobImplBase {
   protected:
     vw::cartography::GeoReference m_georef;
@@ -133,7 +130,8 @@ class MVPJobImplBase {
       options.set_alt_range((m_settings.alt_max() - m_settings.alt_min()) / 2);
       options.set_fix_orientation(true);
       options.set_fix_windows(true);
-      // TODO: set num_iterations?
+      options.set_max_iterations(m_settings.max_iterations());
+      options.set_gauss_divisor(m_settings.gauss_divisor());
 
       return process_pixel(pre_seed, seed_col, seed_row, options);
     }
@@ -149,12 +147,13 @@ class MVPJobImplBase {
 
       MVPAlgorithmOptions options;
       options.set_alt_range(m_settings.alt_search_range());
-      // TODO: set num_iterations?
-      // TODO: orientation and windows are fixed for testing.
-      // window size is also explicitly set.
       options.set_fix_orientation(true); 
       options.set_fix_windows(true);
-      seed.windows = vw::Vector3(10, 10, 1);
+      options.set_max_iterations(m_settings.max_iterations());
+      options.set_gauss_divisor(m_settings.gauss_divisor());
+
+      // Set window size
+      seed.windows = vw::Vector3(m_settings.window_size(), m_settings.window_size(), m_settings.window_smooth_size());
 
       int curr_px_num = 0;
       int num_px_to_process = m_tile_size * m_tile_size;
