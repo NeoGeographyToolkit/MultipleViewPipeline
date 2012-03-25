@@ -31,8 +31,16 @@ target_link_libraries(mvpd mvpcommon
                            ${Boost_LIBRARIES}
                            ${ZEROMQ_LIBRARIES})
 
+add_executable(mvpdumpjob mvpdumpjob.cc)
+target_link_libraries(mvpdumpjob mvpcommon
+                                 ${PROTOBUF_LIBRARIES}
+                                 ${VW_LIBRARIES}
+                                 ${Boost_LIBRARIES}
+                                 ${ZEROMQ_LIBRARIES})
+
 if (ENABLE_OCTAVE_SUPPORT)
   #target_link_libraries(mvpworker ${OCTAVE_LIBRARIES})
+  target_link_libraries(mvpdumpjob ${OCTAVE_LIBRARIES})
 endif()
 
 configure_file(Config.h.in Config.h)
