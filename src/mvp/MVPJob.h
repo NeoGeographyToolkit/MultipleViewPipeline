@@ -39,9 +39,9 @@ class MVPJob {
                                        job_request.user_settings().alt_max());
       crops.add_image_collection(job_request.orbital_images());
 
-      if (job_request.user_settings().use_octave()) {
+      if (job_request.use_octave()) {
         #if MVP_ENABLE_OCTAVE_SUPPORT
-          if (job_request.user_settings().test_algorithm()) {
+          if (job_request.draw_footprints()) {
             m_impl.reset(new MVPJobImplFootprintOctave(georef, m_plate_georef.tile_size(), crops, job_request.user_settings()));
           } else {
             m_impl.reset(new MVPJobImplOctave(georef, m_plate_georef.tile_size(), crops, job_request.user_settings()));
@@ -49,7 +49,7 @@ class MVPJob {
         #else
           vw::vw_throw(vw::NoImplErr() << "Cannot use octave algorithm, as the MVP was not compiled with it!");
         #endif
-      } else if (job_request.user_settings().test_algorithm()) {
+      } else if (job_request.draw_footprints()) {
         m_impl.reset(new MVPJobImplFootprint(georef, m_plate_georef.tile_size(), crops, job_request.user_settings()));
       } else {
         m_impl.reset(new MVPJobImpl(georef, m_plate_georef.tile_size(), crops, job_request.user_settings()));

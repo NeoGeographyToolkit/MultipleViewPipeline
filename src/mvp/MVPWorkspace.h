@@ -48,6 +48,8 @@ class MVPWorkspace {
   OrbitalImageFootprintCollection m_footprints;
   vw::BBox2i m_render_bbox;
   int m_render_level;
+  bool m_use_octave;
+  bool m_draw_footprints;
  
   public:
     MVPWorkspace(MVPWorkspaceRequest const& work_request) :
@@ -57,7 +59,9 @@ class MVPWorkspace {
       m_user_settings(work_request.user_settings()),
       m_footprints(work_request.plate_georef().datum(), 
                    work_request.user_settings().alt_min(), 
-                   work_request.user_settings().alt_max()) {
+                   work_request.user_settings().alt_max()),
+      m_use_octave(work_request.use_octave()),
+      m_draw_footprints(work_request.draw_footprints()) {
       
       m_footprints.add_image_collection(work_request.orbital_images());
 
@@ -101,6 +105,10 @@ class MVPWorkspace {
     /// Return the render level for the worspace
     int render_level() const {return m_render_level;}
 
+    bool use_octave() const {return m_use_octave;}
+
+    bool draw_footprints() const {return m_draw_footprints;}
+
     /// Return all the orbital images that overlap a given tile
     std::vector<OrbitalImageFileDescriptor> images_at_tile(int col, int row, int level) const {
       return m_footprints.images_in_region(m_plate_georef.tile_lonlat_bbox(col, row, level));
@@ -125,6 +133,8 @@ class MVPWorkspace {
       request.set_internal_result_platefile(m_internal_result_platefile);
       *request.mutable_plate_georef() = m_plate_georef.build_desc();
       *request.mutable_user_settings() = m_user_settings;
+      request.set_use_octave(m_use_octave);
+      request.set_draw_footprints(m_draw_footprints);
 
       std::vector<OrbitalImageFileDescriptor> image_matches(images_at_tile(col, row, level));
       std::copy(image_matches.begin(), image_matches.end(), RepeatedFieldBackInserter(request.mutable_orbital_images()));

@@ -12,4 +12,6 @@ message MVPWorkspaceRequest {
   repeated OrbitalImageFileDescriptor orbital_images = 5;
   repeated int32 render_bbox = 6;
   optional int32 render_level = 7 [default=-1];
+  optional bool use_octave = 8 [default=false];
+  optional bool draw_footprints = 9 [default=false];
 }

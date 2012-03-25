@@ -14,4 +14,6 @@ message MVPJobRequest {
   required vw.platefile.PlateGeoReferenceDesc plate_georef = 7;
   required MVPUserSettings user_settings = 8;
   repeated OrbitalImageFileDescriptor orbital_images = 9;
+  optional bool use_octave = 10 [default=false];
+  optional bool draw_footprints = 11 [default=false];
 }
