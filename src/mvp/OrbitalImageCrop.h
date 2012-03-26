@@ -42,10 +42,10 @@ class OrbitalImageCrop : public vw::ImageView<vw::PixelMask<vw::PixelGray<vw::fl
   vw::camera::PinholeModel m_camera;
 
   public:
-    static vw::BBox2i find_crop_bbox(vw::camera::PinholeModel const& camera, 
-                                     vw::BBox2 const& lonlat_bbox,
-                                     vw::cartography::Datum const& datum, 
-                                     vw::Vector2 const& alt_limits);
+    static vw::BBox2 find_crop_bbox(vw::camera::PinholeModel const& camera, 
+                                    vw::BBox2 const& lonlat_bbox,
+                                    vw::cartography::Datum const& datum, 
+                                    vw::Vector2 const& alt_limits);
 
     static OrbitalImageCrop construct_from_paths(std::string const& image_path,
                                                  std::string const& camera_path);

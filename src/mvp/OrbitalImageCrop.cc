@@ -19,10 +19,10 @@ static vw::ImageViewRef<vw::PixelMask<vw::PixelGray<vw::float32> > > rsrc_helper
 
 namespace mvp {
 
-vw::BBox2i OrbitalImageCrop::find_crop_bbox(vw::camera::PinholeModel const& camera, 
-                                            vw::BBox2 const& lonlat_bbox,
-                                            vw::cartography::Datum const& datum, 
-                                            vw::Vector2 const& alt_limits) 
+vw::BBox2 OrbitalImageCrop::find_crop_bbox(vw::camera::PinholeModel const& camera, 
+                                           vw::BBox2 const& lonlat_bbox,
+                                           vw::cartography::Datum const& datum, 
+                                           vw::Vector2 const& alt_limits) 
 {
   VW_ASSERT(datum.semi_major_axis() == datum.semi_minor_axis(), vw::LogicErr() << "Spheroid datums not supported");
   vw::Vector2 radius_range(alt_limits + vw::Vector2(datum.semi_major_axis(), datum.semi_major_axis()));
@@ -62,7 +62,7 @@ OrbitalImageCrop OrbitalImageCrop::construct_from_paths(std::string const& image
   boost::shared_ptr<vw::DiskImageResource> rsrc(vw::DiskImageResource::open(image_path));
   vw::camera::PinholeModel camera(camera_path);
 
-  vw::BBox2i cropbox(find_crop_bbox(camera, lonlat_bbox, datum, alt_limits));
+  vw::BBox2 cropbox(find_crop_bbox(camera, lonlat_bbox, datum, alt_limits));
   cropbox.crop(vw::BBox2i(0, 0, rsrc->cols(), rsrc->rows()));
 
   // Return empty if smaller than a pixel
