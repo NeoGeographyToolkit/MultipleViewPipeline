@@ -45,8 +45,15 @@ target_link_libraries(mvpdumpjob mvpcommon
                                  ${Boost_LIBRARIES}
                                  ${ZEROMQ_LIBRARIES})
 
+add_executable(mvpworker mvpworker.cc)
+target_link_libraries(mvpworker mvpcommon
+                                ${PROTOBUF_LIBRARIES}
+                                ${VW_LIBRARIES}
+                                ${Boost_LIBRARIES}
+                                ${ZEROMQ_LIBRARIES})
+
 if (ENABLE_OCTAVE_SUPPORT)
-  #target_link_libraries(mvpworker ${OCTAVE_LIBRARIES})
+  target_link_libraries(mvpworker ${OCTAVE_LIBRARIES})
   target_link_libraries(mvpdumpjob ${OCTAVE_LIBRARIES})
 endif()
 
@@ -57,7 +64,7 @@ configure_file(mvpadmin.py mvpadmin)
 add_custom_target(mvpadmin ALL DEPENDS ${PROTO_PYS})
 
 # Install executables / headers
-install(TARGETS mvpd DESTINATION bin)
+install(TARGETS mvpd mvpworker mvpdumpjob DESTINATION bin)
 install(FILES ${MVP_HDRS} DESTINATION include/mvp)
 
 # Install python executables / support
