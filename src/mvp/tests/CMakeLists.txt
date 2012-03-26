@@ -8,7 +8,8 @@ macro(add_mvp_test test_name)
                                      gtest_main
                                      ${GTEST_LIBRARIES}
                                      ${VW_LIBRARIES}
-                                     ${PROTOBUF_LIBRARIES})
+                                     ${PROTOBUF_LIBRARIES}
+                                     ${Boost_LIBRARIES})
 
   if (ENABLE_OCTAVE_SUPPORT)
     target_link_libraries(${test_name} ${OCTAVE_LIBRARIES})

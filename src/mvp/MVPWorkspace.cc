@@ -7,6 +7,59 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
 
+namespace mvp {
+
+MVPWorkspace::MVPWorkspace(MVPWorkspaceRequest const& work_request) :
+  m_result_platefile(work_request.result_platefile()), 
+  m_internal_result_platefile(work_request.internal_result_platefile()),
+  m_plate_georef(work_request.plate_georef()),
+  m_user_settings(work_request.user_settings()),
+  m_footprints(work_request.plate_georef().datum(), 
+               work_request.user_settings().alt_min(), 
+               work_request.user_settings().alt_max()),
+  m_use_octave(work_request.use_octave()),
+  m_draw_footprints(work_request.draw_footprints()) {
+  
+  m_footprints.add_image_collection(work_request.orbital_images());
+
+  if (work_request.has_render_level()) {
+    m_render_level = work_request.render_level();
+  } else {
+    m_render_level = m_footprints.equal_density_level(m_plate_georef.tile_size());
+  }
+
+  if (work_request.render_bbox().size() == 4) {
+    m_render_bbox.min() = vw::Vector2i(work_request.render_bbox(0), work_request.render_bbox(1));
+    m_render_bbox.max() = vw::Vector2i(work_request.render_bbox(2), work_request.render_bbox(3));
+  } else {
+    vw::BBox2 lonlat_bbox = m_footprints.lonlat_bbox();
+    vw::BBox2 pixel_bbox = m_plate_georef.level_georef(m_render_level).lonlat_to_pixel_bbox(lonlat_bbox);
+    m_render_bbox = vw::grow_bbox_to_int(pixel_bbox / m_plate_georef.tile_size());
+  }
+}
+
+MVPJobRequest MVPWorkspace::assemble_job(int col, int row, int level) const {
+  using google::protobuf::RepeatedFieldBackInserter;
+
+  MVPJobRequest request;
+
+  request.set_col(col);
+  request.set_row(row);
+  request.set_level(level);
+  
+  request.set_result_platefile(m_result_platefile);
+  request.set_internal_result_platefile(m_internal_result_platefile);
+  *request.mutable_plate_georef() = m_plate_georef.build_desc();
+  *request.mutable_user_settings() = m_user_settings;
+  request.set_use_octave(m_use_octave);
+  request.set_draw_footprints(m_draw_footprints);
+
+  std::vector<OrbitalImageFileDescriptor> image_matches(images_at_tile(col, row, level));
+  std::copy(image_matches.begin(), image_matches.end(), RepeatedFieldBackInserter(request.mutable_orbital_images()));
+
+  return request;
+}
+
 std::vector<std::string> paths_from_pattern(boost::filesystem::path pattern) {
   namespace fs = boost::filesystem;
 
@@ -31,8 +84,6 @@ std::vector<std::string> paths_from_pattern(boost::filesystem::path pattern) {
 
   return result_paths;
 }
-
-namespace mvp {
 
 #define PROPERTY_TO_PROTO(ptree, protobuf, type, proto_name, prop_name) \
 {boost::optional<type> val = ptree.get_optional<type>(prop_name); \
