@@ -1,5 +1,5 @@
-function ts_showpatches(seed, georef, images)
-  patches = mvpproj(seed.alt, seed.orientation, seed.windows, georef, images);
+function ts_showpatches(seed, georef, images, mvpoptions)
+  patches = mvpproj(seed.alt, seed.orientation, seed.windows, georef, images, mvpoptions);
 
   numPatches = numel(patches);
 
