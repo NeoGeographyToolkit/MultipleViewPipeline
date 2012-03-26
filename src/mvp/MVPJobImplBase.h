@@ -11,6 +11,7 @@
 #include <vw/Plate/PlateGeoReference.h>
 #include <vw/Cartography/GeoReference.h>
 #include <vw/Image/PixelMask.h>
+#include <vw/Cartography/SimplePointImageManipulation.h>
 
 #include <mvp/Config.h>
 #include <mvp/MVPJobRequest.pb.h>

@@ -3,6 +3,8 @@
 
 #include <mvp/OrbitalImageCrop.h>
 
+#include <vw/Cartography/SimplePointImageManipulation.h>
+
 using namespace std;
 using namespace vw;
 using namespace vw::test;

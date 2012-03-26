@@ -34,7 +34,7 @@ template <class VectorT>
 }
 
 /// Convert an Octave ColumnVector to a VW Vector
-Vector<double, 0> octave_to_vector(::ColumnVector const& oct_vect) {
+inline Vector<double, 0> octave_to_vector(::ColumnVector const& oct_vect) {
   Vector<double, 0> vw_vect(oct_vect.length());
 
   for (int i = 0; i < oct_vect.length(); i++) {
@@ -60,7 +60,7 @@ template <class MatrixT>
 }
 
 /// Convert an Octave Matrix into a VW Matrix
-Matrix<double, 0> octave_to_matrix(::Matrix const& oct_mat) {
+inline Matrix<double, 0> octave_to_matrix(::Matrix const& oct_mat) {
   Matrix<double, 0> vw_mat(oct_mat.cols(), oct_mat.rows());
 
   for (unsigned col = 0; col < vw_mat.cols(); col++) {
@@ -73,7 +73,7 @@ Matrix<double, 0> octave_to_matrix(::Matrix const& oct_mat) {
 }
 
 /// Convert a VW PinholeModel to an Octave Matrix
-::Matrix pinhole_to_octave(camera::PinholeModel const& vw_cam) {
+inline ::Matrix pinhole_to_octave(camera::PinholeModel const& vw_cam) {
   ::Matrix oct_cam_mat(3, 4);
 
   for (int r = 0; r < 3; r++) {
@@ -115,7 +115,7 @@ template <class ViewT>
 }
 
 /// Convert an Octave Matrix to a VW ImageView
-ImageView<PixelMask<double> > octave_to_imageview(::Matrix const& oct_img) {
+inline ImageView<PixelMask<double> > octave_to_imageview(::Matrix const& oct_img) {
   typedef ImageView<PixelMask<double> > RasterT;
 
   RasterT rast(oct_img.cols(), oct_img.rows());
@@ -136,7 +136,7 @@ ImageView<PixelMask<double> > octave_to_imageview(::Matrix const& oct_img) {
 }
 
 /// Convert a VW GeoReference to an Octave Matrix
-::octave_scalar_map georef_to_octave(cartography::GeoReference const& vw_geo) {
+inline ::octave_scalar_map georef_to_octave(cartography::GeoReference const& vw_geo) {
   if (vw_geo.is_projected()) {
     vw_throw(ArgumentErr() << "Projected georefs not supported!");
   }
@@ -173,7 +173,7 @@ ImageView<PixelMask<double> > octave_to_imageview(::Matrix const& oct_img) {
   return result;
 }
 
-::octave_scalar_map protobuf_to_octave(const google::protobuf::Message *message) {
+inline ::octave_scalar_map protobuf_to_octave(const google::protobuf::Message *message) {
   using namespace google::protobuf;
 
   ::octave_scalar_map result;

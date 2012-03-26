@@ -23,6 +23,7 @@ set(MVP_HDRS MVPJob.h
 set(MVP_SRCS ${PROTO_SRCS}
              ConvexPolygon.cc
              OrbitalImageFootprint.cc
+             OrbitalImageCrop.cc
              MVPWorkspace.cc)
 
 add_library(mvpcommon ${MVP_SRCS})
