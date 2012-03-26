@@ -1,12 +1,12 @@
 function obj = mvpobj(alt, orientation, windows, georef, images, mvpoptions)
-  projs = mvpproj(alt, orientation, windows, georef, images);
+  projs = mvpproj(alt, orientation, windows, georef, images, mvpoptions);
 
   if (numel(projs) < 2)
     obj = NA;
     return;
   endif
 
-  [patches weights] = mvppatches(projs, windows);
+  [patches weights] = mvppatches(projs, windows, mvpoptions);
 
   if (size(patches)(3) < 2)
     obj = NA;

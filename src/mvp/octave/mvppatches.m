@@ -1,17 +1,11 @@
-function [patches weights] = mvppatches(projs, windows)
+function [patches weights] = mvppatches(projs, windows, mvpoptions)
   % Given projections, smooth them, create weight images
-
-  if (ischar(projs) && projs == "projsize")
-    patchSize = gausskernel("kernsize", windows(1:2));
-    paddingSize = gausskernel("kernsize", windows(3));
-    patches = patchSize + (paddingSize - 1);
-    return;
-  endif
 
   dim = size(projs{1});
   numProjs = numel(projs);
+  windows_px = windows * mvpoptions.gauss_divisor;
 
-  smoothKernel = gausskernel(windows(3));
+  smoothKernel = gausskernel(windows(3), windows_px(3));
 
   numPatches = 0;
   patches = zeros(0, 0, 0);
@@ -31,7 +25,7 @@ function [patches weights] = mvppatches(projs, windows)
     patches(:, :, numPatches) = projs{i};
   endfor
 
-  weightWin = gausskernel(windows(1))' * gausskernel(windows(2));
+  weightWin = gausskernel(windows(1), windows_px(1))' * gausskernel(windows(2), windows_px(2));
   weights = repmat(weightWin, [1 1 numPatches]);
 
   idx = find(isnan(patches));
