@@ -24,8 +24,8 @@ void handle_arguments(int argc, char* argv[], Options *opts) {
     ("help,h", "Print this message")
     ("config-file,f", po::value<string>(&opts->config_file)->required(), "Specify a pipeline configuration file")
     ("col,c", po::value<int>(&opts->col)->required(), "Column of tile to dump")
-    ("row,r", po::value<int>(&opts->row)->required(), "When dumping a jobfile, row of tile to dump")
-    ("level,l", po::value<int>(&opts->level)->required(), "When dumping a jobfile or printing the workspace, level to operate at")
+    ("row,r", po::value<int>(&opts->row)->required(), "Row of tile to dump")
+    ("level,l", po::value<int>(&opts->level)->required(), "Level of tile to dump")
     ;
 
   po::positional_options_description p;
