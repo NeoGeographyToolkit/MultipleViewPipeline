@@ -21,6 +21,7 @@ set(MVP_HDRS MVPJob.h
              ${CMAKE_CURRENT_BINARY_DIR}/Config.h
              ${PROTO_HDRS})
 set(MVP_SRCS ${PROTO_SRCS}
+             ConvexPolygon.cc
              MVPWorkspace.cc)
 
 add_library(mvpcommon ${MVP_SRCS})

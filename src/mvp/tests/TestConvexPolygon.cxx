@@ -2,6 +2,7 @@
 #include <test/Helpers.h>
 #include <mvp/ConvexPolygon.h>
 
+#include <boost/foreach.hpp>
 #include <boost/random/linear_congruential.hpp>
 #include <boost/random/uniform_real_distribution.hpp>
 
