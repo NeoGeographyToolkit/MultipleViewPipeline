@@ -96,7 +96,7 @@ TEST(ConvexPolygon, intersect) {
 }
 
 TEST(ConvexPolygon, circulation_direction) {
-  EXPECT_GT(circulation_direction(Vector2(2, 2), Vector2(3, 3), Vector2(1, 5)), 0);
-  EXPECT_LT(circulation_direction(Vector2(1, 5), Vector2(3, 3), Vector2(2, 2)), 0);
-  EXPECT_EQ(circulation_direction(Vector2(2, 2), Vector2(3, 3), Vector2(4, 4)), 0);
+  EXPECT_GT(ConvexPolygon::circulation_direction(Vector2(2, 2), Vector2(3, 3), Vector2(1, 5)), 0);
+  EXPECT_LT(ConvexPolygon::circulation_direction(Vector2(1, 5), Vector2(3, 3), Vector2(2, 2)), 0);
+  EXPECT_EQ(ConvexPolygon::circulation_direction(Vector2(2, 2), Vector2(3, 3), Vector2(4, 4)), 0);
 }

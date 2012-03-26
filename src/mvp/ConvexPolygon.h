@@ -14,12 +14,6 @@
 
 namespace mvp {
 
-/// Return the circulation direction of three points. Negative if clockwise,
-/// positive if anticlockwise, zero if colinear. For Y pointing up, X pointing right
-double circulation_direction(vw::Vector2 const& v0, vw::Vector2 const& v1, vw::Vector2 const& v) {
-  return (v.y() - v0.y()) * (v1.x() - v0.x()) - (v.x() - v0.x()) * (v1.y() - v0.y());
-}
-
 struct ConvexPolygon {
   typedef std::vector<vw::Vector2> VertexList;
 
@@ -88,6 +82,11 @@ struct ConvexPolygon {
       }
 
       return bbox;
+    }
+    /// Return the circulation direction of three points. Negative if clockwise,
+    /// positive if anticlockwise, zero if colinear. For Y pointing up, X pointing right
+    static double circulation_direction(vw::Vector2 const& v0, vw::Vector2 const& v1, vw::Vector2 const& v) {
+      return (v.y() - v0.y()) * (v1.x() - v0.x()) - (v.x() - v0.x()) * (v1.y() - v0.y());
     }
 
     bool contains(vw::Vector2 const& pt) const {

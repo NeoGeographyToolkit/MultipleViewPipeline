@@ -14,12 +14,12 @@ using namespace vw::test;
 using namespace vw::camera;
 using namespace vw::cartography;
 
-TEST(HelperFunction, backproj_px) {
+TEST(OrbitalImageFootprint, backproj_px) {
   PinholeModel cam(SrcName("synth.0.pinhole"));
 
   Vector2 px_pick(100.0, 200.0);
 
-  Vector2 lonlat = backproj_px(cam, px_pick, Datum("D_MOON"), 0);
+  Vector2 lonlat = OrbitalImageFootprint::backproj_px(cam, px_pick, Datum("D_MOON"), 0);
 
   Vector3 llr(lonlat[0], lonlat[1], Datum("D_MOON").semi_major_axis());
   Vector3 xyz = vw::cartography::lon_lat_radius_to_xyz(llr);
