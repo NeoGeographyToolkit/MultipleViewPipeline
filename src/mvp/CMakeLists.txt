@@ -25,6 +25,7 @@ set(MVP_SRCS ${PROTO_SRCS}
              OrbitalImageFootprint.cc
              OrbitalImageCrop.cc
              MVPJobImplBase.cc
+             MVPJobImpl.cc
              MVPWorkspace.cc)
 
 add_library(mvpcommon ${MVP_SRCS})

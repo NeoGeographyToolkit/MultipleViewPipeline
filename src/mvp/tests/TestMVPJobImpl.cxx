@@ -2,7 +2,9 @@
 #include <test/Helpers.h>
 
 #include <mvp/MVPJobImpl.h>
+
 #include <vw/Plate/PlateGeoReference.h>
+#include <vw/Cartography/SimplePointImageManipulation.h>
 
 using namespace std;
 using namespace vw;
