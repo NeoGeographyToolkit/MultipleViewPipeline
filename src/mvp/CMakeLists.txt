@@ -50,7 +50,7 @@ endif()
 configure_file(Config.h.in Config.h)
 
 # Build mvpadmin
-configure_file(mvpadmin.in mvpadmin)
+configure_file(mvpadmin.py mvpadmin)
 add_custom_target(mvpadmin ALL DEPENDS ${PROTO_PYS})
 
 # Install executables / headers
