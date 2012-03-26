@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
 #include <test/Helpers.h>
+
 #include <mvp/MVPJobImpl.h>
+#include <vw/Plate/PlateGeoReference.h>
 
 using namespace std;
 using namespace vw;

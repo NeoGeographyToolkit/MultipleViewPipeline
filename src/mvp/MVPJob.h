@@ -10,6 +10,7 @@
 
 #include <mvp/MVPJobImpl.h>
 
+#include <vw/Plate/PlateGeoReference.h>
 #include <vw/Plate/PlateFile.h>
 #include <vw/Image/MaskViews.h>
 

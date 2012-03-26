@@ -24,6 +24,7 @@ set(MVP_SRCS ${PROTO_SRCS}
              ConvexPolygon.cc
              OrbitalImageFootprint.cc
              OrbitalImageCrop.cc
+             MVPJobImplBase.cc
              MVPWorkspace.cc)
 
 add_library(mvpcommon ${MVP_SRCS})
