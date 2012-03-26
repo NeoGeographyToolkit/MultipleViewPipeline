@@ -10,7 +10,7 @@ function [result, variance, converged, num_iterations] = mvpalgorithm(seed, geor
 
   try
     if (mvpoptions.alt_range > 0)
-      opts = optimset("MaxIter", mvpoptions.max_iterations, "FunValCheck", "on", "TolX", mvpoptions.alt_tolerance);
+      opts = optimset("MaxIter", mvpoptions.max_iterations, "FunValCheck", "on");
 
       altMin = seed.alt - mvpoptions.alt_range;
       altMax = seed.alt + mvpoptions.alt_range;
