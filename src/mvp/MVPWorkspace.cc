@@ -152,7 +152,7 @@ MVPWorkspaceRequest MVPWorkspace::load_workspace_request(std::string const& file
   PROPERTY_TO_PROTO(pt, work_request, bool, use_octave, "render.use-octave");
   PROPERTY_TO_PROTO(pt, work_request, bool, draw_footprints, "render.draw-footprints");
 
-  std::cout << work_request.DebugString() << std::endl;
+  //std::cout << work_request.DebugString() << std::endl;
 
   return work_request;
 }
