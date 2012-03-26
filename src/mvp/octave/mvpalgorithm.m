@@ -6,6 +6,7 @@ function [result, variance, converged, num_iterations] = mvpalgorithm(seed, geor
   try
     if (mvpoptions.alt_range > 0)
       opts = optimset("MaxIter", mvpoptions.max_iterations, "FunValCheck", "on");
+      opts = optimset(opts, "TolX", 1e-2);
 
       altMin = seed.alt - mvpoptions.alt_range;
       altMax = seed.alt + mvpoptions.alt_range;
@@ -16,7 +17,7 @@ function [result, variance, converged, num_iterations] = mvpalgorithm(seed, geor
       num_iterations = output.iterations;
     else
       opts = optimset("MaxIter", mvpoptions.max_iterations, "FunValCheck", "on");
-      % opts = optimset(opts, "TolX", 1e-8, "TolFun", 1e-8);
+      opts = optimset(opts, "TolX", 1e-8, "TolFun", 1e-8);
 
       [result.alt variance info output] = fminunc(@(a) mvpobj(a, seed.orientation, seed.windows, georef, images, mvpoptions), seed.alt, opts);
 
