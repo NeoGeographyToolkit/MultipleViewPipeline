@@ -1,12 +1,7 @@
 % Convention: everything is [x y] until it is indexted in a matrix: M(y, x)
   
 function [result, variance, converged, num_iterations] = mvpalgorithm(seed, georef, images, mvpoptions)
-  % Initialize the result
-  global gResult;
-  gResult = seed;
-  
-  global gVariance;
-  gVariance = Inf;
+  result = seed;
 
   try
     if (mvpoptions.alt_range > 0)
@@ -15,19 +10,16 @@ function [result, variance, converged, num_iterations] = mvpalgorithm(seed, geor
       altMin = seed.alt - mvpoptions.alt_range;
       altMax = seed.alt + mvpoptions.alt_range;
 
-      [gResult.alt gVariance info output] = fminbnd(@(a) mvpobj(a, gResult.orientation, gResult.windows, georef, images, mvpoptions), 
-                                                                altMin, altMax, opts);
-      result = gResult;
-      variance = gVariance;
+      [result.alt variance info output] = fminbnd(@(a) mvpobj(a, seed.orientation, seed.windows, georef, images, mvpoptions), 
+                                                              altMin, altMax, opts);
       converged = (info == 1);
       num_iterations = output.iterations;
     else
       opts = optimset("MaxIter", mvpoptions.max_iterations, "FunValCheck", "on");
-      opts = optimset(opts, "TolX", 1e-8, "TolFun", 1e-8);
+      % opts = optimset(opts, "TolX", 1e-8, "TolFun", 1e-8);
 
-      [gResult.alt gVariance info output] = fminunc(@(a) mvpobj(a, gResult.orientation, gResult.windows, georef, images, mvpoptions), seed.alt, opts);
-      result = gResult;
-      variance = gVariance;
+      [result.alt variance info output] = fminunc(@(a) mvpobj(a, seed.orientation, seed.windows, georef, images, mvpoptions), seed.alt, opts);
+
       converged = (info > 0);
       num_iterations = output.iterations;
     endif
