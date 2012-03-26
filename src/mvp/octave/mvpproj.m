@@ -1,5 +1,5 @@
 function projs = mvpproj(alt, orientation, windows, georef, images, mvpoptions)
-  windows_px = windows * mvpoptions.gauss_divisor;
+  windows_px = round(windows * mvpoptions.gauss_divisor);
   projSize = windows_px(1:2) + (windows_px(3) - 1);
 
   lonlat_h = georef.transform * ones(3, 1);

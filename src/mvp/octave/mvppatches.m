@@ -3,7 +3,7 @@ function [patches weights] = mvppatches(projs, windows, mvpoptions)
 
   dim = size(projs{1});
   numProjs = numel(projs);
-  windows_px = windows * mvpoptions.gauss_divisor;
+  windows_px = round(windows * mvpoptions.gauss_divisor);
 
   smoothKernel = gausskernel(windows(3), windows_px(3));
 

@@ -1,5 +1,5 @@
 function ts_showpatchprints(seed, patch_georef, images, mvpoptions)
-  windows_px = seed.windows * mvpoptions.gauss_divisor;
+  windows_px = round(seed.windows * mvpoptions.gauss_divisor);
   projSize = windows_px(1:2) + (windows_px(3) - 1);
 
   lonlat_H = patch_georef.transform * ones(3, 1);
