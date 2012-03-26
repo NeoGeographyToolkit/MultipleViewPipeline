@@ -1,5 +1,5 @@
 function [xw, yw] = _porthoproj_impl_ref(camera, planeNormal, planeD, georef, win)
-  dim = fliplr(win);
+  dim = flipdim(win);
   hWin = (win - 1) / 2;
 
   xw = zeros(dim);

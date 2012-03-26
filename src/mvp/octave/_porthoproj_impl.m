@@ -1,5 +1,5 @@
 function [xw, yw] = _porthoproj_impl(camera, planeNormal, planeD, georef, projSize)
-  dim = fliplr(projSize);
+  dim = flipdim(projSize);
   hWin = (projSize - 1) / 2;
 
   cntrPtLonLatH = georef.transform * ones(3, 1);

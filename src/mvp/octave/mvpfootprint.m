@@ -20,7 +20,7 @@ function [result, variance, converged, num_iterations] = mvpfootprint(seed, geor
     % coordinate "contained" in that pixel will be (1, 1) <= (x, y) < (2, 2).
     %
     % This is why we must add [1; 1] to the image size before comparing it.
-    if (px >= [1; 1] && px < (fliplr(size(img.data))' + [1; 1]))
+    if (px >= [1; 1] && px < (flipdim(size(img.data))' + [1; 1]))
       overlap++;
     endif
   endfor
