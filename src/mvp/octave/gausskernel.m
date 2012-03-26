@@ -1,20 +1,4 @@
 function [kern dkern] = gausskernel(sigma, sz)
-  if (sigma == "kernsize")
-    % A gaussian kernel needs 6sigma values
-    kern = round(6 * sz);
-    kern(find(kern<=0)) = 1;
-    return;
-  endif
-
-  if (sigma <= 0)
-    kern = 1;
-    return;
-  endif
-
-  if (nargin < 2)
-    sz = gausskernel("kernsize", sigma);
-  endif
-
   x = (0:sz) - (sz / 2);
   kern = diff(normcdf(x, 0, sigma));
   kern /= sum(kern);
@@ -23,7 +7,6 @@ function [kern dkern] = gausskernel(sigma, sz)
     dkern = diff(normpdf(x, 0, sigma));
     dkern /= sum(kern);
   endif 
-
 endfunction
 
 %!test
