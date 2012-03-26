@@ -1,6 +1,6 @@
-function [xw, yw] = _porthoproj_impl_ref(camera, planeNormal, planeD, georef, win)
-  dim = flipdim(win);
-  hWin = (win - 1) / 2;
+function [xw, yw] = _porthoproj_impl_ref(camera, planeNormal, planeD, georef, projSize)
+  dim = flipdim(projSize);
+  hWin = (projSize - 1) / 2;
 
   xw = zeros(dim);
   yw = zeros(dim);
