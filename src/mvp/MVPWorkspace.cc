@@ -38,7 +38,7 @@ namespace mvp {
 {boost::optional<type> val = ptree.get_optional<type>(prop_name); \
 if (val) (protobuf).set_##proto_name(*val);}
 
-MVPWorkspaceRequest work_request_from_conf(std::string const& filename) {
+MVPWorkspaceRequest MVPWorkspace::load_workspace_request(std::string const& filename) {
   using boost::property_tree::ptree;
   ptree pt;
 

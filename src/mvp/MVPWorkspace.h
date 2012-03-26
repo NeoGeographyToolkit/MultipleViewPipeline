@@ -141,9 +141,9 @@ class MVPWorkspace {
 
       return request;
     }
-};
 
-MVPWorkspaceRequest work_request_from_conf(std::string const& filename);
+    static MVPWorkspaceRequest load_workspace_request(std::string const& filename);
+};
 
 } // namespace mvp
 #endif

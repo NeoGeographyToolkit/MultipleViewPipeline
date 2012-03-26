@@ -41,8 +41,7 @@ void handle_arguments(int argc, char* argv[], Options *opts) {
   notify(vm);
 }
 
-int main(int argc, char* argv[])
-{
+int main(int argc, char* argv[]) {
   Options opts;
 
   try {
@@ -52,7 +51,7 @@ int main(int argc, char* argv[])
     return 1;
   }
 
-  MVPWorkspace work(work_request_from_conf(opts.config_file));
+  MVPWorkspace work(MVPWorkspace::load_workspace_request(opts.config_file));
   MVPJob job(work.assemble_job(opts.col, opts.row, opts.level));
 
   string job_filename = job.save_job_file();
