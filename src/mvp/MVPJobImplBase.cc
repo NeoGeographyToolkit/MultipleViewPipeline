@@ -15,12 +15,10 @@ MVPPixelResult MVPJobImplBase::generate_seed() const {
   VW_ASSERT(m_georef.datum().semi_major_axis() == m_georef.datum().semi_minor_axis(), vw::NoImplErr() << "Spheroid datums not supported"); 
   // TODO: The following calculation assumes spherical datum
   pre_seed.orientation = vw::cartography::lon_lat_radius_to_xyz(vw::Vector3(seed_lonlat[0], seed_lonlat[1], 1));
-  pre_seed.windows = vw::Vector3(m_tile_size, m_tile_size, m_settings.seed_window_smooth_size());
+  pre_seed.windows = vw::Vector3(m_tile_size, m_tile_size, m_settings.seed_window_smooth_size()) / m_settings.gauss_divisor();
 
   MVPAlgorithmOptions options;
   options.set_alt_range((m_settings.alt_max() - m_settings.alt_min()) / 2);
-  options.set_fix_orientation(true);
-  options.set_fix_windows(true);
   options.set_max_iterations(m_settings.max_iterations());
   options.set_gauss_divisor(m_settings.gauss_divisor());
 
@@ -38,13 +36,11 @@ MVPTileResult MVPJobImplBase::process_tile(vw::ProgressCallback const& progress)
 
   MVPAlgorithmOptions options;
   options.set_alt_range(m_settings.alt_search_range());
-  options.set_fix_orientation(true); 
-  options.set_fix_windows(true);
   options.set_max_iterations(m_settings.max_iterations());
   options.set_gauss_divisor(m_settings.gauss_divisor());
 
   // Set window size
-  seed.windows = vw::Vector3(m_settings.window_size(), m_settings.window_size(), m_settings.window_smooth_size());
+  seed.windows = vw::Vector3(m_settings.window_size(), m_settings.window_size(), m_settings.window_smooth_size()) / m_settings.gauss_divisor();
 
   int curr_px_num = 0;
   int num_px_to_process = m_tile_size * m_tile_size;
