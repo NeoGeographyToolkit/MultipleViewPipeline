@@ -2,6 +2,8 @@
 
 #include <mvp/MVPJob.h>
 
+#include <vw/Octave/Main.h>
+
 #include <boost/program_options.hpp>
 
 using namespace vw;
@@ -35,6 +37,10 @@ void handle_arguments(int argc, char* argv[], Options *opts) {
 }
 
 int main(int argc, char* argv[]) {
+  #if MVP_ENABLE_OCTAVE_SUPPORT
+  vw::octave::start_octave_interpreter();
+  #endif
+
   Options opts;
 
   try {
@@ -49,6 +55,10 @@ int main(int argc, char* argv[]) {
   MVPTileResult tile_result(job.process_tile(TerminalProgressCallback("mvp", "Processing tile: ")));
  
   write_image(opts.job_file + ".tif", tile_result.alt);
+
+  #if MVP_ENABLE_OCTAVE_SUPPORT
+  do_octave_atexit();
+  #endif
 
   return 0;
 }
