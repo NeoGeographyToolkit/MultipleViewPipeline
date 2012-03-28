@@ -20,6 +20,7 @@ set(MVP_HDRS MVPJob.h
              ConvexPolygon.h
              MVPAlgorithm.h
              MVPTileSeeder.h
+             MVPTileProcessor.h
              ${CMAKE_CURRENT_BINARY_DIR}/Config.h
              ${PROTO_HDRS})
 set(MVP_SRCS ${PROTO_SRCS}
@@ -31,6 +32,7 @@ set(MVP_SRCS ${PROTO_SRCS}
              MVPJob.cc
              MVPWorkspace.cc
              MVPTileSeeder.cc
+             MVPTileProcessor.cc
              MVPAlgorithm.cc)
 
 add_library(mvpcommon ${MVP_SRCS})
