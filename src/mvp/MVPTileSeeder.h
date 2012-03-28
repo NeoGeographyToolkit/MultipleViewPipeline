@@ -35,6 +35,8 @@ class MVPTileSeeder {
     virtual MVPAlgorithmVar seed(int col, int row) = 0;
 
     virtual MVPPixelResult update(int col, int row, MVPAlgorithmVar const& seed) = 0;
+
+    MVPPixelResult update(int col, int row) {return update(col, row, seed(col, row));}
 };
 
 class MVPTileSeederDumb : public MVPTileSeeder {
