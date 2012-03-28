@@ -29,6 +29,11 @@ struct MVPTileProcessorDumb : public MVPTileProcessor {
   virtual MVPTileResult operator()(vw::ProgressCallback const& progress = vw::ProgressCallback::dummy_instance()) const;  
 };
 
+struct MVPTileProcessorSquare : public MVPTileProcessor {
+  MVPTileProcessorSquare(MVPTileSeeder *seeder) : MVPTileProcessor(seeder) {}
+  virtual MVPTileResult operator()(vw::ProgressCallback const& progress = vw::ProgressCallback::dummy_instance()) const;  
+};
+
 } // namespace mvp
 
 #endif

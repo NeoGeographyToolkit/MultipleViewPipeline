@@ -56,3 +56,13 @@ TEST(MVPTileProcessorDumb, operator) {
     }
   }  
 }
+
+TEST(MVPTileProcessorSquare, operator) {
+  MVPAlgoTest algorithm;
+  MVPTileSeederTest seeder(&algorithm, GeoReference(Datum("D_MOON")), 8, MVPUserSettings());
+  MVPTileProcessorSquare processor(&seeder);
+
+  MVPTileResult result(processor());
+
+  //write_image("debug.tif", result.alt);
+}
