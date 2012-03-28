@@ -25,16 +25,16 @@ struct MVPTileSeederTest : public MVPTileSeeder {
   MVPTileSeederTest(MVPAlgorithm *algorithm, vw::cartography::GeoReference georef, int tile_size, MVPUserSettings user_settings) :
     MVPTileSeeder(algorithm, georef, tile_size, user_settings) {}
 
-  bool init() {
+  virtual bool init() {
     m_num_counts = 0;
     return true;
   }
 
-  MVPAlgorithmVar seed(int col, int row) const {
+  virtual MVPAlgorithmVar seed(int col, int row) {
     return MVPAlgorithmVar();
   }
 
-  MVPPixelResult update(int col, int row, MVPAlgorithmVar const& seed) {
+  virtual MVPPixelResult update(int col, int row, MVPAlgorithmVar const& seed) {
     MVPPixelResult px_result(MVPAlgorithmVar(m_num_counts++));
     m_result.update(col, row, px_result);
     

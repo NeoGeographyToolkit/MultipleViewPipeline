@@ -2,6 +2,9 @@
 #include <mvp/MVPAlgorithm.h>
 
 #include <vw/Cartography/SimplePointImageManipulation.h> // lon_lat_radius_to_xyz
+#include <vw/Image/MaskViews.h>
+#include <vw/Image/EdgeExtension.h>
+#include <vw/Image/UtilityViews.h>
 
 namespace mvp {
 
@@ -36,7 +39,7 @@ bool MVPTileSeederDumb::init() {
   }
 }
 
-MVPAlgorithmVar MVPTileSeederDumb::seed(int col, int row) const {
+MVPAlgorithmVar MVPTileSeederDumb::seed(int col, int row) {
   return m_seed;
 }
 
@@ -49,6 +52,24 @@ MVPPixelResult MVPTileSeederDumb::update(int col, int row, MVPAlgorithmVar const
   MVPPixelResult px_result((*m_algorithm)(seed, vw::cartography::crop(m_result.georef, col, row), opts));
   m_result.update(col, row, px_result);
   return px_result;
+}
+
+MVPAlgorithmVar MVPTileSeederSquare::seed(int col, int row) {
+  // TODO: this is all a hack in here...
+  using namespace vw;
+
+  BBox2i win_bbox(col - 2, row - 2, 5, 5);
+
+  ImageViewRef<PixelMask<float32> > win = edge_extend(m_result.alt, win_bbox, ZeroEdgeExtension());
+
+  double alt_avg_num = sum_of_pixel_values(apply_mask(win));
+  double alt_avg_denom = sum_of_pixel_values(apply_mask(copy_mask(constant_view(1, win), win)));
+
+  if (alt_avg_denom != 0) {
+    m_seed.alt = alt_avg_num / alt_avg_denom;
+  }
+
+  return m_seed;
 }
 
 } // namespace mvp

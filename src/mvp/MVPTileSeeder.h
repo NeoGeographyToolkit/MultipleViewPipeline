@@ -32,13 +32,14 @@ class MVPTileSeeder {
 
     virtual bool init() = 0; 
 
-    virtual MVPAlgorithmVar seed(int col, int row) const = 0;
+    virtual MVPAlgorithmVar seed(int col, int row) = 0;
 
     virtual MVPPixelResult update(int col, int row, MVPAlgorithmVar const& seed) = 0;
 };
 
 class MVPTileSeederDumb : public MVPTileSeeder {
-  MVPAlgorithmVar m_seed;
+  protected:
+    MVPAlgorithmVar m_seed;
 
   public:
     MVPTileSeederDumb(MVPAlgorithm *algorithm, vw::cartography::GeoReference georef, int tile_size, MVPUserSettings user_settings) :
@@ -46,9 +47,17 @@ class MVPTileSeederDumb : public MVPTileSeeder {
 
     virtual bool init();
 
-    virtual MVPAlgorithmVar seed(int col, int row) const;
+    virtual MVPAlgorithmVar seed(int col, int row);
 
     virtual MVPPixelResult update(int col, int row, MVPAlgorithmVar const& seed);
+};
+
+struct MVPTileSeederSquare : public MVPTileSeederDumb {
+  public:
+    MVPTileSeederSquare(MVPAlgorithm *algorithm, vw::cartography::GeoReference georef, int tile_size, MVPUserSettings user_settings) :
+      MVPTileSeederDumb(algorithm, georef, tile_size, user_settings) {}
+
+    virtual MVPAlgorithmVar seed(int col, int row);
 };
 
 } // namespace mvp

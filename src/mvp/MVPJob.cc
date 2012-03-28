@@ -40,7 +40,7 @@ MVPTileResult MVPJob::process_tile(vw::ProgressCallback const& progress) const {
     }
   }
 
-  MVPTileSeederDumb seeder(algorithm.get(), m_job_request.georef(), m_job_request.tile_size(), m_job_request.user_settings());
+  MVPTileSeederSquare seeder(algorithm.get(), m_job_request.georef(), m_job_request.tile_size(), m_job_request.user_settings());
   MVPTileProcessorDumb processor(&seeder);
 
   return processor(progress);
