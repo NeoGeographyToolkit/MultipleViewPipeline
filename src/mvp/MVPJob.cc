@@ -1,42 +1,91 @@
 #include <mvp/MVPJob.h>
+#include <mvp/MVPAlgorithm.h>
+#include <mvp/MVPTileSeeder.h>
+#include <mvp/MVPTileProcessor.h>
 
+#include <vw/Plate/PlateGeoReference.h> // TODO: get rid of me
 #include <vw/Plate/PlateFile.h>
+#include <vw/Image/ImageViewRef.h>
 #include <vw/Image/MaskViews.h>
 
 #include <boost/filesystem.hpp>
 
-
 namespace mvp {
 
-MVPJob::MVPJob(MVPJobRequest const& job_request) :
-  m_job_request(job_request),
-  m_col(job_request.col()), m_row(job_request.row()), m_level(job_request.level()),
-  m_result_platefile(job_request.result_platefile()),
-  m_internal_result_platefile(job_request.internal_result_platefile()),
-  m_plate_georef(job_request.plate_georef()) {
-  
-  vw::cartography::GeoReference georef = m_plate_georef.tile_georef(m_col, m_row, m_level);
-  OrbitalImageCropCollection crops(m_plate_georef.tile_lonlat_bbox(m_col, m_row, m_level),
-                                   m_plate_georef.datum(),
-                                   job_request.user_settings().alt_min(),
-                                   job_request.user_settings().alt_max());
-  crops.add_image_collection(job_request.orbital_images());
+MVPJob::MVPJob(MVPJobRequest const& job_request) : 
+  m_job_request(job_request) {
 
-  if (job_request.use_octave()) {
+  // TODO: Make MVPJobRequest send a GeoRef and a tile_lonlat_bbox to avoid these calcs 
+  int col = job_request.col();
+  int row = job_request.row();
+  int level = job_request.level();
+  vw::platefile::PlateGeoReference plate_georef(m_job_request.plate_georef());
+  vw::cartography::GeoReference georef = plate_georef.tile_georef(col, row, level);
+  OrbitalImageCropCollection crops(plate_georef.tile_lonlat_bbox(col, row, level),
+                                   plate_georef.datum(),
+                                   m_job_request.user_settings().alt_min(),
+                                   m_job_request.user_settings().alt_max());
+  crops.add_image_collection(m_job_request.orbital_images());
+  m_crops = crops;
+}
+
+MVPTileResult MVPJob::process_tile(vw::ProgressCallback const& progress) const {
+  boost::scoped_ptr<MVPAlgorithm> algorithm;
+
+  if (m_job_request.use_octave()) {
     #if MVP_ENABLE_OCTAVE_SUPPORT
-      if (job_request.draw_footprints()) {
-        m_impl.reset(new MVPJobImplFootprintOctave(georef, m_plate_georef.tile_size(), crops, job_request.user_settings()));
+      if (m_job_request.draw_footprints()) {
+        algorithm.reset(new MVPAlgoOctave(m_crops, MVP_OCTAVE_FOOTPRINT_FCN));
       } else {
-        m_impl.reset(new MVPJobImplOctave(georef, m_plate_georef.tile_size(), crops, job_request.user_settings()));
+        algorithm.reset(new MVPAlgoOctave(m_crops, MVP_OCTAVE_ALGORITHM_FCN));
       }
     #else
       vw::vw_throw(vw::NoImplErr() << "Cannot use octave algorithm, as the MVP was not compiled with it!");
     #endif
-  } else if (job_request.draw_footprints()) {
-    m_impl.reset(new MVPJobImplFootprint(georef, m_plate_georef.tile_size(), crops, job_request.user_settings()));
   } else {
-    m_impl.reset(new MVPJobImpl(georef, m_plate_georef.tile_size(), crops, job_request.user_settings()));
+    if (m_job_request.draw_footprints()) {
+      algorithm.reset(new MVPAlgoFootprint(m_crops));
+    } else {
+      algorithm.reset(new MVPAlgoImpl(m_crops));
+    }
   }
+
+  // TODO: Make MVPJobRequest send a GeoRef and a tile_lonlat_bbox to avoid these calcs 
+  int col = m_job_request.col();
+  int row = m_job_request.row();
+  int level = m_job_request.level();
+  vw::platefile::PlateGeoReference plate_georef(m_job_request.plate_georef());
+  vw::cartography::GeoReference georef = plate_georef.tile_georef(col, row, level);
+
+  MVPTileSeederDumb seeder(algorithm.get(), georef, plate_georef.tile_size(), m_job_request.user_settings());
+  MVPTileProcessorDumb processor(&seeder);
+
+  return processor(progress);
+}
+
+void MVPJob::write_tile(MVPTileResult const& result) const {
+  int col = m_job_request.col();
+  int row = m_job_request.row();
+  int level = m_job_request.level();
+
+  vw::ImageViewRef<vw::PixelGrayA<vw::float32> > rendered_tile = vw::mask_to_alpha(vw::pixel_cast<vw::PixelMask<vw::PixelGray<vw::float32> > >(result.alt));
+
+  boost::scoped_ptr<vw::platefile::PlateFile> pf(new vw::platefile::PlateFile(m_job_request.result_platefile()));
+
+  pf->transaction_begin("Post Heights", 1);
+  pf->write_request();
+  pf->write_update(rendered_tile, col, row, level);
+  pf->sync();
+  pf->write_complete();
+  pf->transaction_end(true);
+
+  // TODO: Write the other tiles
+}
+
+MVPTileResult MVPJob::process_and_write_tile(vw::ProgressCallback const& progress) const {
+  MVPTileResult result(process_tile(progress));
+  write_tile(result);
+  return result;
 }
 
 MVPJobRequest MVPJob::load_job_file(std::string const& filename) {
@@ -57,35 +106,14 @@ MVPJobRequest MVPJob::load_job_file(std::string const& filename) {
   return job_request;
 }
 
-MVPTileResult MVPJob::process_tile(vw::ProgressCallback const& progress, bool write_tile) const {
-  MVPTileResult result = m_impl->process_tile(progress);
-
-  if (write_tile) {
-    vw::ImageViewRef<vw::PixelGrayA<vw::float32> > rendered_tile = vw::mask_to_alpha(vw::pixel_cast<vw::PixelMask<vw::PixelGray<vw::float32> > >(result.alt));
-
-    boost::scoped_ptr<vw::platefile::PlateFile> pf(new vw::platefile::PlateFile(m_result_platefile));
-
-    pf->transaction_begin("Post Heights", 1);
-    pf->write_request();
-    pf->write_update(rendered_tile, m_col, m_row, m_level);
-    pf->sync();
-    pf->write_complete();
-    pf->transaction_end(true);
-
-    // TODO: Write the other tiles
-  }
-
-  return result;
-}
-
-std::string MVPJob::save_job_file(std::string const& out_dir) {
+std::string MVPJob::save_job_file(std::string const& out_dir) const {
   namespace fs = boost::filesystem;
 
   std::string job_filename;
 
   {
     std::stringstream stream;
-    stream << out_dir << "/" << m_col << "_" << m_row << "_" << m_level << ".job";
+    stream << out_dir << "/" << m_job_request.col() << "_" << m_job_request.row()<< "_" << m_job_request.level() << ".job";
     job_filename = stream.str();
   }
 
@@ -93,7 +121,7 @@ std::string MVPJob::save_job_file(std::string const& out_dir) {
   fs::create_directory(job_filename);
 
   MVPJobRequest job_request_mod(m_job_request);
-  for (unsigned curr_image = 0; curr_image < m_impl->crops().size(); curr_image++) {
+  for (unsigned curr_image = 0; curr_image < m_crops.size(); curr_image++) {
     std::stringstream stream;
     stream << curr_image;
     std::string str_num(stream.str());
@@ -104,8 +132,8 @@ std::string MVPJob::save_job_file(std::string const& out_dir) {
     job_request_mod.mutable_orbital_images(curr_image)->set_camera_path(camera_name);
     job_request_mod.mutable_orbital_images(curr_image)->set_image_path(image_name);
 
-    vw::write_image(job_filename + "/" + image_name, m_impl->crops()[curr_image]);
-    m_impl->crops()[curr_image].camera().write(job_filename + "/" + camera_name);
+    vw::write_image(job_filename + "/" + image_name, m_crops[curr_image]);
+    m_crops[curr_image].camera().write(job_filename + "/" + camera_name);
   }
 
   {
@@ -117,7 +145,5 @@ std::string MVPJob::save_job_file(std::string const& out_dir) {
 
   return job_filename;
 }
-
-
 
 } // namespace mvp

@@ -1,5 +1,7 @@
 #include <mvp/MVPJob.h>
 
+#include <vw/Plate/PlateGeoReference.h>
+
 #include <boost/filesystem.hpp>
 
 DEFUN_DLD(loadjobfile, args, nargout, "Load an MVP Job File")

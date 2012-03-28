@@ -8,29 +8,28 @@
 #ifndef __MVP_MVPJOB_H__
 #define __MVP_MVPJOB_H__
 
-#include <mvp/MVPJobImpl.h>
-
-// TODO: Remove PlateGeoReference from MVPJob and MVPJobRequest.
-// simply pass a GeoReference and tile size
-#include <vw/Plate/PlateGeoReference.h>
+#include <mvp/MVPTypes.h>
+#include <mvp/MVPJobRequest.pb.h>
+#include <mvp/OrbitalImageCrop.h>
 
 namespace mvp {
 
 class MVPJob {
-  boost::shared_ptr<MVPJobImplBase> m_impl;
   MVPJobRequest m_job_request;
-  int m_col, m_row, m_level;
-  std::string m_result_platefile, m_internal_result_platefile;
-  vw::platefile::PlateGeoReference m_plate_georef;
+  OrbitalImageCropCollection m_crops;
 
   public:
-    MVPJob(MVPJobRequest const& job_request); 
+    MVPJob(MVPJobRequest const& job_request);
 
-    static MVPJobRequest load_job_file(std::string const& filename); 
+    MVPTileResult process_tile(vw::ProgressCallback const& progress = vw::ProgressCallback::dummy_instance()) const;
 
-    MVPTileResult process_tile(vw::ProgressCallback const& progress = vw::ProgressCallback::dummy_instance(), bool write_tile = false) const;
+    void write_tile(MVPTileResult const& result) const;
 
-    std::string save_job_file(std::string const& out_dir = "."); 
+    MVPTileResult process_and_write_tile(vw::ProgressCallback const& progress = vw::ProgressCallback::dummy_instance()) const;
+
+    static MVPJobRequest load_job_file(std::string const& filename);
+
+    std::string save_job_file(std::string const& out_dir = ".") const; 
 };
 
 } // namespace mvp

@@ -2,6 +2,7 @@
 #include <test/Helpers.h>
 
 #include <mvp/MVPJob.h>
+#include <vw/Plate/PlateGeoReference.h>
 
 using namespace std;
 using namespace vw;
