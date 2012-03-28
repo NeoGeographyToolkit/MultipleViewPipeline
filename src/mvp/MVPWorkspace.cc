@@ -41,23 +41,24 @@ MVPWorkspace::MVPWorkspace(MVPWorkspaceRequest const& work_request) :
 MVPJobRequest MVPWorkspace::assemble_job(int col, int row, int level) const {
   using google::protobuf::RepeatedFieldBackInserter;
 
-  MVPJobRequest request;
+  MVPJobRequest job_request;
 
-  request.set_col(col);
-  request.set_row(row);
-  request.set_level(level);
+  job_request.set_col(col);
+  job_request.set_row(row);
+  job_request.set_level(level);
+  job_request.set_tile_size(m_plate_georef.tile_size());
   
-  request.set_result_platefile(m_result_platefile);
-  request.set_internal_result_platefile(m_internal_result_platefile);
-  *request.mutable_plate_georef() = m_plate_georef.build_desc();
-  *request.mutable_user_settings() = m_user_settings;
-  request.set_use_octave(m_use_octave);
-  request.set_draw_footprints(m_draw_footprints);
+  job_request.set_result_platefile(m_result_platefile);
+  job_request.set_internal_result_platefile(m_internal_result_platefile);
+  *job_request.mutable_georef() = m_plate_georef.tile_georef(col, row, level).build_desc();
+  *job_request.mutable_user_settings() = m_user_settings;
+  job_request.set_use_octave(m_use_octave);
+  job_request.set_draw_footprints(m_draw_footprints);
 
   std::vector<OrbitalImageFileDescriptor> image_matches(images_at_tile(col, row, level));
-  std::copy(image_matches.begin(), image_matches.end(), RepeatedFieldBackInserter(request.mutable_orbital_images()));
+  std::copy(image_matches.begin(), image_matches.end(), RepeatedFieldBackInserter(job_request.mutable_orbital_images()));
 
-  return request;
+  return job_request;
 }
 
 std::vector<std::string> paths_from_pattern(boost::filesystem::path pattern) {

@@ -13,20 +13,10 @@
 namespace mvp {
 
 MVPJob::MVPJob(MVPJobRequest const& job_request) : 
-  m_job_request(job_request) {
+  m_job_request(job_request),
+  m_crops(m_job_request.georef(), m_job_request.tile_size(), m_job_request.user_settings().alt_min(), m_job_request.user_settings().alt_max()) {
 
-  // TODO: Make MVPJobRequest send a GeoRef and a tile_lonlat_bbox to avoid these calcs 
-  int col = job_request.col();
-  int row = job_request.row();
-  int level = job_request.level();
-  vw::platefile::PlateGeoReference plate_georef(m_job_request.plate_georef());
-  vw::cartography::GeoReference georef = plate_georef.tile_georef(col, row, level);
-  OrbitalImageCropCollection crops(plate_georef.tile_lonlat_bbox(col, row, level),
-                                   plate_georef.datum(),
-                                   m_job_request.user_settings().alt_min(),
-                                   m_job_request.user_settings().alt_max());
-  crops.add_image_collection(m_job_request.orbital_images());
-  m_crops = crops;
+  m_crops.add_image_collection(m_job_request.orbital_images());
 }
 
 MVPTileResult MVPJob::process_tile(vw::ProgressCallback const& progress) const {
@@ -50,31 +40,20 @@ MVPTileResult MVPJob::process_tile(vw::ProgressCallback const& progress) const {
     }
   }
 
-  // TODO: Make MVPJobRequest send a GeoRef and a tile_lonlat_bbox to avoid these calcs 
-  int col = m_job_request.col();
-  int row = m_job_request.row();
-  int level = m_job_request.level();
-  vw::platefile::PlateGeoReference plate_georef(m_job_request.plate_georef());
-  vw::cartography::GeoReference georef = plate_georef.tile_georef(col, row, level);
-
-  MVPTileSeederDumb seeder(algorithm.get(), georef, plate_georef.tile_size(), m_job_request.user_settings());
+  MVPTileSeederDumb seeder(algorithm.get(), m_job_request.georef(), m_job_request.tile_size(), m_job_request.user_settings());
   MVPTileProcessorDumb processor(&seeder);
 
   return processor(progress);
 }
 
 void MVPJob::write_tile(MVPTileResult const& result) const {
-  int col = m_job_request.col();
-  int row = m_job_request.row();
-  int level = m_job_request.level();
-
   vw::ImageViewRef<vw::PixelGrayA<vw::float32> > rendered_tile = vw::mask_to_alpha(vw::pixel_cast<vw::PixelMask<vw::PixelGray<vw::float32> > >(result.alt));
 
   boost::scoped_ptr<vw::platefile::PlateFile> pf(new vw::platefile::PlateFile(m_job_request.result_platefile()));
 
   pf->transaction_begin("Post Heights", 1);
   pf->write_request();
-  pf->write_update(rendered_tile, col, row, level);
+  pf->write_update(rendered_tile, m_job_request.col(), m_job_request.row(), m_job_request.level());
   pf->sync();
   pf->write_complete();
   pf->transaction_end(true);

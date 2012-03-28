@@ -40,8 +40,7 @@ class MVPAlgoFootprintTest : public ::testing::TestWithParam<bool> {
       }
 
       // JobT
-      OrbitalImageCropCollection crops(plate_georef.tile_lonlat_bbox(col, row, level),
-                                       plate_georef.datum(), 0, 0);
+      OrbitalImageCropCollection crops(georef, tile_size, 0, 0);
       crops.add_image_collection(orbital_images);
 
       if (GetParam()) {

@@ -2,16 +2,17 @@ package mvp;
 
 import "mvp/OrbitalImageFileDescriptor.proto";
 import "mvp/MVPUserSettings.proto";
-import "vw/Plate/PlateGeoReferenceDesc.proto";
+import "vw/Cartography/GeoReferenceDesc.proto";
 
 message MVPJobRequest {
   required int32 col = 1;
   required int32 row = 2;
   required int32 level = 3;
+  required int32 tile_size = 4;
 
   required string result_platefile = 5;
   required string internal_result_platefile = 6;
-  required vw.platefile.PlateGeoReferenceDesc plate_georef = 7;
+  required vw.cartography.GeoReferenceDesc georef = 7;
   required MVPUserSettings user_settings = 8;
   repeated OrbitalImageFileDescriptor orbital_images = 9;
   optional bool use_octave = 10 [default=false];

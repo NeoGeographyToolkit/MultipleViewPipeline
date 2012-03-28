@@ -61,7 +61,7 @@ TEST_F(MVPWorkspaceTest, images_at_tile) {
   images = work.images_at_tile(0, 0, 1);
   EXPECT_EQ(images.size(), 0u);
 
-  // Same as tile in TestMVPJobImpl
+  // Same as tile in TestMVPAlgorithm. TODO: make standard test tile?
   images = work.images_at_tile(5374, 3875, 13);
   EXPECT_EQ(images.size(), 2u);
 }
@@ -76,9 +76,10 @@ TEST_F(MVPWorkspaceTest, assemble_job) {
   EXPECT_EQ(job.col(), 1);
   EXPECT_EQ(job.row(), 1);
   EXPECT_EQ(job.level(), 1);
+  // TODO: check tile_size?
   EXPECT_EQ(job.result_platefile(), "result");
   EXPECT_EQ(job.internal_result_platefile(), "internal");
-  EXPECT_EQ(job.plate_georef().DebugString(), PlateGeoReference(Datum("D_MOON")).build_desc().DebugString());
+  // TODO: check georef?
   EXPECT_EQ(job.user_settings().DebugString(), MVPUserSettings().DebugString());
   EXPECT_EQ(job.orbital_images_size(), 4);
 }
