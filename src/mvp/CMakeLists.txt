@@ -13,8 +13,6 @@ PROTOBUF_GENERATE(CPPOUT PROTO_SRCS
                   PROTOS ${MVP_PROTOS})
 
 set(MVP_HDRS MVPJob.h
-             MVPJobImpl.h
-             MVPJobImplBase.h
              MVPWorkspace.h
              OrbitalImageFootprint.h
              ConvexPolygon.h
@@ -27,8 +25,6 @@ set(MVP_SRCS ${PROTO_SRCS}
              ConvexPolygon.cc
              OrbitalImageFootprint.cc
              OrbitalImageCrop.cc
-             MVPJobImplBase.cc
-             MVPJobImpl.cc
              MVPJob.cc
              MVPWorkspace.cc
              MVPTileSeeder.cc
