@@ -8,6 +8,7 @@
 
 #include <octave/oct.h>
 #include <octave/oct-map.h>
+#include <octave/lo-ieee.h> // octave_NA
 
 #include <vw/FileIO/DiskImageResource.h>
 #include <vw/Image/ImageView.h>
@@ -105,7 +106,7 @@ template <class ViewT>
   for(int row = 0; row < rast.rows(); row++) {
     AccT cacc = racc;
     for(int col = 0; col < rast.cols(); col++) {
-      oct_img(row, col) = is_valid(*cacc) ? remove_mask(*cacc) : std::numeric_limits<double>::quiet_NaN();
+      oct_img(row, col) = is_valid(*cacc) ? remove_mask(*cacc) : ::octave_NA;
       cacc.next_col();
     }
     racc.next_row();
@@ -126,7 +127,7 @@ inline ImageView<PixelMask<double> > octave_to_imageview(::Matrix const& oct_img
   for(int row = 0; row < rast.rows(); row++) {
     AccT cacc = racc;
     for(int col = 0; col < rast.cols(); col++) {
-      *cacc = std::isnan(oct_img(row, col)) ? PixelMask<double>() : PixelMask<double>(oct_img(row, col));
+      *cacc = ::xisnan(oct_img(row, col)) ? PixelMask<double>() : PixelMask<double>(oct_img(row, col));
       cacc.next_col();
     }
     racc.next_row();
