@@ -1,4 +1,19 @@
 #include <vw/Octave/Conversions.h>
+#include <vw/Image/ImageViewRef.h>
+#include <vw/FileIO/DiskImageView.h>
+
+static vw::ImageViewRef<vw::PixelMask<vw::PixelGray<vw::float32> > > rsrc_helper(boost::shared_ptr<vw::DiskImageResource> rsrc) {
+  switch(rsrc->format().pixel_format) {
+    case vw::VW_PIXEL_GRAYA:
+      return vw::DiskImageView<vw::PixelMask<vw::PixelGray<vw::float32> > >(rsrc);
+      break;
+    case vw::VW_PIXEL_GRAY:
+      return vw::pixel_cast<vw::PixelMask<vw::PixelGray<vw::float32> > >(vw::DiskImageView<vw::PixelGray<vw::float32> >(rsrc));
+      break;
+    default:
+      vw::vw_throw(vw::ArgumentErr() << "Unsupported orbital image pixel format: " << vw::pixel_format_name(rsrc->format().pixel_format));
+  }
+}
 
 DEFUN_DLD(imread_vw, args, nargout, "Load an image using VW")
 {
@@ -18,15 +33,15 @@ DEFUN_DLD(imread_vw, args, nargout, "Load an image using VW")
 
    std::string filename = args(0).string_value();
 
-   vw::ImageView<double> vw_img;
+   boost::shared_ptr<vw::DiskImageResource> rsrc;
    try {
-    read_image(vw_img, filename);
+     rsrc.reset(vw::DiskImageResource::open(filename));
    } catch (vw::Exception& e) {
-    error(e.what());
-    return retval;
+     error(e.what());
+     return retval;
    }
 
-   Matrix oct_img(vw::octave::imageview_to_octave(vw_img));
+   Matrix oct_img(vw::octave::imageview_to_octave(rsrc_helper(rsrc)));
 
    if (nargout == 1) {
      return octave_value(oct_img);
