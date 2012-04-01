@@ -51,8 +51,8 @@ if options.cmd_status:
 
 if options.cmd_launch_filename:
   cmd = MVPCommandMessage()
-  cmd.cmd = MVPCommandMessage.STATUS
-  cmd.url = options.cmd_launch_filename
+  cmd.cmd = MVPCommandMessage.LAUNCH
+  cmd.conf_file = options.cmd_launch_filename
   cmd_sock.send(cmd.SerializeToString())
   evts = poller.poll(timeout)
   if not(evts):

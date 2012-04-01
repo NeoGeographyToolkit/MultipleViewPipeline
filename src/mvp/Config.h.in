@@ -18,4 +18,8 @@
   #define MVP_OCTAVE_FOOTPRINT_FCN "mvpfootprint"
 #endif
 
+#define MVP_COMMAND_PORT "6677"
+#define MVP_STATUS_PORT "6678"
+#define MVP_BROADCAST_PORT "6679"
+
 #endif

@@ -4,9 +4,29 @@ message MVPCommandMessage {
   enum CommandType {
     LAUNCH = 0;
     STATUS = 1;
-    ABORT = 2; 
+    INFO = 2;
+    ABORT = 3;
+    KILL = 4;
+    GET_JOB = 5;
   }
 
   required CommandType cmd = 1;
-  optional string url = 2;
+  optional string conf_file = 2;
+}
+
+message MVPStatusUpdate {
+  required double status = 1; 
+}
+
+message MVPStatusReport {
+
+}
+
+message MVPWorkerCommand {
+  enum CommandType {
+    WAKE = 0;
+    ABORT = 1;
+    KILL = 2;
+  }
+  required CommandType cmd = 1;
 }
