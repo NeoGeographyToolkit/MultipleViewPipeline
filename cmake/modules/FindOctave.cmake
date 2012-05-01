@@ -112,7 +112,6 @@ if (OCTAVE_CONFIG_EXECUTABLE)
     OUTPUT_VARIABLE _octave_all_ldflags
     RESULT_VARIABLE _mkoctfile_failed
     OUTPUT_STRIP_TRAILING_WHITESPACE)
-  separate_arguments(_octave_all_ldflags)
   set(OCTAVE_LINK_FLAGS "${_octave_all_ldflags}")
 
   # OCTAVE_LIBRARY_DIRS
