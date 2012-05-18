@@ -2,11 +2,11 @@
 
 #include <mvp/MVPJob.h>
 #include <mvp/MVPMessages.pb.h>
+#include <mvp/ZmqHelpers.h>
 
 #include <vw/Octave/Main.h>
 
 #include <boost/program_options.hpp>
-#include <zmq.hpp>
 
 using namespace vw;
 using namespace mvp;
@@ -69,28 +69,11 @@ int main(int argc, char* argv[]) {
   }
 
   zmq::context_t context(1);
+  ZmqWorkerHelper helper(context, opts.hostname);
 
-  // Create socket urls
-  string cmd_sock_url("tcp://" + opts.hostname + ":" MVP_COMMAND_PORT);
-  string bcast_sock_url("tcp://" + opts.hostname + ":" MVP_BROADCAST_PORT);
-  string status_sock_url("tcp://" + opts.hostname + ":" MVP_STATUS_PORT);
-
-  // Create sockets
-  zmq::socket_t cmd_sock(context, ZMQ_REQ);
-  zmq::socket_t bcast_sock(context, ZMQ_SUB);
-  zmq::socket_t status_sock(context, ZMQ_PUB);
-
-  // Connect sockets
-  cmd_sock.connect(cmd_sock_url.c_str());
-  bcast_sock.connect(bcast_sock_url.c_str());
-  status_sock.connect(status_sock_url.c_str());
-
-  // Set subscription filter
-  bcast_sock.setsockopt(ZMQ_SUBSCRIBE, 0, 0); // Don't filter out any messages
-
-  MVPWorkerCommand cmd;
-  cmd.set_cmd(MVPWorkerCommand::WAKE);
   while (1) {
+    MVPWorkerCommand cmd(helper.recv_bcast());
+
     switch (cmd.cmd()) {
       case MVPWorkerCommand::WAKE:
         cout << "Command wake!" << endl;
@@ -120,11 +103,6 @@ int main(int argc, char* argv[]) {
       default:
         vw_throw(vw::LogicErr() << "Invalid Worker Request");
     }
-
-    zmq::message_t message;
-    bcast_sock.recv(&message);
-    string str_message(static_cast<char*>(message.data()), message.size());
-    cmd.ParseFromString(str_message);
   }
 
   // TODO: Make sure this is called every time mvpworker exits...

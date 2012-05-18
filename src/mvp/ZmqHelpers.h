@@ -28,24 +28,24 @@ const std::string cmd_sock_url = "tcp://*:" MVP_COMMAND_PORT;
 const std::string bcast_sock_url = "tcp://*:" MVP_BROADCAST_PORT;
 const std::string status_sock_url = "tcp://*:" MVP_STATUS_PORT;
 
+void sock_send(zmq::socket_t& sock, std::string const& str_message) {
+  zmq::message_t reply(str_message.size());
+  memcpy(reply.data(), str_message.c_str(), str_message.size());
+  sock.send(reply);
+}
+
+std::string sock_recv(zmq::socket_t& sock) {
+  zmq::message_t message;
+  sock.recv(&message);
+  return std::string(static_cast<char*>(message.data()), message.size());
+}
+
 class ZmqServerHelper {
 
   zmq::socket_t m_cmd_sock;
   zmq::socket_t m_bcast_sock;
   zmq::socket_t m_status_sock;
 
-  void sock_send(zmq::socket_t& sock, std::string const& str_message) {
-    zmq::message_t reply(str_message.size());
-    memcpy(reply.data(), str_message.c_str(), str_message.size());
-    sock.send(reply);
-  }
-
-  std::string sock_recv(zmq::socket_t& sock) {
-    zmq::message_t message;
-    sock.recv(&message);
-    return std::string(static_cast<char*>(message.data()), message.size());
-  }
-  
   public:
     enum PollEvent {
       STATUS_EVENT,
@@ -120,6 +120,46 @@ class ZmqServerHelper {
       std::string str_bcast_message;
       bcast_cmd.SerializeToString(&str_bcast_message);
       sock_send(m_bcast_sock, str_bcast_message);
+    }
+};
+
+class ZmqWorkerHelper {
+
+  zmq::socket_t m_cmd_sock;
+  zmq::socket_t m_bcast_sock;
+  zmq::socket_t m_status_sock;
+
+  bool m_startup;
+
+  public:
+    ZmqWorkerHelper(zmq::context_t& context, std::string const& hostname) :
+      m_cmd_sock(context, ZMQ_REQ),
+      m_bcast_sock(context, ZMQ_SUB),
+      m_status_sock(context, ZMQ_PUB),
+      m_startup(true) {
+
+      std::string cmd_sock_url("tcp://" + hostname + ":" MVP_COMMAND_PORT);
+      std::string bcast_sock_url("tcp://" + hostname + ":" MVP_BROADCAST_PORT);
+      std::string status_sock_url("tcp://" + hostname + ":" MVP_STATUS_PORT);
+
+      m_cmd_sock.connect(cmd_sock_url.c_str());
+      m_bcast_sock.connect(bcast_sock_url.c_str());
+      m_status_sock.connect(status_sock_url.c_str());
+
+      // Set subscription filter
+      m_bcast_sock.setsockopt(ZMQ_SUBSCRIBE, 0, 0); // Don't filter out any messages
+    }
+
+    MVPWorkerCommand recv_bcast() {
+      MVPWorkerCommand cmd;
+
+      if (m_startup) {
+        cmd.set_cmd(MVPWorkerCommand::WAKE);
+        m_startup = false;
+      } else {
+        cmd.ParseFromString(sock_recv(m_bcast_sock));
+      }
+      return cmd;
     }
 };
 
