@@ -161,6 +161,26 @@ class ZmqWorkerHelper {
       }
       return cmd;
     }
+
+    // TODO: standardize request / reply messages
+    /*
+    MVPJobRequest get_job() {
+      MVPCommandMessage cmd;
+      cmd.set_cmd(MVPCommandMessage::GET_JOB);
+      string str_cmd;
+      cmd.SerializeToString(&str_cmd);
+
+      cmd_sock.send(str_cmd)
+
+      zmq::pollitem_t cmd_poller[] = {{cmd_sock, 0, ZMQ_POLLIN, 0}};
+      zmq::poll(cmd_poller, 1, 1000);
+
+      if (!(cmd_poller[0].revents & ZMQ_POLLIN)) {
+        vw_throw(vw::IOErr() << "Lost connection to mvpd");
+      }
+
+
+    } */
 };
 
 } // namespace mvp
