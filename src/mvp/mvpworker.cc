@@ -72,10 +72,10 @@ int main(int argc, char* argv[]) {
   ZmqWorkerHelper helper(context, opts.hostname);
 
   while (1) {
-    MVPWorkerCommand cmd(helper.recv_bcast());
+    MVPWorkerBroadcast cmd(helper.recv_bcast());
 
     switch (cmd.cmd()) {
-      case MVPWorkerCommand::WAKE:
+      case MVPWorkerBroadcast::WAKE:
         cout << "Command wake!" << endl;
         /*
       {
@@ -83,11 +83,11 @@ int main(int argc, char* argv[]) {
         job
       } */
         break;
-      case MVPWorkerCommand::ABORT:
+      case MVPWorkerBroadcast::ABORT:
         // Do Nothing
         cout << "Got abort request!" << endl;
         break;
-      case MVPWorkerCommand::KILL:
+      case MVPWorkerBroadcast::KILL:
         vw_throw(vw::Aborted() << "Kill request");
       default:
         vw_throw(vw::LogicErr() << "Invalid Worker Request");

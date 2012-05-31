@@ -20,34 +20,35 @@ int main (int argc, char *argv[]) {
     ZmqServerHelper::PollEventSet events = helper.poll();
 
     if (events.count(ZmqServerHelper::COMMAND_EVENT)) {
-      MVPCommandMessage cmd(helper.recv_cmd());
+      MVPCommand cmd(helper.recv_cmd());
+      MVPCommandReply reply;
+      reply.set_cmd(cmd.cmd());
 
       switch(cmd.cmd()) {
-        case MVPCommandMessage::LAUNCH:
+        case MVPCommand::LAUNCH:
           job_queue.reset(cmd.conf_file());
-          helper.send_bcast(MVPWorkerCommand::WAKE);
-          helper.send_cmd();
+          helper.send_bcast(MVPWorkerBroadcast::WAKE);
           break;
-        case MVPCommandMessage::STATUS:
-          helper.send_cmd(job_queue.status());
+        case MVPCommand::STATUS:
+          *reply.mutable_status_report() = job_queue.status();
           break;
-        case MVPCommandMessage::INFO:
-          helper.send_cmd();
+        case MVPCommand::INFO:
+          // TODO: do something here
           break;
-        case MVPCommandMessage::ABORT:
-          helper.send_bcast(MVPWorkerCommand::ABORT);
-          helper.send_cmd();
+        case MVPCommand::ABORT:
+          helper.send_bcast(MVPWorkerBroadcast::ABORT);
           break;
-        case MVPCommandMessage::KILL:
-          helper.send_bcast(MVPWorkerCommand::KILL);
-          helper.send_cmd();
+        case MVPCommand::KILL:
+          helper.send_bcast(MVPWorkerBroadcast::KILL);
           break;
-        case MVPCommandMessage::GET_JOB:
-          helper.send_cmd(job_queue.next());
+        case MVPCommand::JOB:
+          *reply.mutable_job_request() = job_queue.next();
           break;
         default:
           vw_throw(vw::LogicErr() << "Unrecognized command");  
       }
+
+      helper.send_cmd(reply);
     }
     
     if (events.count(ZmqServerHelper::STATUS_EVENT)) {

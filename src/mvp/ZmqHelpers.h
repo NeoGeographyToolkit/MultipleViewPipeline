@@ -91,30 +91,20 @@ class ZmqServerHelper {
       return update;
     }
 
-    MVPCommandMessage recv_cmd() {
-      MVPCommandMessage cmd;
+    MVPCommand recv_cmd() {
+      MVPCommand cmd;
       cmd.ParseFromString(sock_recv(m_cmd_sock));
       return cmd;
     }
 
-    void send_cmd(MVPStatusReport const& status) {
+    void send_cmd(MVPCommandReply const& cmd) {
       std::string str_cmd_message;
-      status.SerializeToString(&str_cmd_message);
+      cmd.SerializeToString(&str_cmd_message);
       sock_send(m_cmd_sock, str_cmd_message);
     }
 
-    void send_cmd(MVPJobRequest const& job) {
-      std::string str_cmd_message;
-      job.SerializeToString(&str_cmd_message);
-      sock_send(m_cmd_sock, str_cmd_message);
-    }
-
-    void send_cmd() {
-      sock_send(m_cmd_sock, "");
-    }
-
-    void send_bcast(MVPWorkerCommand::CommandType cmd_enum) {
-      MVPWorkerCommand bcast_cmd;
+    void send_bcast(MVPWorkerBroadcast::BroadcastType cmd_enum) {
+      MVPWorkerBroadcast bcast_cmd;
       bcast_cmd.set_cmd(cmd_enum);
 
       std::string str_bcast_message;
@@ -150,11 +140,11 @@ class ZmqWorkerHelper {
       m_bcast_sock.setsockopt(ZMQ_SUBSCRIBE, 0, 0); // Don't filter out any messages
     }
 
-    MVPWorkerCommand recv_bcast() {
-      MVPWorkerCommand cmd;
+    MVPWorkerBroadcast recv_bcast() {
+      MVPWorkerBroadcast cmd;
 
       if (m_startup) {
-        cmd.set_cmd(MVPWorkerCommand::WAKE);
+        cmd.set_cmd(MVPWorkerBroadcast::WAKE);
         m_startup = false;
       } else {
         cmd.ParseFromString(sock_recv(m_bcast_sock));

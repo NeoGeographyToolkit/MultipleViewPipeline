@@ -1,32 +1,40 @@
 package mvp;
 
-message MVPCommandMessage {
+import "mvp/MVPJobRequest.proto";
+
+message MVPCommand {
   enum CommandType {
     LAUNCH = 0;
     STATUS = 1;
     INFO = 2;
     ABORT = 3;
     KILL = 4;
-    GET_JOB = 5;
+    JOB = 5;
   }
 
   required CommandType cmd = 1;
   optional string conf_file = 2;
 }
 
+message MVPCommandReply {
+  required MVPCommand.CommandType cmd = 1;
+  optional MVPJobRequest job_request = 2;
+  optional MVPStatusReport status_report = 3;
+}
+
+message MVPStatusReport {
+  
+}
+
 message MVPStatusUpdate {
   required double status = 1; 
 }
 
-message MVPStatusReport {
-
-}
-
-message MVPWorkerCommand {
-  enum CommandType {
+message MVPWorkerBroadcast {
+  enum BroadcastType {
     WAKE = 0;
     ABORT = 1;
     KILL = 2;
   }
-  required CommandType cmd = 1;
+  required BroadcastType cmd = 1;
 }
