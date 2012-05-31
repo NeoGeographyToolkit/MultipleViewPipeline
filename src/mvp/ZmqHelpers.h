@@ -8,6 +8,8 @@
 #ifndef __MVP_ZMQHELPERS_H__
 #define __MVP_ZMQHELPERS_H__
 
+#include <vw/Core/Exception.h>
+
 #include <mvp/Config.h>
 #include <mvp/MVPJobRequest.pb.h>
 #include <mvp/MVPMessages.pb.h>
@@ -152,25 +154,26 @@ class ZmqWorkerHelper {
       return cmd;
     }
 
-    // TODO: standardize request / reply messages
-    /*
-    MVPJobRequest get_job() {
-      MVPCommandMessage cmd;
-      cmd.set_cmd(MVPCommandMessage::GET_JOB);
-      string str_cmd;
+    MVPCommandReply get_next_job() {
+      MVPCommand cmd;
+      cmd.set_cmd(MVPCommand::JOB);
+      std::string str_cmd;
       cmd.SerializeToString(&str_cmd);
 
-      cmd_sock.send(str_cmd)
+      sock_send(m_cmd_sock, str_cmd);
 
-      zmq::pollitem_t cmd_poller[] = {{cmd_sock, 0, ZMQ_POLLIN, 0}};
-      zmq::poll(cmd_poller, 1, 1000);
+      zmq::pollitem_t cmd_poller[] = {{m_cmd_sock, 0, ZMQ_POLLIN, 0}};
+      zmq::poll(cmd_poller, 1, 5000);
 
       if (!(cmd_poller[0].revents & ZMQ_POLLIN)) {
         vw_throw(vw::IOErr() << "Lost connection to mvpd");
       }
 
+      MVPCommandReply reply;
+      reply.ParseFromString(sock_recv(m_cmd_sock));
 
-    } */
+      return reply;
+    }
 };
 
 } // namespace mvp

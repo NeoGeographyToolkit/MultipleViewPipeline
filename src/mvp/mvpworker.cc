@@ -77,11 +77,12 @@ int main(int argc, char* argv[]) {
     switch (cmd.cmd()) {
       case MVPWorkerBroadcast::WAKE:
         cout << "Command wake!" << endl;
-        /*
       {
-        MVPJob job(helper.get_job());
-        job
-      } */
+        MVPCommandReply reply(helper.get_next_job());
+        if (reply.has_job_request()) {
+          cout << reply.job_request().result_platefile() << endl;
+        }
+      }
         break;
       case MVPWorkerBroadcast::ABORT:
         // Do Nothing

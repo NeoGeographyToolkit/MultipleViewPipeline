@@ -42,12 +42,13 @@ int main (int argc, char *argv[]) {
           helper.send_bcast(MVPWorkerBroadcast::KILL);
           break;
         case MVPCommand::JOB:
-          *reply.mutable_job_request() = job_queue.next();
+          if (job_queue.has_next()) {
+            *reply.mutable_job_request() = job_queue.next();
+          }
           break;
         default:
           vw_throw(vw::LogicErr() << "Unrecognized command");  
       }
-
       helper.send_cmd(reply);
     }
     

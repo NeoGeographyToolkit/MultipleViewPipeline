@@ -26,11 +26,10 @@ class MVPJobQueue {
     }
 
     bool has_next() {
-      return m_render_level < 3; // For now simulating sending out 3 tiles
+      return false;
     }
 
     MVPJobRequest next() {
-      m_render_level++;
       return MVPJobRequest();
     }
 
