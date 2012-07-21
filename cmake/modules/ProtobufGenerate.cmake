@@ -108,6 +108,10 @@ function(INSTALL_PROTOBUF_PYS)
   foreach(PPY ${INSTALL_PROTOBUF_PYS_FILES})
     file(RELATIVE_PATH _rel ${INSTALL_PROTOBUF_PYS_BASEPATH} ${PPY})
     get_filename_component(_rel_path ${_rel} PATH)
+
+    # Make module path lowercase (python modules should be lowercase)
+    string(TOLOWER ${_rel_path} _rel_path)
+ 
     install(FILES ${PPY} DESTINATION ${INSTALL_PROTOBUF_PYS_DESTINATION}/${_rel_path})
     list(APPEND _rel_path_list ${_rel_path})
   endforeach()
