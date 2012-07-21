@@ -1,0 +1,7 @@
+package mvp.core;
+
+message GlobalSettings {
+  required int32 command_port = 1 [default=6677];
+  required int32 status_port = 2 [default=6678];
+  required int32 broadcast_port = 3 [default=6679];
+}
