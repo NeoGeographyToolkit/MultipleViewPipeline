@@ -1,0 +1,81 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf360
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fmodern\fcharset0 CourierNewPSMT;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue255;\red114\green16\blue225;\red14\green111\blue0;
+}
+\margl1440\margr1440\vieww12120\viewh18360\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural\pardirnatural
+
+\f0\fs24 \cf0 % properties\
+% q: quaternion\
+% r: radial elevation\
+% s: smoothing size\
+% w: window size\
+\
+% operations\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural\pardirnatural
+\cf0 % initialize q, r, s, w\
+% compute confidence\
+% optimize q, r, s, w\
+% display patches\
+\
+% status of views\
+% rotated -  \
+% translated\
+% \
+\
+classdef SingleView < MultiViews\
+\pard\pardeftab720\ql\qnatural
+
+\f1 \cf0    \cf2 properties\cf0  (Hidden)\
+      q\
+	AccountStatus = \cf3 'open'\cf0 ; \
+   \cf2 end\cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural\pardirnatural
+
+\f0 \cf0 end % classed\
+\
+\pard\pardeftab720\ql\qnatural
+
+\f1 \cf2 classdef\cf0  MultiViews\
+   \cf2 properties\cf0  (Hidden)\
+      AccountStatus = \cf3 'open'\cf0 ; \
+   \cf2 end\cf0 \
+   \cf4 % The following properties can be set only by class methods\cf0 \
+   \cf2 properties\cf0  (SetAccess = private)\
+      AccountNumber\
+      AccountBalance = 0; \
+   \cf2 end\cf0 \
+   \cf4 % Define an event called InsufficientFunds\cf0 \
+   \cf2 events\cf0 \
+      InsufficientFunds \
+   \cf2 end\cf0 \
+   \cf2 methods\cf0 \
+      \cf2 function\cf0  BA = BankAccount(AccountNumber,InitialBalance)\
+         BA.AccountNumber = AccountNumber;\
+         BA.AccountBalance = InitialBalance;\
+         \cf4 % Calling a static method requires the class name\cf0 \
+         \cf4 % addAccount registers the InsufficientFunds listener on this instance\cf0 \
+         AccountManager.addAccount(BA);\
+      \cf2 end\cf0 \
+      \cf2 function\cf0  deposit(BA,amt)\
+         BA.AccountBalance = BA.AccountBalance + amt;\
+         \cf2 if\cf0  BA.AccountBalance > 0\
+            BA.AccountStatus = \cf3 'open'\cf0 ;\
+         \cf2 end\cf0 \
+      \cf2 end\cf0 \
+      \cf2 function\cf0  withdraw(BA,amt)\
+         \cf2 if\cf0  (strcmp(BA.AccountStatus,\cf3 'closed'\cf0 )&& BA.AccountBalance < 0)\
+            disp([\cf3 'Account '\cf0 ,num2str(BA.AccountNumber),\cf3 ' has been closed.'\cf0 ])\
+            \cf2 return\cf0 \
+         \cf2 end\cf0 \
+         newbal = BA.AccountBalance - amt;\
+         BA.AccountBalance = newbal;\
+         \cf4 % If a withdrawal results in a negative balance,\cf0 \
+         \cf4 % trigger the InsufficientFunds event using notify\cf0 \
+         \cf2 if\cf0  newbal < 0\
+            notify(BA,\cf3 'InsufficientFunds'\cf0 )\
+         \cf2 end\cf0 \
+      \cf2 end\cf0  \cf4 % withdraw\cf0 \
+   \cf2 end\cf0  \cf4 % methods\cf0 \
+\cf2 end\cf0  \cf4 % classdef\cf0 \
+}
