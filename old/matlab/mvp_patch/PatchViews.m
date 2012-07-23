@@ -28,7 +28,7 @@ classdef PatchViews < handle
     properties (Hidden)
         sv = SingleView;
         tv = TerainView;
-        Is, Ix, Iy, Ws, Wx, Wy, W
+        Ia, Is, Ix, Iy, Ws, Wx, Wy, W
         It              % gradient image w.r.t theta
         Ib              % original patch
         Wt, Wn          % total and normalized weight
@@ -36,7 +36,7 @@ classdef PatchViews < handle
         n2, N, nc, is, js, ks, ia, ja, ka,
         x0, x1, x2, y0, y1, y2,
         a0, a1, a2, b0, b1, b2,
-        Gb, Gs, Gm, Es, Eb  % albedos
+        Gb, Gs, Gm, Ga, Es, Eb  % albedos
         Gx, Gy, Gt, G2      % albedo gradients
         Ds              % disparity
         rof, sof   % reciprocals of dof
@@ -337,7 +337,7 @@ classdef PatchViews < handle
             
             if ~isempty(pv.Is)
                 pv.residual;
-                A = num2cell(pv.Is,[1 2]);
+                A = num2cell(pv.Ia,[1 2]);
                 A = reshape(A,[2 2]);
                 A = cell2mat(A);
                 
@@ -345,7 +345,7 @@ classdef PatchViews < handle
                 subplot(2,3,1), imshow(imadjust(A)), axis equal
                 title('Before Photometric Correction','FontSize',14)
 
-                C = num2cell(pv.Gs,[1 2]);
+                C = num2cell(pv.Ga,[1 2]);
                 C = reshape(C,[2 2]);
                 C = cell2mat(C);                
                 subplot(2,3,2), imagesc(C), axis off equal
@@ -427,25 +427,24 @@ classdef PatchViews < handle
         end
         
         function E = residual(pv)
-            pv.Gs=[]; pv.Gb=[];
+            pv.Gb=[];
             for k=1:pv.n
-                pv.Gs(:,:,k) = pv.Is(:,:,k)*pv.a(k)+pv.b(k);
                 pv.Gb(:,:,k) = pv.Ib(:,:,k)*pv.a(k)+pv.b(k);
             end
-            Wt = sum(pv.Ws,3);
-            pv.Gm = sum(pv.Ws.*pv.Gs,3)./Wt;
-            pv.Gm(find(isnan(pv.Gm))) = 0;
-            pv.Es = pv.Gs - pv.Gm(:,:,ones(pv.n,1));
+            pv.Ga = pv.Gs./pv.Ws; pv.Ga(find(isnan(pv.Ga))) = 0;
+            pv.Gm = sum(pv.Gs,3)./pv.Wt; pv.Gm(find(isnan(pv.Gm))) = 0;
+            pv.Es = pv.Ga - pv.Gm(:,:,ones(pv.n,1));
             pv.Eb = pv.Gb - pv.Gm(:,:,ones(pv.n,1));
             if nargout > 0, E = pv.Eb; end
         end
         
         function [f,a,b] = phometry(pv)
             % Scatter Matrices
-            Iw = pv.Ws.*pv.Is; In = pv.Wn.*pv.Is;
-            Ea = scatw(Iw(:,:,pv.is).*In(:,:,pv.js),Iw.*pv.Is,pv.ks,pv.x0,pv.y0);
-            Eb = scatw(pv.Wn(:,:,pv.is).*pv.Ws(:,:,pv.js),pv.Ws,pv.ks,pv.x0,pv.y0);
-            Ec = scatw(Iw(:,:,pv.ia).*pv.Wn(:,:,pv.ja),Iw,pv.ka,pv.x0,pv.y0);
+            pv.Ia = pv.Is./pv.Ws; pv.Ia(find(isnan(pv.Ia))) = 0;
+            In = pv.Is./repmat(pv.Wt,[1 1 pv.n]); In(find(isnan(In))) = 0;
+            Ea = scatw(pv.Is(:,:,pv.is).*In(:,:,pv.js),pv.Ia.*pv.Is,pv.ks,pv.x0,pv.y0);
+            Eb = scatw(pv.Ws(:,:,pv.is).*pv.Wn(:,:,pv.js),pv.Ws,pv.ks,pv.x0,pv.y0);
+            Ec = scatw(pv.Is(:,:,pv.ia).*pv.Wn(:,:,pv.ja),pv.Is,pv.ka,pv.x0,pv.y0);
             wa = wnd3(pv.y0,pv.x0,In); wb = wnd3(pv.y0,pv.x0,pv.Wn);
             T = (Eb*Eb+wb*wb')\(Eb*Ec'+wb*wa');
             Et = T'*Eb*T/2-Ec*T;
@@ -493,7 +492,27 @@ classdef PatchViews < handle
             Gx = scatw(Nx(:,:,pv.ia).*Gs(:,:,pv.ja),Gx.*pv.Gs,pv.ka,pv.x0,pv.y0);
             Gy = scatw(Ny(:,:,pv.ia).*Gs(:,:,pv.ja),Gy.*pv.Gs,pv.ka,pv.x0,pv.y0);
             Gt = scatw(Nt(:,:,pv.ia).*Gs(:,:,pv.ja),Gt.*pv.Gs,pv.ka,pv.x0,pv.y0);
-            
+
+            Gx = pv.Gx./pv.Ws; Gx(find(isnan(Gx))) = 0; 
+            Gy = pv.Gy./pv.Ws; Gy(find(isnan(Gy))) = 0;
+            Gt = pv.Gt./pv.Ws; Gt(find(isnan(Gt))) = 0;
+            WT = repmat(pv.Wt,[1 1 pv.n]);
+            Nx = pv.Gx./WT; Nx(find(isnan(Nx))) = 0;
+            Ny = pv.Gy./WT; Ny(find(isnan(Ny))) = 0;
+            Nt = pv.Gt./WT; Nt(find(isnan(Nt))) = 0;
+            %  symmetric components of Hessian
+            Exx = scatw(Nx(:,:,pv.is).*pv.Gx(:,:,pv.js),Gx.*pv.Gx,pv.ks,pv.x0,pv.y0);
+            Eyy = scatw(Ny(:,:,pv.is).*pv.Gy(:,:,pv.js),Gy.*pv.Gy,pv.ks,pv.x0,pv.y0);
+            Ett = scatw(Nt(:,:,pv.is).*pv.Gt(:,:,pv.js),Gt.*pv.Gt,pv.ks,pv.x0,pv.y0);
+            % asymmetric components of Hessian
+            Exy = scatw(Nx(:,:,pv.ia).*pv.Gy(:,:,pv.ja),Gx.*pv.Gy,pv.ka,pv.x0,pv.y0);
+            Ext = scatw(Nx(:,:,pv.ia).*pv.Gt(:,:,pv.ja),Gx.*pv.Gt,pv.ka,pv.x0,pv.y0);
+            Eyt = scatw(Ny(:,:,pv.ia).*pv.Gt(:,:,pv.ja),Gy.*pv.Gt,pv.ka,pv.x0,pv.y0);
+            % gradient components
+            Gx = scatw(Nx(:,:,pv.ia).*pv.Gs(:,:,pv.ja),Gx.*pv.Gs,pv.ka,pv.x0,pv.y0);
+            Gy = scatw(Ny(:,:,pv.ia).*pv.Gs(:,:,pv.ja),Gy.*pv.Gs,pv.ka,pv.x0,pv.y0);
+            Gt = scatw(Nt(:,:,pv.ia).*pv.Gs(:,:,pv.ja),Gt.*pv.Gs,pv.ka,pv.x0,pv.y0);
+
             H = [Exx Exy Ext; Exy' Eyy Eyt; Ext' Eyt' Ett];
             g = sum([Gx; Gy; Gt],2);        % gradient 
             w = wnd3(pv.y0,pv.x0,pv.Ws)';   % individual weights
@@ -623,19 +642,18 @@ classdef PatchViews < handle
             % G2: weighted gradient
             pv.Gs=[]; pv.Gt=[]; pv.Gx=[]; pv.Gy=[];
             for k=1:pv.n
-                pv.Gs(:,:,k)=pv.a(k)*pv.Is(:,:,k)+pv.b(k);
-                pv.Gx(:,:,k)=pv.a(k)*pv.Ix(:,:,k);
-                pv.Gy(:,:,k)=pv.a(k)*pv.Iy(:,:,k);
-                pv.Gt(:,:,k)=pv.a(k)*pv.It(:,:,k);
+                pv.Gs(:,:,k)=pv.a(k)*pv.Is(:,:,k)+pv.b(k).*pv.Ws(:,:,k);
+%                pv.Gt(:,:,k)=pv.a(k)*pv.It(:,:,k)+pv.b(k).*pv.Wt(:,:,k);
+                pv.Gx(:,:,k)=pv.a(k)*pv.Ix(:,:,k)+pv.b(k).*pv.Wx(:,:,k);
+                pv.Gy(:,:,k)=pv.a(k)*pv.Iy(:,:,k)+pv.b(k).*pv.Wy(:,:,k);
             end
-            Gw = pv.Gs.*pv.Ws;
-            Gx = pv.Gx.*pv.Ws+pv.Gs.*pv.Wx;
-            Gy = pv.Gy.*pv.Ws+pv.Gs.*pv.Wy;
+            Gt = sum(pv.Gs,3); Wx = sum(pv.Wx,3); Wy = sum(pv.Wy,3);
+            pv.Gm = Gt./pv.Wt; pv.Gm(find(isnan(pv.Gm))) = 0;
+            
+            Gx = sum(pv.Gx,3)-pv.Gm.*Wx;
+            Gy = sum(pv.Gy,3)-pv.Gm.*Wy;
                 
-            Gt = sum(Gw,3); Wx = sum(pv.Wx,3); Wy = sum(pv.Wy,3);
-            Gx = pv.Wt.*sum(Gx,3)-Gt.*Wx; Gx(find(isnan(Gx))) = 0;
-            Gy = pv.Wt.*sum(Gy,3)-Gt.*Wy; Gy(find(isnan(Gy))) = 0;
-            pv.G2 = (Gx.^2+Gy.^2)./pv.Wt.^3; pv.G2(find(isnan(pv.G2))) = 0;
+            pv.G2 = (Gx.^2+Gy.^2)./pv.Wt; pv.G2(find(isnan(pv.G2))) = 0;
             
             if nargout > 0, Gx = pv.Gx; end
             if nargout > 1, Gy = pv.Gy; end

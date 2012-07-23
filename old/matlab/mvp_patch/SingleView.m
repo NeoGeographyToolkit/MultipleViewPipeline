@@ -57,14 +57,12 @@ classdef SingleView < handle
         s0, s1, s2
         r3, x3, y3
         
-        % I, W: Back-projected images and weights
         Ib, Wb  % (backward) projected image and weight
-        Is, Ws  % smoothed image and weight
-        Ix, Wx  % gradient image and weight
-        Iy, Wy  % gradient image and weight
+        Is, Ws  % smoothed weighted image and weight
+        Ix, Wx  % gradient weighted image and weight
+        Iy, Wy  % gradient weighted image and weight
         It      % gradient w.r.t theta
-        Wt      % W*Wb
-        Iw      % weighted texture
+        Wt      % =W*Wb
     end
     
     methods
@@ -295,14 +293,14 @@ classdef SingleView < handle
             
             [sv.Ws,sv.Wx,sv.Wy] = smooth(sv.Wt,sv.s0,sv.s1);
             [sv.Is,sv.Ix,sv.Iy] = smooth(sv.Wt.*sv.Ib,sv.s0,sv.s1);
-            sv.Is = sv.Is./sv.Ws;
-            sv.Is(find(isnan(sv.Is))) = 0;
-            IW = sv.Is./sv.Ws;
-            sv.Ix = sv.Ix./sv.Ws-IW.*sv.Wx;
-            sv.Ix(find(isnan(sv.Ix))) = 0;
-            sv.Iy = sv.Iy./sv.Ws-IW.*sv.Wy;
-            sv.Iy(find(isnan(sv.Iy))) = 0;
-            %            sv.It=sv.X(sv.is,sv.js).*sv.Iy-sv.Y(sv.is,sv.js).*sv.Ix;
+%             sv.Is = sv.Is./sv.Ws;
+%             sv.Is(find(isnan(sv.Is))) = 0;
+%             IW = sv.Is./sv.Ws;
+%             sv.Ix = sv.Ix./sv.Ws-IW.*sv.Wx;
+%             sv.Ix(find(isnan(sv.Ix))) = 0;
+%             sv.Iy = sv.Iy./sv.Ws-IW.*sv.Wy;
+%             sv.Iy(find(isnan(sv.Iy))) = 0;
+%             %            sv.It=sv.X(sv.is,sv.js).*sv.Iy-sv.Y(sv.is,sv.js).*sv.Ix;
             sv.It=sv.X.*sv.Iy-sv.Y.*sv.Ix;
             
             if nargout > 0, Is = sv.Is; end
