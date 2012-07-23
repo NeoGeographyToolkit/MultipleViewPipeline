@@ -7,10 +7,10 @@ PROTOBUF_GENERATE(CPPOUT PROTO_SRCS
                   OUTPUT ${CMAKE_BINARY_DIR}/src 
                   PROTOS ${MVP_PROTOS})
 
-set(MVP_HDRS SettingsParser.h
+set(MVP_HDRS 
              ${PROTO_HDRS})
 
-set(MVP_SRCS SettingsParser.cc
+set(MVP_SRCS 
              ${PROTO_SRCS})
 
 # Build python libs
