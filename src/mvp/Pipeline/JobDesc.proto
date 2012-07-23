@@ -1,0 +1,29 @@
+package mvp.Pipeline;
+
+import "vw/Plate/PlateGeoReferenceDesc.proto";
+import "mvp/Core/AlgorithmSettings.proto";
+
+message JobDesc {
+  message Input {
+    repeated string images = 1;
+    repeated string cameras = 2;
+  }
+
+  message Render {
+    required int32 col = 1;
+    required int32 row = 2;
+    required int32 level = 3;
+    required bool use_octave = 5;
+  }
+
+  message Output {
+    required string result = 1;
+    required string internal_result = 2;
+    required vw.platefile.PlateGeoReferenceDesc plate_georef = 3;
+  }
+
+  required Input input = 1;
+  required Render render = 2;
+  required Output output = 3;
+  required mvp.core.AlgorithmSettings algorithm = 4;
+}

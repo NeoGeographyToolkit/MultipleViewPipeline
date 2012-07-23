@@ -34,7 +34,7 @@ function(mvp_module)
   install(TARGETS mvp${mvp_module_NAME} DESTINATION lib)
 endfunction()
 
-function(mvp_test)
+function(mvp_test test_name)
   add_definitions(-DTEST_SRCDIR=\"${CMAKE_CURRENT_SOURCE_DIR}\")
   add_definitions(-DTEST_OBJDIR=\"${CMAKE_CURRENT_BINARY_DIR}\")
 

@@ -1,0 +1,28 @@
+package mvp.pipeline;
+
+import "mvp/Core/AlgorithmSettings.proto";
+
+message SessionDesc {
+  message Input {
+    required string image_pattern = 1;
+  }
+
+  message Render {
+    required string bbox = 1;
+    optional int32 level = 2;
+    optional bool use_octave = 3 [default=true];
+  }
+
+  message Output {
+    required string result = 1;
+    required string internal_result = 2;
+    required string datum = 3;
+    optional string map_projection = 4 [default="equi"];
+    optional int32 tile_Size = 5 [default = 64];
+  }
+
+  required Input input = 1;
+  required Render render = 2;
+  required Output output = 3;
+  required mvp.core.AlgorithmSettings algorithm = 4;
+}

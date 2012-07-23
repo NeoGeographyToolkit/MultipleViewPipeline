@@ -1,0 +1,11 @@
+package mvp.core;
+
+message AlgorithmSettings {
+  required double alt_min = 1;
+  required double alt_max = 2;
+  required double alt_search_range = 3;
+
+  optional double seed_window_smooth_size = 4 [default=8];
+  optional double window_size = 5 [default=32];
+  optional double window_smooth_size = 6 [default=8];
+}
