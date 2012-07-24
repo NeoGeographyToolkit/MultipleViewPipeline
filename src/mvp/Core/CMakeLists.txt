@@ -1,6 +1,6 @@
 mvp_module(NAME Core
-           HDRS 
-           SRCS
+           HDRS Settings.h
+           SRCS Settings.cc
            PROTOS GlobalSettings.proto
                   AlgorithmSettings.proto)
 
