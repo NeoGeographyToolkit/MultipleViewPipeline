@@ -20,7 +20,6 @@ end
 figure, plot(log(f))
 figure, plot(log(p))
 mv.pv.disp
-mv.pv.robust
 % c = mv.slote
 % mv.corelate;
 % mv.pv.disp

@@ -57,10 +57,6 @@ classdef MultiViews < handle
             s=mv.pv.scate.^2;
         end
         
-        function [p,t]=slopate(mv,s)
-            [p,t]=mv.pv.slopate(s);
-        end
-        
         function s=smote(mv)
             s=mv.pv.smote.^2;
         end
