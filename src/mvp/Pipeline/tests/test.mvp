@@ -3,7 +3,7 @@ input {
 }
 
 render {
-  bbox: "2682,1937:2685,1940"
+  bbox: "1,2:3,4"
   level: 12
   use_octave: true
 }

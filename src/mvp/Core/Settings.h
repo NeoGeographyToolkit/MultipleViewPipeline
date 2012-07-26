@@ -10,12 +10,16 @@
 
 #include <mvp/Core/GlobalSettings.pb.h>
 
+#include <vw/Math/BBox.h>
+
 namespace mvp {
 namespace core {
 
 GlobalSettings& mvp_settings(std::string const& loadfrom = "");
 
 void load_settings(google::protobuf::Message *message, std::string const& filename);
+
+vw::BBox2 parse_bbox_string(std::string const& bbox_string); 
 
 }} // namespace core, mvp
 
