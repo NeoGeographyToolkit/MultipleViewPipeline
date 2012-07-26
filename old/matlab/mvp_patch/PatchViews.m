@@ -54,8 +54,10 @@ classdef PatchViews < handle
             addlistener(pv,'n','PostSet',@pv.PropEvents);
             addlistener(pv,'e','PostSet',@pv.PropEvents);
             addlistener(pv,'t','PostSet',@pv.PropEvents);
+            addlistener(pv,'H','PostSet',@pv.PropEvents);
             addlistener(pv,'W','PostSet',@pv.PropEvents);
-            pv.sv=sv; pv.n=numel(sv);
+            pv.sv=sv; pv.n=numel(sv); 
+            pv.H = zeros(pv.n,3);
             for i=1:pv.n,
                 obj = sv(i);
                 addlistener(pv,'e','PostSet',@obj.PropEvents);
@@ -325,6 +327,13 @@ classdef PatchViews < handle
                     pv.initIndices;
                 case 't'
                     pv.initWindows;
+                case 'H'
+                    H = evt.AffectedObject.H;
+                    for k=1:pv.n,
+                        if ~isequal(pv.sv(k).h',H(k,:)),
+                            pv.sv(k).h = H(k,:)';
+                        end
+                    end
                 case 'W'
                     W = evt.AffectedObject.W;
                     for k=1:pv.n,
@@ -455,27 +464,22 @@ classdef PatchViews < handle
             H = [Exx Exy Ext; Exy' Eyy Eyt; Ext' Eyt' Ett];
             g = sum([Gx; Gy; Gt],2);        % gradient
             
+            B = pv.H;
             z = zeros(1,pv.n);
             A = [pv.sw' z z; z pv.sw' z; z z pv.sw'];
-            b = zeros(3,1); t0 = zeros(3*pv.n,1);
+            b = -pv.sw'*B; t0 = zeros(3*pv.n,1);
             
             options = optimset('Display','off');
             [t,fval,exitflag] = quadprog(H,g,[],[],A,b,[],[],t0,options);
             t = reshape(t,pv.n,3);
             
             f = pv.f;       % current squared error
-            for k = 1:pv.n
-                pv.sv(k).h = pv.sv(k).h + t(k,:)';
-            end
-            
+            pv.H = B+t;
             pv.proj
             pv.phometry;
             if f < pv.f,    % check smaller squared error
-                for k = 1:pv.n
-                    pv.sv(k).h = pv.sv(k).h - t(k,:)';
-                end
+                pv.H = B;
                 fprintf('<');
-            else
             end
         end
         
