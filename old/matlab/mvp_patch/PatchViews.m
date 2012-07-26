@@ -1,7 +1,6 @@
 classdef PatchViews < handle
     % terrain patch contains handle of single view
     properties (Constant)
-        radiusMoon = 1737400;   % radius of the moon
         ratioScale = 5;
         ratioSmoth = 4;
         eps_realmin = realmin;
@@ -13,75 +12,73 @@ classdef PatchViews < handle
     end % properties (Constant)
     
     properties (SetObservable)
-        e               % elevation post
         n = 2;          % number of patches
-        q               % quaternion of rotation
-        r = PatchViews.radiusMoon % radial elevation
-        s = 0.5;      % smoothing scale
-        t = 10*[1 1]';   % correlation scale
+        r = 0;          % radial elevation
+        e = [0 0 1]     % elevation post
+        q = [0 0 0 1]'; % quaternion of rotation
+        s = 0.5;        % smoothing scale
+        t = [10 10]';   % correlation scale
         u = 31;         % unit length of the pixel
-        z = [1 1]';     % point of interest
         w
         H
+        W
     end
     
     properties (Hidden)
         sv = SingleView;
-        tv = TerainView;
-        Ia, Is, Ix, Iy, Ws, Wx, Wy, W
+        Ia, Is, Ix, Iy, Ws, Wx, Wy
         It              % gradient image w.r.t theta
         Ib              % original patch
-        Wt, Wn          % total and normalized weight
+        Wt, Wn, Wr      % total and normalized weight
         Ic, Wc          % corrected by linear reflectance
         n2, N, nc, is, js, ks, ia, ja, ka,
         x0, x1, x2, y0, y1, y2,
-        a0, a1, a2, b0, b1, b2,
         Gb, Gs, Gm, Ga, Es, Eb  % albedos
         Gx, Gy, Gt, G2      % albedo gradients
         Ds              % disparity
         rof, sof   % reciprocals of dof
-        ne, nr, ns  % degrees of freedom
+        ne, nr, ns, nt  % degrees of freedom
         a, b;     % reflectance coefficients
-        c = [0 4];         % shape parameters of exponetial power function
-        lonlat          % longitude and latitude
         m = 1;          % multiplicative hypothesis
         p               % p-value of correspondences
         f, df           % squared error
         X, Y, Z
+        sw              % individual total dofs
         
         opt;            % optimization settings
     end
     
     methods
-        function pv = PatchViews(sv,tv)
-            if nargin == 2,
-                addlistener(pv,'n','PostSet',@pv.PropEvents);
-                pv.tv=tv; pv.sv=sv; pv.n=numel(sv);
-                for i=1:pv.n,
-                    obj = sv(i);
-                    addlistener(pv,'e','PostSet',@obj.PropEvents);
-                    addlistener(pv,'q','PostSet',@obj.PropEvents);
-                    addlistener(pv,'r','PostSet',@obj.PropEvents);
-                    addlistener(pv,'s','PostSet',@obj.PropEvents);
-                    addlistener(pv,'w','PostSet',@obj.PropEvents);
-                end
-                addlistener(pv,'s','PostSet',@pv.PropEvents);
-                addlistener(pv,'t','PostSet',@pv.PropEvents);
-                addlistener(pv,'z','PostSet',@pv.PropEvents);
-                
-                % initialize SingleView objects
-                pv.a = ones(pv.n,1);
-                pv.b = zeros(pv.n,1);
-                pv.r = pv.r;
-                pv.s = pv.s;
-                pv.t = pv.t;
-                pv.z = [1 1]';
-                
-                pv.opt.R = optimset('disp','iter','Largescale','off');
-                pv.opt.R = optimset(pv.opt.R,'Largescale','off');
-                pv.opt.W = optimset('disp','iter','Largescale','off');
-                pv.opt.W = optimset(pv.opt.W,'TolX',1e-25,'FinDiffType','central');
+        function pv = PatchViews(sv,e)
+            if nargin == 0, return; end
+            addlistener(pv,'n','PostSet',@pv.PropEvents);
+            addlistener(pv,'e','PostSet',@pv.PropEvents);
+            addlistener(pv,'t','PostSet',@pv.PropEvents);
+            addlistener(pv,'W','PostSet',@pv.PropEvents);
+            pv.sv=sv; pv.n=numel(sv);
+            for i=1:pv.n,
+                obj = sv(i);
+                addlistener(pv,'e','PostSet',@obj.PropEvents);
+                addlistener(pv,'q','PostSet',@obj.PropEvents);
+                addlistener(pv,'r','PostSet',@obj.PropEvents);
+                addlistener(pv,'s','PostSet',@obj.PropEvents);
+                addlistener(pv,'w','PostSet',@obj.PropEvents);
             end
+            
+            % initialize SingleView objects
+            if nargin > 1, pv.e = e; end
+            pv.a = ones(pv.n,1);
+            pv.b = zeros(pv.n,1);
+            pv.r = pv.r;
+            pv.s = pv.s;
+            pv.t = pv.t;
+            
+            pv.opt.R = optimset('disp','iter','Largescale','off');
+            pv.opt.R = optimset(pv.opt.R,'Largescale','off');
+            pv.opt.W = optimset('disp','iter','Largescale','off');
+            pv.opt.W = optimset(pv.opt.W,'TolX',1e-25,'FinDiffType','central');
+            pv.opt.T = optimset('FinDiffType','central','DerivativeCheck','off');
+            pv.opt.T = optimset(pv.opt.T,'MaxIter',1,'GradObj','off');
         end
         
         function m = adjustHypothesis(pv)
@@ -241,35 +238,6 @@ classdef PatchViews < handle
             end
         end
         
-        function c = slote(pv)  % sloppy refine
-            pv.corelate;
-            c = [];
-            for k = 1:pv.n
-                pv.sv(k).a = pv.a(k);
-                pv.sv(k).b = pv.b(k);
-                c = [c pv.sv(k).slote(pv.Gm)];
-            end
-%             pv.corelate;
-%             pv.residual;
-%             pv.gradient;
-% 
-%             s = sqrt(pv.c);
-%             [s,f,exitflag,output] = fminunc(@(s)mvOpt(s,pv),s,pv.opt.R);
-%             pv.c = s^2; c = s^2;
-%             [p,t] = pv.slopate; 
-%             pv.proj;
-%             if ~isequal(pv.opt.R.Display,'off'),
-%                 output
-%                 exitflag
-%                 pv.disp
-%             end
-%             function [f,p]=mvOpt(s,pv)
-%                 pv.c = s^2;
-%                 p=pv.slopate;
-%                 if p<realmin, f = PatchViews.eps_log; else f = log(p); end
-%             end
-        end
-        
         function s = sidate(pv)  % optimize the scales
             s = prod(pv.t)^0.25;
             for k=1:PatchViews.max_iter
@@ -302,31 +270,7 @@ classdef PatchViews < handle
             end
         end
         
-        function m = optimize(pv)
-            r=1737400-3000;
-            pv.opt.R = optimset(pv.opt.R,'OutputFcn',@mvOutFcn);
-            for k=1:100
-                [q,f,exitflag,output] = fminunc(@mvOptQ,q,pv.opt.R);
-                if f < PatchViews.eps_log2p,
-                    pv.r=r;
-                    m = pv.adjustHypothesis;
-                    fprintf('H0: var_s = %f var_e !!!\n',m);
-                else
-                    fprintf('%d iterations \n',k);
-                    break,
-                end
-            end
-            
-            function p=mvOpt(q,r,s,t)
-                pv.q=q; pv.r=r; pv.s=s; pv.t=t; pv.proj;
-                p=reallog(pv.correlate+PatchViews.eps_p);
-            end
-        end
-        
-        function h = disp(pv)
-            fprintf('\npoint of interest (%d,%d) in the %d*%d tile',pv.z,pv.tv.size)
-            fprintf('\nlongitude and latitude (%d,%d) \n',pv.lonlat*180/pi)
-            
+        function h = disp(pv)            
             if ~isempty(pv.W)
                 figure;
                 C = num2cell(pv.W,[1 2]);
@@ -371,25 +315,34 @@ classdef PatchViews < handle
         
         function PropEvents(pv,src,evt)
             switch src.Name
+                case 'e'
+                    ex = [-pv.e(2) pv.e(1) 0]'; ex = ex/norm(ex);
+                    ey = -cross(pv.e,ex); ey = ey/norm(ey);
+                    R = [ex ey -pv.e];
+                    pv.q = dcm2q(R)';
                 case 'n'
                     pv.initIndices;
                 case 't'
                     pv.initWindows;
-                case 'z'
-                    [pv.e d pv.lonlat]=pv.tv.post(pv.z);
-                    R = [d(:,1)/norm(d(:,1)) -d(:,2) -pv.e];
-                    pv.q = dcm2q(R)';
+                case 'W'
+                    W = evt.AffectedObject.W;
+                    if ~isequal(pv.W,W),
+                        for k=1:pv.n, pv.sv(k).W = pv.W(:,:,k); end
+                    end
             end
         end
         
         function initWindows(pv)
             w = ceil([pv.t(1:2)*PatchViews.ratioScale; pv.s*PatchViews.ratioSmoth]);
-            if ~isequal(pv.w,w), pv.w = w; end
-            pv.sof=diff(normcdf([-0.5 0.5],0,pv.s))^2; % smoothing compensation
+            if ~isequal(pv.w,w), 
+                pv.w = w; 
+                [pv.X, pv.Y pv.Z]=meshgrid(-w(1):w(1),-w(2):w(2),1:pv.n);
+            end
             [pv.x0 pv.x1 pv.x2] = wndGaussian(pv.w(1),pv.t(1));
             [pv.y0 pv.y1 pv.y2] = wndGaussian(pv.w(2),pv.t(2));
-            pv.rof = pv.x0(pv.w(1)+1)*pv.y0(pv.w(2)+1); % reciprocal of dof
-            [pv.X, pv.Y pv.Z]=meshgrid(-pv.w(1):pv.w(1),-pv.w(2):pv.w(2),1:pv.n);
+            sof=diff(normcdf([-0.5 0.5],0,pv.s))^2; % smoothing compensation
+            cof = pv.x0(w(1)+1)*pv.y0(w(2)+1);      % central weight dof
+            pv.rof = sof/cof/2;                     % half ratio of dofs
         end
         
         function initIndices(pv)             % derived parameters from n
@@ -410,13 +363,14 @@ classdef PatchViews < handle
         end
         
         function [I,W]=proj(pv)
-            pv.Is=[]; pv.Ix=[]; pv.Iy=[]; pv.It=[];
-            pv.Ws=[]; pv.Wx=[]; pv.Wy=[]; pv.Ib=[];
+            pv.Is=[]; pv.Ix=[]; pv.Iy=[]; pv.Ib=[];
+            pv.Ws=[]; pv.Wx=[]; pv.Wy=[]; W=[];
             for k=1:pv.n
                 [pv.Is(:,:,k),pv.Ws(:,:,k),pv.Ix(:,:,k),pv.Wx(:,:,k),...
-                    pv.Iy(:,:,k),pv.Wy(:,:,k),pv.It(:,:,k),pv.Ib(:,:,k)] = pv.sv(k).crop;
+                    pv.Iy(:,:,k),pv.Wy(:,:,k),pv.Ib(:,:,k),W(:,:,k)] = pv.sv(k).crop;
             end
             
+            pv.W = W;
             % total and normalized weights
             pv.Wt = sum(pv.Ws,3);
             pv.Wn = pv.Ws./repmat(pv.Wt,[1 1 pv.n]);
@@ -474,23 +428,6 @@ classdef PatchViews < handle
         end
         
         function [t,dt] = geometry(pv)
-
-%             Gs = pv.Ws.*pv.Gs;  % smooth image
-%             Gx = pv.Ws.*pv.Gx; Gy = pv.Ws.*pv.Gy; Gt = pv.Ws.*pv.Gt; % weighted gradients
-%             Nx = pv.Wn.*pv.Gx; Ny = pv.Wn.*pv.Gy; Nt = pv.Wn.*pv.Gt; % normalized gradients
-%             %  symmetric components of Hessian
-%             Exx = scatw(Nx(:,:,pv.is).*Gx(:,:,pv.js),Gx.*pv.Gx,pv.ks,pv.x0,pv.y0);
-%             Eyy = scatw(Ny(:,:,pv.is).*Gy(:,:,pv.js),Gy.*pv.Gy,pv.ks,pv.x0,pv.y0);
-%             Ett = scatw(Nt(:,:,pv.is).*Gt(:,:,pv.js),Gt.*pv.Gt,pv.ks,pv.x0,pv.y0);
-%             % asymmetric components of Hessian
-%             Exy = scatw(Nx(:,:,pv.ia).*Gy(:,:,pv.ja),Gx.*pv.Gy,pv.ka,pv.x0,pv.y0);
-%             Ext = scatw(Nx(:,:,pv.ia).*Gt(:,:,pv.ja),Gx.*pv.Gt,pv.ka,pv.x0,pv.y0);
-%             Eyt = scatw(Ny(:,:,pv.ia).*Gt(:,:,pv.ja),Gy.*pv.Gt,pv.ka,pv.x0,pv.y0);
-%             % gradient components
-%             Gx = scatw(Nx(:,:,pv.ia).*Gs(:,:,pv.ja),Gx.*pv.Gs,pv.ka,pv.x0,pv.y0);
-%             Gy = scatw(Ny(:,:,pv.ia).*Gs(:,:,pv.ja),Gy.*pv.Gs,pv.ka,pv.x0,pv.y0);
-%             Gt = scatw(Nt(:,:,pv.ia).*Gs(:,:,pv.ja),Gt.*pv.Gs,pv.ka,pv.x0,pv.y0);
-
             pv.Gt = pv.X.*pv.Gy-pv.Y.*pv.Gx;
             Gx = pv.Gx./pv.Ws; Gx(find(isnan(Gx))) = 0; 
             Gy = pv.Gy./pv.Ws; Gy(find(isnan(Gy))) = 0;
@@ -514,10 +451,9 @@ classdef PatchViews < handle
 
             H = [Exx Exy Ext; Exy' Eyy Eyt; Ext' Eyt' Ett];
             g = sum([Gx; Gy; Gt],2);        % gradient 
-            w = wnd3(pv.y0,pv.x0,pv.Ws)';   % individual weights
 
             z = zeros(1,pv.n);
-            A = [w z z; z w z; z z w];
+            A = [pv.sw' z z; z pv.sw' z; z z pv.sw'];
             b = zeros(3,1); t0 = zeros(3*pv.n,1);
             
             options = optimset('Display','off');
@@ -540,63 +476,42 @@ classdef PatchViews < handle
             end
         end
         
-        function t = geoptimi(pv)
-            t = zeros(3*pv.n,1); z = zeros(1,pv.n);
-            w = wnd3(pv.y0,pv.x0,pv.Ws)';    % individual weights
-            A = [w z z; z w z; z z w];
-            b = zeros(3,1);
-
-            [t,f,exitflag,output] = fmincon(@(t)mvOpt(t,pv),t,[],[],A,b,[],[],[],pv.opt.R);
-            t = reshape(t,pv.n,3);
-            for k = 1:pv.n, pv.sv(k).h = -t(k,:)'; end
-            pv.proj;
-            if ~isequal(pv.opt.R.Display,'off'),
-                output
-                exitflag
-                pv.disp
-            end
-            
-            function p = mvOpt(t,pv)
-                t = reshape(t,pv.n,3);
-                for k = 1:pv.n, pv.sv(k).h = -t(k,:)'; end
-                pv.proj;
-                p=reallog(pv.corelate+PatchViews.eps_p);
+        function w = testGradients(pv)
+            W = pv.W; t = pv.t; 
+            pv.t = [1 1]'; pv.proj; pv.disp;
+            w = pv.W(:); [f,g] = mvOpt(w,pv);
+            g = reshape(g,size(pv.Ws));
+            figure, imagesc(g(:,:,1)), colorbar;
+            [w,f,exitflag,output,grad] = fminunc(@(w)mvOpt(w,pv),w,pv.opt.T);
+            grad = reshape(grad,size(pv.Ws));
+            figure, imagesc(grad(:,:,1)), colorbar;
+            pv.t = t; pv.proj; pv.W = W;
+            function [f,g]=mvOpt(w,pv)
+                pv.W = reshape(w,size(pv.Ws));
+                pv.corelate;
+                f = pv.nt;
+                if nargout > 1, g = pv.grad_nt; end
             end
         end
-
-        function c = robust(pv)
-            E = pv.residual;
-            if pv.c(1) == 0 
-                pv.c(1) = 1/std(E(:)); 
-%             else
-%                 pv.c(1) = pv.c(1)/2;
-            end
-            [c,f,exitflag,output] = fminunc(@(c)mvOpt(c,pv),pv.c,pv.opt.W);
-%             E = pv.residual; lb = -max(abs(E(:)));
-%             [c,f,exitflag,output] = fminbnd(@(c)mvOpt(c,pv),lb,0,pv.opt.W);
-            if ~isequal(pv.opt.W.Display,'off'),
-                output
-                exitflag
-                pv.disp
-            end
-            
-%             function p = mvOpt(c,pv)
-%                 E = pv.residual;
-%                 pv.W = ones(size(E));
-%                 pv.W(find(abs(E)>-c))=0;
-%                 for k=1:pv.n, pv.sv(k).W = pv.W(:,:,k); end
-%                 pv.proj;
-%                 p=reallog(pv.corelate+PatchViews.eps_p);
-%             end
-            function p = mvOpt(c,pv)
-                E = pv.residual;
-                pv.W = exp(-(abs(E)*c(1)).^c(2));
-                for k=1:pv.n, pv.sv(k).W = pv.W(:,:,k); end
-                pv.proj;
-                p=reallog(pv.corelate+PatchViews.eps_p);
+        
+        function g = grad_nt(pv)
+            g = []; c = pv.y0*pv.x0';
+            for k = 1:pv.n
+                g(:,:,k) = pv.sv(k).grad_nt(c);
             end
         end
-
+        
+        function g = grad_ns(pv)
+            g = []; c = pv.y0*pv.x0;
+            for k = 1:pv.n
+                g(:,:,k) = pv.sv(k).grad_ns(c,pv.Wr(:,:,k),pv.Wt);
+            end
+        end
+        
+        function g = grad_ne(pv)
+            g = pv.grad_nt - pv.grad_nr;
+        end
+        
         function w = robustw(pv)
             ub = ones(size(pv.Ws)); ub = ub(:);
             lb = zeros(size(pv.Ws)); lb = lb(:);
@@ -618,16 +533,18 @@ classdef PatchViews < handle
         end
 
         function [p,a,b,f] = corelate(pv)
-            [f,a,b]=pv.phometry;     % photometric estimation
-            pv.gradient;     % gradient estimation
-%            pv.geometry;     % gradient estimation
+            [f,a,b]=pv.phometry;    % photometric estimation
+            pv.gradient;            % gradient computation
             
             % Confidence Value
-            s = wnd3(pv.y0,pv.x0,pv.G2);    % signal
-            w = wnd3(pv.y0,pv.x0,pv.Ws);    % individual weights
-            pv.ns = pv.sof*sum(wnd3(pv.y0,pv.x0,pv.Wn.*pv.Ws))/pv.rof/2;
-            pv.ne = pv.sof*sum(w)/pv.rof/2-pv.ns-2;
-            if any([s pv.ns pv.ne] < 0),
+            s = wnd3(pv.y0,pv.x0,pv.G2);                % signal
+            pv.sw = wnd3(pv.y0,pv.x0,pv.Ws); sw = sum(pv.sw);   % individual dofs
+            pv.Wr = pv.Wn.*pv.Ws;
+            v = wnd3(pv.y0,pv.x0,pv.Wr); sv = sum(v);   % signal dofs
+            pv.nt = pv.rof*sw;
+            pv.ns = pv.rof*sv;
+            pv.ne = pv.nt-pv.ns-2;
+            if any([s f pv.ns pv.ne] < 0),
                 fprintf('All values and dofs of signal and error should be non-negative\n');
                 fprintf('signal: %f, dof: %f\n',s,pv.ns);
                 fprintf(' error: %f, dof: %f\n',f,pv.ne);
@@ -656,58 +573,6 @@ classdef PatchViews < handle
             if nargout > 2, G2 = pv.G2; end
         end
 
-        function [p,a,b] = correlate(pv)
-            % Scatter Matrices
-            Wn = pv.Ws./repmat(sum(pv.Ws,3),[1 1 pv.n]);
-            Wn(find(isnan(Wn))) = 0;
-            Iw = pv.Ws.*pv.Is; In = Wn.*pv.Is;
-            [Ea,Ra] = scatw(Iw(:,:,pv.is).*In(:,:,pv.js),Iw.*pv.Is,pv.ks,pv.x0,pv.y0);
-            [Eb,Rb] = scatw(Wn(:,:,pv.is).*pv.Ws(:,:,pv.js),pv.Ws,pv.ks,pv.x0,pv.y0);
-            [Ec,Rc] = scatw(Iw(:,:,pv.ia).*Wn(:,:,pv.ja),Iw,pv.ka,pv.x0,pv.y0);
-            wa = wnd3(pv.y0,pv.x0,In); wb = wnd3(pv.y0,pv.x0,Wn);
-            T = (Eb*Eb+wb*wb')\(Eb*Ec'+wb*wa');
-            Et = T'*Eb*T/2-Ec*T;
-            E = Ea+Et+Et'; % error matrix with symmetry
-            
-            % compute the smallest generalized Eigen vector a of D
-            [P,D] = eig(E);
-            [pv.f,k] = min(diag(D));
-            a = P(:,k);
-            % opt.A.v0 = pv.a;
-            % [a,f,flag]=eigs(F,1,'sm',opt.A);
-            %             if flag ~= 0
-            %                 [a,f]=eig(E);
-            %                 [f,i]=min(diag(f));
-            %                 a = a(:,i);
-            %                 fprintf('!');
-            %             end
-            
-            if sum(a) < 0, a=-a; end % invert the negative direction
-            
-            % simple treatment of non-positive eigen vector
-            idx = find(a < 0);
-            if ~isempty(idx)
-                a(idx)=0; a = a/norm(a);
-                pv.f = a'*E*a;
-                fprintf('-');
-            end
-            b = -T*a;
-            
-            % Confidence Value
-            w = wnd3(pv.y0,pv.x0,pv.Ws);
-            s = a'*Ra*a+2*a'*Rc*b+b'*Rb*b;
-            pv.ns = pv.sof*sum(wnd3(pv.y0,pv.x0,Wn.*pv.Ws))/pv.rof/2;
-            pv.ne = pv.sof*sum(w)/pv.rof/2-pv.ns-2;
-            if any([s pv.ns pv.ne] < 0),
-                fprintf('All values and dofs of signal and error should be non-negative\n');
-                fprintf('signal: %f, dof: %f\n',s,pv.ns);
-                fprintf(' error: %f, dof: %f\n',pv.f,pv.ne);
-            end
-            
-            p = fpval(s,pv.m*pv.f,pv.ns,pv.ne);
-            pv.p = p; pv.a = a; pv.b = b;
-        end
-        
         function set.q(obj,q) % q property set function
             obj.q = q;
         end % set.q
@@ -715,14 +580,6 @@ classdef PatchViews < handle
         function q=get.q(obj) % q property set function
             q = obj.q;
         end % get.q
-        
-        function set.z(obj,z) % z property set function
-            obj.z = z;
-        end % set.z
-        
-        function z=get.z(obj) % z property set function
-            z = obj.z;
-        end % get.z
         
         function set.e(obj,e) % e property set function
             obj.e = e;

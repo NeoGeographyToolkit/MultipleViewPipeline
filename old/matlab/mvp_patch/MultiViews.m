@@ -1,8 +1,9 @@
 classdef MultiViews < handle
+    % Multiple Views in a Tile
     properties (Hidden)
         strPath        % directory
         sv = SingleView;
-        pv = PatchViews;
+        rv = RasterView;
         tv = TerainView;
         opt;
     end
@@ -24,49 +25,28 @@ classdef MultiViews < handle
             for k=n:-1:1
                 mv.sv(k)=SingleView(images(k).data/2^17,images(k).camera);
             end
-            mv.pv = PatchViews(mv.sv,mv.tv); % = PatchViews(zeros(0,0,mv.n),ones(0,0,mv.n));
-            
-            mv.opt.R = optimset('disp','iter','FunValCheck','off');
+            %            mv.rv = RasterView(mv.sv,mv.tv); % = PatchViews(zeros(0,0,mv.n),ones(0,0,mv.n));
+            mv.rv = RasterView(mv.sv,mv.tv);
+        end
+        
+        function h = raster(mv,z)
+            if nargin > 1,
+                mv.rv.raster(z);
+            else
+                mv.rv.raster;
+            end
         end
         
         function h = disp(mv)
             n = numel(mv.sv);
             for k=1:n, mv.sv(k).disp; end
-            mv.pv.disp;
+            mv.rv.disp;
             mv.tv.disp;
         end
         
         function proj(mv,z)
-            if nargin > 1, mv.pv.z = z; end
-            mv.pv.proj
-        end
-        
-        function r=elevate(mv,r)
-            if nargin > 1,
-                r=mv.pv.elevate(r);
-            else
-                r=mv.pv.elevate;
-            end
-        end
-        
-        function q=rotate(mv)
-            q=mv.pv.rotate;
-        end
-        
-        function s=scate(mv)
-            s=mv.pv.scate.^2;
-        end
-        
-        function s=smote(mv)
-            s=mv.pv.smote.^2;
-        end
-        
-        function c = slote(mv)
-            c = mv.pv.slote;
-        end
-        
-        function s = sidate(mv)
-            s = mv.pv.sidate.^2;
+            if nargin > 1, mv.rv.z = z; end
+            mv.rv.proj
         end
         
         function r = profile(mv,lb,ub,step)
@@ -184,19 +164,14 @@ classdef MultiViews < handle
         end
         
         function [p,a,b]=corelate(mv)
-            mv.pv.proj;
-            [p,a,b]=mv.pv.corelate;
+            mv.rv.proj;
+            [p,a,b]=mv.rv.corelate;
         end
         
         function [p,a,b]=correlate(mv)
-            mv.pv.proj;
-            [p,a,b]=mv.pv.correlate;
+            mv.rv.proj;
+            [p,a,b]=mv.rv.correlate;
         end
-        
-        function c=inflate(mv)
-            c=mv.pv.inflate;
-        end
-        
     end % methods
 end % classdef
 

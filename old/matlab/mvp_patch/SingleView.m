@@ -14,7 +14,7 @@ classdef SingleView < handle
         
         a = 1;
         b = 0;
-        e = [0 0 0]     % elevation post
+        e = [0 0 0]';   % elevation post
         q = [0 0 0 1]'; % quaternion for rotation matrix
         r = 1737400;    % radius of the moon
         s = 1;          % smoothing sigma
@@ -152,6 +152,18 @@ classdef SingleView < handle
             end
         end
         
+        function c = grad_nt(sv,c)
+            c = sv.Wb.*conv2(sv.s0,sv.s0,c,'same');
+        end
+        
+        function c = grad_ns(sv,Wc,Wr,Wt)
+            % Wc: correlation winodw
+            % Wr: signal dof
+            % Wt: total dof
+            c = Wc.*(2*sv.Wt-Wr)./Wt; c(find(isnan(c))) = 0;
+            c = sv.Wb.*conv2(sv.s0,sv.s0,c,'same');
+        end
+        
         function set.q(obj,q)
             % q property set function
             if  length(q) == 4
@@ -254,7 +266,7 @@ classdef SingleView < handle
             imshow(sv.img)
         end
         
-        function [Is,Ws,Ix,Wx,Iy,Wy,It,Ib] = crop(sv)
+        function [Is,Ws,Ix,Wx,Iy,Wy,Ib,W] = crop(sv)
             sv.proj;
             if nargout > 0, Is = sv.Is; end
             if nargout > 1, Ws = sv.Ws; end
@@ -262,13 +274,13 @@ classdef SingleView < handle
             if nargout > 3, Wx = sv.Wx; end
             if nargout > 4, Iy = sv.Iy; end
             if nargout > 5, Wy = sv.Wy; end
-            if nargout > 6, It = sv.It; end
-            if nargout > 7, Ib = sv.Ib; end
+            if nargout > 6, Ib = sv.Ib; end
+            if nargout > 7, W = sv.W; end
         end
     end % methods
     
     methods (Access = private)
-        function [Is,Ws,Ix,Wx,Iy,Wy,It] = proj(sv)
+        function [Is,Ws,Ix,Wx,Iy,Wy] = proj(sv)
             % backward projection of image and weight
             tform = maketform('projective',inv(sv.H)');
             sv.Ib = imtransform(sv.img,tform,'bicubic','xdata',sv.xb,'ydata',sv.yb);
@@ -293,15 +305,6 @@ classdef SingleView < handle
             
             [sv.Ws,sv.Wx,sv.Wy] = smooth(sv.Wt,sv.s0,sv.s1);
             [sv.Is,sv.Ix,sv.Iy] = smooth(sv.Wt.*sv.Ib,sv.s0,sv.s1);
-%             sv.Is = sv.Is./sv.Ws;
-%             sv.Is(find(isnan(sv.Is))) = 0;
-%             IW = sv.Is./sv.Ws;
-%             sv.Ix = sv.Ix./sv.Ws-IW.*sv.Wx;
-%             sv.Ix(find(isnan(sv.Ix))) = 0;
-%             sv.Iy = sv.Iy./sv.Ws-IW.*sv.Wy;
-%             sv.Iy(find(isnan(sv.Iy))) = 0;
-%             %            sv.It=sv.X(sv.is,sv.js).*sv.Iy-sv.Y(sv.is,sv.js).*sv.Ix;
-            sv.It=sv.X.*sv.Iy-sv.Y.*sv.Ix;
             
             if nargout > 0, Is = sv.Is; end
             if nargout > 1, Ws = sv.Ws; end
@@ -309,7 +312,6 @@ classdef SingleView < handle
             if nargout > 3, Wx = sv.Wx; end
             if nargout > 4, Iy = sv.Iy; end
             if nargout > 5, Wy = sv.Wy; end
-            if nargout > 6, It = sv.It; end
         end
     end
     
