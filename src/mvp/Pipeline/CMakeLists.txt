@@ -1,6 +1,6 @@
 mvp_module(NAME Pipeline
-           HDRS
-           SRCS
+           HDRS Session.h
+           SRCS Session.cc
            PROTOS JobDesc.proto
                   SessionDesc.proto)
 

@@ -40,7 +40,9 @@ function(mvp_test test_name)
 
   add_executable(${test_name} ${test_name}.cxx)
 
+# TODO: some sort of deps
   target_link_libraries(${test_name} mvpCore
+                                     mvpPipeline
                                      gtest_main
                                      ${GTEST_LIBRARIES}
                                      ${VW_LIBRARIES}

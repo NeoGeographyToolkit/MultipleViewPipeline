@@ -1,4 +1,4 @@
-package mvp.Pipeline;
+package mvp.pipeline;
 
 import "vw/Plate/PlateGeoReferenceDesc.proto";
 import "mvp/Core/AlgorithmSettings.proto";

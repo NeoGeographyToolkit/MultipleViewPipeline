@@ -1,1 +1,1 @@
-#mvp_test(TestTesting)
+mvp_test(TestSession)
