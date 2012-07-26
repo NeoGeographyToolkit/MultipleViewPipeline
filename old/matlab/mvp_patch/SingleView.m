@@ -160,7 +160,7 @@ classdef SingleView < handle
             % Wc: correlation winodw
             % Wr: signal dof
             % Wt: total dof
-            c = Wc.*(2*sv.Wt-Wr)./Wt; c(find(isnan(c))) = 0;
+            c = Wc.*(2*sv.Ws-Wr)./Wt; c(isnan(c)) = 0;
             c = sv.Wb.*conv2(sv.s0,sv.s0,c,'same');
         end
         

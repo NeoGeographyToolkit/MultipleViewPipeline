@@ -386,7 +386,7 @@ classdef PatchViews < handle
             % total and normalized weights
             pv.Wt = sum(pv.Ws,3);
             pv.Wn = pv.Ws./repmat(pv.Wt,[1 1 pv.n]);
-            pv.Wn(find(isnan(pv.Wn))) = 0;
+            pv.Wn(isnan(pv.Wn)) = 0;
             
             if nargout > 0, I = pv.Is; end
             if nargout > 1, W = pv.Ws; end
@@ -394,8 +394,8 @@ classdef PatchViews < handle
         
         function E = residual(pv)
             pv.Gb = pv.a(pv.Z).*pv.Ib+pv.b(pv.Z);
-            pv.Ga = pv.Gs./pv.Ws; pv.Ga(find(isnan(pv.Ga))) = 0;
-            pv.Gm = sum(pv.Gs,3)./pv.Wt; pv.Gm(find(isnan(pv.Gm))) = 0;
+            pv.Ga = pv.Gs./pv.Ws; pv.Ga((isnan(pv.Ga))) = 0;
+            pv.Gm = sum(pv.Gs,3)./pv.Wt; pv.Gm((isnan(pv.Gm))) = 0;
             pv.Es = pv.Ga - pv.Gm(:,:,ones(pv.n,1));
             pv.Eb = pv.Gb - pv.Gm(:,:,ones(pv.n,1));
             if nargout > 0, E = pv.Eb; end
@@ -403,8 +403,8 @@ classdef PatchViews < handle
         
         function [f,a,b] = phometry(pv)
             % Scatter Matrices
-            pv.Ia = pv.Is./pv.Ws; pv.Ia(find(isnan(pv.Ia))) = 0;
-            In = pv.Is./repmat(pv.Wt,[1 1 pv.n]); In(find(isnan(In))) = 0;
+            pv.Ia = pv.Is./pv.Ws; pv.Ia((isnan(pv.Ia))) = 0;
+            In = pv.Is./repmat(pv.Wt,[1 1 pv.n]); In((isnan(In))) = 0;
             Ea = scatw(pv.Is(:,:,pv.is).*In(:,:,pv.js),pv.Ia.*pv.Is,pv.ks,pv.x0,pv.y0);
             Eb = scatw(pv.Ws(:,:,pv.is).*pv.Wn(:,:,pv.js),pv.Ws,pv.ks,pv.x0,pv.y0);
             Ec = scatw(pv.Is(:,:,pv.ia).*pv.Wn(:,:,pv.ja),pv.Is,pv.ka,pv.x0,pv.y0);
@@ -441,13 +441,13 @@ classdef PatchViews < handle
         
         function [t,dt] = geometry(pv)
             pv.Gt = pv.X.*pv.Gy-pv.Y.*pv.Gx;
-            Gx = pv.Gx./pv.Ws; Gx(find(isnan(Gx))) = 0;
-            Gy = pv.Gy./pv.Ws; Gy(find(isnan(Gy))) = 0;
-            Gt = pv.Gt./pv.Ws; Gt(find(isnan(Gt))) = 0;
+            Gx = pv.Gx./pv.Ws; Gx((isnan(Gx))) = 0;
+            Gy = pv.Gy./pv.Ws; Gy((isnan(Gy))) = 0;
+            Gt = pv.Gt./pv.Ws; Gt((isnan(Gt))) = 0;
             WT = repmat(pv.Wt,[1 1 pv.n]);
-            Nx = pv.Gx./WT; Nx(find(isnan(Nx))) = 0;
-            Ny = pv.Gy./WT; Ny(find(isnan(Ny))) = 0;
-            Nt = pv.Gt./WT; Nt(find(isnan(Nt))) = 0;
+            Nx = pv.Gx./WT; Nx((isnan(Nx))) = 0;
+            Ny = pv.Gy./WT; Ny((isnan(Ny))) = 0;
+            Nt = pv.Gt./WT; Nt((isnan(Nt))) = 0;
             %  symmetric components of Hessian
             Exx = scatw(Nx(:,:,pv.is).*pv.Gx(:,:,pv.js),Gx.*pv.Gx,pv.ks,pv.x0,pv.y0);
             Eyy = scatw(Ny(:,:,pv.is).*pv.Gy(:,:,pv.js),Gy.*pv.Gy,pv.ks,pv.x0,pv.y0);
@@ -484,20 +484,39 @@ classdef PatchViews < handle
         end
         
         function w = testGradients(pv)
+%            pv.test_grad_ns;
+            pv.test_grad_nt;
+        end
+        
+        function w = test_grad_nt(pv)
             W = pv.W; t = pv.t;
             pv.t = [1 1]'; pv.proj; pv.disp;
             w = pv.W(:); [f,g] = mvOpt(w,pv);
             g = reshape(g,size(pv.Ws));
             figure, imagesc(g(:,:,1)), colorbar;
-            [w,f,exitflag,output,grad] = fminunc(@(w)mvOpt(w,pv),w,pv.opt.T);
-            grad = reshape(grad,size(pv.Ws));
-            figure, imagesc(grad(:,:,1)), colorbar;
+            [w,f,exitflag,output] = fminunc(@(w)mvOpt(w,pv),w,pv.opt.T);
             pv.t = t; pv.proj; pv.W = W;
             function [f,g]=mvOpt(w,pv)
                 pv.W = reshape(w,size(pv.Ws));
                 pv.proj; pv.corelate;
-                f = sum(pv.sw);
-                if nargout > 1, g = pv.grad_nt; end
+                f = pv.nt;
+                if nargout > 1, g = pv.rof*pv.grad_nt; end
+            end
+        end
+        
+        function w = test_grad_ns(pv)
+            W = pv.W; t = pv.t;
+            pv.t = [1 1]'; pv.proj; pv.disp;
+            w = pv.W(:); [f,g] = mvOpt(w,pv);
+            g = reshape(g,size(pv.Ws));
+            figure, imagesc(g(:,:,1)), colorbar;
+            [w,f,exitflag,output] = fminunc(@(w)mvOpt(w,pv),w,pv.opt.T);
+            pv.t = t; pv.proj; pv.W = W;
+            function [f,g]=mvOpt(w,pv)
+                pv.W = reshape(w,size(pv.Ws));
+                pv.proj; pv.corelate;
+                f = pv.ns;
+                if nargout > 1, g = pv.rof*pv.grad_ns; end
             end
         end
         
@@ -509,7 +528,7 @@ classdef PatchViews < handle
         end
         
         function g = grad_ns(pv)
-            g = []; c = pv.y0*pv.x0;
+            g = []; c = pv.y0*pv.x0';
             for k = 1:pv.n
                 g(:,:,k) = pv.sv(k).grad_ns(c,pv.Wr(:,:,k),pv.Wt);
             end
@@ -568,12 +587,12 @@ classdef PatchViews < handle
             pv.Gy=pv.a(pv.Z).*pv.Iy+pv.b(pv.Z).*pv.Wy;
             
             Gt = sum(pv.Gs,3); Wx = sum(pv.Wx,3); Wy = sum(pv.Wy,3);
-            pv.Gm = Gt./pv.Wt; pv.Gm(find(isnan(pv.Gm))) = 0;
+            pv.Gm = Gt./pv.Wt; pv.Gm(isnan(pv.Gm)) = 0;
             
             Gx = sum(pv.Gx,3)-pv.Gm.*Wx;
             Gy = sum(pv.Gy,3)-pv.Gm.*Wy;
             
-            pv.G2 = (Gx.^2+Gy.^2)./pv.Wt; pv.G2(find(isnan(pv.G2))) = 0;
+            pv.G2 = (Gx.^2+Gy.^2)./pv.Wt; pv.G2(isnan(pv.G2)) = 0;
             
             if nargout > 0, Gx = pv.Gx; end
             if nargout > 1, Gy = pv.Gy; end
