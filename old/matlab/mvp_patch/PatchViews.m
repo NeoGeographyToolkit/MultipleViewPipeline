@@ -387,6 +387,8 @@ classdef PatchViews < handle
             pv.Wt = sum(pv.Ws,3);
             pv.Wn = pv.Ws./repmat(pv.Wt,[1 1 pv.n]);
             pv.Wn(isnan(pv.Wn)) = 0;
+            pv.Wr = sum(pv.Wn.*pv.Ws,3);
+
             
             if nargout > 0, I = pv.Is; end
             if nargout > 1, W = pv.Ws; end
@@ -470,21 +472,22 @@ classdef PatchViews < handle
             b = -pv.sw'*B; t0 = zeros(3*pv.n,1);
             
             options = optimset('Display','off');
-            [t,fval,exitflag] = quadprog(H,g,[],[],A,b,[],[],t0,options);
-            t = reshape(t,pv.n,3);
+            [dt,fval,exitflag] = quadprog(H,g,[],[],A,b,[],[],t0,options);
+            dt = reshape(dt,pv.n,3);
             
             f = pv.f;       % current squared error
-            pv.H = B+t;
+            pv.H = B+dt;
             pv.proj
             pv.phometry;
             if f < pv.f,    % check smaller squared error
                 pv.H = B;
                 fprintf('<');
             end
+            t = pv.H;
         end
         
         function w = testGradients(pv)
-%            pv.test_grad_ns;
+            pv.test_grad_ns;
             pv.test_grad_nt;
         end
         
@@ -530,7 +533,7 @@ classdef PatchViews < handle
         function g = grad_ns(pv)
             g = []; c = pv.y0*pv.x0';
             for k = 1:pv.n
-                g(:,:,k) = pv.sv(k).grad_ns(c,pv.Wr(:,:,k),pv.Wt);
+                g(:,:,k) = pv.sv(k).grad_ns(c,pv.Wr,pv.Wt);
             end
         end
         
@@ -565,8 +568,7 @@ classdef PatchViews < handle
             % Confidence Value
             s = wnd3(pv.y0,pv.x0,pv.G2);                % signal
             pv.sw = wnd3(pv.y0,pv.x0,pv.Ws); sw = sum(pv.sw);   % individual dofs
-            pv.Wr = pv.Wn.*pv.Ws;
-            v = wnd3(pv.y0,pv.x0,pv.Wr); sv = sum(v);   % signal dofs
+            sv = wnd3(pv.y0,pv.x0,pv.Wr);                % signal dofs
             pv.nt = pv.rof*sw;
             pv.ns = pv.rof*sv;
             pv.ne = pv.nt-pv.ns-2;
