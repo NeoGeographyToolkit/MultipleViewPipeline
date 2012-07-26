@@ -77,8 +77,9 @@ classdef PatchViews < handle
             pv.opt.R = optimset(pv.opt.R,'Largescale','off');
             pv.opt.W = optimset('disp','iter','Largescale','off');
             pv.opt.W = optimset(pv.opt.W,'TolX',1e-25,'FinDiffType','central');
-            pv.opt.T = optimset('FinDiffType','central','DerivativeCheck','off');
-            pv.opt.T = optimset(pv.opt.T,'MaxIter',1,'GradObj','off');
+            pv.opt.T = optimset('Largescale','off','FinDiffType','central');
+            pv.opt.T = optimset(pv.opt.T,'MaxIter',0,'DerivativeCheck','on');
+            pv.opt.T = optimset(pv.opt.T,'GradObj','on');
         end
         
         function m = adjustHypothesis(pv)
@@ -270,7 +271,7 @@ classdef PatchViews < handle
             end
         end
         
-        function h = disp(pv)            
+        function h = disp(pv)
             if ~isempty(pv.W)
                 figure;
                 C = num2cell(pv.W,[1 2]);
@@ -288,26 +289,26 @@ classdef PatchViews < handle
                 h = figure;
                 subplot(2,3,1), imshow(imadjust(A)), axis equal
                 title('Before Photometric Correction','FontSize',14)
-
+                
                 C = num2cell(pv.Ga,[1 2]);
                 C = reshape(C,[2 2]);
-                C = cell2mat(C);                
+                C = cell2mat(C);
                 subplot(2,3,2), imagesc(C), axis off equal
                 title('After Photometric Correction','FontSize',14)
                 E = std(pv.Es,0,3);
                 
                 D = num2cell(pv.Es,[1 2]);
                 D = reshape(D,[2 2]);
-                D = cell2mat(D);                
+                D = cell2mat(D);
                 subplot(2,3,5), imagesc(D), axis off equal
                 title('Residual of Image Patches','FontSize',14)
-
+                
                 subplot(2,3,6), imagesc(pv.G2), axis off equal
                 title('Magnitude of Gradient Albedo','FontSize',14)
-
+                
                 subplot(2,3,3), imagesc(pv.Gm), axis off equal
                 title('Estimated Albedo','FontSize',14)
-
+                
                 subplot(2,3,4), imagesc(E), axis off equal
                 title('Standard Error','FontSize',14)
             end
@@ -326,16 +327,18 @@ classdef PatchViews < handle
                     pv.initWindows;
                 case 'W'
                     W = evt.AffectedObject.W;
-                    if ~isequal(pv.W,W),
-                        for k=1:pv.n, pv.sv(k).W = pv.W(:,:,k); end
+                    for k=1:pv.n,
+                        if ~isequal(pv.sv(k).W,W(:,:,k)),
+                            pv.sv(k).W = pv.W(:,:,k);
+                        end
                     end
             end
         end
         
         function initWindows(pv)
             w = ceil([pv.t(1:2)*PatchViews.ratioScale; pv.s*PatchViews.ratioSmoth]);
-            if ~isequal(pv.w,w), 
-                pv.w = w; 
+            if ~isequal(pv.w,w),
+                pv.w = w;
                 [pv.X, pv.Y pv.Z]=meshgrid(-w(1):w(1),-w(2):w(2),1:pv.n);
             end
             [pv.x0 pv.x1 pv.x2] = wndGaussian(pv.w(1),pv.t(1));
@@ -429,7 +432,7 @@ classdef PatchViews < handle
         
         function [t,dt] = geometry(pv)
             pv.Gt = pv.X.*pv.Gy-pv.Y.*pv.Gx;
-            Gx = pv.Gx./pv.Ws; Gx(find(isnan(Gx))) = 0; 
+            Gx = pv.Gx./pv.Ws; Gx(find(isnan(Gx))) = 0;
             Gy = pv.Gy./pv.Ws; Gy(find(isnan(Gy))) = 0;
             Gt = pv.Gt./pv.Ws; Gt(find(isnan(Gt))) = 0;
             WT = repmat(pv.Wt,[1 1 pv.n]);
@@ -448,10 +451,10 @@ classdef PatchViews < handle
             Gx = scatw(Nx(:,:,pv.ia).*pv.Gs(:,:,pv.ja),Gx.*pv.Gs,pv.ka,pv.x0,pv.y0);
             Gy = scatw(Ny(:,:,pv.ia).*pv.Gs(:,:,pv.ja),Gy.*pv.Gs,pv.ka,pv.x0,pv.y0);
             Gt = scatw(Nt(:,:,pv.ia).*pv.Gs(:,:,pv.ja),Gt.*pv.Gs,pv.ka,pv.x0,pv.y0);
-
+            
             H = [Exx Exy Ext; Exy' Eyy Eyt; Ext' Eyt' Ett];
-            g = sum([Gx; Gy; Gt],2);        % gradient 
-
+            g = sum([Gx; Gy; Gt],2);        % gradient
+            
             z = zeros(1,pv.n);
             A = [pv.sw' z z; z pv.sw' z; z z pv.sw'];
             b = zeros(3,1); t0 = zeros(3*pv.n,1);
@@ -467,7 +470,7 @@ classdef PatchViews < handle
             
             pv.proj
             pv.phometry;
-            if f < pv.f,    % check smaller squared error 
+            if f < pv.f,    % check smaller squared error
                 for k = 1:pv.n
                     pv.sv(k).h = pv.sv(k).h - t(k,:)';
                 end
@@ -477,7 +480,7 @@ classdef PatchViews < handle
         end
         
         function w = testGradients(pv)
-            W = pv.W; t = pv.t; 
+            W = pv.W; t = pv.t;
             pv.t = [1 1]'; pv.proj; pv.disp;
             w = pv.W(:); [f,g] = mvOpt(w,pv);
             g = reshape(g,size(pv.Ws));
@@ -488,8 +491,8 @@ classdef PatchViews < handle
             pv.t = t; pv.proj; pv.W = W;
             function [f,g]=mvOpt(w,pv)
                 pv.W = reshape(w,size(pv.Ws));
-                pv.corelate;
-                f = pv.nt;
+                pv.proj; pv.corelate;
+                f = sum(pv.sw);
                 if nargout > 1, g = pv.grad_nt; end
             end
         end
@@ -515,7 +518,7 @@ classdef PatchViews < handle
         function w = robustw(pv)
             ub = ones(size(pv.Ws)); ub = ub(:);
             lb = zeros(size(pv.Ws)); lb = lb(:);
-            w = 0.5*ub;           
+            w = 0.5*ub;
             [w,f,exitflag,output] = fmincon(@(w)mvOpt(w,pv),w,[],[],[],[],lb,ub,[],pv.opt.W);
             pv.W = reshape(w,size(pv.W)); w = pv.W;
             if ~isequal(pv.opt.W.Display,'off'),
@@ -531,7 +534,7 @@ classdef PatchViews < handle
                 p=reallog(pv.corelate+PatchViews.eps_p);
             end
         end
-
+        
         function [p,a,b,f] = corelate(pv)
             [f,a,b]=pv.phometry;    % photometric estimation
             pv.gradient;            % gradient computation
@@ -559,20 +562,20 @@ classdef PatchViews < handle
             pv.Gs=pv.a(pv.Z).*pv.Is+pv.b(pv.Z).*pv.Ws;
             pv.Gx=pv.a(pv.Z).*pv.Ix+pv.b(pv.Z).*pv.Wx;
             pv.Gy=pv.a(pv.Z).*pv.Iy+pv.b(pv.Z).*pv.Wy;
-
+            
             Gt = sum(pv.Gs,3); Wx = sum(pv.Wx,3); Wy = sum(pv.Wy,3);
             pv.Gm = Gt./pv.Wt; pv.Gm(find(isnan(pv.Gm))) = 0;
             
             Gx = sum(pv.Gx,3)-pv.Gm.*Wx;
             Gy = sum(pv.Gy,3)-pv.Gm.*Wy;
-                
+            
             pv.G2 = (Gx.^2+Gy.^2)./pv.Wt; pv.G2(find(isnan(pv.G2))) = 0;
             
             if nargout > 0, Gx = pv.Gx; end
             if nargout > 1, Gy = pv.Gy; end
             if nargout > 2, G2 = pv.G2; end
         end
-
+        
         function set.q(obj,q) % q property set function
             obj.q = q;
         end % set.q

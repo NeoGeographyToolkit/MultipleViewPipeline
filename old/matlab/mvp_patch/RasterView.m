@@ -31,7 +31,7 @@ classdef RasterView < handle
                 rv.z = z;
             end
             rv.pv.proj
-%             rv.pv.testGradients;
+            rv.pv.testGradients;
             r = rv.elevate(RasterView.radiusMoon-500);
             h = r-RasterView.radiusMoon
             q = rv.rotate
