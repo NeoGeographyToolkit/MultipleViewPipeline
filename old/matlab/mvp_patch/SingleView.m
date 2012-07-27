@@ -152,6 +152,10 @@ classdef SingleView < handle
             end
         end
         
+        function c = grad_se(sv,c,g)
+            c = sv.Wb.*conv2(sv.s0,sv.s0,c,'same');
+        end
+        
         function c = grad_nt(sv,c)
             c = sv.Wb.*conv2(sv.s0,sv.s0,c,'same');
         end
@@ -225,10 +229,10 @@ classdef SingleView < handle
         function set.W(obj,W)
             % W property set function
             if any(W(:) > 1 | W(:) < 0)
-                error('W must be a probability')
-            else
-                obj.W = W;
+                fprintf('All elements of W are set be probabilities\n')
+                W(W>1)=1; W(W<0)=0;
             end
+            obj.W = W;
         end % set.W
         
         function set.img(obj,img)

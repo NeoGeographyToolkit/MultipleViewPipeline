@@ -2,8 +2,8 @@ classdef MultiViews < handle
     % Multiple Views in a Tile
     properties (Hidden)
         strPath        % directory
-        sv = SingleView;
         rv = RasterView;
+        sv = SingleView;
         tv = TerainView;
         opt;
     end

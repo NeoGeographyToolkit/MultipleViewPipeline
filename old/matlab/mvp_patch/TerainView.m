@@ -24,6 +24,11 @@ classdef TerainView < handle
         end
         
         function [e,d,a] = post(tv,z)
+            if length(z) == 2, 
+                z = z(:); 
+            else
+                error('z should be a 2 dimensional vector.')
+            end
             [e,d,a]=pix2dir(tv.H,z);
         end
         

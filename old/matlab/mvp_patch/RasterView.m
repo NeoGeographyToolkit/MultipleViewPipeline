@@ -31,7 +31,6 @@ classdef RasterView < handle
                 rv.z = z;
             end
             rv.pv.proj
-            rv.pv.testGradients;
             r = rv.elevate(RasterView.radiusMoon-500);
             h = r-RasterView.radiusMoon
             q = rv.rotate
@@ -55,6 +54,13 @@ classdef RasterView < handle
             figure, plot(log(f))
             figure, plot(log(p))
             rv.disp
+        end
+
+        function h = proj(rv,z)
+            if nargin > 1,
+                rv.z = z;
+            end
+            rv.pv.proj
         end
 
         function r=elevate(rv,r)

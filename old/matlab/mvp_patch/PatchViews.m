@@ -1,7 +1,7 @@
 classdef PatchViews < handle
     % terrain patch contains handle of single view
     properties (Constant)
-        ratioScale = 5;
+        ratioScale = 4;
         ratioSmoth = 4;
         eps_realmin = realmin;
         eps_p = realmin;
@@ -9,6 +9,7 @@ classdef PatchViews < handle
         eps_log = reallog(realmin);
         eps_rescale = eps;
         max_iter = 100;
+        t0 = 1*[1 1]';
     end % properties (Constant)
     
     properties (SetObservable)
@@ -19,9 +20,9 @@ classdef PatchViews < handle
         s = 0.5;        % smoothing scale
         t = [10 10]';   % correlation scale
         u = 31;         % unit length of the pixel
-        w
-        H
-        W
+        w               % window size
+        H               % sloppy refinement 
+        W               % inlier membership
     end
     
     properties (Hidden)
@@ -121,35 +122,6 @@ classdef PatchViews < handle
         end
         
         function q = rotate(pv)
-            for k=1:PatchViews.max_iter
-                [q,f,exitflag,output] = fminunc(@(q)mvOpt(q,pv),pv.q,pv.opt.R);
-                if f < PatchViews.eps_log2p,
-                    pv.q=q; pv.proj;
-                    m = pv.adjustHypothesis;
-                    if ~isequal(pv.opt.R.Display,'off'),
-                        fprintf('H0: var_s = %f var_e !!!\n',m);
-                    end
-                else
-                    if ~isequal(pv.opt.R.Display,'off'),
-                        fprintf('%dth iteration for hypothetical adjustment\n',k);
-                    end
-                    break,
-                end
-            end
-            pv.q=q; pv.proj;
-            if ~isequal(pv.opt.R.Display,'off'),
-                output
-                exitflag
-                pv.disp
-            end
-            
-            function p=mvOpt(q,pv)
-                pv.q=q; pv.proj;
-                p=reallog(pv.corelate+PatchViews.eps_p);
-            end
-        end
-        
-        function q = translate(pv)
             for k=1:PatchViews.max_iter
                 [q,f,exitflag,output] = fminunc(@(q)mvOpt(q,pv),pv.q,pv.opt.R);
                 if f < PatchViews.eps_log2p,
@@ -486,43 +458,6 @@ classdef PatchViews < handle
             t = pv.H;
         end
         
-        function w = testGradients(pv)
-            pv.test_grad_ns;
-            pv.test_grad_nt;
-        end
-        
-        function w = test_grad_nt(pv)
-            W = pv.W; t = pv.t;
-            pv.t = [1 1]'; pv.proj; pv.disp;
-            w = pv.W(:); [f,g] = mvOpt(w,pv);
-            g = reshape(g,size(pv.Ws));
-            figure, imagesc(g(:,:,1)), colorbar;
-            [w,f,exitflag,output] = fminunc(@(w)mvOpt(w,pv),w,pv.opt.T);
-            pv.t = t; pv.proj; pv.W = W;
-            function [f,g]=mvOpt(w,pv)
-                pv.W = reshape(w,size(pv.Ws));
-                pv.proj; pv.corelate;
-                f = pv.nt;
-                if nargout > 1, g = pv.rof*pv.grad_nt; end
-            end
-        end
-        
-        function w = test_grad_ns(pv)
-            W = pv.W; t = pv.t;
-            pv.t = [1 1]'; pv.proj; pv.disp;
-            w = pv.W(:); [f,g] = mvOpt(w,pv);
-            g = reshape(g,size(pv.Ws));
-            figure, imagesc(g(:,:,1)), colorbar;
-            [w,f,exitflag,output] = fminunc(@(w)mvOpt(w,pv),w,pv.opt.T);
-            pv.t = t; pv.proj; pv.W = W;
-            function [f,g]=mvOpt(w,pv)
-                pv.W = reshape(w,size(pv.Ws));
-                pv.proj; pv.corelate;
-                f = pv.ns;
-                if nargout > 1, g = pv.rof*pv.grad_ns; end
-            end
-        end
-        
         function g = grad_nt(pv)
             g = []; c = pv.y0*pv.x0';
             for k = 1:pv.n
@@ -538,7 +473,7 @@ classdef PatchViews < handle
         end
         
         function g = grad_ne(pv)
-            g = pv.grad_nt - pv.grad_nr;
+            g = pv.grad_nt - pv.grad_ns;
         end
         
         function w = robustw(pv)
