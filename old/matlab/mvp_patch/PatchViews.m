@@ -34,11 +34,13 @@ classdef PatchViews < handle
         Ic, Wc          % corrected by linear reflectance
         n2, N, nc, is, js, ks, ia, ja, ka,
         x0, x1, x2, y0, y1, y2,
-        Gb, Gs, Gm, Ga, Es, Eb  % albedos
+        Gb, Gs, Ga, Es, Eb  % albedos
+        Ms, Mx, My
         Gx, Gy, Gt, G2      % albedo gradients
         Ds              % disparity
         rof, sof   % reciprocals of dof
         ne, nr, ns, nt  % degrees of freedom
+        se, ss          % squared error and signal
         a, b;     % reflectance coefficients
         m = 1;          % multiplicative hypothesis
         p               % p-value of correspondences
@@ -52,8 +54,8 @@ classdef PatchViews < handle
     methods
         function pv = PatchViews(sv,e)
             if nargin == 0, return; end
-            addlistener(pv,'n','PostSet',@pv.PropEvents);
             addlistener(pv,'e','PostSet',@pv.PropEvents);
+            addlistener(pv,'n','PostSet',@pv.PropEvents);
             addlistener(pv,'t','PostSet',@pv.PropEvents);
             addlistener(pv,'H','PostSet',@pv.PropEvents);
             addlistener(pv,'W','PostSet',@pv.PropEvents);
@@ -254,7 +256,7 @@ classdef PatchViews < handle
                 figure, imagesc(C), axis equal, colorbar;
             end
             
-            if ~isempty(pv.Ia)
+            if ~isempty(pv.Is)
                 pv.residual;
                 A = num2cell(pv.Ia,[1 2]);
                 A = reshape(A,[2 2]);
@@ -280,7 +282,7 @@ classdef PatchViews < handle
                 subplot(2,3,6), imagesc(pv.G2), axis off equal
                 title('Magnitude of Gradient Albedo','FontSize',14)
                 
-                subplot(2,3,3), imagesc(pv.Gm), axis off equal
+                subplot(2,3,3), imagesc(pv.Ms), axis off equal
                 title('Estimated Albedo','FontSize',14)
                 
                 subplot(2,3,4), imagesc(E), axis off equal
@@ -369,9 +371,9 @@ classdef PatchViews < handle
         function E = residual(pv)
             pv.Gb = pv.a(pv.Z).*pv.Ib+pv.b(pv.Z);
             pv.Ga = pv.Gs./pv.Ws; pv.Ga((isnan(pv.Ga))) = 0;
-            pv.Gm = sum(pv.Gs,3)./pv.Wt; pv.Gm((isnan(pv.Gm))) = 0;
-            pv.Es = pv.Ga - pv.Gm(:,:,ones(pv.n,1));
-            pv.Eb = pv.Gb - pv.Gm(:,:,ones(pv.n,1));
+            pv.Ms = sum(pv.Gs,3)./pv.Wt; pv.Ms((isnan(pv.Ms))) = 0;
+            pv.Es = pv.Ga - pv.Ms(:,:,ones(pv.n,1));
+            pv.Eb = pv.Gb - pv.Ms(:,:,ones(pv.n,1));
             if nargout > 0, E = pv.Eb; end
         end
         
@@ -458,6 +460,22 @@ classdef PatchViews < handle
             t = pv.H;
         end
         
+        function g = grad_se(pv)
+            g = []; c = pv.y0*pv.x0';
+            for k = 1:pv.n
+                g(:,:,k) = pv.sv(k).grad_se(c,pv.Ms,pv.Ga(:,:,k),pv.Gb(:,:,k));
+            end
+        end
+        
+        function g = grad_ss(pv)
+            g = []; c = pv.y0*pv.x0';
+            Gt = sum(pv.Gs,3); Wx = sum(pv.Wx,3); Wy = sum(pv.Wy,3);
+            for k = 1:pv.n
+                g(:,:,k) = pv.sv(k).grad_ss(c,Gt,pv.Mx,pv.My,...
+                    pv.Wt,Wx,Wy,pv.Gb(:,:,k));
+            end
+        end
+        
         function g = grad_nt(pv)
             g = []; c = pv.y0*pv.x0';
             for k = 1:pv.n
@@ -513,7 +531,7 @@ classdef PatchViews < handle
                 fprintf(' error: %f, dof: %f\n',f,pv.ne);
             end
             p = fpval(s,pv.m*f,pv.ns,pv.ne);
-            pv.p = p;
+            pv.p = p; pv.se = f; pv.ss = s;
         end
         
         function [G2,Gx,Gy] = gradient(pv)
@@ -524,12 +542,14 @@ classdef PatchViews < handle
             pv.Gy=pv.a(pv.Z).*pv.Iy+pv.b(pv.Z).*pv.Wy;
             
             Gt = sum(pv.Gs,3); Wx = sum(pv.Wx,3); Wy = sum(pv.Wy,3);
-            pv.Gm = Gt./pv.Wt; pv.Gm(isnan(pv.Gm)) = 0;
+            pv.Ms = Gt./pv.Wt; pv.Ms(isnan(pv.Ms)) = 0;
+            pv.Ga = pv.Gs./pv.Ws; pv.Ga((isnan(pv.Ga))) = 0;
+            pv.Gb = pv.a(pv.Z).*pv.Ib+pv.b(pv.Z);
             
-            Gx = sum(pv.Gx,3)-pv.Gm.*Wx;
-            Gy = sum(pv.Gy,3)-pv.Gm.*Wy;
+            pv.Mx = sum(pv.Gx,3)-pv.Ms.*Wx;
+            pv.My = sum(pv.Gy,3)-pv.Ms.*Wy;
             
-            pv.G2 = (Gx.^2+Gy.^2)./pv.Wt; pv.G2(isnan(pv.G2)) = 0;
+            pv.G2 = (pv.Mx.^2+pv.My.^2)./pv.Wt; pv.G2(isnan(pv.G2)) = 0;
             
             if nargout > 0, Gx = pv.Gx; end
             if nargout > 1, Gy = pv.Gy; end

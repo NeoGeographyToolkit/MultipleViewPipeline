@@ -152,8 +152,19 @@ classdef SingleView < handle
             end
         end
         
-        function c = grad_se(sv,c,g)
-            c = sv.Wb.*conv2(sv.s0,sv.s0,c,'same');
+        function c = grad_se(sv,Wc,Gm,Ga,Gb)
+            Gw = Wc.*(Ga-Gm); Mw = Gw.*(Ga+Gm);
+            Gw = conv2(sv.s0,sv.s0,Gw,'same');
+            Mw = conv2(sv.s0,sv.s0,Mw,'same');
+            c = sv.Wb.*(2*Gb.*Gw-Mw);
+        end
+        
+        function c = grad_ss(sv,Wc,Gs,Mx,My,Ws,Wx,Wy,Gb)
+            gx = Wc.*Mx; gy = Wc.*My;
+            Gw = conv2(sv.s0,sv.s1,gx,'same')+conv2(sv.s1,sv.s0,gy,'same');
+            Mw = Wc.*((Mx.*Wx+My.*Wy).*Gs+(Mx.^2+My.^2)/2)./Ws.^2;
+            Mw(isnan(Mw)) = 0; Mw = conv2(sv.s0,sv.s0,Mw,'same');
+            c = sv.Wb.*(Gb.*Gw-Mw)*2;
         end
         
         function c = grad_nt(sv,c)

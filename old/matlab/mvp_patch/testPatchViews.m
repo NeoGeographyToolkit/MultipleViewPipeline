@@ -14,35 +14,54 @@ classdef testPatchViews < TestCase
         function setUp(self)
             strIn = 'AS15_3_3_tiles.mat';
             self.mv = MultiViews(strIn);
-            self.mv.rv.proj([128 150]');
+            self.mv.rv.z=[128 128]';
+            self.mv.rv.pv.proj
+            r = self.mv.rv.elevate(RasterView.radiusMoon-500);
+            h = r-RasterView.radiusMoon
             self.pv = self.mv.rv.pv;
-            self.opt.T = optimset('Largescale','off','FinDiffType','central');
+            self.pv.disp;
+            self.opt.T = optimset('LargeScale','off','FinDiffType','central');
             self.opt.T = optimset(self.opt.T,'MaxIter',0,'DerivativeCheck','on');
             self.opt.T = optimset(self.opt.T,'GradObj','on');
+            close all;
         end
 
         function tearDown(self)
-            delete(self.mv);
+%            delete(self.mv);
         end
 
-        function w = testGradSe(self)
+        function testGradSe(self)
             fprintf('Testing Gradient of Error\n');
-            self.pv.t = [1 1]'; self.pv.proj;
+            self.pv.t = [1 1]';
+            self.pv.proj; self.pv.corelate;
             w = self.pv.W(:);
-            [w,f,exitflag,output] = fminunc(@(w)mvOpt(w,self.pv),w,self.opt.T);
+            fminunc(@(w)mvOpt(w,self.pv),w,self.opt.T);
             function [f,g]=mvOpt(w,pv)
                 pv.W = reshape(w,size(pv.Ws));
                 pv.proj; pv.corelate;
-                f = pv.f;
-                if nargout > 1, g = pv.rof*pv.grad_ne; end
+                f = pv.se;
+                if nargout > 1, g = pv.grad_se; end
             end
         end
         
-        function w = testGradNt(self)
+        function testGradSs(self)
+            fprintf('Testing Gradient of Error\n');
+            self.pv.t = [1 1]'; self.pv.proj;
+            w = self.pv.W(:);
+            fminunc(@(w)mvOpt(w,self.pv),w,self.opt.T);
+            function [f,g]=mvOpt(w,pv)
+                pv.W = reshape(w,size(pv.Ws));
+                pv.proj; pv.corelate;
+                f = pv.ss;
+                if nargout > 1, g = pv.grad_ss; end
+            end
+        end
+        
+        function testGradNt(self)
             fprintf('Testing Gradient of Total DoF\n');
             self.pv.t = [1 1]'; self.pv.proj;
             w = self.pv.W(:);
-            [w,f,exitflag,output] = fminunc(@(w)mvOpt(w,self.pv),w,self.opt.T);
+            fminunc(@(w)mvOpt(w,self.pv),w,self.opt.T);
             function [f,g]=mvOpt(w,pv)
                 pv.W = reshape(w,size(pv.Ws));
                 pv.proj; pv.corelate;
@@ -51,11 +70,11 @@ classdef testPatchViews < TestCase
             end
         end
         
-        function w = testGradNs(self)
+        function testGradNs(self)
             fprintf('Testing Gradient of Signal DoF\n');
             self.pv.t = [1 1]'; self.pv.proj; 
-            w = self.pv.W(:); 
-            [w,f,exitflag,output] = fminunc(@(w)mvOpt(w,self.pv),w,self.opt.T);
+            w = self.pv.W(:);
+            fminunc(@(w)mvOpt(w,self.pv),w,self.opt.T);
             function [f,g]=mvOpt(w,pv)
                 pv.W = reshape(w,size(pv.Ws));
                 pv.proj; pv.corelate;

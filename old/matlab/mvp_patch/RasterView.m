@@ -26,6 +26,16 @@ classdef RasterView < handle
             end
         end
         
+        function h = corelate(rv,z)
+            if nargin > 1,
+                rv.z = z;
+            end
+            rv.pv.proj
+            r = rv.elevate(RasterView.radiusMoon-500);
+            h = r-RasterView.radiusMoon
+            q = rv.rotate
+        end
+
         function h = raster(rv,z)
             if nargin > 1,
                 rv.z = z;
