@@ -7,15 +7,15 @@
 #define __MVP_PIPELINE_SESSION_H__
 
 #include <mvp/Core/Settings.h>
-#include <mvp/Pipeline/SessionDesc.pb.h>
 #include <mvp/Pipeline/JobDesc.pb.h>
+#include <mvp/Frontend/SessionDesc.pb.h>
 
 // Rather than including an ENTIRE PlateGeoReference, we
 // just hold onto its desc.
 #include <vw/Plate/PlateGeoReferenceDesc.pb.h>
 
 namespace mvp {
-namespace pipeline {
+namespace frontend {
 
 class Session {
   SessionDesc m_session_desc;
@@ -30,7 +30,7 @@ class Session {
 
     bool has_next() { return m_render_bbox.contains(m_cursor); }
 
-    JobDesc next();
+    pipeline::JobDesc next();
 };
 
 }} // namespace pipeline, mvp

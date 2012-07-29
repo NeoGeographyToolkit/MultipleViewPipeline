@@ -1,4 +1,4 @@
-package mvp.pipeline;
+package mvp.frontend;
 
 import "mvp/Core/AlgorithmSettings.proto";
 

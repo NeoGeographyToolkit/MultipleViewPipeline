@@ -1,14 +1,14 @@
 #include <gtest/gtest.h>
 #include <test/Helpers.h>
 
-#include <mvp/Pipeline/Session.h>
-#include <mvp/Core/Settings.h>
+#include <mvp/Frontend/Session.h>
 
 using namespace std;
 using namespace mvp;
 using namespace vw::test;
 using namespace mvp::core;
 using namespace mvp::pipeline;
+using namespace mvp::frontend;
 
 TEST(Settings, mvp_settings) {
   SessionDesc session_desc;

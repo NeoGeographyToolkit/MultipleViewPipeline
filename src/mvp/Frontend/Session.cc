@@ -1,9 +1,9 @@
-#include <mvp/Pipeline/Session.h>
+#include <mvp/Frontend/Session.h>
 
 #include <vw/Plate/PlateGeoReference.h>
 
 namespace mvp {
-namespace pipeline {
+namespace frontend {
 
 void Session::reset(SessionDesc const& session_desc) {
   m_session_desc = session_desc;
@@ -24,7 +24,9 @@ void Session::reset(SessionDesc const& session_desc) {
   m_cursor = m_render_bbox.min();
 }
 
-JobDesc Session::next() {
+pipeline::JobDesc Session::next() {
+  using namespace pipeline;
+
   JobDesc::Input input;
   // TODO: use cursor position to get orbital images
 
@@ -59,4 +61,4 @@ JobDesc Session::next() {
   return job_desc;
 }
 
-}} // namespace pipeline, mvp
+}} // namespace frontend, mvp
