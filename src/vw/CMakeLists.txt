@@ -9,6 +9,6 @@ PROTOBUF_GENERATE(PYOUT PROTO_PYS
                   OUTPUT ${CMAKE_BINARY_DIR}/src
                   PROTOS ${vw_protos})
 add_custom_target(vw_proto_python ALL DEPENDS ${PROTO_PYS})
-INSTALL_PROTOBUF_PYS(FILES ${PROTO_PYS}
-                     BASEPATH ${CMAKE_BINARY_DIR}/src 
-                     DESTINATION ${PYTHON_INSTALL_DIR})
+pyinstall(FILES ${PROTO_PYS}
+          BASEPATH ${CMAKE_BINARY_DIR}/src 
+          DESTINATION ${PYTHON_INSTALL_DIR})

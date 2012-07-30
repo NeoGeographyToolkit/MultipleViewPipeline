@@ -1,3 +1,6 @@
+include(ProtobufGenerate)
+include(PythonHelpers)
+  
 function(mvp_module)
   set(options)
   set(oneValueArgs NAME)
@@ -15,10 +18,10 @@ function(mvp_module)
     # Build python protos
     add_custom_target(mvp${mvp_module_NAME}Python ALL DEPENDS ${PROTO_PYS})
 
-    # Install python executables / support
-    INSTALL_PROTOBUF_PYS(FILES ${PROTO_PYS} 
-                         BASEPATH ${CMAKE_BINARY_DIR}/src
-                         DESTINATION ${PYTHON_INSTALL_DIR})
+    # Install python protobuffers
+    pyinstall(FILES ${PROTO_PYS} 
+              BASEPATH ${CMAKE_BINARY_DIR}/src
+              DESTINATION ${PYTHON_INSTALL_DIR})
    
     set(mvp_module_HDRS ${mvp_module_HDRS} ${PROTO_HDRS}) 
     set(mvp_module_SRCS ${mvp_module_SRCS} ${PROTO_SRCS})
