@@ -1,5 +1,4 @@
 include(ProtobufGenerate)
-include(PythonHelpers)
   
 function(mvp_module)
   set(options)
@@ -10,21 +9,12 @@ function(mvp_module)
   if (mvp_module_PROTOS)
     PROTOBUF_GENERATE(CPPOUT PROTO_SRCS 
                       HPPOUT PROTO_HDRS
-                      PYOUT PROTO_PYS 
                       IPATHS ${CMAKE_SOURCE_DIR}/src ${CMAKE_SOURCE_DIR}/thirdparty/vw_protobuf
                       OUTPUT ${CMAKE_BINARY_DIR}/src 
                       PROTOS ${mvp_module_PROTOS})
 
-    # Build python protos
-    add_custom_target(mvp${mvp_module_NAME}Python ALL DEPENDS ${PROTO_PYS})
-
-    # Install python protobuffers
-    pyinstall(FILES ${PROTO_PYS} 
-              BASEPATH ${CMAKE_BINARY_DIR}/src
-              DESTINATION ${PYTHON_INSTALL_DIR})
-   
-    set(mvp_module_HDRS ${mvp_module_HDRS} ${PROTO_HDRS}) 
-    set(mvp_module_SRCS ${mvp_module_SRCS} ${PROTO_SRCS})
+    list(APPEND mvp_module_HDRS ${PROTO_HDRS})
+    list(APPEND mvp_module_SRCS ${PROTO_SRCS})
   endif()
 
   # Build library

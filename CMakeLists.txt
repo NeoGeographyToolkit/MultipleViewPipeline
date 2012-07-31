@@ -35,9 +35,12 @@ else()
   option(ENABLE_OCTAVE_SUPPORT "Build the MVP with octave support" OFF)
 endif()
 
-# PYTHON_INSTALL_DIR
-# TODO: CACHE variable?
-set(PYTHON_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/share/mvp/python)
+option(BUILD_PYTHON_APPS "Build python apps" OFF)
+if (BUILD_PYTHON_APPS)
+  # PYTHON_INSTALL_DIR
+  # TODO: CACHE variable?
+  set(PYTHON_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/share/mvp/python)
+endif()
 
 # MFILE_INSTALL_DIR, OCTFILE_INSTALL_DIR
 if (ENABLE_OCTAVE_SUPPORT)
@@ -100,3 +103,7 @@ if (ENABLE_OCTAVE_SUPPORT)
 endif()
 
 add_subdirectory(src)
+
+if (BUILD_PYTHON_APPS)
+  add_subdirectory(python)
+endif()

@@ -84,3 +84,31 @@ function(pyinstall_bin)
   endforeach()
 
 endfunction()
+
+function(build_pyproto_tree tree root)
+
+  file(GLOB_RECURSE all_protos RELATIVE ${root} ${root}/*.proto)
+
+  foreach(proto_src ${all_protos})
+    get_filename_component(proto_name ${proto_src} NAME)
+
+    get_filename_component(module_name ${proto_src} PATH)
+    string(TOLOWER ${module_name} module_name)
+    file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${module_name})
+
+    set(output_proto_abs "${CMAKE_CURRENT_BINARY_DIR}/${module_name}/${proto_name}")
+
+    set(proto_src_abs "${root}/${proto_src}")
+
+    add_custom_command(OUTPUT ${output_proto_abs}
+                       COMMAND ${CMAKE_SOURCE_DIR}/cmake/fix_pyproto.sh
+                       ARGS ${proto_src_abs} ${output_proto_abs}
+                       DEPENDS ${proto_src_abs}
+                       COMMENT "Adapting ${proto_name} for Python protoc"
+                       VERBATIM)
+    list(APPEND ${tree} ${output_proto_abs})
+  endforeach()
+
+  set_source_files_properties(${${tree}} PROPERTIES GENERATED TRUE)
+  set(${tree} ${${tree}} PARENT_SCOPE) 
+endfunction()

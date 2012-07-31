@@ -1,3 +1,5 @@
+include(CMakeParseArguments)
+  
 function(PROTOBUF_GENERATE)
   set(options)
   set(oneValueArgs CPPOUT HPPOUT PYOUT OUTPUT)
