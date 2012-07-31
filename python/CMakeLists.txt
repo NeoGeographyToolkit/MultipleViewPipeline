@@ -1,9 +1,6 @@
 include (PythonHelpers)
 
-# Install python executables
-pyinstall_bin(FILES mvpadmin.py
-              BASEPATH ${CMAKE_BINARY_DIR}/python 
-              DESTINATION ${PYTHON_INSTALL_DIR})
+pyinstall_bin(mvpadmin.py)
 
 # Make / Install protobuf python modules
 build_pyproto_tree(PROTO_TREE ${CMAKE_SOURCE_DIR}/src)

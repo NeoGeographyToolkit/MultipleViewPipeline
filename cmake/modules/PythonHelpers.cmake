@@ -53,40 +53,12 @@ function(pyinstall)
   endforeach()
 endfunction()
 
-function(pyinstall_bin)
-  set(options)
-  set(oneValueArgs BASEPATH DESTINATION)
-  set(multiValueArgs FILES)
-  cmake_parse_arguments(pyinstall_bin "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
-
-  if (NOT pyinstall_bin_BASEPATH)
-    message(SEND_ERROR "Error: BASEPATH not specified")
-  endif()
-
-  if (NOT pyinstall_bin_DESTINATION)
-    message(SEND_ERROR "Error: DESTINATION not specified")
-  endif()
-
-  if (NOT pyinstall_bin_FILES)
-    message(SEND_ERROR "Error: FILES not specified")
-  endif()
-
-
-  foreach(pyfile ${pyinstall_bin_FILES})
-    string(REPLACE ".py" "" binfile ${pyfile})
-
-    set(CONFIG_PY_DIR ${pyinstall_bin_BASEPATH})
-    configure_file(${pyfile} ${binfile} @ONLY)
-
-    set(CONFIG_PY_DIR ${pyinstall_bin_DESTINATION})
-    configure_file(${pyfile} .pyinstall/${binfile} @ONLY)
-    install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/.pyinstall/${binfile} DESTINATION bin)
-  endforeach()
-
+function(pyinstall_bin pyfile)
+  configure_file(${pyfile} ${pyfile} @ONLY)
+  install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/${pyfile} DESTINATION bin)
 endfunction()
 
 function(build_pyproto_tree tree root)
-
   file(GLOB_RECURSE all_protos RELATIVE ${root} ${root}/*.proto)
 
   foreach(proto_src ${all_protos})
