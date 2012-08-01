@@ -1,0 +1,41 @@
+package mvp.frontend;
+
+import "mvp/Frontend/SessionDesc.proto";
+import "mvp/Pipeline/JobDesc.proto";
+
+message CommandMsg {
+  enum CommandType {
+    LAUNCH = 0;
+    STATUS = 1;
+    INFO = 2;
+    ABORT = 3;
+    KILL = 4;
+    JOB = 5;
+  }
+
+  required CommandType cmd = 1;
+  optional SessionDesc session = 2;
+}
+
+message CommandReplyMsg {
+  required CommandMsg.CommandType cmd = 1;
+  optional pipeline.JobDesc job_request = 2;
+  optional StatusReport status_report = 3;
+}
+
+message StatusReport {
+  
+}
+
+message StatusUpdateMsg {
+  required double status = 1; 
+}
+
+message WorkerCommandMsg {
+  enum CommandType {
+    WAKE = 0;
+    ABORT = 1;
+    KILL = 2;
+  }
+  required CommandType cmd = 1;
+}
