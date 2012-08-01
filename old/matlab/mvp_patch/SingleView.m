@@ -163,22 +163,16 @@ classdef SingleView < handle
         function c = grad_ss(sv,Wc,Gb,Ms,Mx,My,Wt,Wx,Wy)
             Wcs = Wc./Wt; Wcs(isnan(Wcs)) = 0;
             gx = Mx.*Wcs; gy = My.*Wcs;
-            s11 = conv2(sv.s0,sv.s1,gx,'same')+conv2(sv.s1,sv.s0,gy,'same');
-            S12 = (gx.*Wx+gy.*Wy)./Wt; S12(isnan(S12)) = 0;
-            s12 = conv2(sv.s0,sv.s0,S12,'same');
-            s21 = conv2(sv.s0,sv.s1,gx.*Ms,'same')+conv2(sv.s1,sv.s0,gy.*Ms,'same');
-            s22 = conv2(sv.s0,sv.s0,S12.*Ms,'same');
+            s21 = conv2(sv.s0,sv.s1,gx,'same')+conv2(sv.s1,sv.s0,gy,'same');
+            S22 = (gx.*Wx+gy.*Wy)./Wt; S22(isnan(S22)) = 0;
+            s22 = conv2(sv.s0,sv.s0,S22,'same');
+
+            s11 = conv2(sv.s0,sv.s1,gx.*Ms,'same')+conv2(sv.s1,sv.s0,gy.*Ms,'same');
+            s12 = conv2(sv.s0,sv.s0,S22.*Ms,'same');
+
             S3 = (Mx.*gx+My.*gy)./Wt; S3(isnan(S3)) = 0;
             s3 = conv2(sv.s0,sv.s0,S3,'same')/2;
-            c = sv.Wb.*(s11-s12-s21+s22-s3)*2;
-        end
-        
-        function c = grad_ss1(sv,Wc,Gb,Gx,Gy,Wt,S)
-            Wcs = Wc./Wt; Wcs(isnan(Wcs)) = 0;
-            S11 = conv2(sv.s0,sv.s1,Gx.*Wcs,'same');
-            S12 = conv2(sv.s1,sv.s0,Gy.*Wcs,'same');
-            S2 = conv2(sv.s0,sv.s0,S.*Wcs,'same');
-            c = sv.Wb.*(Gb.*(S11+S12)-S2);
+            c = sv.Wb.*(s11+s12-Gb.*(s21+s22)-s3);
         end
         
         function c = grad_ms(sv,Wc,Wt,Gb,Ms)

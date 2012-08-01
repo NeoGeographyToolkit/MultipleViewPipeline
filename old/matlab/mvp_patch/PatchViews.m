@@ -36,8 +36,6 @@ classdef PatchViews < handle
         Ic, Wc          % corrected by linear reflectance
         n2, N, nc, is, js, ks, ia, ja, ka,
         x0, x1, x2, y0, y1, y2,
-        S, S1, S2, S3   % signal
-        s1, s2, s3, 
         gs, gx, gy, 
         ms, mx, my 
         ws, wx, wy  % to verify the gradient
@@ -479,16 +477,6 @@ classdef PatchViews < handle
             end
         end
         
-        function g = grad_ss1(pv)
-            g = []; c = pv.y0*pv.x0';
-            Gx = sum(pv.Gx,3); Gy = sum(pv.Gy,3);
-            Wx = sum(pv.Wx,3); Wy = sum(pv.Wy,3);
-            for k = 1:pv.n
-                g(:,:,k) = pv.sv(k).grad_ss1(c,pv.Gb(:,:,k),...
-                    Gx,Gy,pv.Wt,pv.S1);
-            end
-        end
-        
         function g = grad_ms(pv)
             g = []; c = pv.y0*pv.x0';
             for k = 1:pv.n
@@ -622,8 +610,6 @@ classdef PatchViews < handle
             Gs = sum(pv.Gs,3); 
             Gx = sum(pv.Gx,3); Gy = sum(pv.Gy,3);
             Wx = sum(pv.Wx,3); Wy = sum(pv.Wy,3);
-            pv.S1 = (Gx.^2+Gy.^2)./pv.Wt/2; pv.S1(isnan(pv.S1)) = 0;
-            pv.s1 = wnd3(pv.y0,pv.x0,pv.S1);                % signal
             pv.ms = wnd3(pv.y0,pv.x0,pv.Ms);
             pv.mx = wnd3(pv.y0,pv.x0,pv.Mx);
             pv.my = wnd3(pv.y0,pv.x0,pv.My);
@@ -633,6 +619,7 @@ classdef PatchViews < handle
             pv.ws = wnd3(pv.y0,pv.x0,pv.Wt);
             pv.wx = wnd3(pv.y0,pv.x0,Wx);
             pv.wy = wnd3(pv.y0,pv.x0,Wy);
+            pv.ss = wnd3(pv.y0,pv.x0,pv.G2)/2;                % signal
         end
         
         function [G2,Gx,Gy] = gradient(pv)
@@ -688,14 +675,6 @@ classdef PatchViews < handle
         function ne=get.ne(obj) % ne property set function
             ne = obj.ne;
         end % get.ne
-        
-        function set.s1(obj,s1) % s1 property set function
-            obj.s1 = s1;
-        end % set.s1
-        
-        function s1=get.s1(obj) % s1 property set function
-            s1 = obj.s1;
-        end % get.s1
         
         function set.ns(obj,ns) % ns property set function
             obj.ns = ns;

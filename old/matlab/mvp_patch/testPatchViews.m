@@ -43,20 +43,6 @@ classdef testPatchViews < TestCase
             end
         end
         
-        function testGradSs1(self)
-            fprintf('Testing Gradient of Signal 1\n');
-            self.pv.t = [1 1]'; self.pv.proj;
-            w = self.pv.W(:);
-            fminunc(@(w)mvOpt(w,self.pv),w,self.opt.T);
-            function [f,g]=mvOpt(w,pv)
-                pv.W = reshape(w,size(pv.Ws));
-                pv.proj; 
-                pv.slowate;
-                f = pv.s1;
-                if nargout > 1, g = pv.grad_ss1; end
-            end
-        end
-        
         function testGs(self)
             fprintf('Testing Gs\n');
             self.pv.t = [1 1]'; self.pv.proj;
@@ -164,8 +150,7 @@ classdef testPatchViews < TestCase
             fminunc(@(w)mvOpt(w,self.pv),w,self.opt.T);
             function [f,g]=mvOpt(w,pv)
                 pv.W = reshape(w,size(pv.Ws));
-                pv.proj; 
-                pv.slowate;
+                pv.proj; pv.slowate;
                 f = pv.ws;
                 if nargout > 1, g = pv.grad_ws; end
             end
@@ -178,8 +163,7 @@ classdef testPatchViews < TestCase
             fminunc(@(w)mvOpt(w,self.pv),w,self.opt.T);
             function [f,g]=mvOpt(w,pv)
                 pv.W = reshape(w,size(pv.Ws));
-                pv.proj; 
-                pv.slowate;
+                pv.proj; pv.slowate;
                 f = pv.wx;
                 if nargout > 1, g = pv.grad_wx; end
             end
@@ -208,7 +192,7 @@ classdef testPatchViews < TestCase
             fminunc(@(w)mvOpt(w,self.pv),w,self.opt.T);
             function [f,g]=mvOpt(w,pv)
                 pv.W = reshape(w,size(pv.Ws));
-                pv.proj; pv.corelate;
+                pv.proj; pv.slowate;
                 f = pv.ss;
                 if nargout > 1, g = pv.grad_ss; end
             end
