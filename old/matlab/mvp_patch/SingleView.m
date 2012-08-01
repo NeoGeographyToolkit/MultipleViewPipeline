@@ -57,12 +57,11 @@ classdef SingleView < handle
         s0, s1, s2
         r3, x3, y3
         
-        Ib, Wb  % (backward) projected image and weight
+        Ik, Wb  % (backward) projected image and weight
         Is, Ws  % smoothed weighted image and weight
         Ix, Wx  % gradient weighted image and weight
         Iy, Wy  % gradient weighted image and weight
-        It      % gradient w.r.t theta
-        Wt      % =W*Wb
+        Wk      % =W*Wb
     end
     
     methods
@@ -136,7 +135,8 @@ classdef SingleView < handle
                         x=sv.xb(1):sv.xb(2); y=sv.yb(1):sv.yb(2);
                         [sv.X, sv.Y]=meshgrid(x,y);
                         [sv.s0 sv.s1 sv.s2]=fltGaussian(sv.w(3),sv.s);
-                        sv.Wb = ones(size(sv.X)); sv.W = sv.Wb/2;
+                        sv.Ik = ones(size(sv.X));
+                        sv.Wb = sv.Ik;
                     end
                 case 'S'
                     sv.Hr = [sv.cam(:,1:3)*sv.R(:,1:2)*sv.u sv.S];
@@ -147,24 +147,97 @@ classdef SingleView < handle
                     sv.Hr = [sv.u*sv.cam(:,1:3)*sv.R(:,1:2) sv.S];
                     sv.H = sv.Hr*sv.Hs;
                 case 'W'
-                    sv.Wt = sv.W.*sv.Wb;
-                    [sv.Ws,sv.Wx,sv.Wy] = smooth(sv.Wt,sv.s0,sv.s1);
+                    sv.Wk = sv.W.*sv.Wb;
+                    [sv.Ws,sv.Wx,sv.Wy] = smooth(sv.Wk,sv.s0,sv.s1);
+                    [sv.Is,sv.Ix,sv.Iy] = smooth(sv.Wk.*sv.Ik,sv.s0,sv.s1);
             end
         end
         
-        function c = grad_se(sv,Wc,Gm,Ga,Gb)
-            Gw = Wc.*(Ga-Gm); Mw = Gw.*(Ga+Gm);
+        function c = grad_se(sv,Wc,Ms,Ga,Gb)
+            Gw = Wc.*(Ga-Ms); Mw = Gw.*(Ga+Ms);
             Gw = conv2(sv.s0,sv.s0,Gw,'same');
             Mw = conv2(sv.s0,sv.s0,Mw,'same');
             c = sv.Wb.*(2*Gb.*Gw-Mw);
         end
         
-        function c = grad_ss(sv,Wc,Gs,Mx,My,Ws,Wx,Wy,Gb)
-            gx = Wc.*Mx; gy = Wc.*My;
-            Gw = conv2(sv.s0,sv.s1,gx,'same')+conv2(sv.s1,sv.s0,gy,'same');
-            Mw = Wc.*((Mx.*Wx+My.*Wy).*Gs+(Mx.^2+My.^2)/2)./Ws.^2;
-            Mw(isnan(Mw)) = 0; Mw = conv2(sv.s0,sv.s0,Mw,'same');
-            c = sv.Wb.*(Gb.*Gw-Mw)*2;
+        function c = grad_ss(sv,Wc,Gb,Ms,Mx,My,Wt,Wx,Wy)
+            Wcs = Wc./Wt; Wcs(isnan(Wcs)) = 0;
+            gx = Mx.*Wcs; gy = My.*Wcs;
+            s11 = conv2(sv.s0,sv.s1,gx,'same')+conv2(sv.s1,sv.s0,gy,'same');
+            S12 = (gx.*Wx+gy.*Wy)./Wt; S12(isnan(S12)) = 0;
+            s12 = conv2(sv.s0,sv.s0,S12,'same');
+            s21 = conv2(sv.s0,sv.s1,gx.*Ms,'same')+conv2(sv.s1,sv.s0,gy.*Ms,'same');
+            s22 = conv2(sv.s0,sv.s0,S12.*Ms,'same');
+            S3 = (Mx.*gx+My.*gy)./Wt; S3(isnan(S3)) = 0;
+            s3 = conv2(sv.s0,sv.s0,S3,'same')/2;
+            c = sv.Wb.*(s11-s12-s21+s22-s3)*2;
+        end
+        
+        function c = grad_ss1(sv,Wc,Gb,Gx,Gy,Wt,S)
+            Wcs = Wc./Wt; Wcs(isnan(Wcs)) = 0;
+            S11 = conv2(sv.s0,sv.s1,Gx.*Wcs,'same');
+            S12 = conv2(sv.s1,sv.s0,Gy.*Wcs,'same');
+            S2 = conv2(sv.s0,sv.s0,S.*Wcs,'same');
+            c = sv.Wb.*(Gb.*(S11+S12)-S2);
+        end
+        
+        function c = grad_ms(sv,Wc,Wt,Gb,Ms)
+            Wcs = Wc./Wt; Wcs(isnan(Wcs)) = 0;
+            Gc = conv2(sv.s0,sv.s0,Wcs,'same');
+            Mc = conv2(sv.s0,sv.s0,Wcs.*Ms,'same');
+            c = sv.Wb.*(Gb.*Gc-Mc);
+        end
+        
+        function c = grad_mx(sv,Wc,Wt,Wx,Gb,Ms)
+            gx = sv.grad_gx(Wc,Gb);
+
+            % ms*wx
+            Wcs = Wx.*Wc./Wt; Wcs(isnan(Wcs)) = 0;
+            Gc = conv2(sv.s0,sv.s0,Wcs,'same');
+            Mc = conv2(sv.s0,sv.s0,Wcs.*Ms,'same');
+            ms = sv.Wb.*(Gb.*Gc-Mc);
+            
+            % ms*wx
+            wx = -sv.Wb.*conv2(sv.s0,sv.s1,Wc.*Ms,'same');
+            c = gx - ms - wx;
+        end
+        
+        function c = grad_my(sv,Wc,Wt,Wy,Gb,Ms)
+            gy = sv.grad_gy(Wc,Gb);
+
+            % ms*wx
+            Wcs = Wy.*Wc./Wt; Wcs(isnan(Wcs)) = 0;
+            Gc = conv2(sv.s0,sv.s0,Wcs,'same');
+            Mc = conv2(sv.s0,sv.s0,Wcs.*Ms,'same');
+            ms = sv.Wb.*(Gb.*Gc-Mc);
+            
+            % ms*wx
+            wy = -sv.Wb.*conv2(sv.s1,sv.s0,Wc.*Ms,'same');
+            c = gy - ms - wy;
+        end
+        
+        function c = grad_gs(sv,Wc,Gb)
+            c = sv.Wb.*Gb.*conv2(sv.s0,sv.s0,Wc,'same');
+        end
+        
+        function c = grad_gx(sv,Wc,Gb)
+            c = -sv.Wb.*Gb.*conv2(sv.s0,sv.s1,Wc,'same');
+        end
+        
+        function c = grad_gy(sv,Wc,Gb)
+            c = -sv.Wb.*Gb.*conv2(sv.s1,sv.s0,Wc,'same');
+        end
+        
+        function c = grad_ws(sv,Wc)
+            c = sv.Wb.*conv2(sv.s0,sv.s0,Wc,'same');
+        end
+        
+        function c = grad_wx(sv,Wc)
+            c = -sv.Wb.*conv2(sv.s0,sv.s1,Wc,'same');
+        end
+        
+        function c = grad_wy(sv,Wc)
+            c = -sv.Wb.*conv2(sv.s1,sv.s0,Wc,'same');
         end
         
         function c = grad_nt(sv,c)
@@ -281,7 +354,7 @@ classdef SingleView < handle
             imshow(sv.img)
         end
         
-        function [Is,Ws,Ix,Wx,Iy,Wy,Ib,W] = crop(sv)
+        function [Is,Ws,Ix,Wx,Iy,Wy,Ik,Wb] = crop(sv)
             sv.proj;
             if nargout > 0, Is = sv.Is; end
             if nargout > 1, Ws = sv.Ws; end
@@ -289,8 +362,8 @@ classdef SingleView < handle
             if nargout > 3, Wx = sv.Wx; end
             if nargout > 4, Iy = sv.Iy; end
             if nargout > 5, Wy = sv.Wy; end
-            if nargout > 6, Ib = sv.Ib; end
-            if nargout > 7, W = sv.W; end
+            if nargout > 6, Ik = sv.Ik; end
+            if nargout > 7, Wb = sv.Wb; end
         end
     end % methods
     
@@ -298,7 +371,7 @@ classdef SingleView < handle
         function [Is,Ws,Ix,Wx,Iy,Wy] = proj(sv)
             % backward projection of image and weight
             tform = maketform('projective',inv(sv.H)');
-            sv.Ib = imtransform(sv.img,tform,'bicubic','xdata',sv.xb,'ydata',sv.yb);
+            sv.Ik = imtransform(sv.img,tform,'bicubic','xdata',sv.xb,'ydata',sv.yb);
             %            sv.Wb = imtransform(sv.wat,tform,'bicubic','xdata',sv.xb,'ydata',sv.yb);
             
             % determinant of backward Jacobian
@@ -318,8 +391,9 @@ classdef SingleView < handle
                 error('Weight should be nonnegative!!!')
             end
             
-            [sv.Ws,sv.Wx,sv.Wy] = smooth(sv.Wt,sv.s0,sv.s1);
-            [sv.Is,sv.Ix,sv.Iy] = smooth(sv.Wt.*sv.Ib,sv.s0,sv.s1);
+            sv.Wk = sv.W.*sv.Wb;
+            [sv.Ws,sv.Wx,sv.Wy] = smooth(sv.Wk,sv.s0,sv.s1);
+            [sv.Is,sv.Ix,sv.Iy] = smooth(sv.Wk.*sv.Ik,sv.s0,sv.s1);
             
             if nargout > 0, Is = sv.Is; end
             if nargout > 1, Ws = sv.Ws; end

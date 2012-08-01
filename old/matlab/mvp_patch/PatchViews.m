@@ -27,16 +27,21 @@ classdef PatchViews < handle
     
     properties (Hidden)
         sv = SingleView;
-        Ia, Is, Ix, Iy, Ws, Wx, Wy
-        It              % gradient image w.r.t theta
-        Ib              % original patch
+        Fa, Fb, Fs, Fx, Fy, 
+        Ga, Gb, Gs, Gx, Gy, Gt, G2      % albedo gradients
+                Ms, Mx, My
+        Es, Eb  % albedos
+        Wb, Ws, Wx, Wy
         Wt, Wn, Wr      % total and normalized weight
         Ic, Wc          % corrected by linear reflectance
         n2, N, nc, is, js, ks, ia, ja, ka,
         x0, x1, x2, y0, y1, y2,
-        Gb, Gs, Ga, Es, Eb  % albedos
-        Ms, Mx, My
-        Gx, Gy, Gt, G2      % albedo gradients
+        S, S1, S2, S3   % signal
+        s1, s2, s3, 
+        gs, gx, gy, 
+        ms, mx, my 
+        ws, wx, wy  % to verify the gradient
+        ls, lx, ly,
         Ds              % disparity
         rof, sof   % reciprocals of dof
         ne, nr, ns, nt  % degrees of freedom
@@ -112,9 +117,7 @@ classdef PatchViews < handle
             end
             pv.r=r; pv.proj;
             if ~isequal(pv.opt.R.Display,'off'),
-                output
-                exitflag
-                pv.disp
+                pv.disp;
             end
             
             function p=mvOpt(r,pv)
@@ -256,9 +259,9 @@ classdef PatchViews < handle
                 figure, imagesc(C), axis equal, colorbar;
             end
             
-            if ~isempty(pv.Is)
+            if ~isempty(pv.Fs)
                 pv.residual;
-                A = num2cell(pv.Ia,[1 2]);
+                A = num2cell(pv.Fa,[1 2]);
                 A = reshape(A,[2 2]);
                 A = cell2mat(A);
                 
@@ -323,6 +326,7 @@ classdef PatchViews < handle
             if ~isequal(pv.w,w),
                 pv.w = w;
                 [pv.X, pv.Y pv.Z]=meshgrid(-w(1):w(1),-w(2):w(2),1:pv.n);
+                pv.W = ones(size(pv.X))/2;
             end
             [pv.x0 pv.x1 pv.x2] = wndGaussian(pv.w(1),pv.t(1));
             [pv.y0 pv.y1 pv.y2] = wndGaussian(pv.w(2),pv.t(2));
@@ -349,14 +353,13 @@ classdef PatchViews < handle
         end
         
         function [I,W]=proj(pv)
-            pv.Is=[]; pv.Ix=[]; pv.Iy=[]; pv.Ib=[];
-            pv.Ws=[]; pv.Wx=[]; pv.Wy=[]; W=[];
+            pv.Fs=[]; pv.Fx=[]; pv.Fy=[]; pv.Fb=[];
+            pv.Ws=[]; pv.Wx=[]; pv.Wy=[]; pv.Wb=[];
             for k=1:pv.n
-                [pv.Is(:,:,k),pv.Ws(:,:,k),pv.Ix(:,:,k),pv.Wx(:,:,k),...
-                    pv.Iy(:,:,k),pv.Wy(:,:,k),pv.Ib(:,:,k),W(:,:,k)] = pv.sv(k).crop;
+                [pv.Fs(:,:,k),pv.Ws(:,:,k),pv.Fx(:,:,k),pv.Wx(:,:,k),...
+                    pv.Fy(:,:,k),pv.Wy(:,:,k),pv.Fb(:,:,k),pv.Wb(:,:,k)] = pv.sv(k).crop;
             end
             
-            pv.W = W;
             % total and normalized weights
             pv.Wt = sum(pv.Ws,3);
             pv.Wn = pv.Ws./repmat(pv.Wt,[1 1 pv.n]);
@@ -364,12 +367,12 @@ classdef PatchViews < handle
             pv.Wr = sum(pv.Wn.*pv.Ws,3);
 
             
-            if nargout > 0, I = pv.Is; end
+            if nargout > 0, I = pv.Fs; end
             if nargout > 1, W = pv.Ws; end
         end
         
         function E = residual(pv)
-            pv.Gb = pv.a(pv.Z).*pv.Ib+pv.b(pv.Z);
+            pv.Gb = pv.a(pv.Z).*pv.Fb+pv.b(pv.Z);
             pv.Ga = pv.Gs./pv.Ws; pv.Ga((isnan(pv.Ga))) = 0;
             pv.Ms = sum(pv.Gs,3)./pv.Wt; pv.Ms((isnan(pv.Ms))) = 0;
             pv.Es = pv.Ga - pv.Ms(:,:,ones(pv.n,1));
@@ -379,11 +382,11 @@ classdef PatchViews < handle
         
         function [f,a,b] = phometry(pv)
             % Scatter Matrices
-            pv.Ia = pv.Is./pv.Ws; pv.Ia((isnan(pv.Ia))) = 0;
-            In = pv.Is./repmat(pv.Wt,[1 1 pv.n]); In((isnan(In))) = 0;
-            Ea = scatw(pv.Is(:,:,pv.is).*In(:,:,pv.js),pv.Ia.*pv.Is,pv.ks,pv.x0,pv.y0);
+            pv.Fa = pv.Fs./pv.Ws; pv.Fa((isnan(pv.Fa))) = 0;
+            In = pv.Fs./repmat(pv.Wt,[1 1 pv.n]); In((isnan(In))) = 0;
+            Ea = scatw(pv.Fs(:,:,pv.is).*In(:,:,pv.js),pv.Fa.*pv.Fs,pv.ks,pv.x0,pv.y0);
             Eb = scatw(pv.Ws(:,:,pv.is).*pv.Wn(:,:,pv.js),pv.Ws,pv.ks,pv.x0,pv.y0);
-            Ec = scatw(pv.Is(:,:,pv.ia).*pv.Wn(:,:,pv.ja),pv.Is,pv.ka,pv.x0,pv.y0);
+            Ec = scatw(pv.Fs(:,:,pv.ia).*pv.Wn(:,:,pv.ja),pv.Fs,pv.ka,pv.x0,pv.y0);
             wa = wnd3(pv.y0,pv.x0,In); wb = wnd3(pv.y0,pv.x0,pv.Wn);
             T = (Eb*Eb+wb*wb')\(Eb*Ec'+wb*wa');
             Et = T'*Eb*T/2-Ec*T;
@@ -469,10 +472,87 @@ classdef PatchViews < handle
         
         function g = grad_ss(pv)
             g = []; c = pv.y0*pv.x0';
-            Gt = sum(pv.Gs,3); Wx = sum(pv.Wx,3); Wy = sum(pv.Wy,3);
+            Wx = sum(pv.Wx,3); Wy = sum(pv.Wy,3);
             for k = 1:pv.n
-                g(:,:,k) = pv.sv(k).grad_ss(c,Gt,pv.Mx,pv.My,...
-                    pv.Wt,Wx,Wy,pv.Gb(:,:,k));
+                g(:,:,k) = pv.sv(k).grad_ss(c,pv.Gb(:,:,k),...
+                    pv.Ms,pv.Mx,pv.My,pv.Wt,Wx,Wy);
+            end
+        end
+        
+        function g = grad_ss1(pv)
+            g = []; c = pv.y0*pv.x0';
+            Gx = sum(pv.Gx,3); Gy = sum(pv.Gy,3);
+            Wx = sum(pv.Wx,3); Wy = sum(pv.Wy,3);
+            for k = 1:pv.n
+                g(:,:,k) = pv.sv(k).grad_ss1(c,pv.Gb(:,:,k),...
+                    Gx,Gy,pv.Wt,pv.S1);
+            end
+        end
+        
+        function g = grad_ms(pv)
+            g = []; c = pv.y0*pv.x0';
+            for k = 1:pv.n
+                g(:,:,k) = pv.sv(k).grad_ms(c,pv.Wt,pv.Gb(:,:,k),pv.Ms);
+            end
+        end
+        
+        function g = grad_mx(pv)
+            g = []; c = pv.y0*pv.x0';
+            Wx = sum(pv.Wx,3);
+            for k = 1:pv.n
+                g(:,:,k) = pv.sv(k).grad_mx(c,pv.Wt,Wx,...
+                    pv.Gb(:,:,k),pv.Ms);
+            end
+        end
+        
+        function g = grad_my(pv)
+            g = []; c = pv.y0*pv.x0';
+            Wy = sum(pv.Wy,3);
+            for k = 1:pv.n
+                g(:,:,k) = pv.sv(k).grad_my(c,pv.Wt,Wy,...
+                    pv.Gb(:,:,k),pv.Ms);
+            end
+        end
+        
+        function g = grad_gs(pv)
+            g = []; c = pv.y0*pv.x0';
+            for k = 1:pv.n
+                g(:,:,k) = pv.sv(k).grad_gs(c,pv.Gb(:,:,k));
+            end
+        end
+        
+        function g = grad_gx(pv)
+            g = []; c = pv.y0*pv.x0';
+            for k = 1:pv.n
+                g(:,:,k) = pv.sv(k).grad_gx(c,pv.Gb(:,:,k));
+            end
+        end
+        
+        function g = grad_gy(pv)
+            g = []; c = pv.y0*pv.x0';
+            for k = 1:pv.n
+                g(:,:,k) = pv.sv(k).grad_gy(c,pv.Gb(:,:,k));
+            end
+        end
+        
+        function g = grad_ws(pv)
+            g = []; c = pv.y0*pv.x0';
+            for k = 1:pv.n
+                g(:,:,k) = pv.sv(k).grad_ws(c);
+            end
+        end
+        
+        function g = grad_wx(pv)
+            g = []; c = pv.y0*pv.x0';
+            for k = 1:pv.n
+                g(:,:,k) = pv.sv(k).grad_wx(c);
+            end
+        end
+        
+        function g = grad_wy(pv)
+            g = []; c = pv.y0*pv.x0';
+            for k = 1:pv.n
+                g(:,:,k) = pv.sv(k).grad_wy(c);
             end
         end
         
@@ -534,17 +614,38 @@ classdef PatchViews < handle
             pv.p = p; pv.se = f; pv.ss = s;
         end
         
+        function [p,a,b,f] = slowate(pv)
+%            [f,a,b]=pv.phometry;    % photometric estimation
+            pv.gradient;            % gradient computation
+            
+            % Confidence Value
+            Gs = sum(pv.Gs,3); 
+            Gx = sum(pv.Gx,3); Gy = sum(pv.Gy,3);
+            Wx = sum(pv.Wx,3); Wy = sum(pv.Wy,3);
+            pv.S1 = (Gx.^2+Gy.^2)./pv.Wt/2; pv.S1(isnan(pv.S1)) = 0;
+            pv.s1 = wnd3(pv.y0,pv.x0,pv.S1);                % signal
+            pv.ms = wnd3(pv.y0,pv.x0,pv.Ms);
+            pv.mx = wnd3(pv.y0,pv.x0,pv.Mx);
+            pv.my = wnd3(pv.y0,pv.x0,pv.My);
+            pv.gs = wnd3(pv.y0,pv.x0,Gs);
+            pv.gx = wnd3(pv.y0,pv.x0,Gx);
+            pv.gy = wnd3(pv.y0,pv.x0,Gy);
+            pv.ws = wnd3(pv.y0,pv.x0,pv.Wt);
+            pv.wx = wnd3(pv.y0,pv.x0,Wx);
+            pv.wy = wnd3(pv.y0,pv.x0,Wy);
+        end
+        
         function [G2,Gx,Gy] = gradient(pv)
             % Gx, Gy: gradients with constant weight
             % G2: weighted gradient
-            pv.Gs=pv.a(pv.Z).*pv.Is+pv.b(pv.Z).*pv.Ws;
-            pv.Gx=pv.a(pv.Z).*pv.Ix+pv.b(pv.Z).*pv.Wx;
-            pv.Gy=pv.a(pv.Z).*pv.Iy+pv.b(pv.Z).*pv.Wy;
+            pv.Gs = pv.a(pv.Z).*pv.Fs+pv.b(pv.Z).*pv.Ws;
+            pv.Gx = pv.a(pv.Z).*pv.Fx+pv.b(pv.Z).*pv.Wx;
+            pv.Gy = pv.a(pv.Z).*pv.Fy+pv.b(pv.Z).*pv.Wy;
+            pv.Gb = pv.a(pv.Z).*pv.Fb+pv.b(pv.Z);
             
             Gt = sum(pv.Gs,3); Wx = sum(pv.Wx,3); Wy = sum(pv.Wy,3);
             pv.Ms = Gt./pv.Wt; pv.Ms(isnan(pv.Ms)) = 0;
             pv.Ga = pv.Gs./pv.Ws; pv.Ga((isnan(pv.Ga))) = 0;
-            pv.Gb = pv.a(pv.Z).*pv.Ib+pv.b(pv.Z);
             
             pv.Mx = sum(pv.Gx,3)-pv.Ms.*Wx;
             pv.My = sum(pv.Gy,3)-pv.Ms.*Wy;
@@ -587,6 +688,14 @@ classdef PatchViews < handle
         function ne=get.ne(obj) % ne property set function
             ne = obj.ne;
         end % get.ne
+        
+        function set.s1(obj,s1) % s1 property set function
+            obj.s1 = s1;
+        end % set.s1
+        
+        function s1=get.s1(obj) % s1 property set function
+            s1 = obj.s1;
+        end % get.s1
         
         function set.ns(obj,ns) % ns property set function
             obj.ns = ns;
