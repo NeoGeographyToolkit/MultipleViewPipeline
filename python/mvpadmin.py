@@ -29,7 +29,7 @@ if not(options.cmd_abort or options.cmd_status or options.cmd_launch_filename):
 mvp_settings = GlobalSettings()
 
 cmd_sock_url = "tcp://" + args[0] + ":" + mvp_settings.ports.command
-timeout = 1000
+timeout = mvp_settings.timeouts.command
 
 context = zmq.Context()
 cmd_sock = context.socket(zmq.REQ)

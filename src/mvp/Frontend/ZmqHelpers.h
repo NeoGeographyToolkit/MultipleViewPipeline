@@ -153,7 +153,7 @@ class ZmqWorkerHelper {
 
       // TODO: Write generic single-message poll function
       zmq::pollitem_t cmd_poller[] = {{m_cmd_sock, 0, ZMQ_POLLIN, 0}};
-      zmq::poll(cmd_poller, 1, 5000);
+      zmq::poll(cmd_poller, 1, mvp_settings().timeouts().command());
 
       if (!(cmd_poller[0].revents & ZMQ_POLLIN)) {
         vw_throw(vw::IOErr() << "Lost connection to mvpd");

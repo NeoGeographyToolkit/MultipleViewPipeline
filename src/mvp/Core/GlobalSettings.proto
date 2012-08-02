@@ -6,5 +6,10 @@ message GlobalSettings {
     optional string status = 2 [default="6678"];
     optional string broadcast = 3 [default="6679"];
   }
+  message Timeouts {
+    optional int32 command = 1 [default=5000];
+  }
+
   required Ports ports = 1;
+  required Timeouts timeouts = 2;
 }
