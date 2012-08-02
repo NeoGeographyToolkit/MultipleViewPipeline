@@ -1,0 +1,27 @@
+input {
+  image_pattern: "/home/khusmann/mvp_data/real_scene/.\.tif"
+}
+
+render {
+  bbox: "2682,1937:2685,1940"
+  level: 12
+  use_octave: true
+}
+
+output {
+  result: "zmq://localhost:5566/result.plate"
+  internal_result: "zmq://localhost:5566/internal_result.plate"
+  datum: "D_MOON"
+  map_projection: "equi"
+  tile_size: 64  
+}
+
+algorithm {
+  alt_min: -6000
+  alt_max: 2000
+  seed_window_smooth_size: 8
+
+  window_size: 32
+  window_smooth_size: 8
+  alt_search_range: 600
+}
