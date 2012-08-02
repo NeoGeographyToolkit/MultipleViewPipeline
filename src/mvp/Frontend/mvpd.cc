@@ -13,7 +13,6 @@ using namespace mvp::frontend;
 
 int main (int argc, char *argv[]) {
   vw_out(InfoMessage, "mvpd") << "Started" << endl;
-
   zmq::context_t context(1);
   ZmqServerHelper helper(context);
 
@@ -53,7 +52,7 @@ int main (int argc, char *argv[]) {
           vw_out(InfoMessage, "mvpd") << "CommandMsg::JOB" << endl;
           if (session.has_next()) {
             *reply.mutable_job() = session.next();
-            vw_out(InfoMessage, "mvpd") << "Dispatched job: " << reply.job().id() << endl;
+            vw_out(InfoMessage, "mvpd") << "Dispatched job ID = " << reply.job().id() << endl;
           }
           break;
         default:
