@@ -20,7 +20,6 @@ int main (int argc, char *argv[]) {
 
   while (1) {
     ZmqServerHelper::PollEventSet events = helper.poll();
-    vw_out(VerboseDebugMessage, "mvpd") << "Tick" << endl;
 
     if (events.count(ZmqServerHelper::COMMAND_EVENT)) {
       CommandMsg cmd(helper.recv_cmd());
