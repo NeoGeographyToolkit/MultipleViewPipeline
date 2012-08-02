@@ -59,6 +59,27 @@ classdef testPatchViews < TestCase
             assertElementsAlmostEqual(Gs,Gt);
         end
         
+        function testGradBeta(self)
+            fprintf('Testing Gradient of Beta\n');
+            self.pv.proj;
+            x = [rand(1) self.pv.ne self.pv.ns];
+            fminunc(@(w)mvOpt(x,self.pv),x,self.opt.T);
+            function [f,g]=mvOpt(x,pv)
+                a = x(2); b = x(3); x = x(1);
+                f = betainc(x,a,b);
+                if nargout > 1,
+                    ab = a+b; y = 1-x;
+                    ga = gamma(a); gb = gamma(b); gab = gamma(ab);
+                    pa =   psi(a); pb =   psi(b); pab =   psi(ab);
+                    Fa = hypergeom([a a 1-b],[a+1 a+1],x);
+                    Fb = hypergeom([b b 1-a],[b+1 b+1],y);
+                    g(1) = y^(b-1)*x^(a-1)/beta(a,b);
+                    g(2) = (log(x)-pa+pab)*f-ga*gab/gb*x^a*Fa; 
+                    g(3) = gb*gab/ga*y^b*Fb-(log(y)-pb+pab)*f; 
+                end
+            end
+        end
+        
         function testGradGs(self)
             fprintf('Testing Gradient of Gs\n');
             self.pv.t = [1 1]'; self.pv.proj;
