@@ -28,6 +28,13 @@ find_package(Octave)
 option(BINARY_DIR_INSTALL "Install in the build directory" OFF)
 option(CMAKE_INSTALL_RPATH_USE_LINK_PATH "Use the link path as the rpath in the install" ON)
 
+# the RPATH to be used when installing, but only if it's not a system directory
+# see http://www.cmake.org/Wiki/CMake_RPATH_handling#Always_full_RPATH
+list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
+if("${isSystemDir}" STREQUAL "-1")
+   set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+endif()
+
 # ENABLE_OCTAVE_SUPPORT
 if (OCTAVE_FOUND)
   option(ENABLE_OCTAVE_SUPPORT "Build the MVP with octave support" ON)
