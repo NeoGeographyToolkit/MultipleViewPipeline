@@ -31,21 +31,28 @@ function(mvp_test test_name)
   add_definitions(-DTEST_SRCDIR=\"${CMAKE_CURRENT_SOURCE_DIR}\")
   add_definitions(-DTEST_OBJDIR=\"${CMAKE_CURRENT_BINARY_DIR}\")
 
-  add_executable(${test_name} ${test_name}.cxx)
-
-# TODO: some sort of deps
-  target_link_libraries(${test_name} mvpCore
-                                     mvpPipeline
-                                     mvpFrontend
-                                     gtest_main
-                                     ${GTEST_LIBRARIES}
-                                     ${VW_LIBRARIES}
-                                     ${PROTOBUF_LIBRARIES}
-                                     ${Boost_LIBRARIES})
-
-  if (ENABLE_OCTAVE_SUPPORT)
-    target_link_libraries(${test_name} ${OCTAVE_LIBRARIES})
-  endif()
+  mvp_executable(${test_name} ${test_name}.cxx)
+  target_link_libraries(${test_name} gtest_main
+                                     ${GTEST_LIBRARIES})
 
   add_test(mvp/${test_name} ${test_name})
+endfunction()
+
+function(mvp_executable exe sources)
+
+  add_executable(${exe} ${sources})
+
+  # TODO: some sort of deps
+  target_link_libraries(${exe} mvpCore
+                               mvpPipeline
+                               mvpFrontend
+                               ${VW_LIBRARIES}
+                               ${PROTOBUF_LIBRARIES}
+                               ${Boost_LIBRARIES}
+                               ${ZEROMQ_LIBRARIES})
+
+  if (ENABLE_OCTAVE_SUPPORT)
+    target_link_libraries(${exe} ${OCTAVE_LIBRARIES})
+  endif()
+
 endfunction()
