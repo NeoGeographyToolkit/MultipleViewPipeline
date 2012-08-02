@@ -31,13 +31,13 @@ classdef testPatchViews < TestCase
 
         function testGradSe(self)
             fprintf('Testing Gradient of Error\n');
-            self.pv.t = [1 1]';
+            self.pv.t = [2 2]';
             self.pv.proj; self.pv.corelate;
             w = self.pv.W(:);
             fminunc(@(w)mvOpt(w,self.pv),w,self.opt.T);
             function [f,g]=mvOpt(w,pv)
                 pv.W = reshape(w,size(pv.Ws));
-                pv.proj; pv.corelate;
+                pv.proj; pv.slowate;
                 f = pv.se;
                 if nargout > 1, g = pv.grad_se; end
             end
@@ -45,7 +45,7 @@ classdef testPatchViews < TestCase
         
         function testGs(self)
             fprintf('Testing Gs\n');
-            self.pv.t = [1 1]'; self.pv.proj;
+            self.pv.t = [2 2]'; self.pv.proj;
             self.pv.slowate;
             Gs = self.pv.Gs;
             Gb = [];
@@ -59,10 +59,24 @@ classdef testPatchViews < TestCase
             assertElementsAlmostEqual(Gs,Gt);
         end
         
+        function testGradP(self)
+            fprintf('Testing Gradient of p-value\n');
+            self.pv.t = [2 2]';
+            self.pv.proj; self.pv.corelate;
+            w = self.pv.W(:);
+            fminunc(@(w)mvOpt(w,self.pv),w,self.opt.T);
+            function [f,g]=mvOpt(w,pv)
+                pv.W = reshape(w,size(pv.Ws));
+                pv.proj; pv.slowate;
+                f = pv.p;
+                if nargout > 1, g = pv.grad_p; end
+            end
+        end
+        
         function testGradBeta(self)
             fprintf('Testing Gradient of Beta\n');
             self.pv.proj;
-            x = [rand(1) self.pv.ne self.pv.ns];
+            x = [self.pv.se/(self.pv.se+self.pv.ss) self.pv.ne self.pv.ns];
             fminunc(@(w)mvOpt(x,self.pv),x,self.opt.T);
             function [f,g]=mvOpt(x,pv)
                 a = x(2); b = x(3); x = x(1);
@@ -82,7 +96,7 @@ classdef testPatchViews < TestCase
         
         function testGradGs(self)
             fprintf('Testing Gradient of Gs\n');
-            self.pv.t = [1 1]'; self.pv.proj;
+            self.pv.t = [2 2]'; self.pv.proj;
             w = self.pv.W(:);
             fminunc(@(w)mvOpt(w,self.pv),w,self.opt.T);
             function [f,g]=mvOpt(w,pv)
@@ -96,7 +110,7 @@ classdef testPatchViews < TestCase
         
         function testGradMs(self)
             fprintf('Testing Gradient of Ms\n');
-            self.pv.t = [1 1]'; self.pv.proj;
+            self.pv.t = [2 2]'; self.pv.proj;
             w = self.pv.W(:);
             fminunc(@(w)mvOpt(w,self.pv),w,self.opt.T);
             function [f,g]=mvOpt(w,pv)
@@ -110,7 +124,7 @@ classdef testPatchViews < TestCase
         
         function testGradMx(self)
             fprintf('Testing Gradient of Mx\n');
-            self.pv.t = [1 1]'; self.pv.proj;
+            self.pv.t = [2 2]'; self.pv.proj;
             w = self.pv.W(:);
             fminunc(@(w)mvOpt(w,self.pv),w,self.opt.T);
             function [f,g]=mvOpt(w,pv)
@@ -124,7 +138,7 @@ classdef testPatchViews < TestCase
         
         function testGradMy(self)
             fprintf('Testing Gradient of My\n');
-            self.pv.t = [1 1]'; self.pv.proj;
+            self.pv.t = [2 2]'; self.pv.proj;
             w = self.pv.W(:);
             fminunc(@(w)mvOpt(w,self.pv),w,self.opt.T);
             function [f,g]=mvOpt(w,pv)
@@ -138,7 +152,7 @@ classdef testPatchViews < TestCase
         
         function testGradGx(self)
             fprintf('Testing Gradient of Gx\n');
-            self.pv.t = [1 1]'; self.pv.proj;
+            self.pv.t = [2 2]'; self.pv.proj;
             w = self.pv.W(:);
             fminunc(@(w)mvOpt(w,self.pv),w,self.opt.T);
             function [f,g]=mvOpt(w,pv)
@@ -152,7 +166,7 @@ classdef testPatchViews < TestCase
         
         function testGradGy(self)
             fprintf('Testing Gradient of Gy\n');
-            self.pv.t = [1 1]'; self.pv.proj;
+            self.pv.t = [2 2]'; self.pv.proj;
             w = self.pv.W(:); self.pv.corelate;
             fminunc(@(w)mvOpt(w,self.pv),w,self.opt.T);
             function [f,g]=mvOpt(w,pv)
@@ -166,7 +180,7 @@ classdef testPatchViews < TestCase
         
         function testGradWs(self)
             fprintf('Testing Gradient of Ws\n');
-            self.pv.t = [1 1]'; self.pv.proj;
+            self.pv.t = [2 2]'; self.pv.proj;
             w = self.pv.W(:);
             fminunc(@(w)mvOpt(w,self.pv),w,self.opt.T);
             function [f,g]=mvOpt(w,pv)
@@ -179,7 +193,7 @@ classdef testPatchViews < TestCase
         
         function testGradWx(self)
             fprintf('Testing Gradient of Wx\n');
-            self.pv.t = [1 1]'; self.pv.proj;
+            self.pv.t = [2 2]'; self.pv.proj;
             w = self.pv.W(:);
             fminunc(@(w)mvOpt(w,self.pv),w,self.opt.T);
             function [f,g]=mvOpt(w,pv)
@@ -192,7 +206,7 @@ classdef testPatchViews < TestCase
         
         function testGradWy(self)
             fprintf('Testing Gradient of Wy\n');
-            self.pv.t = [1 1]'; self.pv.proj;
+            self.pv.t = [2 2]'; self.pv.proj;
             w = self.pv.W(:);
             fminunc(@(w)mvOpt(w,self.pv),w,self.opt.T);
             function [f,g]=mvOpt(w,pv)
@@ -206,7 +220,7 @@ classdef testPatchViews < TestCase
         
         function testGradSs(self)
             fprintf('Testing Gradient of Signal\n');
-            self.pv.t = [1 1]'; self.pv.proj;
+            self.pv.t = [2 2]'; self.pv.proj;
             w = self.pv.W(:);
             [f,g]=mvOpt(w,self.pv); g = reshape(g,size(self.pv.Ws));
             figure, imagesc(g(:,:,1)), colorbar;
@@ -221,7 +235,7 @@ classdef testPatchViews < TestCase
         
         function testGradNt(self)
             fprintf('Testing Gradient of Total DoF\n');
-            self.pv.t = [1 1]'; self.pv.proj;
+            self.pv.t = [2 2]'; self.pv.proj;
             w = self.pv.W(:);
             fminunc(@(w)mvOpt(w,self.pv),w,self.opt.T);
             function [f,g]=mvOpt(w,pv)
@@ -234,7 +248,7 @@ classdef testPatchViews < TestCase
         
         function testGradNs(self)
             fprintf('Testing Gradient of Signal DoF\n');
-            self.pv.t = [1 1]'; self.pv.proj; 
+            self.pv.t = [2 2]'; self.pv.proj; 
             w = self.pv.W(:);
             fminunc(@(w)mvOpt(w,self.pv),w,self.opt.T);
             function [f,g]=mvOpt(w,pv)
@@ -247,7 +261,7 @@ classdef testPatchViews < TestCase
         
         function testGradNe(self)
             fprintf('Testing Gradient of Error DoF\n');
-            self.pv.t = [1 1]'; self.pv.proj; 
+            self.pv.t = [2 2]'; self.pv.proj; 
             w = self.pv.W(:); 
             [w,f,exitflag,output] = fminunc(@(w)mvOpt(w,self.pv),w,self.opt.T);
             function [f,g]=mvOpt(w,pv)

@@ -378,7 +378,7 @@ classdef PatchViews < handle
             if nargout > 0, E = pv.Eb; end
         end
         
-        function [f,a,b] = phometry(pv)
+        function [f,a,b] = phometry(pv,a)
             % Scatter Matrices
             pv.Fa = pv.Fs./pv.Ws; pv.Fa((isnan(pv.Fa))) = 0;
             In = pv.Fs./repmat(pv.Wt,[1 1 pv.n]); In((isnan(In))) = 0;
@@ -389,6 +389,8 @@ classdef PatchViews < handle
             T = (Eb*Eb+wb*wb')\(Eb*Ec'+wb*wa');
             Et = T'*Eb*T/2-Ec*T;
             E = Ea+Et+Et'; % error matrix with symmetry
+            
+            if nargin > 1, f = a'*E*a; return; end
             
             % compute the smallest generalized Eigen vector a of D
             [P,D] = eig(E);
@@ -459,6 +461,25 @@ classdef PatchViews < handle
                 fprintf('<');
             end
             t = pv.H;
+        end
+        
+        function g = grad_p(pv)
+            x = pv.se/(pv.se+pv.ss); y = 1-x;
+            a = pv.ne; b = pv.ns; ab = a+b; f = pv.p; 
+            ga = gamma(a); gb = gamma(b); gab = gamma(ab);
+            pa =   psi(a); pb =   psi(b); pab =   psi(ab);
+            Fa = hypergeom([a a 1-b],[a+1 a+1],x);
+            Fb = hypergeom([b b 1-a],[b+1 b+1],y);
+            dg(1) = y^(b-1)*x^(a-1)/beta(a,b);
+            dg(2) = (log(x)-pa+pab)*f-ga*gab/gb*x^a*Fa; 
+            dg(3) = gb*gab/ga*y^b*Fb-(log(y)-pb+pab)*f; 
+            
+            de = pv.grad_se; ds = pv.grad_ss;
+            dz = (y*de-x*ds)/(pv.se+pv.ss);
+            de = pv.rof*pv.grad_ne;
+            ds = pv.rof*pv.grad_ns;
+            
+            g = dg(1)*dz+dg(2)*de+dg(3)*ds;
         end
         
         function g = grad_se(pv)
@@ -602,11 +623,9 @@ classdef PatchViews < handle
             pv.p = p; pv.se = f; pv.ss = s;
         end
         
-        function [p,a,b,f] = slowate(pv)
-%            [f,a,b]=pv.phometry;    % photometric estimation
+        function slowate(pv)
             pv.gradient;            % gradient computation
             
-            % Confidence Value
             Gs = sum(pv.Gs,3); 
             Gx = sum(pv.Gx,3); Gy = sum(pv.Gy,3);
             Wx = sum(pv.Wx,3); Wy = sum(pv.Wy,3);
@@ -619,7 +638,17 @@ classdef PatchViews < handle
             pv.ws = wnd3(pv.y0,pv.x0,pv.Wt);
             pv.wx = wnd3(pv.y0,pv.x0,Wx);
             pv.wy = wnd3(pv.y0,pv.x0,Wy);
+
+            pv.se = pv.phometry(pv.a)/2;    % photometric estimation
             pv.ss = wnd3(pv.y0,pv.x0,pv.G2)/2;                % signal
+            
+            % Confidence Value
+            sv = wnd3(pv.y0,pv.x0,pv.Wr);                % signal dofs
+            pv.sw = wnd3(pv.y0,pv.x0,pv.Ws); sw = sum(pv.sw);   % individual dofs
+            pv.nt = pv.rof*sw;
+            pv.ns = pv.rof*sv;
+            pv.ne = pv.nt-pv.ns-2;
+            pv.p = fpval(pv.ss,pv.se,pv.ns,pv.ne);
         end
         
         function [G2,Gx,Gy] = gradient(pv)

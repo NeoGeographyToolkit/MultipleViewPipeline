@@ -157,7 +157,7 @@ classdef SingleView < handle
             Gw = Wc.*(Ga-Ms); Mw = Gw.*(Ga+Ms);
             Gw = conv2(sv.s0,sv.s0,Gw,'same');
             Mw = conv2(sv.s0,sv.s0,Mw,'same');
-            c = sv.Wb.*(2*Gb.*Gw-Mw);
+            c = sv.Wb.*(Gb.*Gw-Mw/2);
         end
         
         function c = grad_ss(sv,Wc,Gb,Ms,Mx,My,Wt,Wx,Wy)
