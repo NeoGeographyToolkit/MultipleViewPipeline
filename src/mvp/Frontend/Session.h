@@ -24,6 +24,8 @@ class Session {
   vw::BBox2i m_render_bbox;
 
   public:
+    Session() {}
+
     Session(SessionDesc const& session_desc) { reset(session_desc); }
 
     void reset(SessionDesc const& session_desc);

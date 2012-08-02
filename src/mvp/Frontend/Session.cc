@@ -27,6 +27,8 @@ void Session::reset(SessionDesc const& session_desc) {
 pipeline::JobDesc Session::next() {
   using namespace pipeline;
 
+  static int curr_id = 0;
+
   JobDesc::Input input;
   // TODO: use cursor position to get orbital images
 
@@ -42,6 +44,7 @@ pipeline::JobDesc Session::next() {
   *output.mutable_plate_georef() = m_plate_georef_desc;
 
   JobDesc job_desc;
+  job_desc.set_id(curr_id++);
   *job_desc.mutable_input() = input;
   *job_desc.mutable_render() = render;
   *job_desc.mutable_output() = output;

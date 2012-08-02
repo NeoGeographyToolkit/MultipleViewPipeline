@@ -22,8 +22,9 @@ message JobDesc {
     required vw.platefile.PlateGeoReferenceDesc plate_georef = 3;
   }
 
-  required Input input = 1;
-  required Render render = 2;
-  required Output output = 3;
-  required mvp.core.AlgorithmSettings algorithm = 4;
+  required int32 id = 1;
+  required Input input = 2;
+  required Render render = 3;
+  required Output output = 4;
+  required mvp.core.AlgorithmSettings algorithm = 5;
 }

@@ -19,7 +19,7 @@ message CommandMsg {
 
 message CommandReplyMsg {
   required CommandMsg.CommandType cmd = 1;
-  optional pipeline.JobDesc job_request = 2;
+  optional pipeline.JobDesc job = 2;
   optional StatusReport status_report = 3;
 }
 
