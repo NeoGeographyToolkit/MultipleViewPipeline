@@ -6,6 +6,7 @@ mvp_module(NAME Frontend
                   Messages.proto)
 
 mvp_executable(mvpd mvpd.cc)
+mvp_executable(mvpworker mvpworker.cc)
 
 if (BUILD_TESTS)
   add_subdirectory(tests)

@@ -106,7 +106,7 @@ class ZmqServerHelper {
       sock_send(m_bcast_sock, bcast_cmd);
     }
 };
-/*
+
 class ZmqWorkerHelper {
 
   zmq::socket_t m_cmd_sock;
@@ -122,9 +122,9 @@ class ZmqWorkerHelper {
       m_status_sock(context, ZMQ_PUB),
       m_startup(true) {
 
-      std::string cmd_sock_url("tcp://" + hostname + ":" MVP_COMMAND_PORT);
-      std::string bcast_sock_url("tcp://" + hostname + ":" MVP_BROADCAST_PORT);
-      std::string status_sock_url("tcp://" + hostname + ":" MVP_STATUS_PORT);
+      std::string cmd_sock_url("tcp://" + hostname + ":" + mvp_settings().ports().command());
+      std::string bcast_sock_url("tcp://" + hostname + ":" + mvp_settings().ports().broadcast());
+      std::string status_sock_url("tcp://" + hostname + ":" + mvp_settings().ports().status());
 
       m_cmd_sock.connect(cmd_sock_url.c_str());
       m_bcast_sock.connect(bcast_sock_url.c_str());
@@ -134,11 +134,11 @@ class ZmqWorkerHelper {
       m_bcast_sock.setsockopt(ZMQ_SUBSCRIBE, 0, 0); // Don't filter out any messages
     }
 
-    MVPWorkerBroadcast recv_bcast() {
-      MVPWorkerBroadcast cmd;
+    WorkerCommandMsg recv_bcast() {
+      WorkerCommandMsg cmd;
 
       if (m_startup) {
-        cmd.set_cmd(MVPWorkerBroadcast::WAKE);
+        cmd.set_cmd(WorkerCommandMsg::WAKE);
         m_startup = false;
       } else {
         cmd.ParseFromString(sock_recv(m_bcast_sock));
@@ -146,14 +146,12 @@ class ZmqWorkerHelper {
       return cmd;
     }
 
-    MVPCommandReply get_next_job() {
-      MVPCommand cmd;
-      cmd.set_cmd(MVPCommand::JOB);
-      std::string str_cmd;
-      cmd.SerializeToString(&str_cmd);
+    CommandReplyMsg get_next_job() {
+      CommandReplyMsg cmd;
+      cmd.set_cmd(CommandMsg::JOB);
+      sock_send(m_cmd_sock, cmd);
 
-      sock_send(m_cmd_sock, str_cmd);
-
+      // TODO: Write generic single-message poll function
       zmq::pollitem_t cmd_poller[] = {{m_cmd_sock, 0, ZMQ_POLLIN, 0}};
       zmq::poll(cmd_poller, 1, 5000);
 
@@ -161,13 +159,12 @@ class ZmqWorkerHelper {
         vw_throw(vw::IOErr() << "Lost connection to mvpd");
       }
 
-      MVPCommandReply reply;
+      CommandReplyMsg reply;
       reply.ParseFromString(sock_recv(m_cmd_sock));
 
       return reply;
     }
 };
-*/
 
 }} // namespace frontend, mvp
 
