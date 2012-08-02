@@ -2,9 +2,9 @@ package mvp.core;
 
 message GlobalSettings {
   message Ports {
-    optional int32 command = 1 [default=6677];
-    optional int32 status = 2 [default=6678];
-    optional int32 broadcast = 3 [default=6679];
+    optional string command = 1 [default="6677"];
+    optional string status = 2 [default="6678"];
+    optional string broadcast = 3 [default="6679"];
   }
   required Ports ports = 1;
 }
