@@ -2,6 +2,7 @@
 #include <test/Helpers.h>
 
 #include <mvp/Frontend/Session.h>
+#include <mvp/Core/Settings.h>
 
 using namespace std;
 using namespace mvp;

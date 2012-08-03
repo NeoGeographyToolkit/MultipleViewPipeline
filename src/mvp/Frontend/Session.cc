@@ -1,4 +1,5 @@
 #include <mvp/Frontend/Session.h>
+#include <mvp/Core/Settings.h> //parse_bbox_string
 
 #include <vw/Plate/PlateGeoReference.h>
 

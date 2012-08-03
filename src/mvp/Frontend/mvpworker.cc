@@ -1,15 +1,17 @@
 #include <iostream>
 
-#include <mvp/Frontend/ZmqHelpers.h>
+#include <mvp/Frontend/ZmqWorkerHelper.h>
 
 #include <vw/Octave/Main.h>
 #include <vw/Core/Log.h>
+#include <vw/Core/Exception.h>
 
 #include <boost/program_options.hpp>
 
-using namespace vw;
-using namespace mvp::frontend;
 using namespace std;
+using namespace vw;
+using namespace mvp;
+using namespace mvp::frontend;
 
 namespace po = boost::program_options;
 

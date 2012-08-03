@@ -1,7 +1,12 @@
 mvp_module(NAME Frontend
            HDRS Session.h
                 ZmqHelpers.h
+                ZmqWorkerHelper.h
+                ZmqServerHelper.h
            SRCS Session.cc
+                ZmqHelpers.cc
+                ZmqWorkerHelper.cc
+                ZmqServerHelper.cc
            PROTOS SessionDesc.proto
                   Messages.proto)
 

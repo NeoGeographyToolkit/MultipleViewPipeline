@@ -6,9 +6,11 @@
 #ifndef __MVP_PIPELINE_SESSION_H__
 #define __MVP_PIPELINE_SESSION_H__
 
-#include <mvp/Core/Settings.h>
 #include <mvp/Pipeline/JobDesc.pb.h>
 #include <mvp/Frontend/SessionDesc.pb.h>
+
+#include <vw/Math/Vector.h>
+#include <vw/Math/BBox.h>
 
 // Rather than including an ENTIRE PlateGeoReference, we
 // just hold onto its desc.
