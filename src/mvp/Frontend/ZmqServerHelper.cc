@@ -20,7 +20,7 @@ ZmqServerHelper::ZmqServerHelper(zmq::context_t& context) :
   m_status_sock.bind(status_sock_url.c_str()); 
 }
 
-ZmqServerHelper::PollEventSet ZmqServerHelper::poll() {
+ZmqServerHelper::PollEventSet ZmqServerHelper::poll() const {
   PollEventSet events;
 
   //  Initialize poll set
@@ -41,23 +41,23 @@ ZmqServerHelper::PollEventSet ZmqServerHelper::poll() {
   return events;
 }
 
-StatusUpdateMsg ZmqServerHelper::recv_status() {
+StatusUpdateMsg ZmqServerHelper::recv_status() const {
   StatusUpdateMsg update;
   update.ParseFromString(sock_recv(m_status_sock));
   return update;
 }
 
-CommandMsg ZmqServerHelper::recv_cmd() {
+CommandMsg ZmqServerHelper::recv_cmd() const {
   CommandMsg cmd;
   cmd.ParseFromString(sock_recv(m_cmd_sock));
   return cmd;
 }
 
-void ZmqServerHelper::send_cmd_reply(CommandReplyMsg const& cmd_reply) {
+void ZmqServerHelper::send_cmd_reply(CommandReplyMsg const& cmd_reply) const {
   sock_send(m_cmd_sock, cmd_reply);
 }
 
-void ZmqServerHelper::send_bcast(WorkerCommandMsg::CommandType cmd_enum) {
+void ZmqServerHelper::send_bcast(WorkerCommandMsg::CommandType cmd_enum) const {
   WorkerCommandMsg bcast_cmd;
   bcast_cmd.set_cmd(cmd_enum);
   sock_send(m_bcast_sock, bcast_cmd);

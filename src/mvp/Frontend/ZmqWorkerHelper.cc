@@ -24,7 +24,7 @@ ZmqWorkerHelper::ZmqWorkerHelper(zmq::context_t& context, std::string const& hos
   m_bcast_sock.setsockopt(ZMQ_SUBSCRIBE, 0, 0); // Don't filter out any messages
 }
 
-WorkerCommandMsg ZmqWorkerHelper::recv_bcast() {
+WorkerCommandMsg ZmqWorkerHelper::recv_bcast() const {
   WorkerCommandMsg cmd;
 
   if (m_startup) {
@@ -36,7 +36,7 @@ WorkerCommandMsg ZmqWorkerHelper::recv_bcast() {
   return cmd;
 }
 
-CommandReplyMsg ZmqWorkerHelper::get_next_job() {
+CommandReplyMsg ZmqWorkerHelper::get_next_job() const {
   CommandReplyMsg cmd;
   cmd.set_cmd(CommandMsg::JOB);
   sock_send(m_cmd_sock, cmd);
@@ -53,6 +53,12 @@ CommandReplyMsg ZmqWorkerHelper::get_next_job() {
   reply.ParseFromString(sock_recv(m_cmd_sock));
 
   return reply;
+}
+
+void ZmqWorkerHelper::send_status(double update) const {
+  StatusUpdateMsg status;
+  status.set_status(update);
+  sock_send(m_status_sock, status);
 }
 
 }} // namespace frontend, mvp

@@ -17,9 +17,9 @@ namespace mvp {
 namespace frontend {
 
 class ZmqServerHelper {
-  zmq::socket_t m_cmd_sock;
-  zmq::socket_t m_bcast_sock;
-  zmq::socket_t m_status_sock;
+  mutable zmq::socket_t m_cmd_sock;
+  mutable zmq::socket_t m_bcast_sock;
+  mutable zmq::socket_t m_status_sock;
 
   public:
     enum PollEvent {
@@ -30,15 +30,15 @@ class ZmqServerHelper {
 
     ZmqServerHelper(zmq::context_t& context);
 
-    PollEventSet poll();
+    PollEventSet poll() const;
 
-    StatusUpdateMsg recv_status();
+    StatusUpdateMsg recv_status() const;
 
-    CommandMsg recv_cmd();
+    CommandMsg recv_cmd() const;
 
-    void send_cmd_reply(CommandReplyMsg const& cmd_reply);
+    void send_cmd_reply(CommandReplyMsg const& cmd_reply) const;
 
-    void send_bcast(WorkerCommandMsg::CommandType cmd_enum);
+    void send_bcast(WorkerCommandMsg::CommandType cmd_enum) const;
 };
 
 }} // namespace frontend, mvp
