@@ -48,8 +48,6 @@ void handle_arguments(int argc, char* argv[], Options *opts) {
 #include <unistd.h> // usleep
 
 void launch_job(ProgressCallback const& progress, pipeline::JobDesc const& job_desc) {
-  vw_out(vw::InfoMessage, "mvpworker") << "Working on job ID = " << job_desc.id() << endl;
-
   for (int i = 0; i < 100; i++) {
     usleep(100000);
     progress.report_fractional_progress(i, 100);
@@ -96,6 +94,7 @@ int main(int argc, char* argv[]) {
         while (1) {
           CommandReplyMsg reply(helper.get_next_job());
           if (reply.has_job()) {
+            vw_out(vw::InfoMessage, "mvpworker") << "Working on job ID = " << reply.job().id() << endl;
             try {
               launch_job(ZmqWorkerHelper::ProgressCallback(helper), reply.job());
             } catch (vw::Aborted &e) {
