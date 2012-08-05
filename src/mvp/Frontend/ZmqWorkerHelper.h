@@ -25,6 +25,14 @@ class ZmqWorkerHelper {
   mutable bool m_startup;
 
   public:
+    class ProgressCallback : public vw::ProgressCallback {
+      ZmqWorkerHelper const& m_helper;
+      public:
+        ProgressCallback(ZmqWorkerHelper const& helper) : m_helper(helper) {}
+        virtual void report_progress(double progress) const;
+        virtual void report_finished() const;
+    };
+
     ZmqWorkerHelper(zmq::context_t& context, std::string const& hostname);
 
     WorkerCommandMsg recv_bcast() const;

@@ -6,6 +6,14 @@
 namespace mvp {
 namespace frontend {
 
+void ZmqWorkerHelper::ProgressCallback::report_progress(double progress) const {
+  vw::Mutex::Lock lock(m_mutex);
+}
+
+void ZmqWorkerHelper::ProgressCallback::report_finished() const {
+  vw::Mutex::Lock lock(m_mutex);
+}
+
 ZmqWorkerHelper::ZmqWorkerHelper(zmq::context_t& context, std::string const& hostname) :
   m_cmd_sock(context, ZMQ_REQ),
   m_bcast_sock(context, ZMQ_SUB),
