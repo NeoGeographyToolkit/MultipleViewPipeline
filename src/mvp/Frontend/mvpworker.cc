@@ -1,4 +1,5 @@
 #include <iostream>
+#include <csignal>
 
 #include <mvp/Frontend/ZmqWorkerHelper.h>
 
@@ -111,7 +112,7 @@ int main(int argc, char* argv[]) {
         break;
       case WorkerCommandMsg::KILL:
         vw_out(vw::InfoMessage, "mvpworker") << "WorkerCommandMsg::KILL" << endl;
-        // TODO: Throw signal
+        raise(SIGINT);
       default:
         vw_throw(vw::LogicErr() << "Invalid Worker Request");
     }

@@ -14,6 +14,7 @@ parser = OptionParser()
 parser.usage = "%prog [options] <mvpd server>"
 parser.add_option("--launch", dest="cmd_launch_filename", help="Start a batch", metavar="mvp.conf")
 parser.add_option("--abort",  dest="cmd_abort",     help="Abort current batch", action="store_true")
+parser.add_option("--kill",  dest="cmd_kill",     help="Kill workers", action="store_true")
 parser.add_option("--status", dest="cmd_status",    help="Print the status of the current batch", action="store_true")
 
 (options, args) = parser.parse_args()
@@ -22,7 +23,7 @@ if len(args) != 1:
   parser.print_help()
   exit(1)
 
-if not(options.cmd_abort or options.cmd_status or options.cmd_launch_filename):
+if not(options.cmd_abort or options.cmd_status or options.cmd_kill or options.cmd_launch_filename):
   parser.print_help()
   exit(1)
 
@@ -47,6 +48,10 @@ cmd = CommandMsg()
 
 if options.cmd_abort:
   cmd.cmd = CommandMsg.ABORT
+  sendCommand(cmd)
+
+if options.cmd_kill:
+  cmd.cmd = CommandMsg.KILL
   sendCommand(cmd)
 
 if options.cmd_status:

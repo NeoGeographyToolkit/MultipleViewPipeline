@@ -1,3 +1,5 @@
+#include <csignal>
+
 #include <mvp/Core/Settings.h>
 
 #include <mvp/Frontend/ZmqWorkerHelper.h>
@@ -78,7 +80,7 @@ bool ZmqWorkerHelper::abort_requested() const {
       case WorkerCommandMsg::ABORT:
         return true;
       case WorkerCommandMsg::KILL:
-        // TODO: Throw signal
+        raise(SIGINT);
       default:
         vw_throw(vw::LogicErr() << "Invalid Worker Request");
     }
