@@ -76,10 +76,13 @@ bool ZmqWorkerHelper::abort_requested() const {
   if (sock_recv(m_bcast_sock, &cmd, 0)) {
     switch (cmd.cmd()) {
       case WorkerCommandMsg::WAKE:
+        vw_out(vw::InfoMessage, "mvpworker") << "WorkerCommandMsg::WAKE (while working)" << std::endl;
         break;
       case WorkerCommandMsg::ABORT:
+        vw_out(vw::InfoMessage, "mvpworker") << "WorkerCommandMsg::ABORT (while working)" << std::endl;
         return true;
       case WorkerCommandMsg::KILL:
+        vw_out(vw::InfoMessage, "mvpworker") << "WorkerCommandMsg::KILL (while working)" << std::endl;
         raise(SIGINT);
       default:
         vw_throw(vw::LogicErr() << "Invalid Worker Request");
