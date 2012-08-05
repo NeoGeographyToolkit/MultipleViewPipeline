@@ -45,6 +45,18 @@ void handle_arguments(int argc, char* argv[], Options *opts) {
   notify(vm);
 }
 
+#include <unistd.h> // usleep
+
+void launch_job(ProgressCallback const& progress, pipeline::JobDesc const& job_desc) {
+  vw_out(vw::InfoMessage, "mvpworker") << "Working on job ID = " << job_desc.id() << endl;
+
+  for (int i = 0; i < 100; i++) {
+    usleep(100000);
+    progress.report_fractional_progress(i, 100);
+  }
+  progress.report_finished();
+}
+
 int main(int argc, char* argv[]) {
   #if MVP_ENABLE_OCTAVE_SUPPORT
   octave::start_octave_interpreter();
@@ -81,10 +93,17 @@ int main(int argc, char* argv[]) {
     switch (cmd.cmd()) {
       case WorkerCommandMsg::WAKE:
         vw_out(vw::InfoMessage, "mvpworker") << "WorkerCommandMsg::WAKE" << endl;
-        {
+        while (1) {
           CommandReplyMsg reply(helper.get_next_job());
           if (reply.has_job()) {
-            vw_out(vw::InfoMessage, "mvpworker") << "Working on job ID = " << reply.job().id() << endl;
+            try {
+              launch_job(ZmqWorkerHelper::ProgressCallback(helper), reply.job());
+            } catch (vw::Aborted &e) {
+              vw_out(vw::InfoMessage, "mvpworker") << "Aborted job ID = " << reply.job().id() << endl;
+              break;
+            }
+          } else {
+            break;
           }
         }
         break;
@@ -93,7 +112,7 @@ int main(int argc, char* argv[]) {
         break;
       case WorkerCommandMsg::KILL:
         vw_out(vw::InfoMessage, "mvpworker") << "WorkerCommandMsg::KILL" << endl;
-        vw_throw(vw::Aborted() << "Kill request");
+        // TODO: Throw signal
       default:
         vw_throw(vw::LogicErr() << "Invalid Worker Request");
     }

@@ -8,10 +8,16 @@ namespace frontend {
 
 void ZmqWorkerHelper::ProgressCallback::report_progress(double progress) const {
   vw::Mutex::Lock lock(m_mutex);
+  m_helper.send_status(progress);
+
+  if (m_helper.abort_requested()) {
+    vw::vw_throw(vw::Aborted() << "Abort requested");
+  }
 }
 
 void ZmqWorkerHelper::ProgressCallback::report_finished() const {
   vw::Mutex::Lock lock(m_mutex);
+  m_helper.send_status(-1);
 }
 
 ZmqWorkerHelper::ZmqWorkerHelper(zmq::context_t& context, std::string const& hostname) :
@@ -49,16 +55,10 @@ CommandReplyMsg ZmqWorkerHelper::get_next_job() const {
   cmd.set_cmd(CommandMsg::JOB);
   sock_send(m_cmd_sock, cmd);
 
-  // TODO: Write generic single-message poll function
-  zmq::pollitem_t cmd_poller[] = {{m_cmd_sock, 0, ZMQ_POLLIN, 0}};
-  zmq::poll(cmd_poller, 1, mvp_settings().timeouts().command());
-
-  if (!(cmd_poller[0].revents & ZMQ_POLLIN)) {
+  CommandReplyMsg reply;
+  if (!sock_recv(m_cmd_sock, &reply, mvp_settings().timeouts().command())) {
     vw_throw(vw::IOErr() << "Lost connection to mvpd");
   }
-
-  CommandReplyMsg reply;
-  reply.ParseFromString(sock_recv(m_cmd_sock));
 
   return reply;
 }
@@ -67,6 +67,24 @@ void ZmqWorkerHelper::send_status(double update) const {
   StatusUpdateMsg status;
   status.set_status(update);
   sock_send(m_status_sock, status);
+}
+
+bool ZmqWorkerHelper::abort_requested() const {
+  WorkerCommandMsg cmd;
+  if (sock_recv(m_bcast_sock, &cmd, 0)) {
+    switch (cmd.cmd()) {
+      case WorkerCommandMsg::WAKE:
+        break;
+      case WorkerCommandMsg::ABORT:
+        return true;
+      case WorkerCommandMsg::KILL:
+        // TODO: Throw signal
+      default:
+        vw_throw(vw::LogicErr() << "Invalid Worker Request");
+    }
+  }
+
+  return false;
 }
 
 }} // namespace frontend, mvp

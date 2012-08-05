@@ -40,6 +40,8 @@ class ZmqWorkerHelper {
     CommandReplyMsg get_next_job() const;
 
     void send_status(double status) const;
+
+    bool abort_requested() const;
 };
 
 }} // namespace frontend, mvp

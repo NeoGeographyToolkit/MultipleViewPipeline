@@ -21,6 +21,8 @@ void sock_send(zmq::socket_t& sock, std::string const& str_message);
 
 void sock_send(zmq::socket_t& sock, google::protobuf::Message const& message);
 
+bool sock_recv(zmq::socket_t& sock, google::protobuf::Message *message, int timeout = -1);
+
 }} // namespace frontend, mvp
 
 #endif
