@@ -16,6 +16,29 @@ using namespace mvp::frontend;
 
 namespace po = boost::program_options;
 
+void exit_cleanup(){
+  vw_out(vw::InfoMessage, "mvpworker") << "Shutting Down" << endl;
+
+  #if MVP_ENABLE_OCTAVE_SUPPORT
+  do_octave_atexit();
+  #endif
+}
+
+void signal_handler(int s) {
+  exit_cleanup();
+  exit(0);
+}
+
+void register_signals() {
+  struct sigaction handler;
+
+  handler.sa_handler = signal_handler;
+  sigemptyset(&handler.sa_mask);
+  handler.sa_flags = 0;
+
+  sigaction(SIGINT, &handler, NULL);
+}
+
 struct Options {
   string job_file;
   string hostname;
@@ -60,6 +83,8 @@ int main(int argc, char* argv[]) {
   #if MVP_ENABLE_OCTAVE_SUPPORT
   octave::start_octave_interpreter();
   #endif
+
+  register_signals();
 
   Options opts;
 
@@ -118,12 +143,7 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  // TODO: Make sure this is called every time mvpworker exits...
-  #if MVP_ENABLE_OCTAVE_SUPPORT
-  do_octave_atexit();
-  #endif
-
-  vw_out(vw::InfoMessage, "mvpworker") << "Shutdown" << endl;
+  exit_cleanup();
 
   return 0;
 }
