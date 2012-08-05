@@ -27,8 +27,9 @@ class ZmqWorkerHelper {
   public:
     class ProgressCallback : public vw::ProgressCallback {
       ZmqWorkerHelper const& m_helper;
+      int m_job_id;
       public:
-        ProgressCallback(ZmqWorkerHelper const& helper) : m_helper(helper) {}
+        ProgressCallback(ZmqWorkerHelper const& helper, int job_id) : m_helper(helper), m_job_id(job_id) {}
         virtual void report_progress(double progress) const;
         virtual void report_finished() const;
     };
@@ -39,7 +40,7 @@ class ZmqWorkerHelper {
 
     CommandReplyMsg get_next_job() const;
 
-    void send_status(double status) const;
+    void send_status(int job_id, double status) const;
 
     bool abort_requested() const;
 };

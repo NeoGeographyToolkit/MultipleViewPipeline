@@ -10,7 +10,7 @@ namespace frontend {
 
 void ZmqWorkerHelper::ProgressCallback::report_progress(double progress) const {
   vw::Mutex::Lock lock(m_mutex);
-  m_helper.send_status(progress);
+  m_helper.send_status(m_job_id, progress);
 
   if (m_helper.abort_requested()) {
     vw::vw_throw(vw::Aborted() << "Abort requested");
@@ -19,7 +19,7 @@ void ZmqWorkerHelper::ProgressCallback::report_progress(double progress) const {
 
 void ZmqWorkerHelper::ProgressCallback::report_finished() const {
   vw::Mutex::Lock lock(m_mutex);
-  m_helper.send_status(-1);
+  m_helper.send_status(m_job_id, -1);
 }
 
 ZmqWorkerHelper::ZmqWorkerHelper(zmq::context_t& context, std::string const& hostname) :
@@ -65,8 +65,9 @@ CommandReplyMsg ZmqWorkerHelper::get_next_job() const {
   return reply;
 }
 
-void ZmqWorkerHelper::send_status(double update) const {
+void ZmqWorkerHelper::send_status(int job_id, double update) const {
   StatusUpdateMsg status;
+  status.set_job_id(job_id);
   status.set_status(update);
   sock_send(m_status_sock, status);
 }

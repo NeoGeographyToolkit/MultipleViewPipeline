@@ -122,7 +122,7 @@ int main(int argc, char* argv[]) {
           if (reply.has_job()) {
             vw_out(vw::InfoMessage, "mvpworker") << "Working on job ID = " << reply.job().id() << endl;
             try {
-              launch_job(ZmqWorkerHelper::ProgressCallback(helper), reply.job());
+              launch_job(ZmqWorkerHelper::ProgressCallback(helper, reply.job().id()), reply.job());
             } catch (vw::Aborted &e) {
               vw_out(vw::InfoMessage, "mvpworker") << "Aborted job ID = " << reply.job().id() << endl;
               break;

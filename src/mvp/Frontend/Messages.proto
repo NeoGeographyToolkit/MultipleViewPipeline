@@ -28,7 +28,8 @@ message StatusReport {
 }
 
 message StatusUpdateMsg {
-  required double status = 1; 
+  required int32 job_id = 1;
+  required double status = 2; 
 }
 
 message WorkerCommandMsg {
