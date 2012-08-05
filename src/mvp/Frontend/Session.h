@@ -3,8 +3,8 @@
 /// Session class
 ///
 
-#ifndef __MVP_PIPELINE_SESSION_H__
-#define __MVP_PIPELINE_SESSION_H__
+#ifndef __MVP_FRONTEND_SESSION_H__
+#define __MVP_FRONTEND_SESSION_H__
 
 #include <mvp/Pipeline/JobDesc.pb.h>
 #include <mvp/Frontend/SessionDesc.pb.h>
