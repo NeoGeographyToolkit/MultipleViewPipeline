@@ -46,7 +46,7 @@ void SessionStatus::update_status(StatusUpdateMsg const& status_update) {
     cursor.set_status(status_update.status());
     cursor.set_last_seen(time(NULL));
   } else {
-    vw::vw_throw(vw::LogicErr() << "Got a status update for an unknown job!");
+    vw::vw_out(vw::VerboseDebugMessage, "mvpd") << "Got a status update for an unknown job ID = " << status_update.job_id() << std::endl;
   }
 
   // prune jobs
