@@ -1,9 +1,11 @@
 mvp_module(NAME Frontend
            HDRS Session.h
+                SessionStatus.h
                 ZmqHelpers.h
                 ZmqWorkerHelper.h
                 ZmqServerHelper.h
            SRCS Session.cc
+                SessionStatus.cc
                 ZmqHelpers.cc
                 ZmqWorkerHelper.cc
                 ZmqServerHelper.cc
