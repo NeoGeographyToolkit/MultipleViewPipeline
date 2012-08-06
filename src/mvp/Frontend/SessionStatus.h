@@ -33,6 +33,8 @@ class SessionStatus {
 
     void update_status(StatusUpdateMsg const& status_update);
 
+    void prune_jobs();
+
     bool has_orphans() { return !m_orphans.empty(); }
 
     pipeline::JobDesc next_orphan();

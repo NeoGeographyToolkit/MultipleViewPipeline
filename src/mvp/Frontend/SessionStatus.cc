@@ -49,7 +49,10 @@ void SessionStatus::update_status(StatusUpdateMsg const& status_update) {
     vw::vw_out(vw::VerboseDebugMessage, "mvpd") << "Got a status update for an unknown job ID = " << status_update.job_id() << std::endl;
   }
 
-  // prune jobs
+  prune_jobs();
+}
+
+void SessionStatus::prune_jobs() {
   EntryMap::iterator iter = m_actives.begin();
   while (iter != m_actives.end()) {
     StatusReport::Entry &cursor = iter->second;
