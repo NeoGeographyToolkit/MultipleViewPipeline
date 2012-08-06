@@ -52,8 +52,9 @@ void SessionStatus::update_status(StatusUpdateMsg const& status_update) {
   // prune jobs
   EntryMap::iterator iter = m_actives.begin();
   while (iter != m_actives.end()) {
-    if (iter->second.status() < 0) {
-      vw::vw_out(vw::InfoMessage, "mvpd") << "Completed job ID = " << iter->second.job().id() << std::endl;
+    StatusReport::Entry &cursor = iter->second;
+    if (cursor.status() < 0) {
+      vw::vw_out(vw::InfoMessage, "mvpd") << "Completed job ID = " << cursor.job().id() << std::endl;
       m_jobs_completed++;
       m_actives.erase(iter++);
     } else {
@@ -73,9 +74,10 @@ void SessionStatus::tick() {
 
   EntryMap::iterator iter = m_actives.begin();
   while (iter != m_actives.end()) {
-    if (curr_time - iter->second.last_seen() > mvp_settings().timeouts().orphan()) {
-      vw::vw_out(vw::InfoMessage, "mvpd") << "Orphaned job ID = " << iter->second.job().id() << std::endl;
-      m_orphans.push_back(iter->second.job());
+    StatusReport::Entry &cursor = iter->second;
+    if (curr_time - cursor.last_seen() > mvp_settings().timeouts().orphan()) {
+      vw::vw_out(vw::InfoMessage, "mvpd") << "Orphaned job ID = " << cursor.job().id() << std::endl;
+      m_orphans.push_back(cursor.job());
       m_actives.erase(iter++);
     } else {
       ++iter;
