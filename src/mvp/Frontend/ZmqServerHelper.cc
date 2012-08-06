@@ -18,6 +18,8 @@ ZmqServerHelper::ZmqServerHelper(zmq::context_t& context) :
   m_cmd_sock.bind(cmd_sock_url.c_str());
   m_bcast_sock.bind(bcast_sock_url.c_str());
   m_status_sock.bind(status_sock_url.c_str()); 
+
+  m_status_sock.setsockopt(ZMQ_SUBSCRIBE, 0, 0); // Don't filter out any messages
 }
 
 ZmqServerHelper::PollEventSet ZmqServerHelper::poll() const {

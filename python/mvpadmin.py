@@ -5,10 +5,11 @@ sys.path.insert(0, "@PYTHON_INSTALL_DIR@")
 
 import zmq
 from optparse import OptionParser
-from mvp.frontend.Messages_pb2 import CommandMsg, CommandReplyMsg
+from mvp.frontend.Messages_pb2 import CommandMsg, CommandReplyMsg, StatusReport
 from mvp.frontend.SessionDesc_pb2 import SessionDesc
 from mvp.core.GlobalSettings_pb2 import GlobalSettings
 from google.protobuf import text_format
+from mvp.pipeline.JobDesc_pb2 import JobDesc
 
 parser = OptionParser()
 parser.usage = "%prog [options] <mvpd server>"
@@ -43,6 +44,15 @@ def sendCommand(cmd):
   evts = poller.poll(timeout)
   if not(evts):
     print "Failed to receive reply from", cmd_sock_url
+  reply = CommandReplyMsg()
+  reply.ParseFromString(cmd_sock.recv())
+  return reply
+
+def printStatusReport(status_report):
+  print "Active jobs:"
+  for i in status_report.actives:
+    print "{0}, {1} @{2}: {3}%".format(i.job.render.col, i.job.render.row, i.job.render.level, i.status * 100)
+    
 
 cmd = CommandMsg()
 
@@ -56,7 +66,8 @@ if options.cmd_kill:
 
 if options.cmd_status:
   cmd.cmd = CommandMsg.STATUS
-  sendCommand(cmd)
+  reply = sendCommand(cmd)
+  printStatusReport(reply.status_report)
 
 if options.cmd_launch_filename:
   cmd.cmd = CommandMsg.LAUNCH

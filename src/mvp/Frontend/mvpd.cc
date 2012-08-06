@@ -2,6 +2,7 @@
 
 #include <mvp/Frontend/ZmqServerHelper.h>
 #include <mvp/Frontend/Session.h>
+#include <mvp/Frontend/SessionStatus.h>
 
 #include <vw/Core/Log.h>
 #include <vw/Core/Exception.h>
@@ -17,6 +18,7 @@ int main (int argc, char *argv[]) {
   ZmqServerHelper helper(context);
 
   Session session;
+  SessionStatus session_status;
 
   while (1) {
     ZmqServerHelper::PollEventSet events = helper.poll();
@@ -33,7 +35,8 @@ int main (int argc, char *argv[]) {
           helper.send_bcast(WorkerCommandMsg::WAKE);
           break;
         case CommandMsg::STATUS:
-          // TODO: do something here
+          vw_out(vw::InfoMessage, "mvpd") << "CommandMsg::STATUS" << endl;
+          *reply.mutable_status_report() = session_status.report();
           break;
         case CommandMsg::INFO:
           vw_out(vw::InfoMessage, "mvpd") << "CommandMsg::INFO" << endl;
@@ -49,8 +52,13 @@ int main (int argc, char *argv[]) {
           break;
         case CommandMsg::JOB:
           vw_out(vw::InfoMessage, "mvpd") << "CommandMsg::JOB" << endl;
-          if (session.has_next()) {
+          if (session_status.has_orphans()) {
+            *reply.mutable_job() = session_status.next_orphan();
+            session_status.add_job(reply.job());
+            vw_out(vw::InfoMessage, "mvpd") << "Dispatched orphaned job ID = " << reply.job().id() << endl;
+          } else if (session.has_next()) {
             *reply.mutable_job() = session.next();
+            session_status.add_job(reply.job());
             vw_out(vw::InfoMessage, "mvpd") << "Dispatched job ID = " << reply.job().id() << endl;
           }
           break;
@@ -62,7 +70,7 @@ int main (int argc, char *argv[]) {
     
     if (events.count(ZmqServerHelper::STATUS_EVENT)) {
       vw_out(vw::VerboseDebugMessage, "mvpd") << "ZmqServerHelper::STATUS_EVENT" << endl;
-      //session_status.update_status(helper.recv_status());
+      session_status.update_status(helper.recv_status());
     }
   }
 
