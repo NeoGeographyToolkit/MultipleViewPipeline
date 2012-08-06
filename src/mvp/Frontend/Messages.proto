@@ -27,10 +27,12 @@ message StatusReport {
   message Entry {
     required pipeline.JobDesc job = 1;
     required double status = 2;
+    required int64 last_seen = 3;
   }
   required int32 jobs_completed = 1;
   required int32 total_jobs = 2;
   repeated Entry actives = 3; 
+  repeated pipeline.JobDesc orphans = 4;
 }
 
 message StatusUpdateMsg {

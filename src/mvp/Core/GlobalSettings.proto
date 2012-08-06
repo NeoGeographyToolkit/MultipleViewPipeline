@@ -7,7 +7,8 @@ message GlobalSettings {
     optional string broadcast = 3 [default="6679"];
   }
   message Timeouts {
-    optional int32 command = 1 [default=5000];
+    optional int32 command = 1 [default=5000]; // In ms
+    optional int32 orphan = 2 [default=5]; // In sec
   }
 
   required Ports ports = 1;

@@ -73,7 +73,7 @@ void handle_arguments(int argc, char* argv[], Options *opts) {
 
 void launch_job(ProgressCallback const& progress, pipeline::JobDesc const& job_desc) {
   for (int i = 0; i < 100; i++) {
-    usleep(100000);
+    usleep(1000000);
     progress.report_fractional_progress(i, 100);
   }
   progress.report_finished();

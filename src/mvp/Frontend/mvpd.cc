@@ -22,6 +22,7 @@ int main (int argc, char *argv[]) {
 
   while (1) {
     ZmqServerHelper::PollEventSet events = helper.poll();
+    session_status.tick();
 
     if (events.count(ZmqServerHelper::COMMAND_EVENT)) {
       CommandMsg cmd(helper.recv_cmd());

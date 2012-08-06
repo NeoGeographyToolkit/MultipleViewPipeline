@@ -6,11 +6,14 @@
 #ifndef __MVP_FRONTEND_SESSIONSTATUS_H__
 #define __MVP_FRONTEND_SESSIONSTATUS_H__
 
+#include <ctime>
+
 #include <map>
 #include <queue>
 
 #include <mvp/Pipeline/JobDesc.pb.h>
 #include <mvp/Frontend/Messages.pb.h>
+#include <mvp/Core/Settings.h>
 
 #include <boost/foreach.hpp>
 
@@ -20,7 +23,7 @@ namespace frontend {
 class SessionStatus {
   typedef std::map<int, StatusReport::Entry> EntryMap;
   EntryMap m_actives;
-  std::queue<pipeline::JobDesc> m_orphans;
+  std::vector<pipeline::JobDesc> m_orphans;
   int m_jobs_completed;
   int m_total_jobs;
 
@@ -31,7 +34,7 @@ class SessionStatus {
       m_jobs_completed = 0;
       m_total_jobs = total_jobs;
       m_actives = EntryMap();
-      m_orphans = std::queue<pipeline::JobDesc>();
+      m_orphans = std::vector<pipeline::JobDesc>();
     }
 
     StatusReport report() {
@@ -43,6 +46,10 @@ class SessionStatus {
         *status_report.add_actives() = s.second;
       } 
 
+      BOOST_FOREACH(pipeline::JobDesc &j, m_orphans) {
+        *status_report.add_orphans() = j;
+      }
+
       return status_report;
     }
 
@@ -50,12 +57,15 @@ class SessionStatus {
       StatusReport::Entry entry;
       *entry.mutable_job() = job_desc;
       entry.set_status(0.0);
+      entry.set_last_seen(time(NULL));
       m_actives[job_desc.id()] = entry;
     }
 
     void update_status(StatusUpdateMsg const& status_update) {
       if (m_actives.count(status_update.job_id())) {
-        m_actives[status_update.job_id()].set_status(status_update.status());
+        StatusReport::Entry &cursor = m_actives[status_update.job_id()];
+        cursor.set_status(status_update.status());
+        cursor.set_last_seen(time(NULL));
       } else {
         vw::vw_throw(vw::LogicErr() << "Got a status update for an unknown job!");
       }
@@ -64,6 +74,7 @@ class SessionStatus {
       EntryMap::iterator iter = m_actives.begin();
       while (iter != m_actives.end()) {
         if (iter->second.status() < 0) {
+          //TODO: vw_out(vw::InfoMessage, "mvpd") << "Completed job ID = " << iter->second.job().id() << std::endl;
           m_jobs_completed++;
           m_actives.erase(iter++);
         } else {
@@ -77,9 +88,24 @@ class SessionStatus {
     }
 
     pipeline::JobDesc next_orphan() {
-      pipeline::JobDesc job_desc(m_orphans.front());
-      m_orphans.pop();
+      pipeline::JobDesc job_desc(m_orphans.back());
+      m_orphans.pop_back();
       return job_desc;
+    }
+
+    void tick() {
+      time_t curr_time = time(NULL);
+
+      EntryMap::iterator iter = m_actives.begin();
+      while (iter != m_actives.end()) {
+        if (curr_time - iter->second.last_seen() > mvp_settings().timeouts().orphan()) {
+          //TODO: vw_out(vw::InfoMessage, "mvpd") << "Orphaned job ID = " << iter->second.job().id() << std::endl;
+          m_orphans.push_back(iter->second.job());
+          m_actives.erase(iter++);
+        } else {
+          ++iter;
+        }
+      }
     }
 };
 
