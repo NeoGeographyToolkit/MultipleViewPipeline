@@ -35,6 +35,8 @@ class Session {
     bool has_next() { return m_render_bbox.contains(m_cursor); }
 
     pipeline::JobDesc next();
+
+    int num_jobs() { return m_render_bbox.width() * m_render_bbox.height(); }
 };
 
 }} // namespace pipeline, mvp

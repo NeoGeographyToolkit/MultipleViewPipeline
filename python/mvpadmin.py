@@ -49,6 +49,7 @@ def sendCommand(cmd):
   return reply
 
 def printStatusReport(status_report):
+  print "Completed jobs: {0} of {1}".format(status_report.jobs_completed, status_report.total_jobs)
   print "Active jobs:"
   for i in status_report.actives:
     print "{0}, {1} @{2}: {3}%".format(i.job.render.col, i.job.render.row, i.job.render.level, i.status * 100)

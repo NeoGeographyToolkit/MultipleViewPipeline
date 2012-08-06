@@ -21,12 +21,23 @@ class SessionStatus {
   typedef std::map<int, StatusReport::Entry> EntryMap;
   EntryMap m_actives;
   std::queue<pipeline::JobDesc> m_orphans;
+  int m_jobs_completed;
+  int m_total_jobs;
 
   public:
-    SessionStatus() {}
+    SessionStatus() : m_jobs_completed(0), m_total_jobs(0) {}
+
+    void reset(int total_jobs) {
+      m_jobs_completed = 0;
+      m_total_jobs = total_jobs;
+      m_actives = EntryMap();
+      m_orphans = std::queue<pipeline::JobDesc>();
+    }
 
     StatusReport report() {
       StatusReport status_report;
+      status_report.set_jobs_completed(m_jobs_completed);
+      status_report.set_total_jobs(m_total_jobs);
       
       BOOST_FOREACH(EntryMap::value_type &s, m_actives) {
         *status_report.add_actives() = s.second;
@@ -48,10 +59,21 @@ class SessionStatus {
       } else {
         vw::vw_throw(vw::LogicErr() << "Got a status update for an unknown job!");
       }
+
+      // prune jobs
+      EntryMap::iterator iter = m_actives.begin();
+      while (iter != m_actives.end()) {
+        if (iter->second.status() < 0) {
+          m_jobs_completed++;
+          m_actives.erase(iter++);
+        } else {
+          ++iter;
+        }
+      }
     }
 
     bool has_orphans() {
-      return false;
+      return !m_orphans.empty();
     }
 
     pipeline::JobDesc next_orphan() {

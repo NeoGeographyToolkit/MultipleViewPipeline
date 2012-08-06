@@ -32,6 +32,7 @@ int main (int argc, char *argv[]) {
         case CommandMsg::LAUNCH:
           vw_out(vw::InfoMessage, "mvpd") << "CommandMsg::LAUNCH" << endl;
           session.reset(cmd.session());
+          session_status.reset(session.num_jobs());
           helper.send_bcast(WorkerCommandMsg::WAKE);
           break;
         case CommandMsg::STATUS:
