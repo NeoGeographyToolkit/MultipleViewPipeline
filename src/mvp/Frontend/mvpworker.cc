@@ -143,6 +143,8 @@ int main(int argc, char* argv[]) {
     }
   }
 
+  // Execution never gets here, but we'll leave this call here to remind
+  // us that it actually happens. (It's called by the signal handler)
   exit_cleanup();
 
   return 0;
