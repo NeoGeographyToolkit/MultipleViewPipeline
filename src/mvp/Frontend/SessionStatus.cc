@@ -68,26 +68,28 @@ std::vector<pipeline::JobDesc> SessionStatus::prune_completed_jobs() {
   return completed_jobs;
 }
 
-pipeline::JobDesc SessionStatus::next_orphan() {
-  pipeline::JobDesc job_desc(m_orphans.back());
-  m_orphans.pop_back();
-  return job_desc;
-}
-
-void SessionStatus::tick() {
+std::vector<pipeline::JobDesc> SessionStatus::prune_orphaned_jobs() {
   time_t curr_time = time(NULL);
+  std::vector<pipeline::JobDesc> orphaned_jobs;
 
   EntryMap::iterator iter = m_actives.begin();
   while (iter != m_actives.end()) {
     StatusReport::Entry &cursor = iter->second;
     if (curr_time - cursor.last_seen() > mvp_settings().timeouts().orphan()) {
-      vw::vw_out(vw::InfoMessage, "mvpd") << "Orphaned job ID = " << cursor.job().id() << std::endl;
-      m_orphans.push_back(cursor.job());
+      orphaned_jobs.push_back(cursor.job());
       m_actives.erase(iter++);
     } else {
       ++iter;
     }
   }
+
+  return orphaned_jobs;
+}
+
+pipeline::JobDesc SessionStatus::next_orphan() {
+  pipeline::JobDesc job_desc(m_orphans.back());
+  m_orphans.pop_back();
+  return job_desc;
 }
 
 }} // namespace frontend, mvp

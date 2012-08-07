@@ -24,7 +24,12 @@ int main (int argc, char *argv[]) {
 
   while (1) {
     ZmqServerHelper::PollEventSet events = helper.poll();
-    session_status.tick();
+
+    vector<pipeline::JobDesc> orphaned_jobs = session_status.prune_orphaned_jobs();
+    BOOST_FOREACH(pipeline::JobDesc j, orphaned_jobs) {
+      vw::vw_out(vw::InfoMessage, "mvpd") << "Orphaned job ID = " << j.id() << std::endl;
+      session_status.add_orphan(j);
+    }
 
     if (events.count(ZmqServerHelper::COMMAND_EVENT)) {
       CommandMsg cmd(helper.recv_cmd());

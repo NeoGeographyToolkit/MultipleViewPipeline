@@ -31,15 +31,18 @@ class SessionStatus {
 
     void add_job(pipeline::JobDesc const& job_desc);
 
+    void add_orphan(pipeline::JobDesc const& job_desc) { m_orphans.push_back(job_desc); }
+
     void update_status(StatusUpdateMsg const& status_update);
 
     std::vector<pipeline::JobDesc> prune_completed_jobs();
+
+    std::vector<pipeline::JobDesc> prune_orphaned_jobs();
 
     bool has_orphans() const { return !m_orphans.empty(); }
 
     pipeline::JobDesc next_orphan();
 
-    void tick();
 };
 
 }} // namespace frontend, mvp
