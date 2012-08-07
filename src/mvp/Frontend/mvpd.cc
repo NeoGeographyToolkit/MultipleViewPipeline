@@ -44,10 +44,6 @@ int main (int argc, char *argv[]) {
           vw_out(vw::InfoMessage, "mvpd") << "CommandMsg::INFO" << endl;
           // TODO: do something here
           break;
-        case CommandMsg::ABORT:
-          vw_out(vw::InfoMessage, "mvpd") << "CommandMsg::ABORT" << endl;
-          helper.send_bcast(WorkerCommandMsg::ABORT);
-          break;
         case CommandMsg::KILL:
           vw_out(vw::InfoMessage, "mvpd") << "CommandMsg::KILL" << endl;
           helper.send_bcast(WorkerCommandMsg::KILL);

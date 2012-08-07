@@ -8,7 +8,6 @@ message CommandMsg {
     LAUNCH = 0;
     STATUS = 1;
     INFO = 2;
-    ABORT = 3;
     KILL = 4;
     JOB = 5;
   }

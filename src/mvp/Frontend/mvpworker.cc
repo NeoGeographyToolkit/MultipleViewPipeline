@@ -132,9 +132,6 @@ int main(int argc, char* argv[]) {
           }
         }
         break;
-      case WorkerCommandMsg::ABORT:
-        vw_out(vw::InfoMessage, "mvpworker") << "WorkerCommandMsg::ABORT" << endl;
-        break;
       case WorkerCommandMsg::KILL:
         vw_out(vw::InfoMessage, "mvpworker") << "WorkerCommandMsg::KILL" << endl;
         raise(SIGINT);
