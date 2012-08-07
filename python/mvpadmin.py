@@ -50,11 +50,11 @@ def sendCommand(cmd):
 
 def printStatusReport(status_report):
   print "Completed jobs: {0} of {1}".format(status_report.jobs_completed, status_report.total_jobs)
-  print "\nActive jobs:"
+  print "\nActive jobs: ({0})".format(len(status_report.actives))
   for i in status_report.actives:
     print "{0}, {1} @{2}: {3}%".format(i.job.render.col, i.job.render.row, i.job.render.level, i.status * 100)
   if (status_report.orphans):
-    print "\nOrphaned Jobs:"
+    print "\nOrphaned Jobs: ({0})".format(len(status_report.orphans))
     for i in status_report.orphans:
       print "{0}, {1} @{2}".format(i.render.col, i.render.row, i.render.level)
     
