@@ -9,6 +9,7 @@
 #define __MVP_FRONTEND_ZMQWORKERHELPER_H__
 
 #include <vw/Core/ProgressCallback.h>
+
 #include <mvp/Frontend/Messages.pb.h>
 
 #include <zmq.hpp>
@@ -42,7 +43,7 @@ class ZmqWorkerHelper {
 
     void send_status(int job_id, double status) const;
 
-    bool abort_requested() const;
+    bool bcast_waiting() const;
 };
 
 }} // namespace frontend, mvp

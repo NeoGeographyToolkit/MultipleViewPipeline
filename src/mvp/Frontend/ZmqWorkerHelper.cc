@@ -12,8 +12,8 @@ void ZmqWorkerHelper::ProgressCallback::report_progress(double progress) const {
   vw::Mutex::Lock lock(m_mutex);
   m_helper.send_status(m_job_id, progress);
 
-  if (m_helper.abort_requested()) {
-    vw::vw_throw(vw::Aborted() << "Abort requested");
+  if (m_helper.bcast_waiting()) {
+    vw::vw_throw(vw::Aborted() << "New broadcast from mvpd!");
   }
 }
 
@@ -74,26 +74,8 @@ void ZmqWorkerHelper::send_status(int job_id, double update) const {
   sock_send(m_status_sock, status);
 }
 
-bool ZmqWorkerHelper::abort_requested() const {
-  if (sock_poll(m_bcast_sock, 0)) {
-    WorkerCommandMsg cmd;
-    cmd.ParseFromString(sock_recv(m_bcast_sock));
-    switch (cmd.cmd()) {
-      case WorkerCommandMsg::WAKE:
-        vw_out(vw::InfoMessage, "mvpworker") << "WorkerCommandMsg::WAKE (while working)" << std::endl;
-        break;
-      case WorkerCommandMsg::ABORT:
-        vw_out(vw::InfoMessage, "mvpworker") << "WorkerCommandMsg::ABORT (while working)" << std::endl;
-        return true;
-      case WorkerCommandMsg::KILL:
-        vw_out(vw::InfoMessage, "mvpworker") << "WorkerCommandMsg::KILL (while working)" << std::endl;
-        raise(SIGINT);
-      default:
-        vw_throw(vw::LogicErr() << "Invalid Worker Request");
-    }
-  }
-
-  return false;
+bool ZmqWorkerHelper::bcast_waiting() const { 
+  return sock_poll(m_bcast_sock, 0); 
 }
 
 }} // namespace frontend, mvp
