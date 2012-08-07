@@ -42,8 +42,7 @@ message StatusUpdateMsg {
 message WorkerCommandMsg {
   enum CommandType {
     WAKE = 0;
-    ABORT = 1;
-    KILL = 2;
+    KILL = 1;
   }
   required CommandType cmd = 1;
 }
