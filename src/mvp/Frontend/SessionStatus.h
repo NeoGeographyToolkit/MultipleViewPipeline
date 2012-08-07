@@ -27,15 +27,15 @@ class SessionStatus {
 
     void reset(int total_jobs);
 
-    StatusReport report();
+    StatusReport report() const;
 
     void add_job(pipeline::JobDesc const& job_desc);
 
     void update_status(StatusUpdateMsg const& status_update);
 
-    void prune_jobs();
+    std::vector<pipeline::JobDesc> prune_completed_jobs();
 
-    bool has_orphans() { return !m_orphans.empty(); }
+    bool has_orphans() const { return !m_orphans.empty(); }
 
     pipeline::JobDesc next_orphan();
 

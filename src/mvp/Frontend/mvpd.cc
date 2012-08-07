@@ -7,6 +7,8 @@
 #include <vw/Core/Log.h>
 #include <vw/Core/Exception.h>
 
+#include <boost/foreach.hpp>
+
 using namespace std;
 using namespace vw;
 using namespace mvp;
@@ -69,6 +71,11 @@ int main (int argc, char *argv[]) {
     if (events.count(ZmqServerHelper::STATUS_EVENT)) {
       vw_out(vw::VerboseDebugMessage, "mvpd") << "ZmqServerHelper::STATUS_EVENT" << endl;
       session_status.update_status(helper.recv_status());
+
+      vector<pipeline::JobDesc> completed_jobs = session_status.prune_completed_jobs();
+      BOOST_FOREACH(pipeline::JobDesc j, completed_jobs) {
+        vw_out(vw::InfoMessage, "mvpd") << "Completed job ID = " << j.id() << std::endl;
+      }
     }
   }
 

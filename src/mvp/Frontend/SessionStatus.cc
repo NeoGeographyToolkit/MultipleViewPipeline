@@ -17,16 +17,16 @@ void SessionStatus::reset(int total_jobs) {
   m_orphans = std::vector<pipeline::JobDesc>();
 }
 
-StatusReport SessionStatus::report() {
+StatusReport SessionStatus::report() const {
   StatusReport status_report;
   status_report.set_jobs_completed(m_jobs_completed);
   status_report.set_total_jobs(m_total_jobs);
   
-  BOOST_FOREACH(EntryMap::value_type &s, m_actives) {
+  BOOST_FOREACH(EntryMap::value_type const& s, m_actives) {
     *status_report.add_actives() = s.second;
   } 
 
-  BOOST_FOREACH(pipeline::JobDesc &j, m_orphans) {
+  BOOST_FOREACH(pipeline::JobDesc const& j, m_orphans) {
     *status_report.add_orphans() = j;
   }
 
@@ -48,22 +48,24 @@ void SessionStatus::update_status(StatusUpdateMsg const& status_update) {
   } else {
     vw::vw_out(vw::VerboseDebugMessage, "mvpd") << "Got a status update for an unknown job ID = " << status_update.job_id() << std::endl;
   }
-
-  prune_jobs();
 }
 
-void SessionStatus::prune_jobs() {
+std::vector<pipeline::JobDesc> SessionStatus::prune_completed_jobs() {
+  std::vector<pipeline::JobDesc> completed_jobs;
+
   EntryMap::iterator iter = m_actives.begin();
   while (iter != m_actives.end()) {
     StatusReport::Entry &cursor = iter->second;
     if (cursor.status() < 0) {
-      vw::vw_out(vw::InfoMessage, "mvpd") << "Completed job ID = " << cursor.job().id() << std::endl;
       m_jobs_completed++;
+      completed_jobs.push_back(cursor.job());
       m_actives.erase(iter++);
     } else {
       ++iter;
     }
   }
+
+  return completed_jobs;
 }
 
 pipeline::JobDesc SessionStatus::next_orphan() {
