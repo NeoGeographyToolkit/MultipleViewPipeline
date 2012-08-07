@@ -37,6 +37,7 @@ void register_signals() {
   handler.sa_flags = 0;
 
   sigaction(SIGINT, &handler, NULL);
+  sigaction(SIGTERM, &handler, NULL);
 }
 
 struct Options {
