@@ -17,32 +17,22 @@ namespace frontend {
 
 class SessionStatus {
   typedef std::map<int, StatusReport::Entry> EntryMap;
-  EntryMap m_actives;
-  std::vector<pipeline::JobDesc> m_orphans;
-  int m_jobs_completed;
-  int m_total_jobs;
+  EntryMap m_entries;
 
   public:
-    SessionStatus() : m_jobs_completed(0), m_total_jobs(0) {}
+    SessionStatus() : m_entries() {}
 
-    void reset(int total_jobs);
-
-    StatusReport report() const;
+    void reset() { m_entries.clear(); }
 
     void add_job(pipeline::JobDesc const& job_desc);
 
-    void add_orphan(pipeline::JobDesc const& job_desc) { m_orphans.push_back(job_desc); }
-
     void update_status(StatusUpdateMsg const& status_update);
+
+    std::vector<StatusReport::Entry> entries() const;
 
     std::vector<pipeline::JobDesc> prune_completed_jobs();
 
     std::vector<pipeline::JobDesc> prune_orphaned_jobs();
-
-    bool has_orphans() const { return !m_orphans.empty(); }
-
-    pipeline::JobDesc next_orphan();
-
 };
 
 }} // namespace frontend, mvp

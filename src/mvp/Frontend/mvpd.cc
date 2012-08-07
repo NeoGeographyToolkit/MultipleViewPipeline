@@ -14,6 +14,25 @@ using namespace vw;
 using namespace mvp;
 using namespace mvp::frontend;
 
+StatusReport assemble_status(int jobs_completed, int total_jobs, 
+                             std::vector<StatusReport::Entry> const& actives, 
+                             std::vector<pipeline::JobDesc> const& orphans) {
+
+  StatusReport status_report;
+  status_report.set_jobs_completed(jobs_completed);
+  status_report.set_total_jobs(total_jobs);
+
+  BOOST_FOREACH(StatusReport::Entry const& e, actives) {
+    *status_report.add_actives() = e;
+  } 
+
+  BOOST_FOREACH(pipeline::JobDesc const& j, orphans) {
+    *status_report.add_orphans() = j;
+  }
+
+  return status_report;
+}
+
 int main (int argc, char *argv[]) {
   vw_out(vw::InfoMessage, "mvpd") << "Started" << endl;
   zmq::context_t context(1);
@@ -21,13 +40,15 @@ int main (int argc, char *argv[]) {
 
   Session session;
   SessionStatus session_status;
+  std::vector<pipeline::JobDesc> orphaned_jobs;
+  int jobs_completed = 0;
 
   while (1) {
     ZmqServerHelper::PollEventSet events = helper.poll();
 
     BOOST_FOREACH(pipeline::JobDesc const& j, session_status.prune_orphaned_jobs()) {
       vw::vw_out(vw::InfoMessage, "mvpd") << "Orphaned job ID = " << j.id() << std::endl;
-      session_status.add_orphan(j);
+      orphaned_jobs.push_back(j);
     }
 
     if (events.count(ZmqServerHelper::COMMAND_EVENT)) {
@@ -38,13 +59,18 @@ int main (int argc, char *argv[]) {
       switch(cmd.cmd()) {
         case CommandMsg::LAUNCH:
           vw_out(vw::InfoMessage, "mvpd") << "CommandMsg::LAUNCH" << endl;
+
           session.reset(cmd.session());
-          session_status.reset(session.num_jobs());
+          session_status.reset();
+          orphaned_jobs.clear();
+          jobs_completed = 0;
+
           helper.send_bcast(WorkerCommandMsg::WAKE);
           break;
         case CommandMsg::STATUS:
           vw_out(vw::InfoMessage, "mvpd") << "CommandMsg::STATUS" << endl;
-          *reply.mutable_status_report() = session_status.report();
+          *reply.mutable_status_report() = assemble_status(jobs_completed, session.num_jobs(),
+                                                           session_status.entries(), orphaned_jobs);
           break;
         case CommandMsg::INFO:
           vw_out(vw::InfoMessage, "mvpd") << "CommandMsg::INFO" << endl;
@@ -56,8 +82,9 @@ int main (int argc, char *argv[]) {
           break;
         case CommandMsg::JOB:
           vw_out(vw::InfoMessage, "mvpd") << "CommandMsg::JOB" << endl;
-          if (session_status.has_orphans()) {
-            *reply.mutable_job() = session_status.next_orphan();
+          if (!orphaned_jobs.empty()) {
+            *reply.mutable_job() = orphaned_jobs.back();
+            orphaned_jobs.pop_back();
             session_status.add_job(reply.job());
             vw_out(vw::InfoMessage, "mvpd") << "Dispatched orphaned job ID = " << reply.job().id() << endl;
           } else if (session.has_next()) {
@@ -78,6 +105,7 @@ int main (int argc, char *argv[]) {
 
       BOOST_FOREACH(pipeline::JobDesc const& j, session_status.prune_completed_jobs()) {
         vw_out(vw::InfoMessage, "mvpd") << "Completed job ID = " << j.id() << std::endl;
+        ++jobs_completed;
       }
     }
   }
