@@ -46,7 +46,7 @@ int main (int argc, char *argv[]) {
   while (1) {
     ZmqServerHelper::PollEventSet events = helper.poll();
 
-    BOOST_FOREACH(pipeline::JobDesc const& j, session_status.prune_orphaned_jobs()) {
+    BOOST_FOREACH(pipeline::JobDesc const& j, session_status.prune_orphaned_entries()) {
       vw::vw_out(vw::InfoMessage, "mvpd") << "Orphaned job ID = " << j.id() << std::endl;
       orphaned_jobs.push_back(j);
     }
@@ -85,11 +85,11 @@ int main (int argc, char *argv[]) {
           if (!orphaned_jobs.empty()) {
             *reply.mutable_job() = orphaned_jobs.back();
             orphaned_jobs.pop_back();
-            session_status.add_job(reply.job());
+            session_status.add_entry(reply.job());
             vw_out(vw::InfoMessage, "mvpd") << "Dispatched orphaned job ID = " << reply.job().id() << endl;
           } else if (session.has_next()) {
             *reply.mutable_job() = session.next();
-            session_status.add_job(reply.job());
+            session_status.add_entry(reply.job());
             vw_out(vw::InfoMessage, "mvpd") << "Dispatched job ID = " << reply.job().id() << endl;
           }
           break;
@@ -103,7 +103,7 @@ int main (int argc, char *argv[]) {
       vw_out(vw::VerboseDebugMessage, "mvpd") << "ZmqServerHelper::STATUS_EVENT" << endl;
       session_status.update_status(helper.recv_status());
 
-      BOOST_FOREACH(pipeline::JobDesc const& j, session_status.prune_completed_jobs()) {
+      BOOST_FOREACH(pipeline::JobDesc const& j, session_status.prune_completed_entries()) {
         vw_out(vw::InfoMessage, "mvpd") << "Completed job ID = " << j.id() << std::endl;
         ++jobs_completed;
       }

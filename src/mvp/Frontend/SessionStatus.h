@@ -24,15 +24,15 @@ class SessionStatus {
 
     void reset() { m_entries.clear(); }
 
-    void add_job(pipeline::JobDesc const& job_desc);
+    void add_entry(pipeline::JobDesc const& job_desc);
 
     void update_status(StatusUpdateMsg const& status_update);
 
     std::vector<StatusReport::Entry> entries() const;
 
-    std::vector<pipeline::JobDesc> prune_completed_jobs();
+    std::vector<pipeline::JobDesc> prune_completed_entries();
 
-    std::vector<pipeline::JobDesc> prune_orphaned_jobs();
+    std::vector<pipeline::JobDesc> prune_orphaned_entries();
 };
 
 }} // namespace frontend, mvp
