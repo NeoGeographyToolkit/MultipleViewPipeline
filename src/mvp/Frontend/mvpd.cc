@@ -14,21 +14,16 @@ using namespace vw;
 using namespace mvp;
 using namespace mvp::frontend;
 
-StatusReport assemble_status(int jobs_completed, int total_jobs, 
-                             std::vector<StatusReport::Entry> const& actives, 
-                             std::vector<pipeline::JobDesc> const& orphans) {
+StatusReport assemble_status_report(int jobs_completed, int total_jobs, 
+                                    std::vector<StatusReport::Entry> const& actives, 
+                                    std::vector<pipeline::JobDesc> const& orphans) {
 
   StatusReport status_report;
   status_report.set_jobs_completed(jobs_completed);
   status_report.set_total_jobs(total_jobs);
 
-  BOOST_FOREACH(StatusReport::Entry const& e, actives) {
-    *status_report.add_actives() = e;
-  } 
-
-  BOOST_FOREACH(pipeline::JobDesc const& j, orphans) {
-    *status_report.add_orphans() = j;
-  }
+  std::copy(actives.begin(), actives.end(), RepeatedFieldBackInserter(status_report.mutable_actives()));
+  std::copy(orphans.begin(), orphans.end(), RepeatedFieldBackInserter(status_report.mutable_orphans()));    
 
   return status_report;
 }
@@ -69,8 +64,8 @@ int main (int argc, char *argv[]) {
           break;
         case CommandMsg::STATUS:
           vw_out(vw::InfoMessage, "mvpd") << "CommandMsg::STATUS" << endl;
-          *reply.mutable_status_report() = assemble_status(jobs_completed, session.num_jobs(),
-                                                           session_status.entries(), orphaned_jobs);
+          *reply.mutable_status_report() = assemble_status_report(jobs_completed, session.num_jobs(),
+                                                                  session_status.entries(), orphaned_jobs);
           break;
         case CommandMsg::INFO:
           vw_out(vw::InfoMessage, "mvpd") << "CommandMsg::INFO" << endl;
