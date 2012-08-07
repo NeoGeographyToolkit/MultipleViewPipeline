@@ -25,8 +25,7 @@ int main (int argc, char *argv[]) {
   while (1) {
     ZmqServerHelper::PollEventSet events = helper.poll();
 
-    vector<pipeline::JobDesc> orphaned_jobs = session_status.prune_orphaned_jobs();
-    BOOST_FOREACH(pipeline::JobDesc j, orphaned_jobs) {
+    BOOST_FOREACH(pipeline::JobDesc const& j, session_status.prune_orphaned_jobs()) {
       vw::vw_out(vw::InfoMessage, "mvpd") << "Orphaned job ID = " << j.id() << std::endl;
       session_status.add_orphan(j);
     }
@@ -77,8 +76,7 @@ int main (int argc, char *argv[]) {
       vw_out(vw::VerboseDebugMessage, "mvpd") << "ZmqServerHelper::STATUS_EVENT" << endl;
       session_status.update_status(helper.recv_status());
 
-      vector<pipeline::JobDesc> completed_jobs = session_status.prune_completed_jobs();
-      BOOST_FOREACH(pipeline::JobDesc j, completed_jobs) {
+      BOOST_FOREACH(pipeline::JobDesc const& j, session_status.prune_completed_jobs()) {
         vw_out(vw::InfoMessage, "mvpd") << "Completed job ID = " << j.id() << std::endl;
       }
     }
