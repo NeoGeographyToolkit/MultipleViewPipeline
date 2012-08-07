@@ -21,13 +21,11 @@ void sock_send(zmq::socket_t& sock, google::protobuf::Message const& message) {
   sock_send(sock, str_message);
 }
 
-
-bool sock_recv(zmq::socket_t& sock, google::protobuf::Message *message, int timeout) {
+bool sock_poll(zmq::socket_t& sock, int timeout) {
   zmq::pollitem_t poller[] = {{sock, 0, ZMQ_POLLIN, 0}};
   zmq::poll(poller, 1, timeout);
 
   if (poller[0].revents & ZMQ_POLLIN) {
-    message->ParseFromString(sock_recv(sock));
     return true;
   } else {
     return false;

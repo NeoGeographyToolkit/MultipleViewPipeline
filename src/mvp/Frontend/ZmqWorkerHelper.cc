@@ -53,14 +53,16 @@ WorkerCommandMsg ZmqWorkerHelper::recv_bcast() const {
 }
 
 CommandReplyMsg ZmqWorkerHelper::get_next_job() const {
-  CommandReplyMsg cmd;
+  CommandMsg cmd;
   cmd.set_cmd(CommandMsg::JOB);
   sock_send(m_cmd_sock, cmd);
 
-  CommandReplyMsg reply;
-  if (!sock_recv(m_cmd_sock, &reply, mvp_settings().timeouts().command())) {
+  if (!sock_poll(m_cmd_sock, mvp_settings().timeouts().command())) {
     vw_throw(vw::IOErr() << "Lost connection to mvpd");
   }
+
+  CommandReplyMsg reply;
+  reply.ParseFromString(sock_recv(m_cmd_sock));
 
   return reply;
 }
@@ -73,8 +75,9 @@ void ZmqWorkerHelper::send_status(int job_id, double update) const {
 }
 
 bool ZmqWorkerHelper::abort_requested() const {
-  WorkerCommandMsg cmd;
-  if (sock_recv(m_bcast_sock, &cmd, 0)) {
+  if (sock_poll(m_bcast_sock, 0)) {
+    WorkerCommandMsg cmd;
+    cmd.ParseFromString(sock_recv(m_bcast_sock));
     switch (cmd.cmd()) {
       case WorkerCommandMsg::WAKE:
         vw_out(vw::InfoMessage, "mvpworker") << "WorkerCommandMsg::WAKE (while working)" << std::endl;
