@@ -25,7 +25,7 @@ void Session::reset(SessionDesc const& session_desc) {
   m_cursor = m_render_bbox.min();
 }
 
-pipeline::JobDesc Session::next() {
+pipeline::JobDesc Session::next_job() {
   using namespace pipeline;
 
   static int curr_id = 0;

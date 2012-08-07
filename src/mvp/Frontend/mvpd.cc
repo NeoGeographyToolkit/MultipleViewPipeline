@@ -69,8 +69,8 @@ int main (int argc, char *argv[]) {
             *reply.mutable_job() = orphaned_jobs.back();
             orphaned_jobs.pop_back();
             vw_out(vw::InfoMessage, "mvpd") << "Un-orphaned job ID = " << reply.job().id() << endl;
-          } else if (session.has_next()) {
-            *reply.mutable_job() = session.next();
+          } else if (session.has_next_job()) {
+            *reply.mutable_job() = session.next_job();
           }
 
           if (reply.has_job()) {
@@ -81,7 +81,7 @@ int main (int argc, char *argv[]) {
         case CommandMsg::STATUS:
           vw_out(vw::InfoMessage, "mvpd") << "CommandMsg::STATUS" << endl;
 
-          *reply.mutable_status_report() = assemble_status_report(jobs_completed, session.num_jobs(),
+          *reply.mutable_status_report() = assemble_status_report(jobs_completed, session.size(),
                                                                   session_status.entries(), orphaned_jobs);
           break;
         case CommandMsg::INFO:

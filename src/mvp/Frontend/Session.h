@@ -32,11 +32,11 @@ class Session {
 
     void reset(SessionDesc const& session_desc);
 
-    bool has_next() { return m_render_bbox.contains(m_cursor); }
+    bool has_next_job() { return m_render_bbox.contains(m_cursor); }
 
-    pipeline::JobDesc next();
+    pipeline::JobDesc next_job();
 
-    int num_jobs() { return m_render_bbox.width() * m_render_bbox.height(); }
+    int size() { return m_render_bbox.width() * m_render_bbox.height(); }
 };
 
 }} // namespace pipeline, mvp

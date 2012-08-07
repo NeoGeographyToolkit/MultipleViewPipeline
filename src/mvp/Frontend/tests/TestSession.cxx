@@ -17,14 +17,14 @@ TEST(Settings, mvp_settings) {
 
   Session session(session_desc);
 
-  EXPECT_TRUE(session.has_next());
-  JobDesc job_desc = session.next();
+  EXPECT_TRUE(session.has_next_job());
+  JobDesc job_desc = session.next_job();
 
   EXPECT_EQ(job_desc.render().col(), 1);
   EXPECT_EQ(job_desc.render().row(), 2);
 
-  while (session.has_next()) {
-    job_desc = session.next();
+  while (session.has_next_job()) {
+    job_desc = session.next_job();
   }
 
   EXPECT_EQ(job_desc.render().col(), 2);
