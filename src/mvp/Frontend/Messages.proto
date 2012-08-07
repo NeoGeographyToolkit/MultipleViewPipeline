@@ -6,10 +6,10 @@ import "mvp/Pipeline/JobDesc.proto";
 message CommandMsg {
   enum CommandType {
     LAUNCH = 0;
-    STATUS = 1;
-    INFO = 2;
+    JOB = 1;
+    STATUS = 2;
+    INFO = 3;
     KILL = 4;
-    JOB = 5;
   }
 
   required CommandType cmd = 1;

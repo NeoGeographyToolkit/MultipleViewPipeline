@@ -62,35 +62,41 @@ int main (int argc, char *argv[]) {
 
           helper.send_bcast(WorkerCommandMsg::WAKE);
           break;
+        case CommandMsg::JOB:
+          vw_out(vw::InfoMessage, "mvpd") << "CommandMsg::JOB" << endl;
+
+          if (!orphaned_jobs.empty()) {
+            *reply.mutable_job() = orphaned_jobs.back();
+            orphaned_jobs.pop_back();
+            vw_out(vw::InfoMessage, "mvpd") << "Un-orphaned job ID = " << reply.job().id() << endl;
+          } else if (session.has_next()) {
+            *reply.mutable_job() = session.next();
+          }
+
+          if (reply.has_job()) {
+            session_status.add_entry(reply.job());
+            vw_out(vw::InfoMessage, "mvpd") << "Dispatched job ID = " << reply.job().id() << endl;
+          }
+          break;
         case CommandMsg::STATUS:
           vw_out(vw::InfoMessage, "mvpd") << "CommandMsg::STATUS" << endl;
+
           *reply.mutable_status_report() = assemble_status_report(jobs_completed, session.num_jobs(),
                                                                   session_status.entries(), orphaned_jobs);
           break;
         case CommandMsg::INFO:
           vw_out(vw::InfoMessage, "mvpd") << "CommandMsg::INFO" << endl;
+
           // TODO: do something here
           break;
         case CommandMsg::KILL:
           vw_out(vw::InfoMessage, "mvpd") << "CommandMsg::KILL" << endl;
           helper.send_bcast(WorkerCommandMsg::KILL);
           break;
-        case CommandMsg::JOB:
-          vw_out(vw::InfoMessage, "mvpd") << "CommandMsg::JOB" << endl;
-          if (!orphaned_jobs.empty()) {
-            *reply.mutable_job() = orphaned_jobs.back();
-            orphaned_jobs.pop_back();
-            session_status.add_entry(reply.job());
-            vw_out(vw::InfoMessage, "mvpd") << "Dispatched orphaned job ID = " << reply.job().id() << endl;
-          } else if (session.has_next()) {
-            *reply.mutable_job() = session.next();
-            session_status.add_entry(reply.job());
-            vw_out(vw::InfoMessage, "mvpd") << "Dispatched job ID = " << reply.job().id() << endl;
-          }
-          break;
         default:
           vw_throw(vw::LogicErr() << "Unrecognized command");  
       }
+
       helper.send_cmd_reply(reply);
     }
     
