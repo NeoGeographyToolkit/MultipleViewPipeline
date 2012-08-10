@@ -45,6 +45,7 @@ classdef PatchViews < handle
         ne, nr, ns, nt  % degrees of freedom
         se, ss          % squared error and signal
         a, b;     % reflectance coefficients
+        c = [0 4];         % shape parameters of exponetial power function
         m = 1;          % multiplicative hypothesis
         p               % p-value of correspondences
         f, df           % squared error
@@ -84,10 +85,11 @@ classdef PatchViews < handle
             pv.opt.R = optimset('disp','iter','Largescale','off');
             pv.opt.R = optimset(pv.opt.R,'Largescale','off');
             pv.opt.W = optimset('disp','iter','Largescale','off');
-            pv.opt.W = optimset(pv.opt.W,'TolX',1e-25,'FinDiffType','central');
-            pv.opt.T = optimset('Largescale','off','FinDiffType','central');
+            pv.opt.W = optimset(pv.opt.W,'MaxIter',2,'TolX',1e-25);
+            pv.opt.W = optimset(pv.opt.W,'GradObj','off');
+            pv.opt.T = optimset('Largescale','on','FinDiffType','central');
             pv.opt.T = optimset(pv.opt.T,'MaxIter',0,'DerivativeCheck','on');
-            pv.opt.T = optimset(pv.opt.T,'GradObj','on');
+            pv.opt.T = optimset(pv.opt.T,'GradObj','on','OutputFcn',@outfun);
         end
         
         function m = adjustHypothesis(pv)
@@ -324,7 +326,7 @@ classdef PatchViews < handle
             if ~isequal(pv.w,w),
                 pv.w = w;
                 [pv.X, pv.Y pv.Z]=meshgrid(-w(1):w(1),-w(2):w(2),1:pv.n);
-                pv.W = ones(size(pv.X))/2;
+                pv.W = ones(size(pv.X));
             end
             [pv.x0 pv.x1 pv.x2] = wndGaussian(pv.w(1),pv.t(1));
             [pv.y0 pv.y1 pv.y2] = wndGaussian(pv.w(2),pv.t(2));
@@ -373,8 +375,12 @@ classdef PatchViews < handle
             pv.Gb = pv.a(pv.Z).*pv.Fb+pv.b(pv.Z);
             pv.Ga = pv.Gs./pv.Ws; pv.Ga((isnan(pv.Ga))) = 0;
             pv.Ms = sum(pv.Gs,3)./pv.Wt; pv.Ms((isnan(pv.Ms))) = 0;
-            pv.Es = pv.Ga - pv.Ms(:,:,ones(pv.n,1));
-            pv.Eb = pv.Gb - pv.Ms(:,:,ones(pv.n,1));
+            pv.Es = pv.Gb - pv.Ms(:,:,ones(pv.n,1));
+            Wt = sum(pv.W.*pv.Wb,3); Gb = sum(pv.Gb,3);
+            Mb = Gb./Wt; Mb(isnan(Mb)) = 0;
+            Ma = (pv.Wt.*pv.Ms+Wt.*Mb)./(pv.Wt+Wt);
+            Ma(isnan(Ma)) = 0;
+            pv.Eb = pv.Gb - Mb(:,:,ones(pv.n,1));
             if nargout > 0, E = pv.Eb; end
         end
         
@@ -464,22 +470,25 @@ classdef PatchViews < handle
         end
         
         function g = grad_p(pv)
+            a = pv.ne; b = pv.ns; 
             x = pv.se/(pv.se+pv.ss); y = 1-x;
-            a = pv.ne; b = pv.ns; ab = a+b; f = pv.p; 
-            ga = gamma(a); gb = gamma(b); gab = gamma(ab);
-            pa =   psi(a); pb =   psi(b); pab =   psi(ab);
-            Fa = hypergeom([a a 1-b],[a+1 a+1],x);
-            Fb = hypergeom([b b 1-a],[b+1 b+1],y);
-            dg(1) = y^(b-1)*x^(a-1)/beta(a,b);
-            dg(2) = (log(x)-pa+pab)*f-ga*gab/gb*x^a*Fa; 
-            dg(3) = gb*gab/ga*y^b*Fb-(log(y)-pb+pab)*f; 
+%             a = pv.ne; b = pv.ns; c = a+b; f = pv.p; 
+%             pa = psi(a); pb = psi(b); pc = psi(c);
+%             ga = gamma(a); gb = gamma(b); gc = gamma(c);
+%             la = gammaln(a); lb = gammaln(b); lc = gammaln(c);
+%             Fx = hypergeom([a a 1-b],[a+1 a+1],x);
+%             Fy = hypergeom([b b 1-a],[b+1 b+1],y);
+%             Dx = exp(la+lb-lc+a*log(x)+log(Fx)); % exp(la+lc-lb+a*log(x)+log(Fx));
+%             dg(2) = (log(x)-pa+pc)*f-Dx;
+%             Dy = exp(la+lb-lc+b*log(y)+log(Fy)); % exp(lb+lc-la+b*log(y)+log(Fy));
+%             dg(3) = Dy-(log(y)-pb+pc)*f;
+            dg(1) = exp((b-1)*log(y)+(a-1)*log(x)-betaln(a,b));
+            dg(2) = gradest(@(a)betainc(x,a,b),a,0,inf,pv.opt.T);
+            dg(3) = gradest(@(b)betainc(x,a,b),b,0,inf,pv.opt.T);
             
-            de = pv.grad_se; ds = pv.grad_ss;
-            dz = (y*de-x*ds)/(pv.se+pv.ss);
-            de = pv.rof*pv.grad_ne;
-            ds = pv.rof*pv.grad_ns;
-            
-            g = dg(1)*dz+dg(2)*de+dg(3)*ds;
+            de = pv.grad_ne; ds = pv.grad_ns;
+            dy = pv.ss*pv.grad_se; dx = pv.se*pv.grad_ss;
+            g = dg(1)*(dy-dx)/(pv.se+pv.ss)^2+pv.rof*(dg(2)*de+dg(3)*ds);
         end
         
         function g = grad_se(pv)
@@ -583,10 +592,82 @@ classdef PatchViews < handle
             g = pv.grad_nt - pv.grad_ns;
         end
         
+        function c = robust(pv)
+            E = pv.residual;
+            if pv.c(1) == 0 
+                pv.c(1) = 1/std(E(:))/1e1; 
+%             else
+%                 pv.c(1) = pv.c(1)/2;
+            end
+            pv.opt.W = optimset(pv.opt.W,'OutputFcn',@outres);
+            [c,f,exitflag,output] = fminunc(@(c)mvOpt(pv,c),pv.c,pv.opt.W);
+%             E = pv.residual; lb = -max(abs(E(:)));
+%             [c,f,exitflag,output] = fminbnd(@(c)mvOpt(c,pv),lb,0,pv.opt.W);
+            if ~isequal(pv.opt.W.Display,'off'),
+                output
+                exitflag
+                pv.disp
+            end
+            
+            function stop = outres(c,optimvalues,state)
+                stop = false;
+                switch state
+                    case 'iter'
+                        pv.residual;                        
+                end
+            end
+%             function p = mvOpt(c,pv)
+%                 E = pv.residual;
+%                 pv.W = ones(size(E));
+%                 pv.W(find(abs(E)>-c))=0;
+%                 for k=1:pv.n, pv.sv(k).W = pv.W(:,:,k); end
+%                 pv.proj;
+%                 p=reallog(pv.corelate+PatchViews.eps_p);
+%             end
+        end
+        
+        function e = robusti(pv)
+            sz = size(pv.Eb);
+            n = prod(sz(1:2))*(sz(3)-1);
+            P = [];
+            for k = 1:1000
+                pv.residual;
+                pv.Eb(~pv.W) = 0;
+                [e,i]=max(abs(pv.Eb(:)));
+                pv.W(i) = 0; pv.proj;
+                p = reallog(pv.corelate+PatchViews.eps_p);
+                P = [P p];
+                fprintf('.');
+            end
+            figure, plot(P)
+        end
+        
+        function p = mvOpt(pv,c)
+%            E = pv.residual;
+            pv.W = exp(-(abs(pv.Eb)*c(1)).^c(2));
+            pv.proj;
+            p=reallog(pv.corelate+PatchViews.eps_p);
+        end
+            
         function w = robustw(pv)
             ub = ones(size(pv.Ws)); ub = ub(:);
             lb = zeros(size(pv.Ws)); lb = lb(:);
             w = 0.5*ub;
+
+fcn  = 'mvFcnGrad';
+grad = 'mvGrad'; 
+fcnGrad = 'mvFcnGrad'; % optional
+
+% add some ASA options (these are optional). See driver1.c for examples,
+%   and see asa_user.h for all possible values
+opts = [];
+opts.PrintParms = true;
+CGopts = struct('PrintParms',true);
+param = struct('pv',pv);
+
+% run the function
+[out,status] = asa_wrapper(w,lb,ub,fcn,grad,fcnGrad,opts,CGopts,param);
+            
             [w,f,exitflag,output] = fmincon(@(w)mvOpt(w,pv),w,[],[],[],[],lb,ub,[],pv.opt.W);
             pv.W = reshape(w,size(pv.W)); w = pv.W;
             if ~isequal(pv.opt.W.Display,'off'),
@@ -595,11 +676,12 @@ classdef PatchViews < handle
                 pv.disp
             end
             
-            function p = mvOpt(w,pv)
+            function [p,g] = mvOpt(w,pv)
                 pv.W = reshape(w,size(pv.Ws));
                 for k=1:pv.n, pv.sv(k).W = pv.W(:,:,k); end
                 pv.proj;
                 p=reallog(pv.corelate+PatchViews.eps_p);
+                if nargout > 1, g = pv.grad_p/pv.p; end
             end
         end
         

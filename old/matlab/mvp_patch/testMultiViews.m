@@ -7,6 +7,8 @@ classdef testMultiViews < TestCase
     methods
         function self = testMultiViews(name)
             self = self@TestCase(name);
+            % compile with
+%        mex -DMEXPRINTF asa_wrapper.c ASA_CG-2.2/asa_cg.c -IASA_CG-2.2 -largeArrayDims -v
         end
         
         function setUp(self)

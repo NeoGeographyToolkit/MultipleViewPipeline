@@ -43,6 +43,7 @@ classdef RasterView < handle
             rv.pv.proj
             r = rv.elevate(RasterView.radiusMoon-500);
             h = r-RasterView.radiusMoon
+            
             q = rv.rotate
             for k=1:5
                 k
@@ -63,6 +64,7 @@ classdef RasterView < handle
             end
             figure, plot(log(f))
             figure, plot(log(p))
+            c = rv.pv.robust
             rv.disp
         end
 
