@@ -14,11 +14,27 @@ classdef SingleView < handle
         
         a = 1;
         b = 0;
+        c = [0 0]';     % translation
         e = [0 0 0]';   % elevation post
         q = [0 0 0 1]'; % quaternion for rotation matrix
-        r = 1737400;    % radius of the moon
+        r = 1737400;    % radius
+        r0 = 1737400;   % reference radius
+        dr = 0;         % offset of radius
         s = 1;          % smoothing sigma
+        t = 0;          % rotation
         u = 31;
+    end % properties (Hidden)
+    
+    properties (Hidden)     % tiled projection
+        cI  % cell images
+        cW  % cell weights
+        tC = [1 1]';
+        tW  % tiled weight
+        tM = true(3);   % tiled map
+        tX, tY;
+        tw, tD;
+        
+        d = 40;             % radius of tile
     end % properties (Hidden)
     
     properties (SetObservable, SetAccess = public)
@@ -28,19 +44,22 @@ classdef SingleView < handle
     
     properties (SetObservable, SetAccess = private)
         w = [20 20 3];      % window size for correlation and smoothing
-        p = [0 0 0]';       % origin of patch % 3d point
-        v = [0 0 0]';       % viewing vector
-        R = eye(3);         % rotation matrix of q
-        S = [0 0 0]';       % Projected Patch Center (sv.p)
     end
     
     properties (SetAccess = private)
         camDet
         camCen
         
+        ce = [0 0 0]';      % cross of camCen and e
+        
+        p = [0 0 0]';       % origin of patch % 3d point
+        v = [0 0 0]';       % viewing vector
         H = eye(3);         % compute homography
+        Hi = eye(3);        % inverse homography
         Hr = eye(3);        % homography of image formation
-        Hs = eye(3);        % homography due to sloppy refinement
+        Hs = eye(3);        % inverse homography due to sloppy refinement
+        R = eye(3);         % rotation matrix of q
+        tF                  % transform
         
         xb = 16*[-1 1]; % xdata of backward projection
         yb = 16*[-1 1]; % ydata of backward projection
@@ -49,19 +68,25 @@ classdef SingleView < handle
         X               % X
         Y
         
-        imgCen
-        tilImg
-        tilWat
-        tilMap
-        
         s0, s1, s2
+        s0x, s1x, s2x
+        s0y, s1y, s2y
         r3, x3, y3
+        uvz = 1;    % u*v*ez
         
         Ik, Wb  % (backward) projected image and weight
         Is, Ws  % smoothed weighted image and weight
         Ix, Wx  % gradient weighted image and weight
         Iy, Wy  % gradient weighted image and weight
         Wk      % =W*Wb
+        
+        tIk, tWb  % (backward) projected image and weight
+        tIs, tWs  % smoothed weighted image and weight
+        tIx, tWx  % gradient weighted image and weight
+        tIy, tWy  % gradient weighted image and weight
+        tWk      % =W*Wb
+        tI, tJ;
+        tCen
     end
     
     methods
@@ -76,11 +101,12 @@ classdef SingleView < handle
                 sv.camCen = -sv.cam(:,1:3)\sv.cam(:,4);
             end
             addlistener(sv,'h','PostSet',@sv.PropEvents);
-            addlistener(sv,'p','PostSet',@sv.PropEvents);
-            addlistener(sv,'v','PostSet',@sv.PropEvents);
-            addlistener(sv,'R','PostSet',@sv.PropEvents);
-            addlistener(sv,'S','PostSet',@sv.PropEvents);
             addlistener(sv,'W','PostSet',@sv.PropEvents);
+            sv.tw = 2*sv.d+1;
+            tx = -sv.tw:sv.tw:sv.tw;
+            [sv.tX,sv.tY] = meshgrid(tx,tx);    % center of tile
+            sv.tD = sv.d*[-1 1];
+            sv.tCen = sv.tw+sv.d+1+round(sv.c);
         end
         
         function PropEvents(sv,src,evt)
@@ -90,25 +116,33 @@ classdef SingleView < handle
                     if ~isequal(sv.e,e),
                         sv.e = e;
                         sv.p = sv.r*sv.e;
+                        sv.ce = cross(sv.camCen,sv.e);
                     end
                 case 'h'
-                    c = cos(sv.h(3)); s = sin(sv.h(3)); R = [c -s; s c];
-                    sv.Hs = [R sv.h(1:2); 0 0 1];
-                    sv.H = sv.Hr*sv.Hs;
-                case 'p'
-                    sv.v = sv.p-sv.camCen;
-                    sv.S = sv.cam(:,1:3)*sv.p+sv.cam(:,4);
+                    c = cos(sv.h(3)); s = sin(sv.h(3)); R = [c s; -s c];
+                    sv.Hs = [R -sv.h(1:2); 0 0 1];
+                    sv.tF = maketform('projective',(sv.Hs/sv.Hr)');
                 case 'q'    % quaternion from PatchViews
                     q = evt.AffectedObject.q;
                     if ~isequal(sv.q,q),
                         sv.q = q;
                         sv.R = q2dcm(sv.q);
+                        sv.Hr(:,1:2) = sv.u*sv.cam(:,1:3)*sv.R(:,1:2);
+                        sv.x3 = sv.Hr(3,1); sv.y3 = sv.Hr(3,2);
+                        sv.tF = maketform('projective',(sv.Hs/sv.Hr)');
+                        sv.c = [0 0]';
                     end
                 case 'r'    % elevation from PatchViews
                     r = evt.AffectedObject.r;
                     if ~isequal(sv.r,r),
                         sv.r = r;
                         sv.p = sv.r*sv.e;
+                        sv.v = sv.p-sv.camCen;
+                        sv.Hr(:,3) = sv.cam(:,1:3)*sv.p+sv.cam(:,4);
+                        sv.tF = maketform('projective',(sv.Hs/sv.Hr)');
+                        sv.r3 = sv.cam(3,1:3)*sv.v;
+                        sv.uvz = sv.u*sv.v'*sv.R(:,3);
+                        sv.c = sv.dr*[sv.R(:,2) -sv.R(:,1)]'*sv.ce/sv.uvz;
                     end
                 case 's'    % smoothing scale from PatchViews
                     s = evt.AffectedObject.s;
@@ -116,9 +150,10 @@ classdef SingleView < handle
                         sv.s = s;
                         sv.w(3)=ceil(sv.s*SingleView.ratioSmoth);
                         [sv.s0 sv.s1 sv.s2]=fltGaussian(sv.w(3),sv.s);
+                        c = sv.c-round(sv.c);
+                        [sv.s0x sv.s1x sv.s2x]=fltGaussian(sv.w(3),sv.s,c(1));
+                        [sv.s0y sv.s1y sv.s2y]=fltGaussian(sv.w(3),sv.s,c(2));
                     end
-                case 'v'
-                    sv.r3 = sv.cam(3,1:3)*sv.v;
                 case 'w'
                     w = evt.AffectedObject.w;
                     if ~isequal(sv.w,w),
@@ -134,18 +169,14 @@ classdef SingleView < handle
                         sv.yb = sv.w(2)*[-1 1]; % ydata
                         x=sv.xb(1):sv.xb(2); y=sv.yb(1):sv.yb(2);
                         [sv.X, sv.Y]=meshgrid(x,y);
+                        sv.tI = sv.tCen(2)+y;
+                        sv.tJ = sv.tCen(1)+x;
                         [sv.s0 sv.s1 sv.s2]=fltGaussian(sv.w(3),sv.s);
+                        [sv.s0x sv.s1x sv.s2x]=fltGaussian(sv.w(3),sv.s,sv.c(1)-round(sv.c(1)));
+                        [sv.s0y sv.s1y sv.s2y]=fltGaussian(sv.w(3),sv.s,sv.c(2)-round(sv.c(2)));
                         sv.Ik = ones(size(sv.X));
                         sv.Wb = sv.Ik;
                     end
-                case 'S'
-                    sv.Hr = [sv.cam(:,1:3)*sv.R(:,1:2)*sv.u sv.S];
-                    sv.H = sv.Hr*sv.Hs;
-                case 'R'
-                    sv.x3 = sv.u*sv.cam(3,1:3)*sv.R(:,1);
-                    sv.y3 = sv.u*sv.cam(3,1:3)*sv.R(:,2);
-                    sv.Hr = [sv.u*sv.cam(:,1:3)*sv.R(:,1:2) sv.S];
-                    sv.H = sv.Hr*sv.Hs;
                 case 'W'
                     sv.Wk = sv.W.*sv.Wb;
                     [sv.Ws,sv.Wx,sv.Wy] = smooth(sv.Wk,sv.s0,sv.s1);
@@ -359,19 +390,31 @@ classdef SingleView < handle
             if nargout > 6, Ik = sv.Ik; end
             if nargout > 7, Wb = sv.Wb; end
         end
+        
+        function [Is,Ws,Ix,Wx,Iy,Wy,Ik,Wb] = tCrop(sv)
+            sv.tProj([1 1 1 2 2 2 3 3 3],[1 2 3 1 2 3 1 2 3]);
+            sv.tConv;
+            if nargout > 0, Is = sv.tIs(sv.tI,sv.tJ); end
+            if nargout > 1, Ws = sv.tWs(sv.tI,sv.tJ); end
+            if nargout > 2, Ix = sv.tIx(sv.tI,sv.tJ); end
+            if nargout > 3, Wx = sv.tWx(sv.tI,sv.tJ); end
+            if nargout > 4, Iy = sv.tIy(sv.tI,sv.tJ); end
+            if nargout > 5, Wy = sv.tWy(sv.tI,sv.tJ); end
+            if nargout > 6, Ik = sv.tIk(sv.tI,sv.tJ); end
+            if nargout > 7, Wb = sv.tWb(sv.tI,sv.tJ); end
+        end
     end % methods
     
     methods (Access = private)
         function [Is,Ws,Ix,Wx,Iy,Wy] = proj(sv)
             % backward projection of image and weight
-            tform = maketform('projective',inv(sv.H)');
-            sv.Ik = imtransform(sv.img,tform,'bicubic','xdata',sv.xb,'ydata',sv.yb);
+            sv.Ik = imtransform(sv.img,sv.tF,'bicubic','xdata',sv.xb,'ydata',sv.yb);
             %            sv.Wb = imtransform(sv.wat,tform,'bicubic','xdata',sv.xb,'ydata',sv.yb);
             
             % determinant of backward Jacobian
             d = sv.x3*sv.X+sv.y3*sv.Y+sv.r3;
-            %            n = -sv.u^2*sv.camDet*sv.v'*sv.R(:,3);
-            n = abs(sv.u^2*sv.camDet*sv.v'*sv.R(:,3));
+            %            n = -sv.u^2*sv.camDet*sv.vz;
+            n = abs(sv.u*sv.camDet*sv.uvz);
             sv.Wb = d.^3/n;
             
             %             D = abs(sv.H(3,3)^3/det(sv.H)); % determinant of jacobian
@@ -396,6 +439,45 @@ classdef SingleView < handle
             if nargout > 4, Iy = sv.Iy; end
             if nargout > 5, Wy = sv.Wy; end
         end
+        
+        function tProj(sv,i,j)
+            % backward projection of image and weight
+            m = length(i);
+            %            n = -sv.u^2*sv.camDet*sv.vz;
+            n = abs(sv.u*sv.camDet*sv.uvz);
+            for k = 1:m
+                xb = sv.tX(i(k),j(k))+sv.tD; yb = sv.tY(i(k),j(k))+sv.tD;
+                sv.cI{i(k),j(k)} = imtransform(sv.img,sv.tF,'bicubic','xdata',xb,'ydata',yb);
+
+                % determinant of backward Jacobian
+                d = sv.x3*(sv.X+sv.tX(i(k),j(k)))+sv.y3*(sv.Y+sv.tY(i(k),j(k)))+sv.r3;
+                sv.cW{i(k),j(k)} = d.^3/n;
+            end
+            sv.tIk = cell2mat(sv.cI);
+            sv.tWb = cell2mat(sv.cW);
+            
+            %             D = abs(sv.H(3,3)^3/det(sv.H)); % determinant of jacobian
+            %             if abs(sv.Wb(sv.yb(2)+1,sv.xb(2)+1)-D) > SingleView.eps_sqrt
+            %                 figure, imagesc(sv.Wb), colorbar
+            %                 error('Jacobian should be similar to numerical estimate!!!')
+            %             end
+            if any(sv.tW(:) < 0),
+                sv.R, sv.q, sv.r
+                figure, imagesc(sv.tW), colorbar
+                error('Weight should be nonnegative!!!')
+            end
+        end
+        
+        function tConv(sv,i,j)
+            sv.tWk = sv.tWb;
+            sv.tWs=conv2(sv.s0y,sv.s0x,sv.tWk,'same');
+            sv.tWx=conv2(sv.s0y,sv.s1x,sv.tWk,'same');
+            sv.tWy=conv2(sv.s1y,sv.s0x,sv.tWk,'same');
+            tIW = sv.tWk.*sv.tIk;
+            sv.tIs=conv2(sv.s0y,sv.s0x,tIW,'same');
+            sv.tIx=conv2(sv.s0y,sv.s1x,tIW,'same');
+            sv.tIy=conv2(sv.s1y,sv.s0x,tIW,'same');
+        end
     end
     
     methods (Static)
@@ -408,16 +490,17 @@ Ix=conv2(s0,s1,I,'same');
 Iy=conv2(s1,s0,I,'same');
 end
 
-function [f0 f1 f2]=fncGaussian(r,s)
+function [f0 f1 f2]=fncGaussian(r,s,c)
 % r: radius, s: sigma
-x=[-r-0.5:r+0.5]'; fx = normpdf(x,0,s);
+x=[-r-0.5:r+0.5]'+c; fx = normpdf(x,0,s);
 f0 = diff(normcdf(x,0,s));
 f1 = diff(fx);
 f2 = diff(-x.*fx)/s^2;
 end
 
-function [f0 f1 f2]=fltGaussian(r,s)
-% r: radius, s: sigma
-[f0 f1 f2]=fncGaussian(r,s);
+function [f0 f1 f2]=fltGaussian(r,s,c)
+% r: radius, s: sigma, c: offset
+if nargin < 3, c = 0; end
+[f0 f1 f2]=fncGaussian(r,s,c);
 n0 = sum(f0); f0 = f0/n0; f1 = f1/n0; f2 = f2/n0;
 end

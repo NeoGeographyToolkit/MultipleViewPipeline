@@ -36,6 +36,14 @@ classdef MultiViews < handle
                 mv.rv.raster;
             end
         end
+                
+        function h = elevate(mv,z)
+            if nargin > 1,
+                mv.rv.elevate(z);
+            else
+                mv.rv.elevate;
+            end
+        end
         
         function h = disp(mv)
             n = numel(mv.sv);

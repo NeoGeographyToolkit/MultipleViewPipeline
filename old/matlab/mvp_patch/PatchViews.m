@@ -2,7 +2,6 @@ classdef PatchViews < handle
     % terrain patch contains handle of single view
     properties (Constant)
         ratioScale = 4;
-        ratioSmoth = 4;
         eps_realmin = realmin;
         eps_p = realmin;
         eps_log2p = reallog(2*realmin);
@@ -45,7 +44,7 @@ classdef PatchViews < handle
         ne, nr, ns, nt  % degrees of freedom
         se, ss          % squared error and signal
         a, b;     % reflectance coefficients
-        c = [0 4];         % shape parameters of exponetial power function
+        c = [0 32];         % shape parameters of exponetial power function
         m = 1;          % multiplicative hypothesis
         p               % p-value of correspondences
         f, df           % squared error
@@ -83,9 +82,7 @@ classdef PatchViews < handle
             pv.t = pv.t;
             
             pv.opt.R = optimset('disp','iter','Largescale','off');
-            pv.opt.R = optimset(pv.opt.R,'Largescale','off');
-            pv.opt.W = optimset('disp','iter','Largescale','off');
-            pv.opt.W = optimset(pv.opt.W,'MaxIter',2,'TolX',1e-25);
+            pv.opt.W = optimset(pv.opt.R,'MaxIter',0,'TolX',1e-25);
             pv.opt.W = optimset(pv.opt.W,'GradObj','off');
             pv.opt.T = optimset('Largescale','on','FinDiffType','central');
             pv.opt.T = optimset(pv.opt.T,'MaxIter',0,'DerivativeCheck','on');
@@ -250,6 +247,46 @@ classdef PatchViews < handle
             end
         end
         
+        function [r,q] = optimize(pv,r,q)
+            if nargin > 1, pv.r = r; end
+            if nargin > 2, pv.q = q; end
+            r = pv.elevate;
+            h = r-RasterView.radiusMoon;
+            fprintf('The elevation is %f\n', h);
+            
+            pv.opt.Q = optimset(pv.opt.R,'OutputFcn',@rotfun);
+            pv.opt.R = optimset(pv.opt.R,'disp','off','OutputFcn',@radfun);
+            [q,f,exitflag,output] = fminunc(@(q)mvOpt(q,pv),pv.q,pv.opt.Q);
+            pv.q=q; pv.proj;
+            if ~isequal(pv.opt.Q.Display,'off'),
+                output
+                exitflag
+                pv.disp
+            end
+            
+            function p=mvOpt(q,pv)
+                pv.q=q; pv.proj;
+                p=reallog(pv.corelate+PatchViews.eps_p);
+            end
+            
+            function stop = rotfun(q,optimvalues,state)
+                stop = false;
+                switch state
+                    case 'iter'
+                        pv.q = q; pv.proj;
+                        r = pv.elevate;
+                        h = r-RasterView.radiusMoon;
+                        fprintf('The elevation is %f\n', h);
+                end
+            end
+            
+            function stop = radfun(r,optimvalues,state)
+                stop = false;
+                pv.r = r; pv.proj;
+                pv.geometry;                
+            end
+        end
+        
         function h = disp(pv)
             if ~isempty(pv.W)
                 figure;
@@ -322,7 +359,7 @@ classdef PatchViews < handle
         end
         
         function initWindows(pv)
-            w = ceil([pv.t(1:2)*PatchViews.ratioScale; pv.s*PatchViews.ratioSmoth]);
+            w = ceil([pv.t(1:2)*PatchViews.ratioScale; pv.s*SingleView.ratioSmoth]);
             if ~isequal(pv.w,w),
                 pv.w = w;
                 [pv.X, pv.Y pv.Z]=meshgrid(-w(1):w(1),-w(2):w(2),1:pv.n);
@@ -595,12 +632,13 @@ classdef PatchViews < handle
         function c = robust(pv)
             E = pv.residual;
             if pv.c(1) == 0 
-                pv.c(1) = 1/std(E(:))/1e1; 
+                pv.c(1) = 1/std(E(:))/sqrt(5); 
 %             else
 %                 pv.c(1) = pv.c(1)/2;
             end
             pv.opt.W = optimset(pv.opt.W,'OutputFcn',@outres);
-            [c,f,exitflag,output] = fminunc(@(c)mvOpt(pv,c),pv.c,pv.opt.W);
+%            [c,f,exitflag,output] = fmincon(@(c)mvOpt(pv,c),pv.c,[],[],[],[],[0 4],[inf inf],[],pv.opt.W);
+            [c,f,exitflag,output] = fminunc(@(c)mvOptBnd(pv,c),pv.c(1),pv.opt.W);
 %             E = pv.residual; lb = -max(abs(E(:)));
 %             [c,f,exitflag,output] = fminbnd(@(c)mvOpt(c,pv),lb,0,pv.opt.W);
             if ~isequal(pv.opt.W.Display,'off'),
@@ -645,6 +683,12 @@ classdef PatchViews < handle
         function p = mvOpt(pv,c)
 %            E = pv.residual;
             pv.W = exp(-(abs(pv.Eb)*c(1)).^c(2));
+            pv.proj;
+            p=reallog(pv.corelate+PatchViews.eps_p);
+        end
+            
+        function p = mvOptBnd(pv,c)
+            pv.W = exp(-(abs(pv.Eb)*c).^pv.c(2));
             pv.proj;
             p=reallog(pv.corelate+PatchViews.eps_p);
         end

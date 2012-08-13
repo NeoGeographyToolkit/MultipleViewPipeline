@@ -14,6 +14,7 @@ classdef testMultiViews < TestCase
         function setUp(self)
             strIn = 'AS15_3_3_tiles.mat';
             self.mv = MultiViews(strIn);
+            close all
         end
         
         function tearDown(self)
@@ -28,7 +29,7 @@ classdef testMultiViews < TestCase
         function testRaster(self)
             strIn = 'AS15_3_3_tiles.mat';
             self.mv = MultiViews(strIn);
-            self.mv.raster([128 150]')
+            self.mv.raster([128 150]');
         end
         
         function testConstructor(self)

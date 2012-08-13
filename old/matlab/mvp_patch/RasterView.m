@@ -40,31 +40,7 @@ classdef RasterView < handle
             if nargin > 1,
                 rv.z = z;
             end
-            rv.pv.proj
-            r = rv.elevate(RasterView.radiusMoon-500);
-            h = r-RasterView.radiusMoon
-            
-            q = rv.rotate
-            for k=1:5
-                k
-                [p(k),~,~,f(k)] = rv.pv.corelate;
-                t = rv.pv.geometry
-                rv.pv.proj
-            end
-            figure, plot(log(f))
-            figure, plot(log(p))
-            rv.disp
-            t = rv.scate
-            s = rv.smote
-            for k=1:5
-                k
-                [p(k),~,~,f(k)] = rv.pv.corelate;
-                t = rv.pv.geometry
-                rv.pv.proj
-            end
-            figure, plot(log(f))
-            figure, plot(log(p))
-            c = rv.pv.robust
+            [r,q]=rv.optimize(RasterView.radiusMoon-500);
             rv.disp
         end
 
@@ -85,6 +61,14 @@ classdef RasterView < handle
         
         function q=rotate(rv)
             q=rv.pv.rotate;
+        end
+        
+        function [r,q]=optimize(rv,r,q)
+            switch nargin
+                case 1, [r,q]=rv.pv.optimize;
+                case 2, [r,q]=rv.pv.optimize(r);
+                case 3, [r,q]=rv.pv.optimize(r,q);
+            end
         end
         
         function s=scate(rv)
