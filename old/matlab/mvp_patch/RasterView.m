@@ -96,7 +96,7 @@ classdef RasterView < handle
         function PropEvents(rv,src,evt)
             switch src.Name
                 case 'z'
-                    [rv.pv.e, ~, rv.lonlat]=rv.tv.post(rv.z);
+                    [rv.pv.e, d, rv.lonlat]=rv.tv.post(rv.z);
             end
         end
         

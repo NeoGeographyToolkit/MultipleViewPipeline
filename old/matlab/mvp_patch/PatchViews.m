@@ -14,12 +14,13 @@ classdef PatchViews < handle
     properties (SetObservable)
         n = 2;          % number of patches
         r = 0;          % radial elevation
+        c = [40 40]';   % extended window
         e = [0 0 1]     % elevation post
         q = [0 0 0 1]'; % quaternion of rotation
         s = 0.5;        % smoothing scale
         t = [10 10]';   % correlation scale
         u = 31;         % unit length of the pixel
-        w               % window size
+        w = [40 40 3]'-1; % window size
         H               % sloppy refinement 
         W               % inlier membership
     end
@@ -44,12 +45,13 @@ classdef PatchViews < handle
         ne, nr, ns, nt  % degrees of freedom
         se, ss          % squared error and signal
         a, b;     % reflectance coefficients
-        c = [0 32];         % shape parameters of exponetial power function
+        d = [0 32];         % shape parameters of exponetial power function
         m = 1;          % multiplicative hypothesis
         p               % p-value of correspondences
         f, df           % squared error
         X, Y, Z
         sw              % individual total dofs
+        dw = [40 40]'   % increment of w(1:2)          
         
         opt;            % optimization settings
     end
@@ -66,6 +68,7 @@ classdef PatchViews < handle
             pv.H = zeros(pv.n,3);
             for i=1:pv.n,
                 obj = sv(i);
+                addlistener(pv,'c','PostSet',@obj.PropEvents);
                 addlistener(pv,'e','PostSet',@obj.PropEvents);
                 addlistener(pv,'q','PostSet',@obj.PropEvents);
                 addlistener(pv,'r','PostSet',@obj.PropEvents);
@@ -77,11 +80,15 @@ classdef PatchViews < handle
             if nargin > 1, pv.e = e; end
             pv.a = ones(pv.n,1);
             pv.b = zeros(pv.n,1);
-            pv.r = pv.r;
             pv.s = pv.s;
             pv.t = pv.t;
+            pv.c = pv.w(1:2);
+            pv.dw = pv.w(1:2);
+            pv.W = ones(size(pv.X));
+            pv.r = RasterView.radiusMoon;
             
             pv.opt.R = optimset('disp','iter','Largescale','off');
+            pv.opt.S = optimset(pv.opt.R,'MaxIter',1,'Algorithm','interior-point');
             pv.opt.W = optimset(pv.opt.R,'MaxIter',0,'TolX',1e-25);
             pv.opt.W = optimset(pv.opt.W,'GradObj','off');
             pv.opt.T = optimset('Largescale','on','FinDiffType','central');
@@ -114,7 +121,7 @@ classdef PatchViews < handle
             end
             pv.r=r; pv.proj;
             if ~isequal(pv.opt.R.Display,'off'),
-                pv.disp;
+%                pv.disp;
             end
             
             function p=mvOpt(r,pv)
@@ -179,6 +186,26 @@ classdef PatchViews < handle
                 pv.t = t.^2; pv.proj;
                 p=pv.corelate;
                 if p<realmin, f = PatchViews.eps_log; else f = log(p); end
+            end
+        end
+        
+        function t = scale(pv)  % optimize the scales
+            w = pv.w(1:2);
+            pv.c = pv.w(1:2)+pv.dw;
+            ub = sqrt(pv.c/PatchViews.ratioScale);
+            t = fmincon(@(t)mvOpt(t,pv),sqrt(pv.t),[],[],[],[],[0 0],ub,[],pv.opt.S);
+            pv.t = t.^2; pv.proj;
+            dw = pv.w(1:2)-w;
+            pv.dw = ceil(abs(dw).*2.^sign(dw))+1;
+            pv.c = pv.w(1:2);
+            if ~isequal(pv.opt.R.Display,'off'),
+                pv.disp
+            end
+            
+            function p=mvOpt(t,pv)
+                pv.t = t.^2; 
+                pv.proj;
+                p=reallog(pv.corelate+PatchViews.eps_p);
             end
         end
         
@@ -256,6 +283,7 @@ classdef PatchViews < handle
             
             pv.opt.Q = optimset(pv.opt.R,'OutputFcn',@rotfun);
             pv.opt.R = optimset(pv.opt.R,'disp','off','OutputFcn',@radfun);
+            pv.opt.S = optimset(pv.opt.S,'disp','off');
             [q,f,exitflag,output] = fminunc(@(q)mvOpt(q,pv),pv.q,pv.opt.Q);
             pv.q=q; pv.proj;
             if ~isequal(pv.opt.Q.Display,'off'),
@@ -277,13 +305,18 @@ classdef PatchViews < handle
                         r = pv.elevate;
                         h = r-RasterView.radiusMoon;
                         fprintf('The elevation is %f\n', h);
+                        t = pv.scale.^2;
+                        fprintf('The scale is (%f,%f)\n', t(1),t(2));
                 end
             end
             
             function stop = radfun(r,optimvalues,state)
                 stop = false;
-                pv.r = r; pv.proj;
-                pv.geometry;                
+                switch state
+                    case 'iter'
+                        pv.r = r; pv.proj;
+                        pv.geometry;                
+                end
             end
         end
         
@@ -332,6 +365,7 @@ classdef PatchViews < handle
         
         function PropEvents(pv,src,evt)
             switch src.Name
+                case 'c'
                 case 'e'
                     ex = [-pv.e(2) pv.e(1) 0]'; ex = ex/norm(ex);
                     ey = -cross(pv.e,ex); ey = ey/norm(ey);
@@ -351,8 +385,8 @@ classdef PatchViews < handle
                 case 'W'
                     W = evt.AffectedObject.W;
                     for k=1:pv.n,
-                        if ~isequal(pv.sv(k).W,W(:,:,k)),
-                            pv.sv(k).W = pv.W(:,:,k);
+                        if ~isequal(pv.sv(k).W(pv.sv(k).is,pv.sv(k).js),W(:,:,k)),
+                            pv.sv(k).W(pv.sv(k).is,pv.sv(k).js) = pv.W(:,:,k);
                         end
                     end
             end
@@ -361,6 +395,9 @@ classdef PatchViews < handle
         function initWindows(pv)
             w = ceil([pv.t(1:2)*PatchViews.ratioScale; pv.s*SingleView.ratioSmoth]);
             if ~isequal(pv.w,w),
+                if any(pv.c < pv.w(1:2)),
+                    error('pv.c should be bigger than pv.w');
+                end
                 pv.w = w;
                 [pv.X, pv.Y pv.Z]=meshgrid(-w(1):w(1),-w(2):w(2),1:pv.n);
                 pv.W = ones(size(pv.X));
@@ -392,6 +429,9 @@ classdef PatchViews < handle
         function [I,W]=proj(pv)
             pv.Fs=[]; pv.Fx=[]; pv.Fy=[]; pv.Fb=[];
             pv.Ws=[]; pv.Wx=[]; pv.Wy=[]; pv.Wb=[];
+            if isequal(pv.c,pv.w(1:2))
+                for k=1:pv.n, pv.sv(k).smooth; end
+            end
             for k=1:pv.n
                 [pv.Fs(:,:,k),pv.Ws(:,:,k),pv.Fx(:,:,k),pv.Wx(:,:,k),...
                     pv.Fy(:,:,k),pv.Wy(:,:,k),pv.Fb(:,:,k),pv.Wb(:,:,k)] = pv.sv(k).crop;
@@ -402,8 +442,7 @@ classdef PatchViews < handle
             pv.Wn = pv.Ws./repmat(pv.Wt,[1 1 pv.n]);
             pv.Wn(isnan(pv.Wn)) = 0;
             pv.Wr = sum(pv.Wn.*pv.Ws,3);
-
-            
+       
             if nargout > 0, I = pv.Fs; end
             if nargout > 1, W = pv.Ws; end
         end
@@ -429,7 +468,8 @@ classdef PatchViews < handle
             Eb = scatw(pv.Ws(:,:,pv.is).*pv.Wn(:,:,pv.js),pv.Ws,pv.ks,pv.x0,pv.y0);
             Ec = scatw(pv.Fs(:,:,pv.ia).*pv.Wn(:,:,pv.ja),pv.Fs,pv.ka,pv.x0,pv.y0);
             wa = wnd3(pv.y0,pv.x0,In); wb = wnd3(pv.y0,pv.x0,pv.Wn);
-            T = (Eb*Eb+wb*wb')\(Eb*Ec'+wb*wa');
+            S = [Eb wb; wb' 0]\[Ec; wa'];
+            T = S(1:pv.n,:);
             Et = T'*Eb*T/2-Ec*T;
             E = Ea+Et+Et'; % error matrix with symmetry
             
@@ -631,14 +671,14 @@ classdef PatchViews < handle
         
         function c = robust(pv)
             E = pv.residual;
-            if pv.c(1) == 0 
-                pv.c(1) = 1/std(E(:))/sqrt(5); 
+            if pv.d(1) == 0 
+                pv.d(1) = 1/std(E(:))/sqrt(5); 
 %             else
-%                 pv.c(1) = pv.c(1)/2;
+%                 pv.d(1) = pv.d(1)/2;
             end
             pv.opt.W = optimset(pv.opt.W,'OutputFcn',@outres);
-%            [c,f,exitflag,output] = fmincon(@(c)mvOpt(pv,c),pv.c,[],[],[],[],[0 4],[inf inf],[],pv.opt.W);
-            [c,f,exitflag,output] = fminunc(@(c)mvOptBnd(pv,c),pv.c(1),pv.opt.W);
+%            [c,f,exitflag,output] = fmincon(@(c)mvOpt(pv,c),pv.d,[],[],[],[],[0 4],[inf inf],[],pv.opt.W);
+            [c,f,exitflag,output] = fminunc(@(c)mvOptBnd(pv,c),pv.d(1),pv.opt.W);
 %             E = pv.residual; lb = -max(abs(E(:)));
 %             [c,f,exitflag,output] = fminbnd(@(c)mvOpt(c,pv),lb,0,pv.opt.W);
             if ~isequal(pv.opt.W.Display,'off'),
@@ -688,47 +728,11 @@ classdef PatchViews < handle
         end
             
         function p = mvOptBnd(pv,c)
-            pv.W = exp(-(abs(pv.Eb)*c).^pv.c(2));
+            pv.W = exp(-(abs(pv.Eb)*c).^pv.d(2));
             pv.proj;
             p=reallog(pv.corelate+PatchViews.eps_p);
         end
             
-        function w = robustw(pv)
-            ub = ones(size(pv.Ws)); ub = ub(:);
-            lb = zeros(size(pv.Ws)); lb = lb(:);
-            w = 0.5*ub;
-
-fcn  = 'mvFcnGrad';
-grad = 'mvGrad'; 
-fcnGrad = 'mvFcnGrad'; % optional
-
-% add some ASA options (these are optional). See driver1.c for examples,
-%   and see asa_user.h for all possible values
-opts = [];
-opts.PrintParms = true;
-CGopts = struct('PrintParms',true);
-param = struct('pv',pv);
-
-% run the function
-[out,status] = asa_wrapper(w,lb,ub,fcn,grad,fcnGrad,opts,CGopts,param);
-            
-            [w,f,exitflag,output] = fmincon(@(w)mvOpt(w,pv),w,[],[],[],[],lb,ub,[],pv.opt.W);
-            pv.W = reshape(w,size(pv.W)); w = pv.W;
-            if ~isequal(pv.opt.W.Display,'off'),
-                output
-                exitflag
-                pv.disp
-            end
-            
-            function [p,g] = mvOpt(w,pv)
-                pv.W = reshape(w,size(pv.Ws));
-                for k=1:pv.n, pv.sv(k).W = pv.W(:,:,k); end
-                pv.proj;
-                p=reallog(pv.corelate+PatchViews.eps_p);
-                if nargout > 1, g = pv.grad_p/pv.p; end
-            end
-        end
-        
         function [p,a,b,f] = corelate(pv)
             [f,a,b]=pv.phometry;    % photometric estimation
             pv.gradient;            % gradient computation

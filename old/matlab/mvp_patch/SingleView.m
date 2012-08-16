@@ -14,14 +14,14 @@ classdef SingleView < handle
         
         a = 1;
         b = 0;
-        c = [0 0]';     % translation
+        c = [20 20]';   % clipping window size
+        t = [0 0]';     % translation
         e = [0 0 0]';   % elevation post
         q = [0 0 0 1]'; % quaternion for rotation matrix
-        r = 1737400;    % radius
-        r0 = 1737400;   % reference radius
+        r = RasterView.radiusMoon;    % radius
+        r0 = RasterView.radiusMoon;   % reference radius
         dr = 0;         % offset of radius
         s = 1;          % smoothing sigma
-        t = 0;          % rotation
         u = 31;
     end % properties (Hidden)
     
@@ -71,7 +71,7 @@ classdef SingleView < handle
         s0, s1, s2
         s0x, s1x, s2x
         s0y, s1y, s2y
-        r3, x3, y3
+        r3 = 1, x3 = 1, y3 = 1;
         uvz = 1;    % u*v*ez
         
         Ik, Wb  % (backward) projected image and weight
@@ -106,43 +106,58 @@ classdef SingleView < handle
             tx = -sv.tw:sv.tw:sv.tw;
             [sv.tX,sv.tY] = meshgrid(tx,tx);    % center of tile
             sv.tD = sv.d*[-1 1];
-            sv.tCen = sv.tw+sv.d+1+round(sv.c);
+            sv.tCen = sv.tw+sv.d+1+round(sv.t);
         end
         
         function PropEvents(sv,src,evt)
             switch src.Name
+                case 'c'
+                    c = evt.AffectedObject.c;
+                    if ~isequal(sv.c,c),
+                        sv.c = c;
+                        sv.xb = sv.c(1)*[-1 1]; % xdata
+                        sv.yb = sv.c(2)*[-1 1]; % ydata
+                        x=sv.xb(1):sv.xb(2); y=sv.yb(1):sv.yb(2);
+                        [sv.X, sv.Y]=meshgrid(x,y);
+                        sdx = sv.c-sv.w(1:2)+1; edx = 2*sv.w(1:2)+sdx;
+                        sv.is = sdx(2):edx(2); sv.js = sdx(1):edx(1);
+                        sv.proj;
+                        sv.W = ones(size(sv.X));
+                    end
                 case 'e'    % elevation post from PatchViews
                     e = evt.AffectedObject.e;
                     if ~isequal(sv.e,e),
                         sv.e = e;
-                        sv.p = sv.r*sv.e;
                         sv.ce = cross(sv.camCen,sv.e);
+                        % initialize q
+                        ex = [-sv.e(2) sv.e(1) 0]'; ex = ex/norm(ex);
+                        ey = -cross(sv.e,ex); ey = ey/norm(ey);
+                        sv.R = [ex ey -sv.e];
+                        sv.q = dcm2q(sv.R)';
+                        sv.rotate;
+                        sv.elevate;
+                        sv.proj;
                     end
                 case 'h'
                     c = cos(sv.h(3)); s = sin(sv.h(3)); R = [c s; -s c];
                     sv.Hs = [R -sv.h(1:2); 0 0 1];
-                    sv.tF = maketform('projective',(sv.Hs/sv.Hr)');
+                    sv.proj;
                 case 'q'    % quaternion from PatchViews
                     q = evt.AffectedObject.q;
                     if ~isequal(sv.q,q),
                         sv.q = q;
                         sv.R = q2dcm(sv.q);
-                        sv.Hr(:,1:2) = sv.u*sv.cam(:,1:3)*sv.R(:,1:2);
-                        sv.x3 = sv.Hr(3,1); sv.y3 = sv.Hr(3,2);
-                        sv.tF = maketform('projective',(sv.Hs/sv.Hr)');
-                        sv.c = [0 0]';
+                        sv.rotate
+                        sv.proj;
+                        sv.t = [0 0]';
                     end
                 case 'r'    % elevation from PatchViews
                     r = evt.AffectedObject.r;
                     if ~isequal(sv.r,r),
                         sv.r = r;
-                        sv.p = sv.r*sv.e;
-                        sv.v = sv.p-sv.camCen;
-                        sv.Hr(:,3) = sv.cam(:,1:3)*sv.p+sv.cam(:,4);
-                        sv.tF = maketform('projective',(sv.Hs/sv.Hr)');
-                        sv.r3 = sv.cam(3,1:3)*sv.v;
-                        sv.uvz = sv.u*sv.v'*sv.R(:,3);
-                        sv.c = sv.dr*[sv.R(:,2) -sv.R(:,1)]'*sv.ce/sv.uvz;
+                        sv.elevate;
+                        sv.proj;
+                        sv.t = sv.dr*[sv.R(:,2) -sv.R(:,1)]'*sv.ce/sv.uvz;
                     end
                 case 's'    % smoothing scale from PatchViews
                     s = evt.AffectedObject.s;
@@ -150,38 +165,44 @@ classdef SingleView < handle
                         sv.s = s;
                         sv.w(3)=ceil(sv.s*SingleView.ratioSmoth);
                         [sv.s0 sv.s1 sv.s2]=fltGaussian(sv.w(3),sv.s);
-                        c = sv.c-round(sv.c);
-                        [sv.s0x sv.s1x sv.s2x]=fltGaussian(sv.w(3),sv.s,c(1));
-                        [sv.s0y sv.s1y sv.s2y]=fltGaussian(sv.w(3),sv.s,c(2));
+                        sv.smooth;
+                        
+                        t = sv.t-round(sv.t);
+                        [sv.s0x sv.s1x sv.s2x]=fltGaussian(sv.w(3),sv.s,t(1));
+                        [sv.s0y sv.s1y sv.s2y]=fltGaussian(sv.w(3),sv.s,t(2));
                     end
                 case 'w'
                     w = evt.AffectedObject.w;
                     if ~isequal(sv.w,w),
                         sv.w = w;
-                        %                         sv.xb = (sv.w(1)+sv.w(3))*[-1 1]; % xdata
-                        %                         sv.yb = (sv.w(2)+sv.w(3))*[-1 1]; % ydata
-                        %                         x=sv.xb(1):sv.xb(2); y=sv.yb(1):sv.yb(2);
-                        %                         [sv.X, sv.Y]=meshgrid(x,y);
-                        %                         [sv.s0 sv.s1 sv.s2]=SingleView.fltGaussian(sv.w(3),sv.s);
-                        %                         sv.is = sv.w(3)+1:sv.yb(2)-sv.yb(1)+1-sv.w(3);
-                        %                         sv.js = sv.w(3)+1:sv.xb(2)-sv.xb(1)+1-sv.w(3);
-                        sv.xb = sv.w(1)*[-1 1]; % xdata
-                        sv.yb = sv.w(2)*[-1 1]; % ydata
-                        x=sv.xb(1):sv.xb(2); y=sv.yb(1):sv.yb(2);
-                        [sv.X, sv.Y]=meshgrid(x,y);
-                        sv.tI = sv.tCen(2)+y;
-                        sv.tJ = sv.tCen(1)+x;
+                        sdx = sv.c-sv.w(1:2)+1; edx = 2*sv.w(1:2)+sdx;
+                        sv.is = sdx(2):edx(2); sv.js = sdx(1):edx(1);
+
+%                         [sv.X, sv.Y]=meshgrid(x,y);
+%                         sv.tI = sv.tCen(2)+y;
+%                         sv.tJ = sv.tCen(1)+x;
                         [sv.s0 sv.s1 sv.s2]=fltGaussian(sv.w(3),sv.s);
-                        [sv.s0x sv.s1x sv.s2x]=fltGaussian(sv.w(3),sv.s,sv.c(1)-round(sv.c(1)));
-                        [sv.s0y sv.s1y sv.s2y]=fltGaussian(sv.w(3),sv.s,sv.c(2)-round(sv.c(2)));
-                        sv.Ik = ones(size(sv.X));
-                        sv.Wb = sv.Ik;
+%                         t = sv.t-round(sv.t);
+%                         [sv.s0x sv.s1x sv.s2x]=fltGaussian(sv.w(3),sv.s,t(1));
+%                         [sv.s0y sv.s1y sv.s2y]=fltGaussian(sv.w(3),sv.s,t(2));
                     end
                 case 'W'
-                    sv.Wk = sv.W.*sv.Wb;
-                    [sv.Ws,sv.Wx,sv.Wy] = smooth(sv.Wk,sv.s0,sv.s1);
-                    [sv.Is,sv.Ix,sv.Iy] = smooth(sv.Wk.*sv.Ik,sv.s0,sv.s1);
+                    sv.smooth;
             end
+        end
+        
+        function elevate(sv)
+            sv.p = sv.r*sv.e;
+            sv.v = sv.p-sv.camCen;
+            sv.Hr(:,3) = sv.cam(:,1:3)*sv.p+sv.cam(:,4);
+            sv.r3 = sv.cam(3,1:3)*sv.v;
+            sv.uvz = sv.u*sv.v'*sv.R(:,3);
+        end
+        
+        function rotate(sv)
+            sv.Hr(:,1:2) = sv.u*sv.cam(:,1:3)*sv.R(:,1:2);
+            sv.x3 = sv.Hr(3,1); sv.y3 = sv.Hr(3,2);
+            sv.uvz = sv.u*sv.v'*sv.R(:,3);
         end
         
         function c = grad_se(sv,Wc,Ms,Ga,Gb)
@@ -379,16 +400,21 @@ classdef SingleView < handle
             imshow(sv.img)
         end
         
+        function smooth(sv)
+            sv.Wk = sv.W.*sv.Wb;
+            [sv.Ws,sv.Wx,sv.Wy] = conv3(sv.Wk,sv.s0,sv.s1);
+            [sv.Is,sv.Ix,sv.Iy] = conv3(sv.Wk.*sv.Ik,sv.s0,sv.s1);
+        end
+        
         function [Is,Ws,Ix,Wx,Iy,Wy,Ik,Wb] = crop(sv)
-            sv.proj;
-            if nargout > 0, Is = sv.Is; end
-            if nargout > 1, Ws = sv.Ws; end
-            if nargout > 2, Ix = sv.Ix; end
-            if nargout > 3, Wx = sv.Wx; end
-            if nargout > 4, Iy = sv.Iy; end
-            if nargout > 5, Wy = sv.Wy; end
-            if nargout > 6, Ik = sv.Ik; end
-            if nargout > 7, Wb = sv.Wb; end
+            if nargout > 0, Is = sv.Is(sv.is,sv.js); end
+            if nargout > 1, Ws = sv.Ws(sv.is,sv.js); end
+            if nargout > 2, Ix = sv.Ix(sv.is,sv.js); end
+            if nargout > 3, Wx = sv.Wx(sv.is,sv.js); end
+            if nargout > 4, Iy = sv.Iy(sv.is,sv.js); end
+            if nargout > 5, Wy = sv.Wy(sv.is,sv.js); end
+            if nargout > 6, Ik = sv.Ik(sv.is,sv.js); end
+            if nargout > 7, Wb = sv.Wb(sv.is,sv.js); end
         end
         
         function [Is,Ws,Ix,Wx,Iy,Wy,Ik,Wb] = tCrop(sv)
@@ -406,7 +432,8 @@ classdef SingleView < handle
     end % methods
     
     methods (Access = private)
-        function [Is,Ws,Ix,Wx,Iy,Wy] = proj(sv)
+        function proj(sv)
+            sv.tF = maketform('projective',(sv.Hs/sv.Hr)');
             % backward projection of image and weight
             sv.Ik = imtransform(sv.img,sv.tF,'bicubic','xdata',sv.xb,'ydata',sv.yb);
             %            sv.Wb = imtransform(sv.wat,tform,'bicubic','xdata',sv.xb,'ydata',sv.yb);
@@ -425,19 +452,8 @@ classdef SingleView < handle
             if any(sv.Wb(:) < 0),
                 sv.R, sv.q, sv.r
                 figure, imagesc(sv.Wb), colorbar
-                error('Weight should be nonnegative!!!')
+                fprintf('Weight should be nonnegative!!!')
             end
-            
-            sv.Wk = sv.W.*sv.Wb;
-            [sv.Ws,sv.Wx,sv.Wy] = smooth(sv.Wk,sv.s0,sv.s1);
-            [sv.Is,sv.Ix,sv.Iy] = smooth(sv.Wk.*sv.Ik,sv.s0,sv.s1);
-            
-            if nargout > 0, Is = sv.Is; end
-            if nargout > 1, Ws = sv.Ws; end
-            if nargout > 2, Ix = sv.Ix; end
-            if nargout > 3, Wx = sv.Wx; end
-            if nargout > 4, Iy = sv.Iy; end
-            if nargout > 5, Wy = sv.Wy; end
         end
         
         function tProj(sv,i,j)
@@ -484,15 +500,15 @@ classdef SingleView < handle
     end % methods (Access = private)
 end % classdef
 
-function [Is,Ix,Iy] = smooth(I,s0,s1)
+function [Is,Ix,Iy] = conv3(I,s0,s1)
 Is=conv2(s0,s0,I,'same');
 Ix=conv2(s0,s1,I,'same');
 Iy=conv2(s1,s0,I,'same');
 end
 
-function [f0 f1 f2]=fncGaussian(r,s,c)
+function [f0 f1 f2]=fncGaussian(r,s,t)
 % r: radius, s: sigma
-x=[-r-0.5:r+0.5]'+c; fx = normpdf(x,0,s);
+x=[-r-0.5:r+0.5]'+t; fx = normpdf(x,0,s);
 f0 = diff(normcdf(x,0,s));
 f1 = diff(fx);
 f2 = diff(-x.*fx)/s^2;
