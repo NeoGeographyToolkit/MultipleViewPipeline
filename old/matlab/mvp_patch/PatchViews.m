@@ -21,23 +21,23 @@ classdef PatchViews < handle
         t = [10 10]';   % correlation scale
         u = 31;         % unit length of the pixel
         w = [40 40 3]'-1; % window size
-        H               % sloppy refinement 
+        H               % sloppy refinement
         W               % inlier membership
     end
     
     properties (Hidden)
         sv = SingleView;
-        Fa, Fb, Fs, Fx, Fy, 
+        Fa, Fb, Fs, Fx, Fy,
         Ga, Gb, Gs, Gx, Gy, Gt, G2      % albedo gradients
-                Ms, Mx, My
+        Ms, Mx, My
         Es, Eb  % albedos
         Wb, Ws, Wx, Wy
         Wt, Wn, Wr      % total and normalized weight
         Ic, Wc          % corrected by linear reflectance
         n2, N, nc, is, js, ks, ia, ja, ka,
         x0, x1, x2, y0, y1, y2,
-        gs, gx, gy, 
-        ms, mx, my 
+        gs, gx, gy,
+        ms, mx, my
         ws, wx, wy  % to verify the gradient
         ls, lx, ly,
         Ds              % disparity
@@ -51,7 +51,7 @@ classdef PatchViews < handle
         f, df           % squared error
         X, Y, Z
         sw              % individual total dofs
-        dw = [40 40]'   % increment of w(1:2)          
+        dw = [40 40]'   % increment of w(1:2)
         
         opt;            % optimization settings
     end
@@ -64,7 +64,7 @@ classdef PatchViews < handle
             addlistener(pv,'t','PostSet',@pv.PropEvents);
             addlistener(pv,'H','PostSet',@pv.PropEvents);
             addlistener(pv,'W','PostSet',@pv.PropEvents);
-            pv.sv=sv; pv.n=numel(sv); 
+            pv.sv=sv; pv.n=numel(sv);
             pv.H = zeros(pv.n,3);
             for i=1:pv.n,
                 obj = sv(i);
@@ -121,7 +121,7 @@ classdef PatchViews < handle
             end
             pv.r=r; pv.proj;
             if ~isequal(pv.opt.R.Display,'off'),
-%                pv.disp;
+                %                pv.disp;
             end
             
             function p=mvOpt(r,pv)
@@ -203,7 +203,7 @@ classdef PatchViews < handle
             end
             
             function p=mvOpt(t,pv)
-                pv.t = t.^2; 
+                pv.t = t.^2;
                 pv.proj;
                 p=reallog(pv.corelate+PatchViews.eps_p);
             end
@@ -315,7 +315,7 @@ classdef PatchViews < handle
                 switch state
                     case 'iter'
                         pv.r = r; pv.proj;
-                        pv.geometry;                
+                        pv.geometry;
                 end
             end
         end
@@ -442,7 +442,7 @@ classdef PatchViews < handle
             pv.Wn = pv.Ws./repmat(pv.Wt,[1 1 pv.n]);
             pv.Wn(isnan(pv.Wn)) = 0;
             pv.Wr = sum(pv.Wn.*pv.Ws,3);
-       
+            
             if nargout > 0, I = pv.Fs; end
             if nargout > 1, W = pv.Ws; end
         end
@@ -468,8 +468,7 @@ classdef PatchViews < handle
             Eb = scatw(pv.Ws(:,:,pv.is).*pv.Wn(:,:,pv.js),pv.Ws,pv.ks,pv.x0,pv.y0);
             Ec = scatw(pv.Fs(:,:,pv.ia).*pv.Wn(:,:,pv.ja),pv.Fs,pv.ka,pv.x0,pv.y0);
             wa = wnd3(pv.y0,pv.x0,In); wb = wnd3(pv.y0,pv.x0,pv.Wn);
-            S = [Eb wb; wb' 0]\[Ec; wa'];
-            T = S(1:pv.n,:);
+            S = [Eb wb; wb' 0]\[Ec wa]'; T = S(1:pv.n,:);
             Et = T'*Eb*T/2-Ec*T;
             E = Ea+Et+Et'; % error matrix with symmetry
             
@@ -488,7 +487,7 @@ classdef PatchViews < handle
             %                 fprintf('!');
             %             end
             
-            if sum(a) < 0, a=-a; end % invert the negative direction
+            if wa'*a < 0, a=-a; end % invert the negative direction
             
             % simple treatment of non-positive eigen vector
             idx = find(a < 0);
@@ -547,18 +546,18 @@ classdef PatchViews < handle
         end
         
         function g = grad_p(pv)
-            a = pv.ne; b = pv.ns; 
+            a = pv.ne; b = pv.ns;
             x = pv.se/(pv.se+pv.ss); y = 1-x;
-%             a = pv.ne; b = pv.ns; c = a+b; f = pv.p; 
-%             pa = psi(a); pb = psi(b); pc = psi(c);
-%             ga = gamma(a); gb = gamma(b); gc = gamma(c);
-%             la = gammaln(a); lb = gammaln(b); lc = gammaln(c);
-%             Fx = hypergeom([a a 1-b],[a+1 a+1],x);
-%             Fy = hypergeom([b b 1-a],[b+1 b+1],y);
-%             Dx = exp(la+lb-lc+a*log(x)+log(Fx)); % exp(la+lc-lb+a*log(x)+log(Fx));
-%             dg(2) = (log(x)-pa+pc)*f-Dx;
-%             Dy = exp(la+lb-lc+b*log(y)+log(Fy)); % exp(lb+lc-la+b*log(y)+log(Fy));
-%             dg(3) = Dy-(log(y)-pb+pc)*f;
+            %             a = pv.ne; b = pv.ns; c = a+b; f = pv.p;
+            %             pa = psi(a); pb = psi(b); pc = psi(c);
+            %             ga = gamma(a); gb = gamma(b); gc = gamma(c);
+            %             la = gammaln(a); lb = gammaln(b); lc = gammaln(c);
+            %             Fx = hypergeom([a a 1-b],[a+1 a+1],x);
+            %             Fy = hypergeom([b b 1-a],[b+1 b+1],y);
+            %             Dx = exp(la+lb-lc+a*log(x)+log(Fx)); % exp(la+lc-lb+a*log(x)+log(Fx));
+            %             dg(2) = (log(x)-pa+pc)*f-Dx;
+            %             Dy = exp(la+lb-lc+b*log(y)+log(Fy)); % exp(lb+lc-la+b*log(y)+log(Fy));
+            %             dg(3) = Dy-(log(y)-pb+pc)*f;
             dg(1) = exp((b-1)*log(y)+(a-1)*log(x)-betaln(a,b));
             dg(2) = gradest(@(a)betainc(x,a,b),a,0,inf,pv.opt.T);
             dg(3) = gradest(@(b)betainc(x,a,b),b,0,inf,pv.opt.T);
@@ -671,16 +670,16 @@ classdef PatchViews < handle
         
         function c = robust(pv)
             E = pv.residual;
-            if pv.d(1) == 0 
-                pv.d(1) = 1/std(E(:))/sqrt(5); 
-%             else
-%                 pv.d(1) = pv.d(1)/2;
+            if pv.d(1) == 0
+                pv.d(1) = 1/std(E(:))/sqrt(5);
+                %             else
+                %                 pv.d(1) = pv.d(1)/2;
             end
             pv.opt.W = optimset(pv.opt.W,'OutputFcn',@outres);
-%            [c,f,exitflag,output] = fmincon(@(c)mvOpt(pv,c),pv.d,[],[],[],[],[0 4],[inf inf],[],pv.opt.W);
+            %            [c,f,exitflag,output] = fmincon(@(c)mvOpt(pv,c),pv.d,[],[],[],[],[0 4],[inf inf],[],pv.opt.W);
             [c,f,exitflag,output] = fminunc(@(c)mvOptBnd(pv,c),pv.d(1),pv.opt.W);
-%             E = pv.residual; lb = -max(abs(E(:)));
-%             [c,f,exitflag,output] = fminbnd(@(c)mvOpt(c,pv),lb,0,pv.opt.W);
+            %             E = pv.residual; lb = -max(abs(E(:)));
+            %             [c,f,exitflag,output] = fminbnd(@(c)mvOpt(c,pv),lb,0,pv.opt.W);
             if ~isequal(pv.opt.W.Display,'off'),
                 output
                 exitflag
@@ -691,17 +690,17 @@ classdef PatchViews < handle
                 stop = false;
                 switch state
                     case 'iter'
-                        pv.residual;                        
+                        pv.residual;
                 end
             end
-%             function p = mvOpt(c,pv)
-%                 E = pv.residual;
-%                 pv.W = ones(size(E));
-%                 pv.W(find(abs(E)>-c))=0;
-%                 for k=1:pv.n, pv.sv(k).W = pv.W(:,:,k); end
-%                 pv.proj;
-%                 p=reallog(pv.corelate+PatchViews.eps_p);
-%             end
+            %             function p = mvOpt(c,pv)
+            %                 E = pv.residual;
+            %                 pv.W = ones(size(E));
+            %                 pv.W(find(abs(E)>-c))=0;
+            %                 for k=1:pv.n, pv.sv(k).W = pv.W(:,:,k); end
+            %                 pv.proj;
+            %                 p=reallog(pv.corelate+PatchViews.eps_p);
+            %             end
         end
         
         function e = robusti(pv)
@@ -721,18 +720,18 @@ classdef PatchViews < handle
         end
         
         function p = mvOpt(pv,c)
-%            E = pv.residual;
+            %            E = pv.residual;
             pv.W = exp(-(abs(pv.Eb)*c(1)).^c(2));
             pv.proj;
             p=reallog(pv.corelate+PatchViews.eps_p);
         end
-            
+        
         function p = mvOptBnd(pv,c)
             pv.W = exp(-(abs(pv.Eb)*c).^pv.d(2));
             pv.proj;
             p=reallog(pv.corelate+PatchViews.eps_p);
         end
-            
+        
         function [p,a,b,f] = corelate(pv)
             [f,a,b]=pv.phometry;    % photometric estimation
             pv.gradient;            % gradient computation
@@ -756,7 +755,7 @@ classdef PatchViews < handle
         function slowate(pv)
             pv.gradient;            % gradient computation
             
-            Gs = sum(pv.Gs,3); 
+            Gs = sum(pv.Gs,3);
             Gx = sum(pv.Gx,3); Gy = sum(pv.Gy,3);
             Wx = sum(pv.Wx,3); Wy = sum(pv.Wy,3);
             pv.ms = wnd3(pv.y0,pv.x0,pv.Ms);
@@ -768,7 +767,7 @@ classdef PatchViews < handle
             pv.ws = wnd3(pv.y0,pv.x0,pv.Wt);
             pv.wx = wnd3(pv.y0,pv.x0,Wx);
             pv.wy = wnd3(pv.y0,pv.x0,Wy);
-
+            
             pv.se = pv.phometry(pv.a)/2;    % photometric estimation
             pv.ss = wnd3(pv.y0,pv.x0,pv.G2)/2;                % signal
             
