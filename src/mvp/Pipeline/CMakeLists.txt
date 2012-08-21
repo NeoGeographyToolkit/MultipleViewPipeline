@@ -1,6 +1,6 @@
 mvp_module(NAME Pipeline
-           HDRS 
-           SRCS 
+           HDRS ConvexPolygon.h
+           SRCS ConvexPolygon.cc
            PROTOS JobDesc.proto)
 
 if (BUILD_TESTS)
