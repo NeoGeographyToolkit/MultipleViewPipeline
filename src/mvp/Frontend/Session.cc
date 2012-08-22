@@ -1,5 +1,6 @@
 #include <mvp/Frontend/Session.h>
 #include <mvp/Core/Settings.h> //parse_bbox_string
+#include <mvp/OrbitalImage/FootprintCollection.h>
 
 #include <vw/Plate/PlateGeoReference.h>
 
@@ -9,9 +10,12 @@ namespace frontend {
 void Session::reset(SessionDesc const& session_desc) {
   m_session_desc = session_desc;
 
-  // TODO: Create new OrbitalImageFootprintCollection
-
   vw::cartography::Datum datum(session_desc.output().datum());
+  m_footprints.reset(new orbitalimage::FootprintCollection(datum, 
+                                                           session_desc.algorithm().alt_min(),
+                                                           session_desc.algorithm().alt_max()));
+  m_footprints->push_back_pattern(session_desc.input().image_pattern(), session_desc.input().camera_pattern());
+
   vw::platefile::PlateGeoReference plate_georef(datum, 
                                                 session_desc.output().map_projection(),
                                                 session_desc.output().tile_size(), 
@@ -30,13 +34,23 @@ pipeline::JobDesc Session::next_job() {
 
   static int curr_id = 0;
 
+  // Init objects
+  int col = m_cursor.x();
+  int row = m_cursor.y();
+  int level = m_session_desc.render().level();
+
+  vw::platefile::PlateGeoReference plate_georef(m_plate_georef_desc);
+  vw::BBox2 lonlat_bbox = plate_georef.tile_lonlat_bbox(col, row, level);
+  std::vector<OrbitalImage> orbital_images = m_footprints->images_in_region(lonlat_bbox);
+
+  // Fill out JobDesc
   JobDesc::Input input;
-  // TODO: use cursor position to get orbital images
+  std::copy(orbital_images.begin(), orbital_images.end(), RepeatedFieldBackInserter(input.mutable_orbital_images()));
 
   JobDesc::Render render;
-  render.set_col(m_cursor.x());
-  render.set_row(m_cursor.y());
-  render.set_level(m_session_desc.render().level());
+  render.set_col(col);
+  render.set_row(row);
+  render.set_level(level);
   render.set_use_octave(m_session_desc.render().use_octave());
 
   JobDesc::Output output;

@@ -5,6 +5,7 @@ import "mvp/Pipeline/AlgorithmSettings.proto";
 message SessionDesc {
   message Input {
     required string image_pattern = 1;
+    required string camera_pattern = 2;
   }
 
   message Render {
