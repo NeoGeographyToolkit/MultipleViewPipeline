@@ -1,5 +1,6 @@
 add_definitions(-DTEST_SRCDIR=\"${CMAKE_CURRENT_SOURCE_DIR}\")
 add_definitions(-DTEST_OBJDIR=\"${CMAKE_CURRENT_BINARY_DIR}\")
+add_definitions(-DTEST_DATADIR=\"${CMAKE_SOURCE_DIR}/src/test/data\")
 
 PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS TestProto.proto)
 

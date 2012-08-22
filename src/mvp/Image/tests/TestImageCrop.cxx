@@ -16,7 +16,7 @@ using namespace vw::cartography;
 using namespace mvp::image;
 
 TEST(HelperFunction, crop_pinhole) {
-  PinholeModel cam(SrcName("data/synth.0.pinhole"));
+  PinholeModel cam(DataName("synth.0.pinhole"));
   PinholeModel crop_cam(crop(cam, BBox2i(10, 20, 100, 100)));
  
   EXPECT_VECTOR_NEAR(cam.pixel_to_vector(Vector2(10, 20)), crop_cam.pixel_to_vector(Vector2(0, 0)), 1e-6);
@@ -50,8 +50,8 @@ Vector2(55.9392,9.4308)
   const int num_pts = 20;
 
   // Set up test space
-  string image_path(SrcName("data/synth.0.tif"));
-  string camera_path(SrcName("data/synth.0.pinhole"));
+  string image_path(DataName("synth.0.tif"));
+  string camera_path(DataName("synth.0.pinhole"));
   Datum datum("D_MOON");
   Vector2 alt_range(-10000, 10000);
   Vector2 radius_range(alt_range + Vector2(datum.semi_major_axis(), datum.semi_major_axis()));

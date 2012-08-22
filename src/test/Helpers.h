@@ -53,6 +53,10 @@ using namespace ::testing;
 #error TEST_SRCDIR is not defined! Define it before including this header.
 #endif
 
+#ifndef TEST_DATADIR
+#error TEST_DATADIR is not defined! Define it before including this header.
+#endif
+
 // Create a temporary filename that is unlinked when constructed and destructed
 class UnlinkName : public std::string {
   public:
@@ -83,6 +87,17 @@ public:
   BinName(const std::string& base, const std::string& directory=TEST_OBJDIR)
     : std::string(directory + "/" + base) {}
   BinName(const char *base,        const std::string& directory=TEST_OBJDIR)
+    : std::string(directory + "/" + base) {}
+};
+
+// Create a filename that auto applies the directory to the test
+// data directory.
+class DataName : public std::string {
+public:
+  DataName() {}
+  DataName(const std::string& base, const std::string& directory=TEST_DATADIR)
+    : std::string(directory + "/" + base) {}
+  DataName(const char *base,        const std::string& directory=TEST_DATADIR)
     : std::string(directory + "/" + base) {}
 };
 

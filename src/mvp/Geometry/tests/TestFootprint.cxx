@@ -15,7 +15,7 @@ using namespace vw::camera;
 using namespace vw::cartography;
 
 TEST(Footprint, backproj_px) {
-  PinholeModel cam(SrcName("data/synth.0.pinhole"));
+  PinholeModel cam(DataName("synth.0.pinhole"));
 
   Vector2 px_pick(100.0, 200.0);
 
@@ -86,8 +86,8 @@ TEST(Footprint, footprint) {
   Vector2 alt_range(-10000, 10000);
   Datum datum("D_MOON");
 
-  Footprint footprint(Footprint::construct_from_paths(SrcName("data/synth.0.tif"), 
-                                                      SrcName("data/synth.0.pinhole"), 
+  Footprint footprint(Footprint::construct_from_paths(DataName("synth.0.tif"), 
+                                                      DataName("synth.0.pinhole"), 
                                                       datum, alt_range));
 
   BBox2 bbox(footprint.bounding_box());
@@ -115,8 +115,8 @@ TEST(Footprint, footprint) {
 }
 
 TEST(Footprint, properties) {
-  Footprint footprint(Footprint::construct_from_paths(SrcName("data/synth.0.tif"), 
-                                                      SrcName("data/synth.0.pinhole"), 
+  Footprint footprint(Footprint::construct_from_paths(DataName("synth.0.tif"), 
+                                                      DataName("synth.0.pinhole"), 
                                                       Datum("D_MOON"), Vector2()));
 
   BBox2 bbox(footprint.bounding_box());
@@ -129,8 +129,8 @@ TEST(Footprint, properties) {
 }
 
 TEST(Footprint, intersects) {
-  Footprint footprint(Footprint::construct_from_paths(SrcName("data/synth.0.tif"), 
-                                                      SrcName("data/synth.0.pinhole"), 
+  Footprint footprint(Footprint::construct_from_paths(DataName("synth.0.tif"), 
+                                                      DataName("synth.0.pinhole"), 
                                                       Datum("D_MOON"), Vector2()));
   //      Vector2(56.3215,9.80684)
   //           -----------------

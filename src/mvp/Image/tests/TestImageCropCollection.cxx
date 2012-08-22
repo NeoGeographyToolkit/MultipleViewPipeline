@@ -21,14 +21,14 @@ TEST(ImageCropCollection, add_image) {
   {
     // Outside footprint
     ImageCropCollection collect(BBox2(55.9392, 9.21995, 0.1, 0.1), datum, alt_range);
-    collect.add_image(SrcName("data/synth.0.tif"), SrcName("data/synth.0.pinhole"));
+    collect.add_image(DataName("synth.0.tif"), DataName("synth.0.pinhole"));
     EXPECT_EQ(collect.size(), 0u);
   }
 
   {
     // Entire footprint
     ImageCropCollection collect(BBox2(55, 9, 2, 1), datum, alt_range);
-    collect.add_image(SrcName("data/synth.0.tif"), SrcName("data/synth.0.pinhole"));
+    collect.add_image(DataName("synth.0.tif"), DataName("synth.0.pinhole"));
     EXPECT_EQ(collect.size(), 1u);
   }
 }
@@ -46,10 +46,10 @@ TEST(ImageCropCollection, no_crop) {
 
   ImageCropCollection collect;
 
-  no_crop_helper(collect, image_sizes, SrcName("data/synth.0.tif"), SrcName("data/synth.0.pinhole"));
-  no_crop_helper(collect, image_sizes, SrcName("data/synth.1.tif"), SrcName("data/synth.1.pinhole"));
-  no_crop_helper(collect, image_sizes, SrcName("data/synth.2.tif"), SrcName("data/synth.2.pinhole"));
-  no_crop_helper(collect, image_sizes, SrcName("data/synth.3.tif"), SrcName("data/synth.3.pinhole"));
+  no_crop_helper(collect, image_sizes, DataName("synth.0.tif"), DataName("synth.0.pinhole"));
+  no_crop_helper(collect, image_sizes, DataName("synth.1.tif"), DataName("synth.1.pinhole"));
+  no_crop_helper(collect, image_sizes, DataName("synth.2.tif"), DataName("synth.2.pinhole"));
+  no_crop_helper(collect, image_sizes, DataName("synth.3.tif"), DataName("synth.3.pinhole"));
   EXPECT_EQ(collect.size(), 4u);
 
   for (unsigned i = 0; i < collect.size(); i++) {
@@ -64,10 +64,10 @@ TEST(ImageCropCollection, to_octave) {
   Vector2 alt_range(-10000, 10000);
 
   ImageCropCollection collect(BBox2(55, 9, 2, 1), datum, alt_range); // Should catch all footprints
-  collect.add_image(SrcName("data/synth.0.tif"), SrcName("data/synth.0.pinhole"));
-  collect.add_image(SrcName("data/synth.1.tif"), SrcName("data/synth.1.pinhole"));
-  collect.add_image(SrcName("data/synth.2.tif"), SrcName("data/synth.2.pinhole"));
-  collect.add_image(SrcName("data/synth.3.tif"), SrcName("data/synth.3.pinhole"));
+  collect.add_image(DataName("synth.0.tif"), DataName("synth.0.pinhole"));
+  collect.add_image(DataName("synth.1.tif"), DataName("synth.1.pinhole"));
+  collect.add_image(DataName("synth.2.tif"), DataName("synth.2.pinhole"));
+  collect.add_image(DataName("synth.3.tif"), DataName("synth.3.pinhole"));
   EXPECT_EQ(collect.size(), 4u);
 
   ::octave_map oct_collect(collect.to_octave());
