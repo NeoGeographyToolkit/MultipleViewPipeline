@@ -1,9 +1,9 @@
-#include <mvp/OrbitalImage/FootprintCollection.h>
+#include <mvp/Geometry/FootprintCollection.h>
 
 #include <boost/foreach.hpp>
 
 namespace mvp {
-namespace orbitalimage {
+namespace geometry {
 
 void FootprintCollection::push_back_pattern(std::string const& image_pattern, std::string const& camera_pattern) {
   std::cout << "Add image pattern!" << std::endl;
@@ -51,4 +51,4 @@ std::vector<pipeline::OrbitalImage> FootprintCollection::images_in_region(vw::BB
   return result;
 }
 
-}} // namespace orbitalimage,mvp
+}} // namespace geometry,mvp

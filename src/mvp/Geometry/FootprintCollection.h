@@ -8,11 +8,11 @@
 #ifndef __MVP_ORBITALIMAGE_FOOTPRINTCOLLECTION_H__
 #define __MVP_ORBITALIMAGE_FOOTPRINTCOLLECTION_H__
 
-#include <mvp/OrbitalImage/Footprint.h>
+#include <mvp/Geometry/Footprint.h>
 #include <vw/Cartography/Datum.h>
 
 namespace mvp {
-namespace orbitalimage {
+namespace geometry {
 
 class FootprintCollection : public std::vector<Footprint> {
   vw::cartography::Datum m_datum;
@@ -40,6 +40,6 @@ class FootprintCollection : public std::vector<Footprint> {
     std::vector<pipeline::OrbitalImage> images_in_region(vw::BBox2 const& lonlat_bbox) const;
 };
 
-}} // namespace orbitalimage,mvp
+}} // namespace geometry,mvp
 
 #endif

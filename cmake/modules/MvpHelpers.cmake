@@ -46,7 +46,7 @@ function(mvp_executable exe sources)
   target_link_libraries(${exe} mvpCore
                                mvpPipeline
                                mvpFrontend
-                               mvpOrbitalImage
+                               mvpGeometry
                                ${VW_LIBRARIES}
                                ${PROTOBUF_LIBRARIES}
                                ${Boost_LIBRARIES}

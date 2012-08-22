@@ -8,14 +8,14 @@
 #ifndef __MVP_ORBITALIMAGE_FOOTPRINT_H__
 #define __MVP_ORBITALIMAGE_FOOTPRINT_H__
 
-#include <mvp/OrbitalImage/ConvexPolygon.h>
+#include <mvp/Geometry/ConvexPolygon.h>
 #include <mvp/Pipeline/OrbitalImage.pb.h>
 
 #include <vw/Camera/PinholeModel.h>
 #include <vw/Cartography/Datum.h>
 
 namespace mvp {
-namespace orbitalimage {
+namespace geometry {
 
 class Footprint : public ConvexPolygon {
   pipeline::OrbitalImage m_image;
@@ -50,7 +50,7 @@ class Footprint : public ConvexPolygon {
 
 };
 
-}} // namespace orbitalimage,mvp
+}} // namespace geometry,mvp
 
 
 #endif

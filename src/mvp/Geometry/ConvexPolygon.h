@@ -11,7 +11,7 @@
 #include <vw/Math/BBox.h>
 
 namespace mvp {
-namespace orbitalimage {
+namespace geometry {
 
 struct ConvexPolygon {
   typedef std::vector<vw::Vector2> VertexList;
@@ -42,6 +42,6 @@ struct ConvexPolygon {
 
 };
 
-}} // namespace orbitalimage,mvp
+}} // namespace geometry,mvp
 
 #endif

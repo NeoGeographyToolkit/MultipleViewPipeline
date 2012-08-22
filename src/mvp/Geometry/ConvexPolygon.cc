@@ -1,9 +1,9 @@
-#include <mvp/OrbitalImage/ConvexPolygon.h>
+#include <mvp/Geometry/ConvexPolygon.h>
 
 #include <boost/foreach.hpp>
 
 namespace mvp {
-namespace orbitalimage {
+namespace geometry {
 
 ConvexPolygon::ConvexPolygon(VertexList pts) {
   // Algorithm is the 'giftwrap' algorithm http://www.cse.unsw.edu.au/~lambert/java/3d/giftwrap.html
@@ -129,4 +129,4 @@ bool ConvexPolygon::intersects(vw::BBox2 const& bbox) const {
   return intersects(bbox_poly);
 }
 
-}} // namespace orbitalimage,mvp
+}} // namespace geometry,mvp

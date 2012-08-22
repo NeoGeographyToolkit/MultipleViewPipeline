@@ -1,6 +1,6 @@
 #include <mvp/Frontend/Session.h>
 #include <mvp/Core/Settings.h> //parse_bbox_string
-#include <mvp/OrbitalImage/FootprintCollection.h>
+#include <mvp/Geometry/FootprintCollection.h>
 
 #include <vw/Plate/PlateGeoReference.h>
 
@@ -11,9 +11,8 @@ void Session::reset(SessionDesc const& session_desc) {
   m_session_desc = session_desc;
 
   vw::cartography::Datum datum(session_desc.output().datum());
-  m_footprints.reset(new orbitalimage::FootprintCollection(datum, 
-                                                           session_desc.algorithm().alt_min(),
-                                                           session_desc.algorithm().alt_max()));
+  m_footprints.reset(new geometry::FootprintCollection(datum, session_desc.algorithm().alt_min(),
+                                                              session_desc.algorithm().alt_max()));
   m_footprints->push_back_pattern(session_desc.input().image_pattern(), session_desc.input().camera_pattern());
 
   vw::platefile::PlateGeoReference plate_georef(datum, 

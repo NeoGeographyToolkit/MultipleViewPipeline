@@ -1,4 +1,4 @@
-#include <mvp/OrbitalImage/Footprint.h>
+#include <mvp/Geometry/Footprint.h>
 
 #include <vw/Cartography/SimplePointImageManipulation.h>
 #include <vw/FileIO/DiskImageResource.h>
@@ -6,7 +6,7 @@
 #include <boost/foreach.hpp>
 
 namespace mvp {
-namespace orbitalimage {
+namespace geometry {
 
 vw::Vector2 Footprint::backproj_px(vw::camera::PinholeModel const& cam, 
                                    vw::Vector2 const& px, 
@@ -85,4 +85,4 @@ int Footprint::equal_density_level(int tile_size) const {
 
   return ceil(std::max(x_dens_lvl, y_dens_lvl));
 }
-}} // namespace orbitalimage,mvp
+}} // namespace geometry,mvp

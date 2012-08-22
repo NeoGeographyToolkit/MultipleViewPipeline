@@ -1,13 +1,13 @@
 #include <gtest/gtest.h>
 #include <test/Helpers.h>
-#include <mvp/OrbitalImage/ConvexPolygon.h>
+#include <mvp/Geometry/ConvexPolygon.h>
 
 #include <boost/foreach.hpp>
 #include <boost/random/linear_congruential.hpp>
 #include <boost/random/uniform_real_distribution.hpp>
 
 using namespace std;
-using namespace mvp::orbitalimage;
+using namespace mvp::geometry;
 using namespace vw;
 using namespace vw::test;
 

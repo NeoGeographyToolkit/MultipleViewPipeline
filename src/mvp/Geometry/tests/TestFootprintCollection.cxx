@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include <test/Helpers.h>
-#include <mvp/OrbitalImage/FootprintCollection.h>
+#include <mvp/Geometry/FootprintCollection.h>
 
 #include <vw/Image.h>
 #include <vw/Camera.h>
@@ -8,7 +8,7 @@
 #include <vw/Cartography.h>
 
 using namespace std;
-using namespace mvp::orbitalimage;
+using namespace mvp::geometry;
 using namespace vw;
 using namespace vw::test;
 using namespace vw::camera;
