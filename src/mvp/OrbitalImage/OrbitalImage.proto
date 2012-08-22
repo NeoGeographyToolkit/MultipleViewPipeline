@@ -1,0 +1,6 @@
+package mvp.orbitalimage;
+
+message OrbitalImage {
+  required string camera_path = 1;
+  required string image_path = 2;
+}

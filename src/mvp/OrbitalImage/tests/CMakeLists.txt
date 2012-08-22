@@ -1,2 +1,2 @@
-#mvp_test(TestSession)
 mvp_test(TestConvexPolygon)
+mvp_test(TestFootprint)
