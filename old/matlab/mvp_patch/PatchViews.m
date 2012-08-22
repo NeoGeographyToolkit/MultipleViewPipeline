@@ -33,6 +33,7 @@ classdef PatchViews < handle
         Es, Eb  % albedos
         Wb, Ws, Wx, Wy
         Wt, Wn, Wr      % total and normalized weight
+        Wr0, Gr0, Mr0
         Ic, Wc          % corrected by linear reflectance
         n2, N, nc, is, js, ks, ia, ja, ka,
         x0, x1, x2, y0, y1, y2,
@@ -543,6 +544,11 @@ classdef PatchViews < handle
                 fprintf('<');
             end
             t = pv.H;
+        end
+
+        function grad_dr(pv)
+            pv.Wr0 = 0;
+            pv.Gr0 = 0;
         end
         
         function g = grad_p(pv)

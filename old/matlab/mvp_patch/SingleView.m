@@ -79,6 +79,7 @@ classdef SingleView < handle
         Ix, Wx  % gradient weighted image and weight
         Iy, Wy  % gradient weighted image and weight
         Wk      % =W*Wb
+        Ir, Wr, Ixr, Iyr, Wxr, Wyr  % gradient w.r.t r
         
         tIk, tWb  % (backward) projected image and weight
         tIs, tWs  % smoothed weighted image and weight
@@ -415,6 +416,15 @@ classdef SingleView < handle
             if nargout > 5, Wy = sv.Wy(sv.is,sv.js); end
             if nargout > 6, Ik = sv.Ik(sv.is,sv.js); end
             if nargout > 7, Wb = sv.Wb(sv.is,sv.js); end
+        end
+        
+        function [Ir,Wr,Ixr,Iyr,Wxr,Wyr] = grad_r(sv)
+            if nargout > 0,  Ir = sv.Ir; end
+            if nargout > 1,  Wr = sv.Wr; end
+            if nargout > 2, Ixr = sv.Ixr; end
+            if nargout > 3, Wxr = sv.Wxr; end
+            if nargout > 4, Iyr = sv.Iyr; end
+            if nargout > 5, Wyr = sv.Wyr; end
         end
         
         function [Is,Ws,Ix,Wx,Iy,Wy,Ik,Wb] = tCrop(sv)
