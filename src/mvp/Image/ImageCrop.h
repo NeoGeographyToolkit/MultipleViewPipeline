@@ -8,8 +8,6 @@
 #ifndef __MVP_IMAGE_IMAGECROP_H__
 #define __MVP_IMAGE_IMAGECROP_H__
 
-#include <mvp/Pipeline/OrbitalImage.pb.h>
-
 #include <vw/Image/ImageView.h>
 #include <vw/Image/PixelTypes.h>
 #include <vw/Image/PixelMask.h>
