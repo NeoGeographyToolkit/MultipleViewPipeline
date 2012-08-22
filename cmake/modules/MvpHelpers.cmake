@@ -47,6 +47,7 @@ function(mvp_executable exe sources)
                                mvpPipeline
                                mvpFrontend
                                mvpGeometry
+                               mvpImage
                                ${VW_LIBRARIES}
                                ${PROTOBUF_LIBRARIES}
                                ${Boost_LIBRARIES}
