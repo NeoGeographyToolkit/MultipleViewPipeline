@@ -1,5 +1,6 @@
 input {
   image_pattern: "/home/khusmann/mvp_data/real_scene/.\.tif"
+  camera_pattern: "/home/khusmann/mvp_data/real_scene/.\.pinhole"
 }
 
 render {
