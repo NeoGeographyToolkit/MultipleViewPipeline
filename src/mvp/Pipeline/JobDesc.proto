@@ -7,6 +7,7 @@ import "mvp/Pipeline/OrbitalImage.proto";
 message JobDesc {
   message Input {
     repeated OrbitalImage orbital_images = 1;
+    // TODO: In the future, ground control points can go here
   }
 
   message Render {
