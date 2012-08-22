@@ -1,6 +1,6 @@
 package mvp.frontend;
 
-import "mvp/Core/AlgorithmSettings.proto";
+import "mvp/Pipeline/AlgorithmSettings.proto";
 
 message SessionDesc {
   message Input {
@@ -24,5 +24,5 @@ message SessionDesc {
   required Input input = 1;
   required Render render = 2;
   required Output output = 3;
-  required mvp.core.AlgorithmSettings algorithm = 4;
+  required pipeline.AlgorithmSettings algorithm = 4;
 }

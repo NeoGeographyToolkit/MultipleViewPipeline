@@ -1,4 +1,4 @@
-package mvp.core;
+package mvp.pipeline;
 
 message AlgorithmSettings {
   required double alt_min = 1;
