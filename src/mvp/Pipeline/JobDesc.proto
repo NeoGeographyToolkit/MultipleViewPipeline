@@ -2,11 +2,11 @@ package mvp.pipeline;
 
 import "vw/Plate/PlateGeoReferenceDesc.proto";
 import "mvp/Pipeline/AlgorithmSettings.proto";
+import "mvp/Pipeline/OrbitalImage.proto";
 
 message JobDesc {
   message Input {
-    repeated string images = 1;
-    repeated string cameras = 2;
+    repeated OrbitalImage orbital_images = 1;
   }
 
   message Render {

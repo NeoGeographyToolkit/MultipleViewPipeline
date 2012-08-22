@@ -4,8 +4,7 @@ mvp_module(NAME OrbitalImage
                 FootprintCollection.h
            SRCS ConvexPolygon.cc
                 Footprint.cc
-                FootprintCollection.cc
-           PROTOS OrbitalImage.proto)
+                FootprintCollection.cc)
 
 if (BUILD_TESTS)
   add_subdirectory(tests)

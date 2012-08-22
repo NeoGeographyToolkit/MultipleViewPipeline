@@ -38,7 +38,7 @@ Footprint Footprint::construct_from_paths(std::string const& image_path,
                                           vw::cartography::Datum const& datum, 
                                           vw::Vector2 const& alt_limits)
 {
-  OrbitalImage image;
+  pipeline::OrbitalImage image;
   image.set_camera_path(camera_path);
   image.set_image_path(image_path);
 

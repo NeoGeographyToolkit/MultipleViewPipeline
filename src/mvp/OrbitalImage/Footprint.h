@@ -9,7 +9,7 @@
 #define __MVP_ORBITALIMAGE_FOOTPRINT_H__
 
 #include <mvp/OrbitalImage/ConvexPolygon.h>
-#include <mvp/OrbitalImage/OrbitalImage.pb.h>
+#include <mvp/Pipeline/OrbitalImage.pb.h>
 
 #include <vw/Camera/PinholeModel.h>
 #include <vw/Cartography/Datum.h>
@@ -18,7 +18,7 @@ namespace mvp {
 namespace orbitalimage {
 
 class Footprint : public ConvexPolygon {
-  OrbitalImage m_image;
+  pipeline::OrbitalImage m_image;
   vw::Vector2i m_image_size;
 
   public:
@@ -32,7 +32,7 @@ class Footprint : public ConvexPolygon {
                                           vw::cartography::Datum const& datum, 
                                           vw::Vector2 const& alt_limits);
 
-    OrbitalImage orbital_image() const {return m_image;}
+    pipeline::OrbitalImage orbital_image() const {return m_image;}
 
     /// Return the level for which the resolution of one tile at that level
     /// is approximately equal to the resolution of the orbital image.
@@ -45,7 +45,7 @@ class Footprint : public ConvexPolygon {
 
   protected:
     // Make sure the user doesn't construct one
-    Footprint(OrbitalImage const& image, vw::Vector2i const& image_size, VertexList point_list) :
+    Footprint(pipeline::OrbitalImage const& image, vw::Vector2i const& image_size, VertexList point_list) :
       ConvexPolygon(point_list), m_image(image), m_image_size(image_size) {}
 
 };

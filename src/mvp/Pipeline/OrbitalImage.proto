@@ -1,4 +1,4 @@
-package mvp.orbitalimage;
+package mvp.pipeline;
 
 message OrbitalImage {
   required string camera_path = 1;

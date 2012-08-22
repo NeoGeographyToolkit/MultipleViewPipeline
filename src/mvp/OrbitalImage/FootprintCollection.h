@@ -37,7 +37,7 @@ class FootprintCollection : public std::vector<Footprint> {
 
     vw::BBox2 lonlat_bbox() const;
 
-    std::vector<OrbitalImage> images_in_region(vw::BBox2 const& lonlat_bbox) const;
+    std::vector<pipeline::OrbitalImage> images_in_region(vw::BBox2 const& lonlat_bbox) const;
 };
 
 }} // namespace orbitalimage,mvp
