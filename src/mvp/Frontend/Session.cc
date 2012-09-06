@@ -50,7 +50,6 @@ pipeline::JobDesc Session::next_job() {
   render.set_col(col);
   render.set_row(row);
   render.set_level(level);
-  render.set_use_octave(m_session_desc.render().use_octave());
 
   JobDesc::Output output;
   output.set_result(m_session_desc.output().result());

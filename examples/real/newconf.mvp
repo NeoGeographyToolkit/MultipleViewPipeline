@@ -6,7 +6,6 @@ input {
 render {
   bbox: "2682,1937:2685,1940"
   level: 12
-  use_octave: true
 }
 
 output {

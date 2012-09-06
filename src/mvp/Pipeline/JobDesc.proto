@@ -14,7 +14,6 @@ message JobDesc {
     required int32 col = 1;
     required int32 row = 2;
     required int32 level = 3;
-    required bool use_octave = 5;
   }
 
   message Output {

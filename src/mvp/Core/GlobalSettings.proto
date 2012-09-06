@@ -10,7 +10,11 @@ message GlobalSettings {
     optional int32 command = 1 [default=5000]; // In ms
     optional int32 orphan = 2 [default=5]; // In sec
   }
+  message Render {
+    optional bool use_octave = 1 [default=true];
+  }
 
   required Ports ports = 1;
   required Timeouts timeouts = 2;
+  required Render render = 3;
 }
