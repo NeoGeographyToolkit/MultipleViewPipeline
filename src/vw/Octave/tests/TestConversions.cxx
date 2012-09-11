@@ -37,25 +37,6 @@ TEST(Conversions, octave_to_vector) {
   }
 }
 
-TEST(Conversions, pinhole_to_octave) {
-  PinholeModel vw_cam(SrcName("AS15-M-0073.lev1.pinhole"));
-  ::Matrix oct_cam(pinhole_to_octave(vw_cam));
-
-  {
-    vw::Vector3 pt(0, 0, 0);
-    Vector2 vw_result = vw_cam.point_to_pixel(pt);
-    Vector2 oct_result = dehom(octave_to_vector(oct_cam * vector_to_octave(hom(pt)))) - Vector2(1, 1);
-    EXPECT_VECTOR_NEAR(vw_result, oct_result, 1e-6);
-  }
-
-  {
-    vw::Vector3 pt(1003, 29, -8200);
-    Vector2 vw_result = vw_cam.point_to_pixel(pt);
-    Vector2 oct_result = dehom(octave_to_vector(oct_cam * vector_to_octave(hom(pt)))) - Vector2(1, 1);
-    EXPECT_VECTOR_NEAR(vw_result, oct_result, 1e-6);
-  }
-}
-
 TEST(Conversions, imageview_to_octave) {
   boost::rand48 gen(10);
 
@@ -130,6 +111,44 @@ TEST(Conversions, imageview_to_octave_masked) {
   }
 }
 
+TEST(Conversions, protobuf_to_octave) {
+  TestProto message;
+  message.set_double_field(0.1);
+  message.set_float_field(0.2);
+  message.set_int32_field(3);
+  message.set_bool_field(true);
+  message.set_string_field("4");
+
+  octave_scalar_map oct_map(protobuf_to_octave(&message));
+
+  EXPECT_EQ(oct_map.getfield("double_field").double_value(), message.double_field());
+  EXPECT_EQ(oct_map.getfield("float_field").float_value(), message.float_field());
+  EXPECT_EQ(oct_map.getfield("int32_field").int_value(), message.int32_field());
+  EXPECT_EQ(oct_map.getfield("bool_field").bool_value(), message.bool_field());
+  EXPECT_EQ(oct_map.getfield("string_field").string_value(), message.string_field());
+}
+
+// TODO: Wrapper
+TEST(Conversions, pinhole_to_octave) {
+  PinholeModel vw_cam(SrcName("AS15-M-0073.lev1.pinhole"));
+  ::Matrix oct_cam(pinhole_to_octave(vw_cam));
+
+  {
+    vw::Vector3 pt(0, 0, 0);
+    Vector2 vw_result = vw_cam.point_to_pixel(pt);
+    Vector2 oct_result = dehom(octave_to_vector(oct_cam * vector_to_octave(hom(pt)))) - Vector2(1, 1);
+    EXPECT_VECTOR_NEAR(vw_result, oct_result, 1e-6);
+  }
+
+  {
+    vw::Vector3 pt(1003, 29, -8200);
+    Vector2 vw_result = vw_cam.point_to_pixel(pt);
+    Vector2 oct_result = dehom(octave_to_vector(oct_cam * vector_to_octave(hom(pt)))) - Vector2(1, 1);
+    EXPECT_VECTOR_NEAR(vw_result, oct_result, 1e-6);
+  }
+}
+
+// TODO: Wrapper
 TEST(Conversions, georef_to_octave) {
   double res = 256;
 
@@ -161,21 +180,4 @@ TEST(Conversions, georef_to_octave) {
 
   EXPECT_EQ(oct_geo.getfield("datum").scalar_map_value().getfield("semi_major_axis").double_value(), datum.semi_major_axis());
   EXPECT_EQ(oct_geo.getfield("datum").scalar_map_value().getfield("semi_minor_axis").double_value(), datum.semi_minor_axis());
-}
-
-TEST(Conversions, protobuf_to_octave) {
-  TestProto message;
-  message.set_double_field(0.1);
-  message.set_float_field(0.2);
-  message.set_int32_field(3);
-  message.set_bool_field(true);
-  message.set_string_field("4");
-
-  octave_scalar_map oct_map(protobuf_to_octave(&message));
-
-  EXPECT_EQ(oct_map.getfield("double_field").double_value(), message.double_field());
-  EXPECT_EQ(oct_map.getfield("float_field").float_value(), message.float_field());
-  EXPECT_EQ(oct_map.getfield("int32_field").int_value(), message.int32_field());
-  EXPECT_EQ(oct_map.getfield("bool_field").bool_value(), message.bool_field());
-  EXPECT_EQ(oct_map.getfield("string_field").string_value(), message.string_field());
 }

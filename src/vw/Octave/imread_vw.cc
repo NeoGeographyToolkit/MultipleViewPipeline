@@ -47,8 +47,9 @@ DEFUN_DLD(imread_vw, args, nargout, "Load an image using VW")
      return octave_value(oct_img);
    }
 
-   octave_scalar_map oct_geo;
+   octave_value oct_geo;
    vw::cartography::GeoReference vw_geo;
+
    try {
      read_georeference(vw_geo, filename);
      oct_geo = vw::octave::georef_to_octave(vw_geo);

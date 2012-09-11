@@ -27,7 +27,7 @@ int main(int argc, char **argv) {
   int status = RUN_ALL_TESTS();
 
   #if MVP_ENABLE_OCTAVE_SUPPORT
-  do_octave_atexit();
+  vw::octave::stop_octave_interpreter();
   #endif
 
   return status;

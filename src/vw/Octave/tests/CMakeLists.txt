@@ -11,6 +11,7 @@ macro(add_vwoctave_test test_name)
 
   target_link_libraries(${test_name} vwoctave_test 
                                      gtest_main
+                                     vwOctave
                                      ${VW_LIBRARIES}
                                      ${OCTAVE_LIBRARIES}
                                      ${PROTOBUF_LIBRARIES})
