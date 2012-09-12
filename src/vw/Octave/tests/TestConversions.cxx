@@ -40,7 +40,7 @@ TEST(Conversions, octave_to_vector) {
 TEST(Conversions, imageview_to_octave) {
   boost::rand48 gen(10);
 
-  ImageView<float32> vw_img(uniform_noise_view(gen, 10, 10));
+  ImageView<float32> vw_img(uniform_noise_view(gen, 20, 10));
   
   ::Matrix oct_img(imageview_to_octave(vw_img));
 
@@ -52,7 +52,7 @@ TEST(Conversions, imageview_to_octave) {
 }
 
 TEST(Conversions, imageview_to_octave_mask) {
-  ImageView<PixelMask<float32> > vw_img;
+  ImageView<PixelMask<float32> > vw_img(20, 10);
   
   ::Matrix oct_img(imageview_to_octave(vw_img));
  
@@ -66,7 +66,7 @@ TEST(Conversions, imageview_to_octave_mask) {
 TEST(Conversions, octave_to_imageview) {
   ::octave_rand::seed(10);
 
-  ::Matrix oct_img(::octave_rand::matrix(10, 10));
+  ::Matrix oct_img(::octave_rand::matrix(20, 10));
   ImageView<float32> vw_img(octave_to_imageview(oct_img));
 
   for (int col = 0; col < vw_img.cols(); col++) {
@@ -77,7 +77,9 @@ TEST(Conversions, octave_to_imageview) {
 }
 
 TEST(Conversions, octave_to_imageview_mask) {
-  ::Matrix oct_img(10, 10);
+  ::octave_rand::seed(10);
+
+  ::Matrix oct_img(::octave_rand::matrix(20, 10));
   oct_img(0, 0) = ::octave_NA;
 
   ImageView<PixelMask<float32> > vw_img = octave_to_imageview(oct_img);
@@ -110,6 +112,7 @@ TEST(Conversions, imageview_to_octave_masked) {
     }
   }
 }
+
 
 TEST(Conversions, protobuf_to_octave) {
   TestProto message;
