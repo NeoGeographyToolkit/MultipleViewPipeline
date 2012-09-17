@@ -49,6 +49,7 @@ function(mvp_executable exe sources)
                                mvpFrontend
                                mvpGeometry
                                mvpImage
+                               mvpOctave
                                ${VW_LIBRARIES}
                                ${PROTOBUF_LIBRARIES}
                                ${Boost_LIBRARIES}

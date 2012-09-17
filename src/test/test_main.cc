@@ -10,7 +10,7 @@
 #include <mvp/Config.h>
 
 #if MVP_ENABLE_OCTAVE_SUPPORT
-#include <vw/Octave/Main.h>
+#include <mvp/Octave/Main.h>
 #endif
 
 #include <boost/filesystem/operations.hpp>
@@ -18,7 +18,7 @@ namespace fs = boost::filesystem;
 
 int main(int argc, char **argv) {
   #if MVP_ENABLE_OCTAVE_SUPPORT
-  vw::octave::start_octave_interpreter(vw::test::BinName("loadtestenv.m"));
+  mvp::octave::start_octave_interpreter(vw::test::BinName("loadtestenv.m"));
   #endif
 
   // Disable the user's config file
@@ -27,7 +27,7 @@ int main(int argc, char **argv) {
   int status = RUN_ALL_TESTS();
 
   #if MVP_ENABLE_OCTAVE_SUPPORT
-  vw::octave::stop_octave_interpreter();
+  mvp::octave::stop_octave_interpreter();
   #endif
 
   return status;

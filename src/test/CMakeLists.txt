@@ -9,7 +9,7 @@ add_definitions(-DTEST_DATADIR=\"${CMAKE_SOURCE_DIR}/src/test/data\")
 target_link_libraries(gtest_main gtest)
 
 if (ENABLE_OCTAVE_SUPPORT)
-  target_link_libraries(gtest_main vwOctave)
+  target_link_libraries(gtest_main mvpOctave)
 endif()
 
 configure_file(${CMAKE_SOURCE_DIR}/src/test/loadtestenv.m.in loadtestenv.m)
