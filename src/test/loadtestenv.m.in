@@ -1,2 +1,2 @@
-addpath("@CMAKE_BINARY_DIR@/src/vw/Octave");
-addpath("@CMAKE_SOURCE_DIR@/src/vw/Octave");
+addpath("@CMAKE_BINARY_DIR@/src/mvp/Octave");
+addpath("@CMAKE_SOURCE_DIR@/src/mvp/Octave");
