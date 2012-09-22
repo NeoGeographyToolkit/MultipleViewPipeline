@@ -67,7 +67,7 @@ class octave_mvpobj_impl : public octave_mvpobj<ObjectT> {
           error("mvpobj_impl has no member `%s'", field.c_str());
         }
       } else {
-        error("invalid index for mvpobj_impl");
+        error("unsupported subsref for mvpobj_impl");
       }
 
       return retval;
@@ -76,11 +76,22 @@ class octave_mvpobj_impl : public octave_mvpobj<ObjectT> {
     virtual octave_value
     subsasgn (std::string const& type, std::list<octave_value_list> const& idx, octave_value const& rhs) { 
       if (idx.size() > 1) {
-        error("FIXME: Nested subsasgn unsupported for now");
-      } {
-        m_map.setfield("asdf", 5);
-        //m_impl.subsasgn(type, idx, rhs); 
+        std::list<octave_value_list> new_idx(idx.begin(), --idx.end());
+        octave_value_list ovl = subsref(type.substr(0, type.size() - 1), new_idx, 1);
+        if (ovl.length()) {
+          ovl(0).subsasgn(type.substr(type.size() - 1), std::list<octave_value_list>(1, *--idx.end()), rhs);
+        } else {
+          error("mvpobj_impl subexpression did not return a result");
+        }
+      } else if (type[0] == '(' || type[0] == '{') {
+        error("mvpobj_impl does not support indexing");
+      } else if (type[0] == '.') {
+        std::string field = idx.front()(0).string_value();
+        m_map.setfield(field, rhs);
+      } else {
+        error("unsupported subsasgn for mvpobj_impl");
       }
+
       return this->as_value();
     }
 

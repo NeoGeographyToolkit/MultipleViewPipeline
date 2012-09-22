@@ -29,6 +29,9 @@ class octave_mvpobj_ref : public octave_base_value {
 
     virtual octave_idx_type numel(octave_value_list const& idx) { return 1; }
 
+    virtual octave_value
+    subsref (std::string const& type, std::list<octave_value_list> const& idx);
+
     virtual octave_value_list 
     subsref (std::string const& type, std::list<octave_value_list> const& idx, int nargout);
 

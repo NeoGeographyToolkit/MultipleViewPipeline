@@ -18,6 +18,12 @@ octave_mvpobj_ref::~octave_mvpobj_ref() {
   }
 }
 
+octave_value
+octave_mvpobj_ref::subsref (std::string const& type, std::list<octave_value_list> const& idx) {
+  octave_value_list ovl = subsref(type, idx, 1);
+  return ovl.length() ? ovl(0) : octave_value(); 
+}
+
 octave_value_list 
 octave_mvpobj_ref::subsref (std::string const& type, std::list<octave_value_list> const& idx, int nargout) {
   if (m_ptr) {
