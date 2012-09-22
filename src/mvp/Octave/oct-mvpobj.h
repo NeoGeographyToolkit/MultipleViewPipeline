@@ -6,14 +6,21 @@
 #ifndef __MVP_OCTAVE_MVPOBJ_H__
 #define __MVP_OCTAVE_MVPOBJ_H__
 
-#include <octave/ov.h>
-#include <octave/ov-struct.h>
+#include <mvp/Octave/ov-mvpobj-ref.h>
+
+#include <octave/oct-map.h>
 
 #include <boost/utility.hpp>
 
 class octave_mvpobj_base : boost::noncopyable {
+  int refcount;
+
   public:
-    virtual ~octave_mvpobj_base() {}
+    friend class octave_mvpobj_ref;
+
+    octave_mvpobj_base() : refcount(0) { std::cout << "const" << std::endl; }
+
+    virtual ~octave_mvpobj_base() { std::cout << "deconst" << std::endl; }
 
     virtual octave_value_list 
     subsref (std::string const& type, std::list<octave_value_list> const& idx, int nargout) = 0;

@@ -1,6 +1,6 @@
 #include <octave/oct.h> 
 
-#include <mvp/Octave/ov-mvpobj-ref.h>
+#include <mvp/Octave/oct-mvpobj.h>
 
 #include <mvp/Algorithm/Stepper/StupidStepper.h>
 
