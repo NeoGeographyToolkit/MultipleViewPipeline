@@ -15,17 +15,22 @@
 class octave_mvpobj_base : boost::noncopyable {
   int refcount;
 
+  protected:
+    octave_value as_value() {
+      return octave_value(new octave_mvpobj_ref(this));
+    }
+
   public:
     friend class octave_mvpobj_ref;
 
-    octave_mvpobj_base() : refcount(0) { std::cout << "const" << std::endl; }
+    octave_mvpobj_base() : refcount(0) {}
 
-    virtual ~octave_mvpobj_base() { std::cout << "deconst" << std::endl; }
+    virtual ~octave_mvpobj_base() {}
 
     virtual octave_value_list 
     subsref (std::string const& type, std::list<octave_value_list> const& idx, int nargout) = 0;
 
-    virtual void
+    virtual octave_value
     subsasgn (std::string const& type, std::list<octave_value_list> const& idx, octave_value const& rhs) = 0;
 };
 
@@ -68,7 +73,7 @@ class octave_mvpobj_impl : public octave_mvpobj<ObjectT> {
       return retval;
     }
 
-    virtual void
+    virtual octave_value
     subsasgn (std::string const& type, std::list<octave_value_list> const& idx, octave_value const& rhs) { 
       if (idx.size() > 1) {
         error("FIXME: Nested subsasgn unsupported for now");
@@ -76,6 +81,7 @@ class octave_mvpobj_impl : public octave_mvpobj<ObjectT> {
         m_map.setfield("asdf", 5);
         //m_impl.subsasgn(type, idx, rhs); 
       }
+      return this->as_value();
     }
 
     virtual ObjectT *obj() {
@@ -103,9 +109,10 @@ class octave_mvpobj_wrap : public octave_mvpobj<ObjectT> {
       return octave_value();
     }
 
-    virtual void
+    virtual octave_value
     subsasgn (std::string const& type, std::list<octave_value_list> const& idx, octave_value const& rhs) {
       error("subsasgn not supported for wrapped mvp classes");
+      return this->as_value();
     }
 
     virtual ObjectT *obj() {

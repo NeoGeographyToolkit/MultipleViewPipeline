@@ -14,7 +14,7 @@ octave_mvpobj_ref::~octave_mvpobj_ref() {
   if (m_ptr) {
     if (!--m_ptr->refcount) {
       delete m_ptr;
-    }
+    } 
   }
 }
 
@@ -31,8 +31,7 @@ octave_mvpobj_ref::subsref (std::string const& type, std::list<octave_value_list
 octave_value
 octave_mvpobj_ref::subsasgn (std::string const& type, std::list<octave_value_list> const& idx, octave_value const& rhs) { 
   if (m_ptr) {
-    m_ptr->subsasgn(type, idx, rhs); 
-    return octave_value(clone()); 
+    return m_ptr->subsasgn(type, idx, rhs); 
   } else {
     error("mvpobj_ref has NULL pointer");
     return octave_value();
