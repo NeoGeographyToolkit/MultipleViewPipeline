@@ -59,9 +59,16 @@ class octave_mvpobj_impl : public octave_mvpobj<ObjectT> {
         if (m_map.contains(field)) {
           retval(0) = m_map.getfield(field);
           
-          if (idx.size () > 1) {
-            // if next type is a (, and retval(0) is a function handle prepend self to idx(1)
-            retval = retval(0).next_subsref(nargout, type, idx, skip);
+          if (idx.size() > 1) {
+            std::list<octave_value_list> idx_copy = idx;
+
+            // Add 'self' to member functions
+            if (retval(0).is_function_handle() && type[1] == '(') {
+              std::list<octave_value_list>::iterator iter = ++idx_copy.begin();
+              iter->prepend(this->as_value());
+            }
+
+            retval = retval(0).next_subsref(nargout, type, idx_copy, skip);
           }
         } else {
           error("mvpobj_impl has no member `%s'", field.c_str());
