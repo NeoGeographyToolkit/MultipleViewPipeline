@@ -1,10 +1,10 @@
-/// \file Conversions.h
+/// \file OctaveCast.h
 ///
-/// Conversions class
+/// octave_cast function
 ///
 
-#ifndef __MVP_OCTAVE_CONVERSIONS_H__
-#define __MVP_OCTAVE_CONVERSIONS_H__
+#ifndef __MVP_OCTAVE_OCTAVECAST_H__
+#define __MVP_OCTAVE_OCTAVECAST_H__
 
 #include <octave/oct.h>
 #include <octave/oct-map.h>

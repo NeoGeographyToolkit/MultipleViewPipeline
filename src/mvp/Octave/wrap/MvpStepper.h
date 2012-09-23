@@ -1,10 +1,10 @@
-/// \file OctaveStepper.h
+/// \file MvpStepper.h
 ///
 /// TODO: Write doc
 ///
 
-#ifndef __MVP_OCTAVE_STEPPER_H__
-#define __MVP_OCTAVE_STEPPER_H__
+#ifndef __MVP_OCTAVE_MVPSTEPPER_H__
+#define __MVP_OCTAVE_MVPSTEPPER_H__
 
 namespace mvp {
 namespace octave {
