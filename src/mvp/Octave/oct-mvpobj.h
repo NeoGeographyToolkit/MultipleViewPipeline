@@ -50,8 +50,6 @@ class octave_mvpobj_impl : public octave_mvpobj<ObjectT> {
       octave_value_list retval;
 
       if (type[0] == '.') {
-        int skip = 1;
-
         assert(idx.front().length() == 1);
 
         std::string field = idx.front()(0).string_value();
@@ -64,11 +62,10 @@ class octave_mvpobj_impl : public octave_mvpobj<ObjectT> {
 
             // Add 'self' to member functions
             if (retval(0).is_function_handle() && type[1] == '(') {
-              std::list<octave_value_list>::iterator iter = ++idx_copy.begin();
-              iter->prepend(this->as_value());
+              (++idx_copy.begin())->prepend(this->as_value());
             }
 
-            retval = retval(0).next_subsref(nargout, type, idx_copy, skip);
+            retval = retval(0).next_subsref(nargout, type, idx_copy, 1);
           }
         } else {
           error("mvpobj_impl has no member `%s'", field.c_str());
@@ -123,8 +120,27 @@ class octave_mvpobj_wrap : public octave_mvpobj<ObjectT> {
 
     virtual octave_value_list 
     subsref (std::string const& type, std::list<octave_value_list> const& idx, int nargout) {
-      std::cout << "subsref" << std::endl;
-      return octave_value();
+      octave_value_list retval;
+
+      if (type[0] == '.') {
+        assert(idx.front().length() == 1);
+
+        std::string method = idx.front()(0).string_value();
+
+        if (idx.size() > 1) {
+          retval(0) = mvpobj_wrap_function(m_obj, method, *(++idx.begin()));
+
+          if (idx.size() > 2) {
+            retval = retval(0).next_subsref(nargout, type, idx, 2);
+          }
+        } else {
+          error("mvpobj_wrap expected ()");
+        }
+      } else {
+        error("unsupported subsref for mvpobj_impl");
+      }
+
+      return retval;
     }
 
     virtual octave_value

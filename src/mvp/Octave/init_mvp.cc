@@ -4,6 +4,11 @@
 
 #include <mvp/Algorithm/Stepper/StupidStepper.h>
 
+octave_value mvpobj_wrap_function(mvp::algorithm::Stepper *obj, std::string const& method, octave_value_list const& args) {
+  std::cout << "wrapping stepper->" << method << "(" << args.length() << ")" << std::endl;
+  return octave_value();
+}
+
 octave_value_list MvpStepper(octave_value_list const& args, int nargout) {
   if (args.length() == 0) {
     return octave_value(new octave_mvpobj_ref(new octave_mvpobj_impl<mvp::algorithm::Stepper>()));
