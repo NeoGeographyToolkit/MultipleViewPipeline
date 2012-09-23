@@ -10,29 +10,29 @@
 
 #include <mvp/Algorithm/Stepper/StupidStepper.h>
 
-OCT_WRAP_BEGINC(MvpStepper, mvp::algorithm::Stepper) {
+MVP_WRAPPER_BEGINC(MvpStepper, mvp::algorithm::Stepper) {
 
-  OCT_WRAP_CONSTRUCTOR("StupidStepper") {
-    OCT_WRAP_CONSTRUCTOR_RETURN(mvp::algorithm::StupidStepper());
+  MVP_WRAPPER_CONSTRUCTOR("StupidStepper") {
+    MVP_WRAPPER_CONSTRUCTOR_RETURN(mvp::algorithm::StupidStepper());
   }
 
-} OCT_WRAP_ENDC()
+} MVP_WRAPPER_ENDC()
 
-OCT_WRAP_BEGINF(mvp::algorithm::Stepper) {
+MVP_WRAPPER_BEGINF(mvp::algorithm::Stepper) {
 
-  OCT_WRAP_FUNCTION("zing") {
-    OCT_WRAP_FUNCTION_NARGS(2);
-    OCT_WRAP_FUNCTION_ARG(int, arg1);
-    OCT_WRAP_FUNCTION_ARG(int, arg2);
-    OCT_WRAP_FUNCTION_VOID(obj->zing(arg1, arg2));
+  MVP_WRAPPER_FUNCTION("zing") {
+    MVP_WRAPPER_FUNCTION_NARGS(2);
+    MVP_WRAPPER_FUNCTION_ARG(int, arg1);
+    MVP_WRAPPER_FUNCTION_ARG(int, arg2);
+    MVP_WRAPPER_FUNCTION_VOID(obj->zing(arg1, arg2));
   }
 
-  OCT_WRAP_FUNCTION("zap") {
-    OCT_WRAP_FUNCTION_NARGS(1);
-    OCT_WRAP_FUNCTION_ARG(int, arg1);
-    OCT_WRAP_FUNCTION_RETURN(obj->zap(arg1));
+  MVP_WRAPPER_FUNCTION("zap") {
+    MVP_WRAPPER_FUNCTION_NARGS(1);
+    MVP_WRAPPER_FUNCTION_ARG(int, arg1);
+    MVP_WRAPPER_FUNCTION_RETURN(obj->zap(arg1));
   }
 
-} OCT_WRAP_ENDF()
+} MVP_WRAPPER_ENDF()
 
 #endif
