@@ -13,6 +13,8 @@ namespace octave {
 
 void start_octave_interpreter(std::string const& startup_script = "");
 
+void register_octave_mvp();
+
 void stop_octave_interpreter();
 
 }} // namespace octave, mvp

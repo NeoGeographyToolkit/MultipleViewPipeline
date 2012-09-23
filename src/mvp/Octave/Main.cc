@@ -5,6 +5,8 @@
 #include <octave/octave.h>
 #include <octave/toplev.h>
 
+#include <mvp/Octave/OctaveStepper.h>
+
 
 namespace mvp {
 namespace octave {
@@ -15,6 +17,14 @@ void start_octave_interpreter(std::string const& startup_script) {
   if (!startup_script.empty()) {
     ::source_file(startup_script);
   }
+
+  register_octave_mvp();
+}
+
+void register_octave_mvp() {
+  octave_mvpobj_ref::register_type(); 
+
+  install_builtin_function(MvpStepper, "MvpStepper", std::string());
 }
 
 void stop_octave_interpreter() {
