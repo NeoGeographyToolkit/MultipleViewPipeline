@@ -13,17 +13,15 @@
 namespace mvp {
 namespace algorithm {
 
-class StupidStepper : public Stepper {
+struct StupidStepper : public Stepper {
+  virtual void zing(int a, int b) {
+    std::cout << "StupidSteper::zing(" << a << ", " << b << std::endl;
+  }
 
-  public:
-    virtual void zing(int a, int b) {
-      std::cout << "StupidSteper::zing(" << a << ", " << b << std::endl;
-    }
-
-    virtual int zap(int a) {
-      std::cout << "StupidStepper::zap(" << a << std::endl;
-      return 5;
-    }
+  virtual int zap(int a) {
+    std::cout << "StupidStepper::zap(" << a << std::endl;
+    return 5;
+  }
 }; 
 
 }}
