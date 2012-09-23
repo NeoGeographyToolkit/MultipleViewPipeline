@@ -5,7 +5,7 @@
 #include <octave/octave.h>
 #include <octave/toplev.h>
 
-#include <mvp/Octave/wrap/MvpStepper.h>
+#include <mvp/Wrapper/cpp/MvpStepper.h>
 
 namespace mvp {
 namespace octave {

@@ -2,7 +2,6 @@ mvp_module(NAME Octave
            HDRS Main.h
                 ov-mvpobj-ref.h
                 oct-mvpobj.h
-                OctaveStepper.h
            SRCS Main.cc
                 ov-mvpobj-ref.cc)
 

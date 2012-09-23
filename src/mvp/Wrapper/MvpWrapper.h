@@ -1,10 +1,10 @@
-/// \file OctaveWrap.h
+/// \file MvpWrapper.h
 ///
 /// OCT_WRAP_* defines
 ///
 
-#ifndef __MVP_OCTAVE_OCTAVEWRAP_H__
-#define __MVP_OCTAVE_OCTAVEWRAP_H__
+#ifndef __MVP_WRAPPER_MVPWRAPPER_H__
+#define __MVP_WRAPPER_MVPWRAPPER_H__
 
 #include <mvp/Octave/oct-mvpobj.h>
 #include <mvp/Octave/OctaveCast.h>

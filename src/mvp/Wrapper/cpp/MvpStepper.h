@@ -6,7 +6,7 @@
 #ifndef __MVP_OCTAVE_MVPSTEPPER_H__
 #define __MVP_OCTAVE_MVPSTEPPER_H__
 
-#include <mvp/Octave/OctaveWrap.h>
+#include <mvp/Wrapper/MvpWrapper.h>
 
 #include <mvp/Algorithm/Stepper/StupidStepper.h>
 
