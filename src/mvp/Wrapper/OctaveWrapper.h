@@ -32,4 +32,31 @@ class OctaveWrapper : BaseT {
 
 }} // namespace wrapper, mvp
 
+#define OCT_WRAPPER_BEGIN(NAME, TYPE) \
+typedef OctaveWrapper<TYPE> NAME; \
+template <> \
+class OctaveWrapper<TYPE> : public TYPE
+
+#define OCT_WRAPPER_INIT() \
+  OctaveWrapperImpl m_wrap; \
+  public: \
+    OctaveWrapper(octave_value const& impl) : m_wrap(impl) {} \
+    OctaveWrapper(std::string const& impl_name) : m_wrap(impl_name) {} \
+    OctaveWrapper(char const* impl_name) : m_wrap(std::string(impl_name)) {} 
+
+
+#define OCT_WRAPPER_FUNCTION_INIT() \
+      octave_value_list args;
+
+#define OCT_WRAPPER_FUNCTION_ARG(ARG) \
+      args.append(mvp::octave::octave_cast<octave_value>(ARG));
+
+#define OCT_WRAPPER_FUNCTION_VOID(NAME) \
+      m_wrap.wrap_function(NAME, args);
+
+#define OCT_WRAPPER_FUNCTION(TYPE, NAME) \
+       mvp::octave::octave_cast<TYPE>(m_wrap.wrap_function(NAME, args));
+
+#define OCT_WRAPPER_END() ;
+
 #endif

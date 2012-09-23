@@ -13,34 +13,23 @@
 namespace mvp {
 namespace wrapper {
 
-template <>
-class OctaveWrapper<algorithm::Stepper> : public algorithm::Stepper {
-  OctaveWrapperImpl m_wrap;
+OCT_WRAPPER_BEGIN(OctaveStepper, mvp::algorithm::Stepper) {
+  OCT_WRAPPER_INIT();
 
-  public:
-    OctaveWrapper(octave_value const& impl) : m_wrap(impl) {}
+  void zing(int a, int b) {
+    OCT_WRAPPER_FUNCTION_INIT();
+    OCT_WRAPPER_FUNCTION_ARG(a);
+    OCT_WRAPPER_FUNCTION_ARG(b);
+    OCT_WRAPPER_FUNCTION_VOID("zing");
+  }
 
-    OctaveWrapper(std::string const& impl_name) : m_wrap(impl_name) {}
-    
-    OctaveWrapper(char const* impl_name) : m_wrap(std::string(impl_name)) {}
+  int zap(int a) {
+    OCT_WRAPPER_FUNCTION_INIT(); 
+    OCT_WRAPPER_FUNCTION_ARG(a);
+    return OCT_WRAPPER_FUNCTION(int, "zap");
+  }
 
-    void zing(int a, int b) {
-      using mvp::octave::octave_cast;
-      octave_value_list args;
-      args.append(octave_cast<octave_value>(a));
-      args.append(octave_cast<octave_value>(b));
-      m_wrap.wrap_function("zing", args);
-    }
-
-    int zap(int a) {
-      using mvp::octave::octave_cast;
-      octave_value_list args;
-      args.append(octave_cast<octave_value>(a));
-      return octave_cast<int>(m_wrap.wrap_function("zap", args));
-    }
-};
-
-typedef OctaveWrapper<algorithm::Stepper> OctaveStepper;
+} OCT_WRAPPER_END()
 
 }} // namespace wrapper,mvp
 
