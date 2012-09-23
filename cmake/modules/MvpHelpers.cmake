@@ -19,6 +19,7 @@ function(mvp_module)
 
   # Build library
   add_library(mvp${mvp_module_NAME} SHARED ${mvp_module_SRCS})
+  target_link_libraries(mvp${mvp_module_NAME} ${VW_LIBRARIES})
 
   # Install headers
   install(FILES ${mvp_module_HDRS} DESTINATION include/mvp/${mvp_module_NAME})

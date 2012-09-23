@@ -6,39 +6,33 @@
 #ifndef __MVP_OCTAVE_MVPSTEPPER_H__
 #define __MVP_OCTAVE_MVPSTEPPER_H__
 
-namespace mvp {
-namespace octave {
-
-
-}} // namespace octave, mvp
-
-#include <mvp/Octave/oct-mvpobj.h>
+#include <mvp/Octave/OctaveWrap.h>
 
 #include <mvp/Algorithm/Stepper/StupidStepper.h>
 
-octave_value_list MvpStepper(octave_value_list const& args, int nargout) {
-  if (args.length() == 0) {
-    return octave_value(new octave_mvpobj_ref(new octave_mvpobj_impl<mvp::algorithm::Stepper>()));
+OCT_WRAP_BEGINC(MvpStepper, mvp::algorithm::Stepper) {
+
+  OCT_WRAP_CONSTRUCTOR("StupidStepper") {
+    OCT_WRAP_CONSTRUCTOR_RETURN(mvp::algorithm::StupidStepper());
   }
 
-  mvp::algorithm::Stepper *stepper = NULL;
-  std::string name = args(0).string_value();
+} OCT_WRAP_ENDC()
 
-  if (name == "StupidStepper") {
-    stepper = new mvp::algorithm::StupidStepper();
+OCT_WRAP_BEGINF(mvp::algorithm::Stepper) {
+
+  OCT_WRAP_FUNCTION("zing") {
+    OCT_WRAP_FUNCTION_NARGS(2);
+    OCT_WRAP_FUNCTION_ARG(int, arg1);
+    OCT_WRAP_FUNCTION_ARG(int, arg2);
+    OCT_WRAP_FUNCTION_VOID(obj->zing(arg1, arg2));
   }
 
-  if (stepper) {
-    return octave_value(new octave_mvpobj_ref(new octave_mvpobj_wrap<mvp::algorithm::Stepper>(stepper, true)));
-  } else {
-    error("`%s' is not a valid MvpStepper", name.c_str());
-    return octave_value();
+  OCT_WRAP_FUNCTION("zap") {
+    OCT_WRAP_FUNCTION_NARGS(1);
+    OCT_WRAP_FUNCTION_ARG(int, arg1);
+    OCT_WRAP_FUNCTION_RETURN(obj->zap(arg1));
   }
-}
 
-octave_value mvpobj_wrap_function(mvp::algorithm::Stepper *obj, std::string const& method, octave_value_list const& args) {
-  std::cout << "wrapping stepper->" << method << "(" << args.length() << ")" << std::endl;
-  return octave_value();
-}
+} OCT_WRAP_ENDF()
 
 #endif
