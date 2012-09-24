@@ -9,48 +9,57 @@
 #include <mvp/Octave/oct-mvpobj.h>
 #include <mvp/Octave/oct-cast.h>
 
-/// MVP_WRAPPER_CONSTRUCTOR
-
-#define MVP_WRAPPER_BEGINC(NAME, TYPE) \
+#define MVP_WRAPPER_BEGIN(NAME, TYPE) \
+template <> \
+octave_value mvp_wrapper<TYPE>(TYPE *obj, std::string const& func, octave_value_list const& args); \
+\
 octave_value_list NAME(octave_value_list const& args, int nargout) { \
-  typedef TYPE type; \
   if (args.length() == 0) { \
-    return octave_value(new octave_mvpobj_ref(new octave_mvpobj_impl<type>())); \
+    return octave_value(new octave_mvpobj_ref(new octave_mvpobj_impl<TYPE>())); \
   } \
-  type *obj = NULL; \
   std::string name = args(0).string_value(); \
-  try
-
-#define MVP_WRAPPER_CONSTRUCTOR(CNAME) \
-  if (name == CNAME)
-
-#define MVP_WRAPPER_CONSTRUCTOR_RETURN(EXPR) \
-  obj = new EXPR
-
-#define MVP_WRAPPER_ENDC() \
-  catch (vw::Exception &e) { \
-    error("invalid cast: %s", e.what()); \
-    return octave_value(); \
-  } \
-  if (obj) { \
-    return octave_value(new octave_mvpobj_ref(new octave_mvpobj_wrap<type>(obj, true))); \
-  } else { \
-    error("`%s' is not a valid classname", name.c_str()); \
-    return octave_value(); \
-  } \
-}
-
-/// MVP_WRAPPER_FUNCTION
-
-#define MVP_WRAPPER_BEGIN(TYPE) \
+  return mvp_wrapper<TYPE>(0, name, args.slice(1, args.length() - 1)); \
+} \
+\
 template <> \
 octave_value mvp_wrapper<TYPE>(TYPE *obj, std::string const& func, octave_value_list const& args) { \
+  typedef TYPE type; \
   try
 
-#define MVP_WRAPPER_void \
+#define MVP_WRAPPER_CONSTRUCT(CLASS, NAME) \
+    if (!obj) { \
+      if (func == NAME) { \
+        if (args.length() == 0) { \
+          return octave_value(new octave_mvpobj_ref(new octave_mvpobj_wrap<type>(new CLASS(), true))); \
+        } \
+      } \
+    }
+
+#define MVP_WRAPPER_CONSTRUCT1(CLASS, NAME, T1) \
+    if (!obj) { \
+      if (func == NAME) { \
+        if (args.length() == 1) { \
+          T1 arg1 = mvp::octave::octave_cast<T1>(args(0)); \
+          return octave_value(new octave_mvpobj_ref(new octave_mvpobj_wrap<type>(new CLASS(arg1), true))); \
+        } \
+      } \
+    }
+
+#define MVP_WRAPPER_CONSTRUCT2(CLASS, NAME, T1, T2) \
+    if (!obj) { \
+      if (func == NAME) { \
+        if (args.length() == 2) { \
+          T1 arg1 = mvp::octave::octave_cast<T1>(args(0)); \
+          T2 arg2 = mvp::octave::octave_cast<T2>(args(1)); \
+          return octave_value(new octave_mvpobj_ref(new octave_mvpobj_wrap<type>(new CLASS(arg1, arg2), true))); \
+        } \
+      } \
+    }
+
+#define MVP_WRAPPER_void
 
 #define MVP_WRAPPER_func \
-ret = mvp::octave::octave_cast<octave_value>
+  ret = mvp::octave::octave_cast<octave_value>
 
 #define MVP_WRAPPER_0arg(NAME, VOID_OR_FUNC) \
     if (func == #NAME) { \
@@ -82,7 +91,7 @@ ret = mvp::octave::octave_cast<octave_value>
       } \
     }
 
-#define MVP_WRAPPER_END() \
+#define MVP_WRAPPER_END \
     catch (vw::Exception &e) { \
     error("invalid cast: %s", e.what()); \
   } \

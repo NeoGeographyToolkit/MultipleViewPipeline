@@ -27,21 +27,15 @@ OCT_WRAPPER_BEGIN(OctaveStepper, mvp::algorithm::Stepper) {
 
 /// MvpWrapper
 
-MVP_WRAPPER_BEGINC(MvpStepper, mvp::algorithm::Stepper) {
+MVP_WRAPPER_BEGIN(MvpStepper, mvp::algorithm::Stepper) {
 
-  MVP_WRAPPER_CONSTRUCTOR("StupidStepper") {
-    MVP_WRAPPER_CONSTRUCTOR_RETURN(mvp::algorithm::StupidStepper());
-  }
-
-} MVP_WRAPPER_ENDC()
-
-MVP_WRAPPER_BEGIN(mvp::algorithm::Stepper) {
+  MVP_WRAPPER_CONSTRUCT1(mvp::algorithm::StupidStepper, "StupidStepper", int);
 
   MVP_WRAPPER_VOID2(zing, int, int);
 
   MVP_WRAPPER_FUNCTION1(int, zap, int);
 
-} MVP_WRAPPER_END()
+} MVP_WRAPPER_END
 
 
 }} // namespace wrapper,mvp
