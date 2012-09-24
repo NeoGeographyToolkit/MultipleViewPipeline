@@ -7,7 +7,7 @@
 #ifndef __MVP_WRAPPER_OCTAVEWRAPPER_H__
 #define __MVP_WRAPPER_OCTAVEWRAPPER_H__
 
-#include <mvp/Octave/OctaveCast.h>
+#include <mvp/Octave/oct-cast.h>
 
 namespace mvp {
 namespace wrapper {

@@ -1,10 +1,10 @@
-/// \file OctaveCast.h
+/// \file oct-cast.h
 ///
 /// octave_cast function
 ///
 
-#ifndef __MVP_OCTAVE_OCTAVECAST_H__
-#define __MVP_OCTAVE_OCTAVECAST_H__
+#ifndef __MVP_OCTAVE_OCTCAST_H__
+#define __MVP_OCTAVE_OCTCAST_H__
 
 #include <octave/oct.h>
 #include <octave/oct-map.h>

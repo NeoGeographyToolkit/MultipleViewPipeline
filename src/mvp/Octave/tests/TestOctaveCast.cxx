@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <test/Helpers.h>
 
-#include <mvp/Octave/OctaveCast.h>
+#include <mvp/Octave/oct-cast.h>
 
 using namespace mvp::octave;
 using namespace vw::test;

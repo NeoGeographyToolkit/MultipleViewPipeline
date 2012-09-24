@@ -7,7 +7,7 @@
 #define __MVP_WRAPPER_MVPWRAPPER_H__
 
 #include <mvp/Octave/oct-mvpobj.h>
-#include <mvp/Octave/OctaveCast.h>
+#include <mvp/Octave/oct-cast.h>
 
 /// MVP_WRAPPER_CONSTRUCTOR
 
