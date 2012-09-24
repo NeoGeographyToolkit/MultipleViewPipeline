@@ -16,18 +16,9 @@ namespace wrapper {
 OCT_WRAPPER_BEGIN(OctaveStepper, mvp::algorithm::Stepper) {
   OCT_WRAPPER_INIT();
 
-  void zing(int a, int b) {
-    OCT_WRAPPER_FUNCTION_INIT();
-    OCT_WRAPPER_FUNCTION_ARG(a);
-    OCT_WRAPPER_FUNCTION_ARG(b);
-    OCT_WRAPPER_FUNCTION_VOID("zing");
-  }
+  OCT_WRAPPER_VOID2(zing, int, int);
 
-  int zap(int a) {
-    OCT_WRAPPER_FUNCTION_INIT(); 
-    OCT_WRAPPER_FUNCTION_ARG(a);
-    return OCT_WRAPPER_FUNCTION(int, "zap");
-  }
+  OCT_WRAPPER_FUNCTION1(int, zap, int);
 
 } OCT_WRAPPER_END()
 
