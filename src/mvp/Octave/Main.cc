@@ -6,6 +6,7 @@
 #include <octave/toplev.h>
 
 #include <mvp/Wrapper/Stepper.h>
+#include <mvp/Wrapper/Dummy.h>
 
 namespace mvp {
 namespace octave {
@@ -24,6 +25,7 @@ void register_octave_mvp() {
   octave_mvpobj_ref::register_type(); 
 
   install_builtin_function(mvp::wrapper::MvpStepper, "MvpStepper", std::string());
+  install_builtin_function(mvp::wrapper::MvpDummy, "MvpDummy", std::string());
 }
 
 void stop_octave_interpreter() {

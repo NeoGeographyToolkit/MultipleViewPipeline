@@ -59,9 +59,10 @@ class OctaveWrapperImpl {
 
 template <class BaseT>  
 class OctaveWrapper : BaseT {
-  private:
-    // Nobody should construct this
-    OctaveWrapper() {}
+  // Nobody should construct this
+  OctaveWrapper() {}
+  public:
+    virtual ~OctaveWrapper() {}
 };
 
 }} // namespace wrapper, mvp
@@ -100,17 +101,17 @@ class OctaveWrapper<TYPE> : public TYPE
 
 #define OCT_WRAPPER_FUNCTION2(RT, NAME, T1, T2) \
   RT NAME(T1 arg1, T2 arg2) { \
-    return mvp::octave::octave_cast<RT>(m_wrap.wrap_function1(#NAME, arg1, arg2)); \
+    return mvp::octave::octave_cast<RT>(m_wrap.wrap_function2(#NAME, arg1, arg2)); \
   }
 
 #define OCT_WRAPPER_VOID(NAME) \
   void NAME() { \
-    m_wrap.wrap_function2(#NAME); \
+    m_wrap.wrap_function(#NAME); \
   }
 
 #define OCT_WRAPPER_VOID1(NAME, T1) \
   void NAME(T1 arg1) { \
-    m_wrap.wrap_function2(#NAME, arg1); \
+    m_wrap.wrap_function1(#NAME, arg1); \
   }
 
 #define OCT_WRAPPER_VOID2(NAME, T1, T2) \
