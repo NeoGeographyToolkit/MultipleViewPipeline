@@ -10,7 +10,7 @@
 namespace mvp {
 namespace wrapper {
 
-OctaveWrapperImpl::OctaveWrapperImpl(std::string const& impl_name, octave_value_list const& args) {
+octave_value OctaveWrapperImpl::create_impl(std::string const& impl_name, octave_value_list const& args) {
   octave_value cnstr = symbol_table::find_function(impl_name);
 
   VW_ASSERT(cnstr.is_defined(), vw::NotFoundErr() << "Unable to find " << impl_name);
@@ -19,7 +19,7 @@ OctaveWrapperImpl::OctaveWrapperImpl(std::string const& impl_name, octave_value_
 
   VW_ASSERT(res.length() == 1, vw::LogicErr() << "Unable to construct " << impl_name);
 
-  m_impl = res(0);
+  return res(0);
 }
 
 octave_value OctaveWrapperImpl::wrap_function(std::string const& func, octave_value_list const& args) {

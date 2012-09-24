@@ -10,7 +10,7 @@ using namespace vw::test;
 using namespace std;
 
 TEST(Stepper, zing) {
-  boost::shared_ptr<Stepper> step(new OctaveStepper("StupidStepper"));
+  boost::shared_ptr<Stepper> step(new OctaveStepper("StupidStepper", 5));
   
   cout << step->zap(100) << endl;
 }

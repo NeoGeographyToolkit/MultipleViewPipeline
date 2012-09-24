@@ -15,10 +15,29 @@ namespace wrapper {
 class OctaveWrapperImpl {
   octave_value m_impl;
 
+  static octave_value create_impl(std::string const& impl_name, octave_value_list const& args = octave_value_list());
+
   public:
     OctaveWrapperImpl(octave_value const& impl) : m_impl(impl) {}
 
-    OctaveWrapperImpl(std::string const& impl_name, octave_value_list const& args = octave_value_list());
+    OctaveWrapperImpl(std::string const& impl_name) {
+      m_impl = create_impl(impl_name);
+    }
+
+    template <class T1>
+    OctaveWrapperImpl(std::string const& impl_name, T1 arg1) {
+      octave_value_list args;
+      args.append(mvp::octave::octave_cast<octave_value>(arg1));
+      m_impl = create_impl(impl_name, args);
+    }
+
+    template <class T1, class T2>
+    OctaveWrapperImpl(std::string const& impl_name, T1 arg1, T2 arg2) {
+      octave_value_list args;
+      args.append(mvp::octave::octave_cast<octave_value>(arg1));
+      args.append(mvp::octave::octave_cast<octave_value>(arg2));
+      m_impl = create_impl(impl_name, args);
+    }
 
     octave_value wrap_function(std::string const& func, octave_value_list const& args = octave_value_list());
 
@@ -56,8 +75,18 @@ class OctaveWrapper<TYPE> : public TYPE
   OctaveWrapperImpl m_wrap; \
   public: \
     OctaveWrapper(octave_value const& impl) : m_wrap(impl) {} \
+
+#define OCT_WRAPPER_CONSTRUCT() \
     OctaveWrapper(std::string const& impl_name) : m_wrap(impl_name) {} \
     OctaveWrapper(char const* impl_name) : m_wrap(std::string(impl_name)) {} 
+
+#define OCT_WRAPPER_CONSTRUCT1(T1) \
+    OctaveWrapper(std::string const& impl_name, T1 arg1) : m_wrap(impl_name, arg1) {} \
+    OctaveWrapper(char const* impl_name, T1 arg1) : m_wrap(std::string(impl_name), arg1) {} 
+
+#define OCT_WRAPPER_CONSTRUCT2(T1, T2) \
+    OctaveWrapper(std::string const& impl_name, T1 arg1, T2 arg2) : m_wrap(impl_name, arg1, arg2) {} \
+    OctaveWrapper(char const* impl_name, T1 arg1, T2 arg2) : m_wrap(std::string(impl_name), arg1, arg2) {} 
 
 #define OCT_WRAPPER_FUNCTION(RT, NAME) \
   RT NAME() { \
@@ -89,6 +118,6 @@ class OctaveWrapper<TYPE> : public TYPE
     m_wrap.wrap_function2(#NAME, arg1, arg2); \
   }
 
-#define OCT_WRAPPER_END() ;
+#define OCT_WRAPPER_END ;
 
 #endif

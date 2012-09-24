@@ -1,6 +1,6 @@
-function self = StupidStepper()
+function self = StupidStepper(var)
   self = MvpStepper();
-  self.memvar = 20;
+  self.memvar = var;
   self.zing = @zing;
   self.zap = @zap;
 endfunction
