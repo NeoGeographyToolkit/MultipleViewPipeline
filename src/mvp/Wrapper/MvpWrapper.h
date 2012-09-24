@@ -42,36 +42,69 @@ octave_value_list NAME(octave_value_list const& args, int nargout) { \
 
 /// MVP_WRAPPER_FUNCTION
 
-#define MVP_WRAPPER_BEGINF(TYPE) \
+#define MVP_WRAPPER_BEGIN(TYPE) \
 octave_value mvpobj_wrap_function(TYPE *obj, std::string const& func, octave_value_list const& args) { \
   try
 
-#define MVP_WRAPPER_FUNCTION(FNAME) \
-    if (func == FNAME) \
+#define MVP_WRAPPER_void \
 
-#define MVP_WRAPPER_FUNCTION_NARGS(NARGS) \
-      if (args.length() != NARGS) { \
-        error("%s requires %d args", func.c_str(), NARGS); \
-        return octave_value(); \
+#define MVP_WRAPPER_func \
+ret = mvp::octave::octave_cast<octave_value>
+
+#define MVP_WRAPPER_0arg(NAME, VOID_OR_FUNC) \
+    if (func == #NAME) { \
+      if (args.length() == 0) { \
+        octave_value ret; \
+        VOID_OR_FUNC(obj->NAME()); \
+        return ret;\
       } \
-      int currarg = 0;
+    }
 
-#define MVP_WRAPPER_FUNCTION_ARG(ARGTYPE, ARGNAME) \
-      ARGTYPE ARGNAME = mvp::octave::octave_cast<ARGTYPE>(args(currarg++));
+#define MVP_WRAPPER_1arg(NAME, T1, VOID_OR_FUNC) \
+    if (func == #NAME) { \
+      if (args.length() == 1) { \
+        octave_value ret; \
+        T1 arg1 = mvp::octave::octave_cast<T1>(args(0)); \
+        VOID_OR_FUNC(obj->NAME(arg1)); \
+        return ret;\
+      } \
+    }
 
-#define MVP_WRAPPER_FUNCTION_RETURN(EXPR) \
-      return mvp::octave::octave_cast<octave_value>(EXPR);
+#define MVP_WRAPPER_2arg(NAME, T1, T2, VOID_OR_FUNC) \
+    if (func == #NAME) { \
+      if (args.length() == 2) { \
+        octave_value ret; \
+        T1 arg1 = mvp::octave::octave_cast<T1>(args(0)); \
+        T2 arg2 = mvp::octave::octave_cast<T2>(args(1)); \
+        VOID_OR_FUNC(obj->NAME(arg1, arg2)); \
+        return ret;\
+      } \
+    }
 
-#define MVP_WRAPPER_FUNCTION_VOID(EXPR) \
-      EXPR; \
-      return octave_value();
-
-#define MVP_WRAPPER_ENDF() \
+#define MVP_WRAPPER_END() \
     catch (vw::Exception &e) { \
     error("invalid cast: %s", e.what()); \
   } \
   error("unable to call function %s", func.c_str()); \
   return octave_value(); \
 }
+
+#define MVP_WRAPPER_FUNCTION(RT, NAME) \
+  MVP_WRAPPER_0arg(NAME, MVP_WRAPPER_func)
+
+#define MVP_WRAPPER_FUNCTION1(RT, NAME, T1) \
+  MVP_WRAPPER_1arg(NAME, T1, MVP_WRAPPER_func)
+
+#define MVP_WRAPPER_FUNCTION2(RT, NAME, T1, T2) \
+  MVP_WRAPPER_2arg(NAME, T1, T2, MVP_WRAPPER_func)
+
+#define MVP_WRAPPER_VOID(NAME) \
+  MVP_WRAPPER_0arg(NAME, MVP_WRAPPER_void)
+
+#define MVP_WRAPPER_VOID1(NAME, T1) \
+  MVP_WRAPPER_1arg(NAME, T1, MVP_WRAPPER_void)
+
+#define MVP_WRAPPER_VOID2(NAME, T1, T2) \
+  MVP_WRAPPER_2arg(NAME, T1, T2, MVP_WRAPPER_void)
 
 #endif

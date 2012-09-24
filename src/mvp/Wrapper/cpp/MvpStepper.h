@@ -18,21 +18,12 @@ MVP_WRAPPER_BEGINC(MvpStepper, mvp::algorithm::Stepper) {
 
 } MVP_WRAPPER_ENDC()
 
-MVP_WRAPPER_BEGINF(mvp::algorithm::Stepper) {
+MVP_WRAPPER_BEGIN(mvp::algorithm::Stepper) {
 
-  MVP_WRAPPER_FUNCTION("zing") {
-    MVP_WRAPPER_FUNCTION_NARGS(2);
-    MVP_WRAPPER_FUNCTION_ARG(int, arg1);
-    MVP_WRAPPER_FUNCTION_ARG(int, arg2);
-    MVP_WRAPPER_FUNCTION_VOID(obj->zing(arg1, arg2));
-  }
+  MVP_WRAPPER_VOID2(zing, int, int);
 
-  MVP_WRAPPER_FUNCTION("zap") {
-    MVP_WRAPPER_FUNCTION_NARGS(1);
-    MVP_WRAPPER_FUNCTION_ARG(int, arg1);
-    MVP_WRAPPER_FUNCTION_RETURN(obj->zap(arg1));
-  }
+  MVP_WRAPPER_FUNCTION1(int, zap, int);
 
-} MVP_WRAPPER_ENDF()
+} MVP_WRAPPER_END()
 
 #endif
