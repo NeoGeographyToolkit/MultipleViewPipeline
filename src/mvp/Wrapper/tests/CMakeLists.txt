@@ -1,1 +1,1 @@
-mvp_test(TestOctaveStepper)
+mvp_test(TestStepperWrap)

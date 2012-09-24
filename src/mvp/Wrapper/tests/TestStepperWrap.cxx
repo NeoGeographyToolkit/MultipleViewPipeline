@@ -2,7 +2,7 @@
 #include <test/Helpers.h>
 
 #include <octave/config.h>
-#include <mvp/Wrapper/octave/OctaveStepper.h>
+#include <mvp/Wrapper/Stepper.h>
 
 using namespace mvp::wrapper;
 using namespace mvp::algorithm;
