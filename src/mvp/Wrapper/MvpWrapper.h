@@ -43,7 +43,8 @@ octave_value_list NAME(octave_value_list const& args, int nargout) { \
 /// MVP_WRAPPER_FUNCTION
 
 #define MVP_WRAPPER_BEGIN(TYPE) \
-octave_value mvpobj_wrap_function(TYPE *obj, std::string const& func, octave_value_list const& args) { \
+template <> \
+octave_value mvp_wrapper<TYPE>(TYPE *obj, std::string const& func, octave_value_list const& args) { \
   try
 
 #define MVP_WRAPPER_void \

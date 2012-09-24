@@ -12,6 +12,14 @@
 
 #include <boost/utility.hpp>
 
+namespace mvp {
+namespace wrapper {
+
+template <class ObjT>
+octave_value mvp_wrapper(ObjT *obj, std::string const& func, octave_value_list const& args);
+
+}} // namespace wrapper, mvp
+
 class octave_mvpobj_base : boost::noncopyable {
   int refcount;
 
@@ -128,7 +136,7 @@ class octave_mvpobj_wrap : public octave_mvpobj<ObjectT> {
         std::string method = idx.front()(0).string_value();
 
         if (idx.size() > 1) {
-          retval(0) = mvpobj_wrap_function(m_obj, method, *(++idx.begin()));
+          retval(0) = mvp::wrapper::mvp_wrapper(m_obj, method, *(++idx.begin()));
 
           if (idx.size() > 2) {
             retval = retval(0).next_subsref(nargout, type, idx, 2);

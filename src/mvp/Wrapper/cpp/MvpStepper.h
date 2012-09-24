@@ -10,6 +10,9 @@
 
 #include <mvp/Algorithm/Stepper/StupidStepper.h>
 
+namespace mvp {
+namespace wrapper {
+
 MVP_WRAPPER_BEGINC(MvpStepper, mvp::algorithm::Stepper) {
 
   MVP_WRAPPER_CONSTRUCTOR("StupidStepper") {
@@ -25,5 +28,7 @@ MVP_WRAPPER_BEGIN(mvp::algorithm::Stepper) {
   MVP_WRAPPER_FUNCTION1(int, zap, int);
 
 } MVP_WRAPPER_END()
+
+}} //namespace wrapper, mvp
 
 #endif
