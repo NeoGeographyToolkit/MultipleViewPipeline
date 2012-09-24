@@ -95,7 +95,7 @@ octave_value mvp_wrapper<TYPE>(TYPE *obj, std::string const& func, octave_value_
     catch (vw::Exception &e) { \
     error("invalid cast: %s", e.what()); \
   } \
-  error("unable to call function %s", func.c_str()); \
+  error("invalid function name `%s' or wrong number of args", func.c_str()); \
   return octave_value(); \
 }
 
