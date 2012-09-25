@@ -88,8 +88,10 @@ endif()
 # Final setting of vars
 set(VW_INCLUDE_DIRS ${VW_INCLUDE_DIR} ${Boost_INCLUDE_DIRS})
 
-# For some reason, on OSX you have to link explicitly to the boost libraries
-# when also linking to VW, so we add them to the list.
-set(VW_LIBRARIES ${VW_LIBRARIES} ${Boost_LIBRARIES})
+# We should include Boost's libraries here because vw depends
+# on them, but for some reason it creates 'duplicate dylib' warnings...
+# See http://public.kitware.com/Bug/view.php?id=10179
+# Maybe we should just ignore those warnings and uncomment the below?
+# set(VW_LIBRARIES ${VW_LIBRARIES} ${Boost_LIBRARIES})
 
 set(VW_FOUND true)

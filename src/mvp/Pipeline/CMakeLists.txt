@@ -1,4 +1,5 @@
 mvp_module(NAME Pipeline
+           DEPS mvpCore
            HDRS 
            SRCS
            PROTOS AlgorithmSettings.proto

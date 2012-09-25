@@ -1,4 +1,8 @@
 mvp_module(NAME Frontend
+           DEPS mvpCore
+                mvpPipeline
+                mvpGeometry
+                mvpImage
            HDRS Session.h
                 SessionStatus.h
                 ZmqHelpers.h

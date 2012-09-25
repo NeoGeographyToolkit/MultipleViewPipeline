@@ -3,7 +3,7 @@ include(ProtobufGenerate)
 function(mvp_module)
   set(options)
   set(oneValueArgs NAME)
-  set(multiValueArgs HDRS SRCS PROTOS)
+  set(multiValueArgs DEPS HDRS SRCS PROTOS)
   cmake_parse_arguments(mvp_module "${options}" "${oneValueArgs}" "${multiValueArgs}" "${ARGN}")
 
   if (mvp_module_PROTOS)
@@ -19,7 +19,7 @@ function(mvp_module)
 
   # Build library
   add_library(mvp${mvp_module_NAME} SHARED ${mvp_module_SRCS})
-  target_link_libraries(mvp${mvp_module_NAME} ${VW_LIBRARIES})
+  target_link_libraries(mvp${mvp_module_NAME} ${mvp_module_DEPS})
 
   # Install headers
   install(FILES ${mvp_module_HDRS} DESTINATION include/mvp/${mvp_module_NAME})
@@ -51,11 +51,7 @@ function(mvp_executable exe sources)
                                mvpGeometry
                                mvpImage
                                mvpOctave
-                               mvpWrapper
-                               ${VW_LIBRARIES}
-                               ${PROTOBUF_LIBRARIES}
-                               ${Boost_LIBRARIES}
-                               ${ZEROMQ_LIBRARIES})
+                               mvpWrapper)
 
   if (ENABLE_OCTAVE_SUPPORT)
     target_link_libraries(${exe} ${OCTAVE_LIBRARIES})

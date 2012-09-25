@@ -1,4 +1,5 @@
 mvp_module(NAME Image
+           DEPS mvpCore
            HDRS ImageCrop.h
                 ImageCropCollection.h
            SRCS ImageCrop.cc
