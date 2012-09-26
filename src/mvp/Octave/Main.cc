@@ -24,8 +24,8 @@ void start_octave_interpreter(std::string const& startup_script) {
 void register_octave_mvp() {
   octave_mvpobj_ref::register_type(); 
 
-  install_builtin_function(mvp::wrapper::MvpStepper, "MvpStepper", std::string());
-  install_builtin_function(mvp::wrapper::MvpDummy, "MvpDummy", std::string());
+  install_builtin_function(MvpStepper, "MvpStepper", std::string());
+  install_builtin_function(MvpDummy, "MvpDummy", std::string());
 }
 
 void stop_octave_interpreter() {

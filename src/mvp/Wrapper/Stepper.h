@@ -29,6 +29,8 @@ OCT_WRAPPER_BEGIN(OctaveStepper, mvp::algorithm::Stepper) {
 
 } OCT_WRAPPER_END
 
+}} // namespace wrapper,mvp
+
 /// MvpWrapper
 
 MVP_WRAPPER_BEGIN(MvpStepper, mvp::algorithm::Stepper) {
@@ -40,8 +42,5 @@ MVP_WRAPPER_BEGIN(MvpStepper, mvp::algorithm::Stepper) {
   MVP_WRAPPER_FUNCTION1(int, zap, int);
 
 } MVP_WRAPPER_END
-
-
-}} // namespace wrapper,mvp
 
 #endif

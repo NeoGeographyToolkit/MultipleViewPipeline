@@ -41,6 +41,8 @@ OCT_WRAPPER_BEGIN(OctaveDummy, mvp::algorithm::Dummy) {
 
 } OCT_WRAPPER_END
 
+}} // namespace wrapper, mvp
+
 MVP_WRAPPER_BEGIN(MvpDummy, mvp::algorithm::Dummy) {
 
   MVP_WRAPPER_CONSTRUCT(mvp::algorithm::DerivedDummy, "DerivedDummy");
@@ -66,7 +68,5 @@ MVP_WRAPPER_BEGIN(MvpDummy, mvp::algorithm::Dummy) {
   MVP_WRAPPER_FUNCTION(int, y);
 
 } MVP_WRAPPER_END
-
-}} // namespace wrapper, mvp
 
 #endif
