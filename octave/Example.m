@@ -18,4 +18,9 @@ function rtn = memfun(self, arg1)
   rtn = arg1 * self.memvar;
 endfunction
 
+%!test
+%! t = Example(2, 3);
+%! t.memvoid(100);
+%! assert(t.memfun(4), 12);
+
 % vim:set syntax=octave:
