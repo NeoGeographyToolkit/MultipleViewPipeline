@@ -43,3 +43,11 @@ octave_mvpobj_ref::subsasgn (std::string const& type, std::list<octave_value_lis
     return octave_value();
   }
 }
+
+void octave_mvpobj_ref::print (std::ostream& os, bool pr_as_read_syntax) const {
+  if (m_ptr) {
+    return m_ptr->print(os, pr_as_read_syntax);
+  } else {
+    error("mvpobj_ref has NULL pointer");
+  }
+}

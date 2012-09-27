@@ -40,6 +40,9 @@ class octave_mvpobj_base : boost::noncopyable {
 
     virtual octave_value
     subsasgn (std::string const& type, std::list<octave_value_list> const& idx, octave_value const& rhs) = 0;
+
+    virtual void
+    print (std::ostream& os, bool pr_as_read_syntax = false) const = 0;
 };
 
 template <class ObjectT>
@@ -107,6 +110,11 @@ class octave_mvpobj_impl : public octave_mvpobj<ObjectT> {
       return this->as_value();
     }
 
+    virtual void
+    print (std::ostream& os, bool pr_as_read_syntax = false) const {
+      os << "<<mvpobj_impl>>" << std::endl;
+    }
+
     virtual ObjectT *obj() {
       return NULL;
     }
@@ -155,6 +163,11 @@ class octave_mvpobj_wrap : public octave_mvpobj<ObjectT> {
     subsasgn (std::string const& type, std::list<octave_value_list> const& idx, octave_value const& rhs) {
       error("subsasgn not supported for wrapped mvp classes");
       return this->as_value();
+    }
+
+    virtual void
+    print (std::ostream& os, bool pr_as_read_syntax = false) const {
+      os << "<<mvpobj_wrap>>" << std::endl;
     }
 
     virtual ObjectT *obj() {

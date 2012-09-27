@@ -38,6 +38,8 @@ class octave_mvpobj_ref : public octave_base_value {
     virtual octave_value
     subsasgn (std::string const& type, std::list<octave_value_list> const& idx, octave_value const& rhs);
 
+    virtual void print (std::ostream& os, bool pr_as_read_syntax = false) const;
+
   private:
     DECLARE_OCTAVE_ALLOCATOR;
     DECLARE_OV_TYPEID_FUNCTIONS_AND_DATA;
