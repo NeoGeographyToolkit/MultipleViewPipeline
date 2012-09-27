@@ -14,9 +14,7 @@ classdef testPatchViews < TestCase
         function setUp(self)
             strIn = 'AS15_3_3_tiles.mat';
             self.mv = MultiViews(strIn);
-            self.mv.rv.z=[128 150]';
-            self.mv.rv.pv.proj
-            r = self.mv.rv.elevate(RasterView.radiusMoon-500);
+            self.mv.raster([128 150]');
             self.pv = self.mv.rv.pv;
             self.pv.disp;
             self.opt.T = optimset('LargeScale','on','FinDiffType','central');
@@ -138,6 +136,75 @@ classdef testPatchViews < TestCase
                 pv.slowate;
                 f = pv.gs;
                 if nargout > 1, g = pv.grad_gs; end
+            end
+        end
+        
+        function testDNtDQ(self)
+            fprintf('Testing Gradient of Ns w.r.t r\n');
+            p = self.pv.r;
+            fminunc(@(p)mvOpt(p,self.pv),p,self.opt.T);
+            function [f,g]=mvOpt(p,pv)
+                pv.r = p;
+                pv.proj;
+                pv.corelate;
+                f = pv.nt;
+                if nargout > 1, 
+                    pv.jacobian;
+                    g = pv.dNtdQ;
+                end
+            end
+        end
+        
+        function testGGN(self)
+            fprintf('Testing Generalized Gauss-Newton w.r.t r\n');
+            p = self.pv.optimize;
+        end
+        
+        function testDNsDQ(self)
+            fprintf('Testing Gradient of Ns w.r.t r\n');
+            p = self.pv.r;
+            fminunc(@(p)mvOpt(p,self.pv),p,self.opt.T);
+            function [f,g]=mvOpt(p,pv)
+                pv.r = p;
+                pv.proj;
+                pv.corelate;
+                f = pv.ns;
+                if nargout > 1, 
+                    pv.jacobian;
+                    g = pv.dNsdQ; 
+                end
+            end
+        end
+        
+        function testDSeDQ(self)
+            fprintf('Testing Gradient of Ns w.r.t r\n');
+            p = self.pv.r;
+            fminunc(@(p)mvOpt(p,self.pv),p,self.opt.T);
+            function [f,g]=mvOpt(p,pv)
+                pv.r = p;
+                pv.proj;
+                pv.corelate;
+                f = pv.se;
+                if nargout > 1, 
+                    pv.jacobian;
+                    g = pv.dSedQ; 
+                end
+            end
+        end
+        
+        function testDSsDQ(self)
+            fprintf('Testing Gradient of Ns w.r.t r\n');
+            p = self.pv.r;
+            fminunc(@(p)mvOpt(p,self.pv),p,self.opt.T);
+            function [f,g]=mvOpt(p,pv)
+                pv.r = p;
+                pv.proj;
+                pv.corelate;
+                f = pv.ss;
+                if nargout > 1, 
+                    pv.jacobian;
+                    g = pv.dSsdQ; 
+                end
             end
         end
         
