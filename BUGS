@@ -22,6 +22,34 @@ Duplicate libraries in FindBoost
 
   You will find that the library list will have a boost_system entry twice
 
-Compile problems on osx
+Compile notes on osx
 -----------------------
   For some reason linking to libvw in osx does not provide FileIO, Core, etc.
+
+"double free detected" or "pointer being freed was not allocated" and other errors
+-----------------------------------------------------------------------------------
+The MVP is unable to provide Octave support in OSX. This is because the macports Octave
+is compiled with the macports' gcc instead of the osx gcc (octave requires gfortran,
+which apple does not provide).
+
+When linking to libraries made with different compilers you're usually fine as long
+as you use opaque pointers to abstract out the compiler's object representation.
+
+http://www.qnx.com/developers/articles/article_302_2.html
+
+But opaque pointers can't be used with VW and Boost because they use so many templates. 
+So unless we ALSO recompile VW and boost with the macports' gcc, we're out of luck.
+I think we'd also have to recompile protobuffers and Zmq with the new compiler as well.
+In short, this is not worth trying to get working.
+
+In isolating this problem, I made a library with a function that called octave::main, and 
+then linked it with a simple executable that called that function. When I compiled with
+-lprotobuf to the left of -loctinterp, it would fail with "pointer being freed not allocated".
+When I moved -lprotobuf to the right of -loctinterp, it would run properly. When I recompiled
+libprotobuf-cpp using the mp-gcc45 compiler, either placement would work properly.
+
+I think in this specific case octave and protobuf had static variables overlapping each other,
+because the double frees would happen inside do_octave_atexit, which frees all its static vars.
+
+Maybe a good way of drawing attention to this fact could be to check the CXX var in mkoctfile, and if
+it does not match the current CXX being used, error?
