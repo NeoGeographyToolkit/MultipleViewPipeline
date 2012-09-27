@@ -41,6 +41,10 @@ class octave_mvpobj_ref : public octave_base_value {
   private:
     DECLARE_OCTAVE_ALLOCATOR;
     DECLARE_OV_TYPEID_FUNCTIONS_AND_DATA;
+
+    // Prevent copy construct and assignment
+    octave_mvpobj_ref(octave_mvpobj_ref const&);
+    octave_mvpobj_ref& operator=(octave_mvpobj_ref const&);
 };
 
 #endif
