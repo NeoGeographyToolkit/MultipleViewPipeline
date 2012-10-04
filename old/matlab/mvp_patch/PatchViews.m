@@ -93,7 +93,7 @@ classdef PatchViews < handle
             pv.opt.T = optimset('Largescale','on','FinDiffType','central');
             pv.opt.T = optimset(pv.opt.T,'MaxIter',0,'DerivativeCheck','on');
             pv.opt.T = optimset(pv.opt.T,'GradObj','on','OutputFcn',@outfun);
-            pv.opt.G = optimset(pv.opt.R,'GradObj','on');
+            pv.opt.G = optimset(pv.opt.R,'GradObj','on','DerivativeCheck','off');
         end
         
         function m = adjustHypothesis(pv)
@@ -277,13 +277,13 @@ classdef PatchViews < handle
         function [r,q] = optimize(pv,r,q)
             if nargin > 1, pv.r = r; end
             if nargin > 2, pv.q = q; end
-            r0 = pv.ggnElevate;
-            r = pv.elevate(r);
+            [r0,k] = pv.ggnElevate;
+            r = pv.elevate(pv.r);
             h0 = r0-RasterView.radiusMoon;
             h = r-RasterView.radiusMoon;
             fprintf('The elevation is %f with %d iterations - %f = %f',h0,k,h,h-h0);
             
-            q = pv.q;
+            r = pv.r; q = pv.q;
             %             pv.opt.Q = optimset(pv.opt.R,'OutputFcn',@rotfun);
             %             pv.opt.R = optimset(pv.opt.R,'disp','off','OutputFcn',@radfun);
             %             pv.opt.S = optimset(pv.opt.S,'disp','off');
@@ -552,36 +552,40 @@ classdef PatchViews < handle
             pv.Nty = sum(pv.Nry,3);
         end
 
-        function r = ggnElevate(pv,r)
+        function [r,k] = ggnElevate(pv,r)
             if nargin > 1, pv.r=r; end
-            x = pv.r; t0 = 0; pv.proj;
+            r0 = pv.r; t0 = 0; pv.proj;
             p0 = reallog(pv.corelate+PatchViews.eps_p);
-            pv.jacobian;
-            [V,d,b] = gn(pv); 
-            [r,f,exitflag,output] = fminunc(@(t)mvOpt(t,pv),0,pv.opt.G);
+            [V,d,b,e] = gn(pv);
+            [t,f,exitflag,output] = fminunc(@(t)mvOpt(t,pv),0,pv.opt.G);
+            k = output.iterations;
+            r = st(t-t0,V,d,b,r0); pv.proj;
 
             function [p,g]=mvOpt(t,pv)
-                pv.r=x(1); pv.proj;
+                pv.r = st(t-t0,V,d,b,r0); pv.proj;
                 q = pv.corelate+PatchViews.eps_p;
                 p = reallog(q);
                 if nargout > 1
-                    pv.jacobian;
-                    [V,d,b,e] = gn(pv); 
-                    g = d'*e/q;
+                    [V,d,b,e] = gn(pv);
+                    t0 = t; r0 = pv.r;
+                    g = -1e5*e'*e/q;
                 end
+            end
+            
+            function r = st(t,V,d,b,r)
+                dr = (eye(1)-V*diag(exp(-1e5*d*t))*V')*b;
+                r = r0+dr;
             end
             
             function [V,d,b,e]=gn(pv)
                 pv.jacobian;
 
                 db = pv.grad_beta;
-                db(3) = db(3)-db(2);
                 [dp,p] = pv.grad_snr;
                 dz(1) = (dp(1)*p(2)-dp(2)*p(1))/(p(1)+p(2))^2/2;
-                dz(2) = dp(3)+dp(4);
-                dz(3) = dp(3);
-                z = [p(2)/(p(1)+p(2))/2 p(3)+p(4) p(3)]';
-                z = z + sign(z).*realmin;
+                dz(2:3) = dp(3:4);
+                z = [p(1)/(p(1)+p(2))/2 p(3:4)]';
+                z = z + realmin*sign(z);
                 e = 2*dz*db;
                 j = dz.^2*(db./z);
                 [V,d,b]=gnd(j,e);
@@ -653,15 +657,15 @@ classdef PatchViews < handle
         end
         
         function [dp,p0] = grad_snr(pv,dr)
-            p0 = [pv.ss pv.se pv.ns pv.ne pv.f];
+            p0 = [pv.se pv.ss pv.ne pv.ns pv.f];
             if nargin > 1
                 pv.r = pv.r+dr; pv.proj; pv.corelate;
-                p1 = [pv.ss pv.se pv.ns pv.ne pv.f];
+                p1 = [pv.se pv.ss pv.ne pv.ns pv.f];
                 dp = (p1-p0)/dr;
             else
                 pv.jacobian;
                 ns = pv.dNsdQ;
-                dp = [pv.dSsdQ pv.dSedQ ns pv.dNtdQ-ns];
+                dp = [pv.dSedQ pv.dSsdQ pv.dNtdQ-ns ns];
             end
         end
         
@@ -1106,5 +1110,5 @@ end
 function [V,d,b] = gnd(A,b) % Gauss-Newton Decomposition
 [V,D]=eig(A);
 d = diag(D);
-if nargin > 1, b = lscov(V*D,b); end
+if nargin > 1, b = -lscov(A,b); end
 end

@@ -73,7 +73,7 @@ classdef testPatchViews < TestCase
         
         function testGradBeta(self)
             fprintf('Testing Gradient of Beta\n');
-            self.pv.proj;
+            self.pv.proj; self.pv.corelate;
             l = [0 0 0]'; u = [1 inf inf]';
             z = [self.pv.se/(self.pv.se+self.pv.ss) self.pv.ne self.pv.ns];
             %             x = [self.pv.ne/(self.pv.ne+self.pv.ns) self.pv.ne self.pv.ns];
