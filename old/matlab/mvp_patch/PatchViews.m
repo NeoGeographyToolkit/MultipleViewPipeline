@@ -436,7 +436,7 @@ classdef PatchViews < handle
             pv.Nn = pv.Na./pv.NT; pv.Nn(isnan(pv.Nn)) = 0;
             pv.Fn = pv.Fa./pv.NT; pv.Fn(isnan(pv.Fn)) = 0;
             pv.Ns = sum(pv.Nn.*pv.Na,3);
-
+            
             if nargout > 0, I = pv.Fa; end
             if nargout > 1, W = pv.Na; end
         end
@@ -497,7 +497,7 @@ classdef PatchViews < handle
             Gx = pv.Gx./pv.Na; Gx((isnan(Gx))) = 0;
             Gy = pv.Gy./pv.Na; Gy((isnan(Gy))) = 0;
             Gz = pv.Gz./pv.Na; Gz((isnan(Gz))) = 0;
-
+            
             Nx = pv.Gx./pv.NT; Nx((isnan(Nx))) = 0;
             Ny = pv.Gy./pv.NT; Ny((isnan(Ny))) = 0;
             Nz = pv.Gz./pv.NT; Nz((isnan(Nz))) = 0;
@@ -551,7 +551,7 @@ classdef PatchViews < handle
             pv.Ntx = sum(pv.Nrx,3);
             pv.Nty = sum(pv.Nry,3);
         end
-
+        
         function [r,k] = ggnElevate(pv,r)
             if nargin > 1, pv.r=r; end
             r0 = pv.r; t0 = 0; pv.proj;
@@ -560,26 +560,41 @@ classdef PatchViews < handle
             [t,f,exitflag,output] = fminunc(@(t)mvOpt(t,pv),0,pv.opt.G);
             k = output.iterations;
             r = st(t-t0,V,d,b,r0); pv.proj;
-
+            
             function [p,g]=mvOpt(t,pv)
-                pv.r = st(t-t0,V,d,b,r0); pv.proj;
+                pv.r = st(t-t0,V,d,b,r0); 
+                pv.proj;
                 q = pv.corelate+PatchViews.eps_p;
                 p = reallog(q);
                 if nargout > 1
-                    [V,d,b,e] = gn(pv);
-                    t0 = t; r0 = pv.r;
-                    g = -1e5*e'*e/q;
+                    p0 = p;
+                    for k = 1:300
+                        [V,d,b,e,j] = gn(pv);
+                        et = e'*e;
+                        jt = 1e5*e'*j*e;
+                        if jt > 0 && et > 0, t1 = et/jt/1e5; else break; end
+                        p1 = mvOpt(t1,pv);
+                        if p1 < p0,
+                            pv.r = st(t1-t0,V,d,b,r0);
+                            p0 = p1; r0 = pv.r; t0 = t1;
+                        else
+                            t0 = t; p = p0; break;
+                        end
+                    end
+                    %                     t0 = t; r0 = pv.r;
+%                    g = -1e5*e'*e/q;
+                    g = gradest(@(t)mvOpt(t,pv),t,-inf,inf,pv.opt.G);
                 end
             end
             
-            function r = st(t,V,d,b,r)
-                dr = (eye(1)-V*diag(exp(-1e5*d*t))*V')*b;
-                r = r0+dr;
+            function x = st(t,V,d,b,x0)
+                dx = (eye(1)-V*diag(exp(-1e5*d*t))*V')*b;
+                x = x0+dx;
             end
             
-            function [V,d,b,e]=gn(pv)
+            function [V,d,b,e,j]=gn(pv)
                 pv.jacobian;
-
+                
                 db = pv.grad_beta;
                 [dp,p] = pv.grad_snr;
                 dz(1) = (dp(1)*p(2)-dp(2)*p(1))/(p(1)+p(2))^2/2;
@@ -602,24 +617,24 @@ classdef PatchViews < handle
                 db = pv.grad_beta;
                 db(3) = db(3)-db(2);
                 [dp,p] = pv.grad_snr(1e-5);
-%                [dp,p] = pv.grad_snr;
-%                [dp1,p1] = pv.grad_snr;
+                %                [dp,p] = pv.grad_snr;
+                %                [dp1,p1] = pv.grad_snr;
                 dz(1) = (dp(1)*p(2)-dp(2)*p(1))/(p(1)+p(2))^2/2;
                 dz(2) = dp(3)+dp(4);
                 dz(3) = dp(3);
                 z = [p(2)/(p(1)+p(2))/2 p(3)+p(4) p(3)]';
                 res = 2*dz*db;
                 jac = dz.^2*(db.*z);
-                if jac ~= 0, 
-                    dr = -pinv(db.*dz')*(z.*(pinv(dz)*res)); %-res/jac; 
-                    pv.r = pv.r+dr; 
-                else 
-                    break; 
+                if jac ~= 0,
+                    dr = -pinv(db.*dz')*(z.*(pinv(dz)*res)); %-res/jac;
+                    pv.r = pv.r+dr;
+                else
+                    break;
                 end
                 pv.proj;
                 pv.corelate;
-                if log(pv.p)-log(f) < 1e-6, f = pv.p; else pv.r = pv.r-dr; 
-                    break; 
+                if log(pv.p)-log(f) < 1e-6, f = pv.p; else pv.r = pv.r-dr;
+                    break;
                 end
                 fprintf('%d %f %f %f\n',k, log(f), pv.r-RasterView.radiusMoon, dr);
             end
@@ -929,7 +944,7 @@ classdef PatchViews < handle
             pv.Gy = pv.a(pv.Z).*pv.Fy+pv.b(pv.Z).*pv.Ny;
             pv.Gb = pv.a(pv.Z).*pv.Fb+pv.b(pv.Z);
             
-            pv.Gt = sum(pv.Ga,3); 
+            pv.Gt = sum(pv.Ga,3);
             pv.Gtx = sum(pv.Gx,3); pv.Gty = sum(pv.Gy,3);
             pv.Ntx = sum(pv.Nx,3); pv.Nty = sum(pv.Ny,3);
             pv.Mm = pv.Gt./pv.Nt; pv.Mm(isnan(pv.Mm)) = 0;
@@ -956,7 +971,7 @@ classdef PatchViews < handle
             pv.Gr = pv.a(pv.Z).*pv.Fr+pv.b(pv.Z).*pv.Nr;
             pv.Grx = pv.a(pv.Z).*pv.Frx+pv.b(pv.Z).*pv.Nrx;
             pv.Gry = pv.a(pv.Z).*pv.Fry+pv.b(pv.Z).*pv.Nry;
-
+            
             pv.Grt = sum(pv.Gr,3);   pv.Nrt = sum(pv.Nr,3);
             pv.Grtx = sum(pv.Grx,3); pv.Nrtx = sum(pv.Nrx,3);
             pv.Grty = sum(pv.Gry,3); pv.Nrty = sum(pv.Nry,3);
@@ -1056,7 +1071,7 @@ end % classdef
 function [f0 f1 f2]=fltGaussian(r,s,c)
 % r: radius, s: sigma
 if nargin < 3, c = 0; end
-x=[-r-0.5:r+0.5]'+c; 
+x=[-r-0.5:r+0.5]'+c;
 fx = normpdf(x,0,s); fx(1) = 0; fx(end) = 0;
 Fx = normcdf(x,0,s); Fx(1) = 0; Fx(end) = 1;
 f0 = diff(Fx); f1 = diff(fx);
