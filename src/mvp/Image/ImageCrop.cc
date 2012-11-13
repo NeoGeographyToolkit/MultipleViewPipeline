@@ -4,6 +4,7 @@
 #include <vw/Cartography/SimplePointImageManipulation.h>
 #include <vw/Image/Algorithms.h>
 #include <vw/Image/ImageViewRef.h>
+#include <vw/Image/Interpolation.h>
 
 #include <boost/foreach.hpp>
 
@@ -77,6 +78,35 @@ ImageCrop ImageCrop::construct_from_paths(std::string const& image_path,
   cropbox = vw::grow_bbox_to_int(cropbox);
 
   return ImageCrop(vw::crop(rsrc_helper(rsrc), cropbox), vw::camera::crop(camera, cropbox));
+}
+
+ImageData ImageCrop::project(vw::Vector3 const& xyz, 
+                             vw::Quat const& orientation,
+                             vw::Vector2 const& scale,
+                             vw::Vector2i const& size) 
+{
+  using namespace vw;
+
+  ImageData patch(size.x(), size.y());
+  Matrix3x3 morientation = orientation.rotation_matrix();
+
+  for (int row = 0; row < size.y(); row++) {
+    for (int col = 0; col < size.x(); col++) {
+      Vector2 patch_pt(col, row);
+      patch_pt -= Vector2(size) / 2;
+      patch_pt = elem_prod(patch_pt, scale);
+
+      Vector3 pt3(patch_pt.x(), patch_pt.y(), 0);
+      pt3 = morientation * pt3;
+      pt3 += xyz;
+
+      Vector2 image_pt = m_camera.point_to_pixel(pt3);
+
+      patch(col, row) = interpolate(*this, BilinearInterpolation(), ZeroEdgeExtension())(image_pt.x(), image_pt.y());
+    }
+  }
+
+  return patch;
 }
 
 }} // namespace image,mvp
