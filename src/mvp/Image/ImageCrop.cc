@@ -67,15 +67,14 @@ ImageCrop ImageCrop::construct_from_paths(std::string const& image_path,
   boost::shared_ptr<vw::DiskImageResource> rsrc(vw::DiskImageResource::open(image_path));
   vw::camera::PinholeModel camera(camera_path);
 
-  vw::BBox2 cropbox(find_crop_bbox(camera, lonlat_bbox, datum, alt_limits));
+  vw::BBox2i cropbox(vw::grow_bbox_to_int(find_crop_bbox(camera, lonlat_bbox, datum, alt_limits)));
   cropbox.crop(vw::BBox2i(0, 0, rsrc->cols(), rsrc->rows()));
 
   // Return empty if smaller than a pixel
-  if (cropbox.width() < 1 || cropbox.height() < 1) {
+  if (cropbox.empty()) {
     return ImageCrop();
   }
 
-  cropbox = vw::grow_bbox_to_int(cropbox);
 
   return ImageCrop(vw::crop(rsrc_helper(rsrc), cropbox), vw::camera::crop(camera, cropbox));
 }
