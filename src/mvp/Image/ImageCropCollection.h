@@ -5,7 +5,7 @@
 /// TODO: Write something here
 ///
 
-#include <mvp/Pipeline/OrbitalImage.pb.h>
+#include <mvp/Image/OrbitalImageDesc.pb.h>
 #include <mvp/Image/ImageCrop.h>
 
 namespace mvp {
@@ -27,7 +27,7 @@ class ImageCropCollection : public std::vector<ImageCrop> {
       VW_ASSERT(m_datum.semi_major_axis() == m_datum.semi_minor_axis(), vw::LogicErr() << "Spheroid datums not supported");
     }
 
-    void push_back(pipeline::OrbitalImage const& image_file) {
+    void push_back(image::OrbitalImageDesc const& image_file) {
       push_back(image_file.image_path(), image_file.camera_path());
     }
 

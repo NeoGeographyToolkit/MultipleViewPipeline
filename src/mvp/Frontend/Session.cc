@@ -40,11 +40,11 @@ pipeline::JobDesc Session::next_job() {
 
   vw::platefile::PlateGeoReference plate_georef(m_plate_georef_desc);
   vw::BBox2 lonlat_bbox = plate_georef.tile_lonlat_bbox(col, row, level);
-  std::vector<OrbitalImage> orbital_images = m_footprints->images_in_region(lonlat_bbox);
+  std::vector<image::OrbitalImageDesc> orbital_image_descs = m_footprints->images_in_region(lonlat_bbox);
 
   // Fill out JobDesc
   JobDesc::Input input;
-  std::copy(orbital_images.begin(), orbital_images.end(), RepeatedFieldBackInserter(input.mutable_orbital_images()));
+  std::copy(orbital_image_descs.begin(), orbital_image_descs.end(), RepeatedFieldBackInserter(input.mutable_orbital_images()));
 
   JobDesc::Render render;
   render.set_col(col);

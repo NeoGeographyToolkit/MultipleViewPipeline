@@ -1,5 +1,5 @@
 mvp_module(NAME Geometry
-           DEPS mvpPipeline
+           DEPS mvpImage
            HDRS ConvexPolygon.h
                 Footprint.h
                 FootprintCollection.h

@@ -2,11 +2,11 @@ package mvp.pipeline;
 
 import "vw/Plate/PlateGeoReferenceDesc.proto";
 import "mvp/Pipeline/AlgorithmSettings.proto";
-import "mvp/Pipeline/OrbitalImage.proto";
+import "mvp/Image/OrbitalImageDesc.proto";
 
 message JobDesc {
   message Input {
-    repeated OrbitalImage orbital_images = 1;
+    repeated image.OrbitalImageDesc orbital_images = 1;
     // TODO: In the future, ground control points can go here
   }
 

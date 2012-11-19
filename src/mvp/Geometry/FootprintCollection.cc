@@ -39,8 +39,8 @@ vw::BBox2 FootprintCollection::lonlat_bbox() const {
   return result;
 }
 
-std::vector<pipeline::OrbitalImage> FootprintCollection::images_in_region(vw::BBox2 const& lonlat_bbox) const {
-  std::vector<pipeline::OrbitalImage> result;
+std::vector<image::OrbitalImageDesc> FootprintCollection::images_in_region(vw::BBox2 const& lonlat_bbox) const {
+  std::vector<image::OrbitalImageDesc> result;
 
   BOOST_FOREACH(Footprint const& fp, *this) {
     if (fp.intersects(lonlat_bbox)) {
