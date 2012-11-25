@@ -47,6 +47,13 @@ ConvexPolygon::ConvexPolygon(VertexList pts) {
   }
 }
 
+ConvexPolygon::ConvexPolygon(vw::BBox2 const& bbox) : m_vertices(4) {
+  m_vertices[0] = bbox.max();
+  m_vertices[1] = vw::Vector2(bbox.max().x(), bbox.min().y());
+  m_vertices[2] = bbox.min();
+  m_vertices[3] = vw::Vector2(bbox.min().x(), bbox.max().y());
+}
+
 vw::BBox2 ConvexPolygon::bounding_box() const {
   vw::BBox2 bbox;
 
@@ -113,20 +120,6 @@ bool ConvexPolygon::intersects(ConvexPolygon const& other) const {
   }
 
   return true;  
-}
-
-bool ConvexPolygon::intersects(vw::BBox2 const& bbox) const {
-  ConvexPolygon bbox_poly;
-  
-  std::vector<vw::Vector2> bbox_verts(4);
-  bbox_verts[0] = bbox.min();
-  bbox_verts[1] = vw::Vector2(bbox.min().x(), bbox.max().y());
-  bbox_verts[2] = bbox.max();
-  bbox_verts[3] = vw::Vector2(bbox.max().x(), bbox.min().y());
-
-  bbox_poly.m_vertices = bbox_verts;
-
-  return intersects(bbox_poly);
 }
 
 }} // namespace geometry,mvp

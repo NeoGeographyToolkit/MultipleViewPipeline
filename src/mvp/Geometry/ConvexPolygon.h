@@ -24,6 +24,8 @@ struct ConvexPolygon {
 
     ConvexPolygon(VertexList pts);
 
+    ConvexPolygon(vw::BBox2 const& bbox);
+
     VertexList vertices() const {return m_vertices;}
 
     vw::BBox2 bounding_box() const;
@@ -37,9 +39,6 @@ struct ConvexPolygon {
     bool contains(vw::Vector2 const& pt) const;
 
     bool intersects(ConvexPolygon const& other) const;
-
-    bool intersects(vw::BBox2 const& bbox) const;
-
 };
 
 }} // namespace geometry,mvp

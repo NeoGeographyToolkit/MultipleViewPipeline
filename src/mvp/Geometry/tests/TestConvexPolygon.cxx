@@ -34,6 +34,21 @@ TEST(ConvexPolygon, construct) {
   EXPECT_FALSE(poly.contains(Vector2(10, 3)));
 }
 
+TEST(ConvexPolygon, construct_bbox) {
+  BBox2 bbox(10, 20, 30, 40);
+
+  std::vector<vw::Vector2> bbox_verts(4);
+  bbox_verts[0] = bbox.min();
+  bbox_verts[1] = vw::Vector2(bbox.min().x(), bbox.max().y());
+  bbox_verts[2] = bbox.max();
+  bbox_verts[3] = vw::Vector2(bbox.max().x(), bbox.min().y());
+
+  ConvexPolygon bbox_poly(bbox_verts);
+
+  // Insure that constructing via convex hull and via bbox are the same
+  EXPECT_EQ(bbox_poly.vertices(), ConvexPolygon(bbox).vertices());
+}
+
 TEST(ConvexPolygon, contains) {
   vector<Vector2> pt_list(4);
 
