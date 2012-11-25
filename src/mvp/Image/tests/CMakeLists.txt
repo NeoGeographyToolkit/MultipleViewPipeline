@@ -1,2 +1,2 @@
-mvp_test(TestImageCrop)
-mvp_test(TestImageCropCollection)
+mvp_test(TestOrbitalImage)
+#mvp_test(TestImageCropCollection)

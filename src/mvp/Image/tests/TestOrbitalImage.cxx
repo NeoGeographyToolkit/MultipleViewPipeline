@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <test/Helpers.h>
 
-#include <mvp/Image/ImageCrop.h>
+#include <mvp/Image/OrbitalImage.h>
 
 #include <vw/Image/Statistics.h>
 #include <vw/Image/MaskViews.h>
@@ -21,19 +21,7 @@ using namespace vw::camera;
 using namespace vw::cartography;
 using namespace mvp::image;
 
-TEST(HelperFunction, crop_pinhole) {
-  PinholeModel cam(DataName("synth.0.pinhole"));
-  PinholeModel crop_cam(crop(cam, BBox2i(10, 20, 100, 100)));
- 
-  EXPECT_VECTOR_NEAR(cam.pixel_to_vector(Vector2(10, 20)), crop_cam.pixel_to_vector(Vector2(0, 0)), 1e-6);
-  EXPECT_VECTOR_NEAR(cam.pixel_to_vector(Vector2(20, 30)), crop_cam.pixel_to_vector(Vector2(10, 10)), 1e-6);
-}
-
-TEST(ImageCrop, find_crop_bbox) {
-  // TODO: write me
-}
-
-TEST(ImageCrop, construct_from_paths) {
+//TEST(ImageCrop, construct_from_paths) {
 /* Footprint for synth.0.pinhole with alt +-10000
 
     Vector2(56.1474,9.90343)
@@ -51,7 +39,7 @@ Vector2(55.9392,9.4308)
 
                                  Vector2(56.4232,9.21995)
                                                                   Vector2(56.7208,9.14307)
-*/
+*//*
   // Number of points to test per range
   const int num_pts = 20;
 
@@ -149,4 +137,4 @@ TEST(ImageCrop, project) {
   image = synth_crop(Vector3(0, 0, -1), Vector3(0, 0, 0), Vector2(1, 1), size);
   patch = image.project(Vector3(0, 0, 0), Quat(0, 1, 0, 0), Vector2(1, 1), size);
   EXPECT_TRUE(is_image_valid_eq(image, patch, 1e-6));
-}
+}*/

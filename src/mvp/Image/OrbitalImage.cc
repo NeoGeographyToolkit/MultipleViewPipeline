@@ -1,4 +1,4 @@
-#include <mvp/Image/ImageCrop.h>
+#include <mvp/Image/OrbitalImage.h>
 
 #include <vw/FileIO/DiskImageView.h>
 #include <vw/Cartography/SimplePointImageManipulation.h>
