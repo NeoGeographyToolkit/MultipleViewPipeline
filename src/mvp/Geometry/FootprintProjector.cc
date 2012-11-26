@@ -51,6 +51,15 @@ ConvexPolygon FootprintProjector::backward(ConvexPolygon const& poly, vw::Vector
       result.push_back(backward(v, alt_limits[0]));
       result.push_back(backward(v, alt_limits[1]));
   }
+
+  // TODO: Need to take care of wrapping around poles!
+  vw::BBox2 maxbounds(-180,-180,360,360);
+  BOOST_FOREACH(vw::Vector2 v, result) {
+    if (!maxbounds.contains(v)) {
+      VW_ASSERT(maxbounds.contains(v), vw::NoImplErr() << "Lonlat wrapping in footprints needs to be implemented");
+    }
+  }
+
   return ConvexPolygon(result);
 }
 
