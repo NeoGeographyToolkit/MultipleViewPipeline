@@ -5,16 +5,16 @@
 /// TODO: Write something here
 ///
 
-#ifndef __MVP_IMAGE_IMAGECROP_H__
-#define __MVP_IMAGE_IMAGECROP_H__
+#ifndef __MVP_IMAGE_ORBITALIMAGE_H__
+#define __MVP_IMAGE_ORBITALIMAGE_H__
+
+#include <mvp/Image/OrbitalImageDesc.pb.h>
 
 #include <vw/Image/ImageView.h>
 #include <vw/Image/PixelTypes.h>
 #include <vw/Image/PixelMask.h>
 
-#include <vw/Camera/PinholeModel.h>
-
-#include <vw/Cartography/Datum.h>
+#include <vw/Camera/CameraModel.h>
 
 #include <vw/Math/Quaternion.h>
 
@@ -24,37 +24,29 @@ namespace image {
 typedef vw::PixelMask<vw::PixelGray<vw::float32> > OrbitalData;
 
 class OrbitalImage {
-  vw::ImageViewRef<OrbitalData> m_image;
-  boost::shared_ptr<vw::camera::CameraModel> m_camera;
+  vw::ImageView<OrbitalData> m_image;
+  vw::camera::CroppedCamera m_camera;
 
   public:
-    template <class ImageT>
-    OrbitalImage(vw::ImageViewBase<ImageT> image, boost::shared_ptr<vw::camera::CameraModel> camera) :
-      m_image(image.impl()), m_camera(camera) {}
+    OrbitalImage() : m_image(), m_camera() {}
 
     template <class ImageT, class CameraT>
-    OrbitalImage(vw::ImageViewBase<ImageT> image, CameraT camera) :
-      m_image(image.impl()), m_camera(new CameraT(camera)) {}
+    OrbitalImage(vw::ImageViewBase<ImageT> const& image, CameraT camera) :
+      m_image(image.impl()), m_camera(camera, vw::Vector2()) {}
 
     OrbitalImage(OrbitalImageDesc const& desc);
 
-    vw::ImageViewRef<OrbitalData> image() const {return m_image;}
+    vw::ImageView<OrbitalData> image() const {return m_image;}
 
-    boost::shared_ptr<vw::camera::CameraModel> camera() const {return m_camera;}
-
-    static OrbitalImageDesc create_desc(std::string const& image_path,
-                                        std::string const& camera_path, 
-                                        vw::BBox2 const& lonlat_bbox,
-                                        vw::cartography::Datum const& datum,
-                                        vw::Vector2 const& alt_limits); 
+    vw::camera::CroppedCamera camera() const {return m_camera;}
 
     // Only can write PinholeModels for now...
     OrbitalImageDesc write(std::string const& prefix);
 
-    ImageView<OrbitalData> project(vw::Vector3 const& xyz, 
-                                   vw::Quat const& orientation, 
-                                   vw::Vector2 const& scale,
-                                   vw::Vector2i const& size);
+    vw::ImageView<OrbitalData> back_project(vw::Vector3 const& xyz, 
+                                            vw::Quat const& orientation, 
+                                            vw::Vector2 const& scale,
+                                            vw::Vector2i const& size);
 };
 
 }} // namespace image,mvp

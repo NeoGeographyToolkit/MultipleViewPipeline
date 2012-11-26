@@ -3,4 +3,8 @@ package mvp.image;
 message OrbitalImageDesc {
   required string camera_path = 1;
   required string image_path = 2;
+  required int32 minx = 3;
+  required int32 miny = 4;
+  required int32 width = 5;
+  required int32 height = 6;
 }
