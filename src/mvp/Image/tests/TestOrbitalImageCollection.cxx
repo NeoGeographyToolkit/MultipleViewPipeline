@@ -7,7 +7,6 @@ using namespace std;
 using namespace vw;
 using namespace vw::test;
 using namespace vw::camera;
-using namespace vw::cartography;
 using namespace mvp::image;
 
 TEST(OrbitalImageCollection, back_project) {

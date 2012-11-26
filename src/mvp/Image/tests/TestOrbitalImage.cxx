@@ -39,7 +39,7 @@ TEST(OrbitalImage, back_project) {
   Vector2i size(64, 32);
 
   OrbitalImage orbital_image;
-  ImageView<OrbitalData> patch;
+  ImageView<OrbitalImagePixel> patch;
 
   // Camera at z = 1, looking back at origin. Plane at z = 0
   orbital_image = synth_orbit(Vector3(0, 0, 1), Vector3(M_PI, 0, 0), Vector2(1, 1), size);

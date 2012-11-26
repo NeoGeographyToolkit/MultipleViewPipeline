@@ -19,7 +19,7 @@ class OrbitalImageCollection : public std::vector<OrbitalImage> {
 
   public:
 
-    std::vector<vw::ImageView<OrbitalData> > back_project(vw::Vector3 const& xyz, 
+    std::vector<vw::ImageView<OrbitalImagePixel> > back_project(vw::Vector3 const& xyz, 
                                                           vw::Quat const& orientation, 
                                                           vw::Vector2 const& scale,
                                                           vw::Vector2i const& size);

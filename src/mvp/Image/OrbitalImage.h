@@ -21,10 +21,10 @@
 namespace mvp {
 namespace image {
 
-typedef vw::PixelMask<vw::PixelGray<vw::float32> > OrbitalData;
+typedef vw::PixelMask<vw::PixelGray<vw::float32> > OrbitalImagePixel;
 
 class OrbitalImage {
-  vw::ImageView<OrbitalData> m_image;
+  vw::ImageView<OrbitalImagePixel> m_image;
   vw::camera::CroppedCamera m_camera;
 
   public:
@@ -36,14 +36,14 @@ class OrbitalImage {
 
     OrbitalImage(OrbitalImageDesc const& desc);
 
-    vw::ImageView<OrbitalData> image() const {return m_image;}
+    vw::ImageView<OrbitalImagePixel> image() const {return m_image;}
 
     vw::camera::CroppedCamera camera() const {return m_camera;}
 
     // Only can write PinholeModels for now...
     OrbitalImageDesc write(std::string const& prefix);
 
-    vw::ImageView<OrbitalData> back_project(vw::Vector3 const& xyz, 
+    vw::ImageView<OrbitalImagePixel> back_project(vw::Vector3 const& xyz, 
                                             vw::Quat const& orientation, 
                                             vw::Vector2 const& scale,
                                             vw::Vector2i const& size) const;

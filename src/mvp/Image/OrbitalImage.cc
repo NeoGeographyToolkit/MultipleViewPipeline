@@ -12,13 +12,13 @@
 namespace mvp {
 namespace image {
 
-static vw::ImageViewRef<OrbitalData> rsrc_helper(boost::shared_ptr<vw::DiskImageResource> rsrc) {
+static vw::ImageViewRef<OrbitalImagePixel> rsrc_helper(boost::shared_ptr<vw::DiskImageResource> rsrc) {
   switch(rsrc->format().pixel_format) {
     case vw::VW_PIXEL_GRAYA:
-      return vw::DiskImageView<OrbitalData>(rsrc);
+      return vw::DiskImageView<OrbitalImagePixel>(rsrc);
       break;
     case vw::VW_PIXEL_GRAY:
-      return vw::pixel_cast<OrbitalData>(vw::DiskImageView<vw::PixelGray<vw::float32> >(rsrc));
+      return vw::pixel_cast<OrbitalImagePixel>(vw::DiskImageView<vw::PixelGray<vw::float32> >(rsrc));
       break;
     default:
       vw::vw_throw(vw::ArgumentErr() << "Unsupported orbital image pixel format: " << vw::pixel_format_name(rsrc->format().pixel_format));
@@ -40,14 +40,14 @@ OrbitalImageDesc write(std::string const& prefix) {
   return OrbitalImageDesc();
 }
 
-vw::ImageView<OrbitalData> OrbitalImage::back_project(vw::Vector3 const& xyz, 
+vw::ImageView<OrbitalImagePixel> OrbitalImage::back_project(vw::Vector3 const& xyz, 
                                                       vw::Quat const& orientation,
                                                       vw::Vector2 const& scale,
                                                       vw::Vector2i const& size) const
 {
   using namespace vw;
 
-  vw::ImageView<OrbitalData> patch(size.x(), size.y());
+  vw::ImageView<OrbitalImagePixel> patch(size.x(), size.y());
   Matrix3x3 morientation = orientation.rotation_matrix();
 
   for (int row = 0; row < size.y(); row++) {
