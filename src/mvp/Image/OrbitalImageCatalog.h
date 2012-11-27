@@ -40,6 +40,8 @@ class OrbitalImageCatalog {
 
     void add_image_pattern(std::string const& image_pattern, std::string const& camera_pattern);
 
+    int size() const {return m_entries.size();}
+
     static ConvexPolygon find_image_roi(ConvexPolygon const& map_roi,
                                         vw::camera::CameraModel const& camera,
                                         vw::cartography::Datum const& datum,
