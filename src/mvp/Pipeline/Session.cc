@@ -1,4 +1,6 @@
 #include <mvp/Pipeline/Session.h>
+
+#include <mvp/Image/OrbitalImageCatalog.h>
 #include <mvp/Core/Settings.h> //parse_bbox_string
 
 #include <vw/Plate/PlateGeoReference.h>
@@ -10,9 +12,10 @@ void Session::reset(SessionDesc const& session_desc) {
   m_session_desc = session_desc;
 
   vw::cartography::Datum datum(session_desc.output().datum());
-  //m_footprints.reset(new geometry::FootprintCollection(datum, session_desc.algorithm().alt_min(),
-  //                                                            session_desc.algorithm().alt_max()));
-  //m_footprints->push_back_pattern(session_desc.input().image_pattern(), session_desc.input().camera_pattern());
+
+  m_catalog.reset(new image::OrbitalImageCatalog(datum, vw::Vector2(session_desc.algorithm().alt_min(), 
+                                                                    session_desc.algorithm().alt_max())));
+  m_catalog->add_image_pattern(session_desc.input().image_pattern(), session_desc.input().camera_pattern());
 
   vw::platefile::PlateGeoReference plate_georef(datum, 
                                                 session_desc.output().map_projection(),
@@ -39,11 +42,11 @@ pipeline::JobDesc Session::next_job() {
 
   vw::platefile::PlateGeoReference plate_georef(m_plate_georef_desc);
   vw::BBox2 lonlat_bbox = plate_georef.tile_lonlat_bbox(col, row, level);
-//  std::vector<image::OrbitalImageDesc> orbital_image_descs = m_footprints->images_in_region(lonlat_bbox);
+  std::vector<image::OrbitalImageDesc> orbital_image_descs = m_catalog->images_in_region(lonlat_bbox);
 
   // Fill out JobDesc
   JobDesc::Input input;
-//  std::copy(orbital_image_descs.begin(), orbital_image_descs.end(), RepeatedFieldBackInserter(input.mutable_orbital_images()));
+  std::copy(orbital_image_descs.begin(), orbital_image_descs.end(), RepeatedFieldBackInserter(input.mutable_orbital_images()));
 
   JobDesc::Render render;
   render.set_col(col);

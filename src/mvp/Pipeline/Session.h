@@ -17,12 +17,19 @@
 #include <vw/Plate/PlateGeoReferenceDesc.pb.h>
 
 namespace mvp {
+namespace image {
+
+class OrbitalImageCatalog;
+
+}} // namespace image,mvp
+
+namespace mvp {
 namespace pipeline {
 
 class Session {
   SessionDesc m_session_desc;
   vw::platefile::PlateGeoReferenceDesc m_plate_georef_desc;
-//  boost::shared_ptr<geometry::FootprintCollection> m_footprints;
+  boost::shared_ptr<image::OrbitalImageCatalog> m_catalog;
   vw::Vector2i m_cursor;
   vw::BBox2i m_render_bbox;
 
@@ -35,7 +42,7 @@ class Session {
 
     bool has_next_job() { return m_render_bbox.contains(m_cursor); }
 
-    pipeline::JobDesc next_job();
+    JobDesc next_job();
 
     int size() { return m_render_bbox.width() * m_render_bbox.height(); }
 };
