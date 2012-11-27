@@ -1,10 +1,10 @@
-/// \file SessionStatus.h
+/// \file StatusTable.h
 ///
-/// SessionStatus class
+/// StatusTable class
 ///
 
-#ifndef __MVP_FRONTEND_SESSIONSTATUS_H__
-#define __MVP_FRONTEND_SESSIONSTATUS_H__
+#ifndef __MVP_FRONTEND_STATUSTABLE_H__
+#define __MVP_FRONTEND_STATUSTABLE_H__
 
 #include <map>
 #include <queue>
@@ -15,12 +15,12 @@
 namespace mvp {
 namespace frontend {
 
-class SessionStatus {
+class StatusTable {
   typedef std::map<int, StatusReport::Entry> EntryMap;
   EntryMap m_entries;
 
   public:
-    SessionStatus() : m_entries() {}
+    StatusTable() : m_entries() {}
 
     void reset() { m_entries.clear(); }
 

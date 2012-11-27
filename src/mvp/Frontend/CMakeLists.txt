@@ -2,18 +2,15 @@ mvp_module(NAME Frontend
            DEPS mvpCore
                 mvpPipeline
                 mvpImage
-           HDRS Session.h
-                SessionStatus.h
+           HDRS StatusTable.h
                 ZmqHelpers.h
                 ZmqWorkerHelper.h
                 ZmqServerHelper.h
-           SRCS Session.cc
-                SessionStatus.cc
+           SRCS StatusTable.cc
                 ZmqHelpers.cc
                 ZmqWorkerHelper.cc
                 ZmqServerHelper.cc
-           PROTOS SessionDesc.proto
-                  Messages.proto)
+           PROTOS Messages.proto)
 
 mvp_executable(mvpd mvpd.cc)
 mvp_executable(mvpworker mvpworker.cc)

@@ -1,10 +1,10 @@
-#include <mvp/Frontend/Session.h>
+#include <mvp/Pipeline/Session.h>
 #include <mvp/Core/Settings.h> //parse_bbox_string
 
 #include <vw/Plate/PlateGeoReference.h>
 
 namespace mvp {
-namespace frontend {
+namespace pipeline {
 
 void Session::reset(SessionDesc const& session_desc) {
   m_session_desc = session_desc;
@@ -76,4 +76,4 @@ pipeline::JobDesc Session::next_job() {
   return job_desc;
 }
 
-}} // namespace frontend, mvp
+}} // namespace pipeline, mvp

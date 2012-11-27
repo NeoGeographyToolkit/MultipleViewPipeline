@@ -1,6 +1,6 @@
 package mvp.frontend;
 
-import "mvp/Frontend/SessionDesc.proto";
+import "mvp/Pipeline/SessionDesc.proto";
 import "mvp/Pipeline/JobDesc.proto";
 
 message CommandMsg {
@@ -13,7 +13,7 @@ message CommandMsg {
   }
 
   required CommandType cmd = 1;
-  optional SessionDesc session = 2;
+  optional pipeline.SessionDesc session = 2;
 }
 
 message CommandReplyMsg {

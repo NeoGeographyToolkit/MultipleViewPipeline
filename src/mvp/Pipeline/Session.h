@@ -3,11 +3,11 @@
 /// Session class
 ///
 
-#ifndef __MVP_FRONTEND_SESSION_H__
-#define __MVP_FRONTEND_SESSION_H__
+#ifndef __MVP_PIPELINE_SESSION_H__
+#define __MVP_PIPELINE_SESSION_H__
 
 #include <mvp/Pipeline/JobDesc.pb.h>
-#include <mvp/Frontend/SessionDesc.pb.h>
+#include <mvp/Pipeline/SessionDesc.pb.h>
 
 #include <vw/Math/Vector.h>
 #include <vw/Math/BBox.h>
@@ -17,7 +17,7 @@
 #include <vw/Plate/PlateGeoReferenceDesc.pb.h>
 
 namespace mvp {
-namespace frontend {
+namespace pipeline {
 
 class Session {
   SessionDesc m_session_desc;

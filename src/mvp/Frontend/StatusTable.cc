@@ -1,4 +1,4 @@
-#include <mvp/Frontend/SessionStatus.h>
+#include <mvp/Frontend/StatusTable.h>
 
 #include <ctime>
 
@@ -10,7 +10,7 @@
 namespace mvp {
 namespace frontend {
 
-void SessionStatus::add_entry(pipeline::JobDesc const& job_desc) {
+void StatusTable::add_entry(pipeline::JobDesc const& job_desc) {
   StatusReport::Entry entry;
   *entry.mutable_job() = job_desc;
   entry.set_status(0.0);
@@ -18,7 +18,7 @@ void SessionStatus::add_entry(pipeline::JobDesc const& job_desc) {
   m_entries[job_desc.id()] = entry;
 }
 
-void SessionStatus::update_status(StatusUpdateMsg const& status_update) {
+void StatusTable::update_status(StatusUpdateMsg const& status_update) {
   if (m_entries.count(status_update.job_id())) {
     StatusReport::Entry &cursor = m_entries[status_update.job_id()];
     cursor.set_status(status_update.status());
@@ -28,7 +28,7 @@ void SessionStatus::update_status(StatusUpdateMsg const& status_update) {
   }
 }
 
-std::vector<StatusReport::Entry> SessionStatus::entries() const {
+std::vector<StatusReport::Entry> StatusTable::entries() const {
   std::vector<StatusReport::Entry> result;
 
   BOOST_FOREACH(EntryMap::value_type const& e, m_entries) {
@@ -38,7 +38,7 @@ std::vector<StatusReport::Entry> SessionStatus::entries() const {
   return result;
 }
 
-std::vector<pipeline::JobDesc> SessionStatus::prune_completed_entries() {
+std::vector<pipeline::JobDesc> StatusTable::prune_completed_entries() {
   std::vector<pipeline::JobDesc> completed_entries;
 
   EntryMap::iterator iter = m_entries.begin();
@@ -55,7 +55,7 @@ std::vector<pipeline::JobDesc> SessionStatus::prune_completed_entries() {
   return completed_entries;
 }
 
-std::vector<pipeline::JobDesc> SessionStatus::prune_orphaned_entries() {
+std::vector<pipeline::JobDesc> StatusTable::prune_orphaned_entries() {
   time_t curr_time = time(NULL);
   std::vector<pipeline::JobDesc> orphaned_entries;
 
@@ -73,4 +73,4 @@ std::vector<pipeline::JobDesc> SessionStatus::prune_orphaned_entries() {
   return orphaned_entries;
 }
 
-}} // namespace frontend, mvp
+}} // namespace pipeline, mvp

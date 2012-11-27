@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <test/Helpers.h>
 
-#include <mvp/Frontend/Session.h>
+#include <mvp/Pipeline/Session.h>
 #include <mvp/Core/Settings.h>
 
 using namespace std;
@@ -9,9 +9,8 @@ using namespace mvp;
 using namespace vw::test;
 using namespace mvp::core;
 using namespace mvp::pipeline;
-using namespace mvp::frontend;
 
-TEST(Settings, mvp_settings) {
+TEST(Session, session_desc) {
   SessionDesc session_desc;
   load_settings(&session_desc, SrcName("test.mvp"));
 
