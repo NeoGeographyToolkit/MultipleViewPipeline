@@ -1,2 +1,3 @@
 mvp_test(TestOrbitalImage)
 mvp_test(TestOrbitalImageCollection)
+mvp_test(TestOrbitalImageCatalog)
