@@ -1,9 +1,9 @@
-#include <mvp/Geometry/ConvexPolygon.h>
+#include <mvp/Core/ConvexPolygon.h>
 
 #include <boost/foreach.hpp>
 
 namespace mvp {
-namespace geometry {
+namespace core {
 
 ConvexPolygon::ConvexPolygon(VertexList pts) {
   // Algorithm is the 'giftwrap' algorithm http://www.cse.unsw.edu.au/~lambert/java/3d/giftwrap.html
@@ -122,4 +122,4 @@ bool ConvexPolygon::intersects(ConvexPolygon const& other) const {
   return true;  
 }
 
-}} // namespace geometry,mvp
+}} // namespace core,mvp

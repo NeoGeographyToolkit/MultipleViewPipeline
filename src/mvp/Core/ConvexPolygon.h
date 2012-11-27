@@ -4,14 +4,14 @@
 ///
 /// TODO: Write me!
 
-#ifndef __MVP_PIPELINE_CONVEXPOLYGON_H__
-#define __MVP_PIPELINE_CONVEXPOLYGON_H__
+#ifndef __MVP_CORE_CONVEXPOLYGON_H__
+#define __MVP_CORE_CONVEXPOLYGON_H__
 
 #include <vw/Math/Vector.h>
 #include <vw/Math/BBox.h>
 
 namespace mvp {
-namespace geometry {
+namespace core {
 
 struct ConvexPolygon {
   typedef std::vector<vw::Vector2> VertexList;
@@ -41,6 +41,10 @@ struct ConvexPolygon {
     bool intersects(ConvexPolygon const& other) const;
 };
 
-}} // namespace geometry,mvp
+}} // namespace core,mvp
+
+namespace mvp {
+  using core::ConvexPolygon;
+} // namespace mvp
 
 #endif

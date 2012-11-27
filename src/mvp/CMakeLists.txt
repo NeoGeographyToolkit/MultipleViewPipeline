@@ -1,7 +1,6 @@
 add_subdirectory(Core)
 add_subdirectory(Pipeline)
 add_subdirectory(Frontend)
-add_subdirectory(Geometry)
 add_subdirectory(Image)
 add_subdirectory(Octave)
 add_subdirectory(Wrapper)

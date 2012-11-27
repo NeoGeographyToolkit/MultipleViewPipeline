@@ -48,7 +48,6 @@ function(mvp_executable exe sources)
   target_link_libraries(${exe} mvpCore
                                mvpPipeline
                                mvpFrontend
-                               mvpGeometry
                                mvpImage
                                mvpOctave
                                mvpWrapper)

@@ -4,7 +4,9 @@ mvp_module(NAME Core
                 ${Boost_LIBRARIES}
                 ${ZEROMQ_LIBRARIES}
            HDRS Settings.h
+                ConvexPolygon.h
            SRCS Settings.cc
+                ConvexPolygon.cc
            PROTOS GlobalSettings.proto)
 
 if (BUILD_TESTS)

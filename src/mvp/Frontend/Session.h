@@ -17,17 +17,12 @@
 #include <vw/Plate/PlateGeoReferenceDesc.pb.h>
 
 namespace mvp {
-namespace geometry {
-  class FootprintCollection;
-}}
-
-namespace mvp {
 namespace frontend {
 
 class Session {
   SessionDesc m_session_desc;
   vw::platefile::PlateGeoReferenceDesc m_plate_georef_desc;
-  boost::shared_ptr<geometry::FootprintCollection> m_footprints;
+//  boost::shared_ptr<geometry::FootprintCollection> m_footprints;
   vw::Vector2i m_cursor;
   vw::BBox2i m_render_bbox;
 
