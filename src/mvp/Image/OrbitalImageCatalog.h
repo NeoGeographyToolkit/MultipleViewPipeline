@@ -45,7 +45,7 @@ class OrbitalImageCatalog {
                                         vw::cartography::Datum const& datum,
                                         vw::Vector2 const& alt_limits);
 
-    std::vector<OrbitalImageDesc> images_in_region(ConvexPolygon const& lonlat_roi);
+    std::vector<OrbitalImageDesc> images_in_region(ConvexPolygon const& lonlat_roi) const;
 };
 
 }} // image,mvp
