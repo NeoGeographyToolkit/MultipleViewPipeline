@@ -18,8 +18,7 @@ message JobDesc {
 
   message Output {
     required string result = 1;
-    required string internal_result = 2;
-    required vw.platefile.PlateGeoReferenceDesc plate_georef = 3;
+    required vw.platefile.PlateGeoReferenceDesc plate_georef = 2;
   }
 
   required int32 id = 1;

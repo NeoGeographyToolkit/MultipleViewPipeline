@@ -15,10 +15,9 @@ message SessionDesc {
 
   message Output {
     required string result = 1;
-    required string internal_result = 2;
-    required string datum = 3;
-    optional string map_projection = 4 [default="equi"];
-    optional int32 tile_size = 5 [default = 64];
+    required string datum = 2;
+    optional string map_projection = 3 [default="equi"];
+    optional int32 tile_size = 4 [default = 64];
   }
 
   required Input input = 1;

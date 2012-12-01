@@ -1,6 +1,6 @@
 input {
-  image_pattern: "/home/khusmann/mvp_data/real_scene/.\.tif"
-  camera_pattern: "/home/khusmann/mvp_data/real_scene/.\.pinhole"
+  image_pattern: "/home/khusmann/mvp_data/AS15_bundle/images/.*p\.tif"
+  camera_pattern: "/home/khusmann/mvp_data/AS15_bundle/images/.*p\.pinhole"
 }
 
 render {
@@ -10,7 +10,6 @@ render {
 
 output {
   result: "zmq://localhost:5566/result.plate"
-  internal_result: "zmq://localhost:5566/internal_result.plate"
   datum: "D_MOON"
   map_projection: "equi"
   tile_size: 64  

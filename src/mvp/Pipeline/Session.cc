@@ -55,7 +55,6 @@ pipeline::JobDesc Session::next_job() {
 
   JobDesc::Output output;
   output.set_result(m_session_desc.output().result());
-  output.set_internal_result(m_session_desc.output().internal_result());
   *output.mutable_plate_georef() = m_plate_georef_desc;
 
   JobDesc job_desc;

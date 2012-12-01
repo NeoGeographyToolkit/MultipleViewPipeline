@@ -1,6 +1,8 @@
 #include <iostream>
 #include <csignal>
 
+#include <mvp/Pipeline/Job.h>
+#include <mvp/Algorithm/Types.h>
 #include <mvp/Frontend/ZmqWorkerHelper.h>
 
 #include <vw/Octave/Main.h>
@@ -70,16 +72,6 @@ void handle_arguments(int argc, char* argv[], Options *opts) {
   notify(vm);
 }
 
-#include <unistd.h> // usleep
-
-void launch_job(ProgressCallback const& progress, pipeline::JobDesc const& job_desc) {
-  for (int i = 0; i < 100; i++) {
-    usleep(1000000);
-    progress.report_fractional_progress(i, 100);
-  }
-  progress.report_finished();
-}
-
 int main(int argc, char* argv[]) {
   #if MVP_ENABLE_OCTAVE_SUPPORT
   octave::start_octave_interpreter();
@@ -96,17 +88,11 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  /*
   if (!opts.job_file.empty()) {
-    MVPJob job(MVPJob::load_job_file(opts.job_file));
-
-    MVPTileResult tile_result(job.process_tile(TerminalProgressCallback("mvp", "Processing tile: ")));
-   
-    write_image(opts.job_file + ".tif", tile_result.alt);
-
+    pipeline::Job job(opts.job_file);
+    job.process_tile(TerminalProgressCallback("mvp", "Processing tile: ")).debug_write(opts.job_file);
     return 0;
   }
-  */
 
   vw_out(vw::InfoMessage, "mvpworker") << "Started" << endl;
   zmq::context_t context(1);
@@ -123,7 +109,8 @@ int main(int argc, char* argv[]) {
           if (reply.has_job()) {
             vw_out(vw::InfoMessage, "mvpworker") << "Working on job ID = " << reply.job().id() << endl;
             try {
-              launch_job(ZmqWorkerHelper::ProgressCallback(helper, reply.job().id()), reply.job());
+              pipeline::Job job(reply.job());
+              job.process_tile(ZmqWorkerHelper::ProgressCallback(helper, reply.job().id())).write();
             } catch (vw::Aborted &e) {
               vw_out(vw::InfoMessage, "mvpworker") << "Aborted job ID = " << reply.job().id() << endl;
               break;
