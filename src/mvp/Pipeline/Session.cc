@@ -30,16 +30,12 @@ void Session::reset(SessionDesc const& session_desc) {
   m_cursor = m_render_bbox.min();
 }
 
-pipeline::JobDesc Session::next_job() {
+pipeline::JobDesc Session::job(int col, int row, int level) {
   using namespace pipeline;
 
   static int curr_id = 0;
 
   // Init objects
-  int col = m_cursor.x();
-  int row = m_cursor.y();
-  int level = m_session_desc.render().level();
-
   vw::platefile::PlateGeoReference plate_georef(m_plate_georef_desc);
   vw::BBox2 lonlat_bbox = plate_georef.tile_lonlat_bbox(col, row, level);
   std::vector<image::OrbitalImageDesc> orbital_image_descs = m_catalog->images_in_region(lonlat_bbox);
@@ -68,6 +64,14 @@ pipeline::JobDesc Session::next_job() {
     vw::vw_throw(vw::LogicErr() << "JobDesc missing fields");
   }
 
+  return job_desc;
+}
+
+pipeline::JobDesc Session::next_job() {
+  int col = m_cursor.x();
+  int row = m_cursor.y();
+  int level = m_session_desc.render().level();
+
   // increment cursor
   m_cursor.x()++;
   if (!m_render_bbox.contains(m_cursor)) {
@@ -75,7 +79,7 @@ pipeline::JobDesc Session::next_job() {
     m_cursor.y()++;
   }
 
-  return job_desc;
+  return job(col, row, level);
 }
 
 }} // namespace pipeline, mvp

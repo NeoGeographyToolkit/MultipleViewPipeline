@@ -1,6 +1,6 @@
 input {
-  image_pattern: "/home/khusmann/mvp_data/AS15_bundle/images/.*p\.tif"
-  camera_pattern: "/home/khusmann/mvp_data/AS15_bundle/images/.*p\.pinhole"
+  image_pattern: "/home/khusmann/mvp_data/AS15_bundle/images/.*p\\.tif"
+  camera_pattern: "/home/khusmann/mvp_data/AS15_bundle/images/.*p\\.pinhole"
 }
 
 render {

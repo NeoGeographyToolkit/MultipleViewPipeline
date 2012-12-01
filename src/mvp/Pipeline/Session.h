@@ -40,10 +40,12 @@ class Session {
 
     void reset(SessionDesc const& session_desc);
 
-    bool has_next_job() { return m_render_bbox.contains(m_cursor); }
+    JobDesc job(int col, int row, int level);
 
     JobDesc next_job();
 
+    bool has_next_job() { return m_render_bbox.contains(m_cursor); }
+    
     int size() { return m_render_bbox.width() * m_render_bbox.height(); }
 };
 
