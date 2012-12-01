@@ -6,7 +6,7 @@ sys.path.insert(0, "@PYTHON_INSTALL_DIR@")
 import zmq
 from optparse import OptionParser
 from mvp.frontend.Messages_pb2 import CommandMsg, CommandReplyMsg, StatusReport
-from mvp.frontend.SessionDesc_pb2 import SessionDesc
+from mvp.pipeline.SessionDesc_pb2 import SessionDesc
 from mvp.core.GlobalSettings_pb2 import GlobalSettings
 from google.protobuf import text_format
 from mvp.pipeline.JobDesc_pb2 import JobDesc
