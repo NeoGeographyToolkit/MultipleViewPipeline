@@ -35,8 +35,8 @@ OrbitalImage::OrbitalImage(OrbitalImageDesc const& desc) {
 }
 
 // TODO: Only can write PinholeModels for now...
-OrbitalImageDesc write(std::string const& prefix) {
-  vw::vw_throw(vw::NoImplErr());
+OrbitalImageDesc OrbitalImage::write(std::string const& filename) const {
+  std::cout << "saving " << filename << "..." << std::endl;
   return OrbitalImageDesc();
 }
 

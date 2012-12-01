@@ -24,6 +24,11 @@ class OrbitalImageCollection : public std::vector<OrbitalImage> {
 
     template <class ContainerT>
     OrbitalImageCollection(ContainerT const& orbital_image_descs) {
+      push_back_container(orbital_image_descs);
+    }
+
+    template <class ContainerT>
+    void push_back_container(ContainerT const& orbital_image_descs) {
       BOOST_FOREACH(OrbitalImageDesc const& desc, orbital_image_descs) {
         push_back(OrbitalImage(desc));
       }
@@ -32,7 +37,7 @@ class OrbitalImageCollection : public std::vector<OrbitalImage> {
     std::vector<vw::ImageView<OrbitalImagePixel> > back_project(vw::Vector3 const& xyz, 
                                                                 vw::Quat const& orientation, 
                                                                 vw::Vector2 const& scale,
-                                                                vw::Vector2i const& size);
+                                                                vw::Vector2i const& size) const;
 
 };
 

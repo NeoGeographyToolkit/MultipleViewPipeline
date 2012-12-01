@@ -41,7 +41,7 @@ class OrbitalImage {
     vw::camera::CroppedCamera camera() const {return m_camera;}
 
     // Only can write PinholeModels for now...
-    OrbitalImageDesc write(std::string const& prefix);
+    OrbitalImageDesc write(std::string const& prefix) const;
 
     vw::ImageView<OrbitalImagePixel> back_project(vw::Vector3 const& xyz, 
                                             vw::Quat const& orientation, 

@@ -8,7 +8,7 @@ namespace image {
 std::vector<vw::ImageView<OrbitalImagePixel> > OrbitalImageCollection::back_project(vw::Vector3 const& xyz, 
                                                                               vw::Quat const& orientation, 
                                                                               vw::Vector2 const& scale,
-                                                                              vw::Vector2i const& size)
+                                                                              vw::Vector2i const& size) const
 {
   std::vector<vw::ImageView<OrbitalImagePixel> > result;
 

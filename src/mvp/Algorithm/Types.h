@@ -8,6 +8,7 @@
 #include <vw/Math/Quaternion.h>
 #include <vw/Image/ImageView.h>
 #include <vw/Image/PixelMask.h>
+#include <vw/FileIO/DiskImageResource.h>
 
 #ifndef __MVP_ALGORITHM_TYPES_H__
 #define __MVP_ALGORITHM_TYPES_H__
@@ -163,6 +164,7 @@ class TileResult {
 
     void debug_write(std::string const& prefix) {
       // Write to individual files
+      write_image("alt.tif", plate_layer(0));
     }
 
     void read() {
