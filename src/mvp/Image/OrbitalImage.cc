@@ -34,10 +34,20 @@ OrbitalImage::OrbitalImage(OrbitalImageDesc const& desc) {
   m_camera = vw::camera::crop(vw::camera::PinholeModel(desc.camera_path()), cropbox);
 }
 
-// TODO: Only can write PinholeModels for now...
-OrbitalImageDesc OrbitalImage::write(std::string const& filename) const {
-  std::cout << "saving " << filename << "..." << std::endl;
-  return OrbitalImageDesc();
+// TODO: write any type of camera
+OrbitalImageDesc OrbitalImage::write(std::string const& prefix) const {
+  OrbitalImageDesc desc;
+  desc.set_image_path(prefix + ".tif");
+  desc.set_camera_path(prefix + ".pinhole");
+  desc.set_minx(0);
+  desc.set_miny(0);
+  desc.set_width(m_image.cols());
+  desc.set_height(m_image.rows());
+
+  vw::write_image(desc.image_path(), m_image);
+  m_camera.write(desc.camera_path());
+
+  return desc;
 }
 
 vw::ImageView<OrbitalImagePixel> OrbitalImage::back_project(vw::Vector3 const& xyz, 

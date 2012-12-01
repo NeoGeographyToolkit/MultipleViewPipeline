@@ -65,7 +65,7 @@ std::string Job::save_job_file(std::string const& out_dir) const {
   std::vector<image::OrbitalImageDesc> saved_orbital_images;
   for (unsigned i = 0; i < m_orbital_images.size(); i++) {
     std::stringstream ss;
-    ss << out_dir << "/image-" << i << ".tif";
+    ss << job_filename << "/image" << i;
     saved_orbital_images.push_back(m_orbital_images[i].write(ss.str()));
   }
 
