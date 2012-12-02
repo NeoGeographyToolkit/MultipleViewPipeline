@@ -54,3 +54,28 @@ TEST(Conversions, octave_to_vector_throws) {
   EXPECT_THROW(octave_cast<vw::Vector2>(ColumnVector(3)), BadCastErr);
   EXPECT_THROW(octave_cast<vw::Vector2>(octave_map()), BadCastErr);
 }
+
+TEST(Conversions, quat_to_octave) {
+  vw::Quat vw_quat(10, 20, 30, 40);
+  ColumnVector oct_quat(octave_cast<ColumnVector>(vw_quat));
+
+  for (unsigned i = 0; i < 4; i++) {
+    EXPECT_EQ(vw_quat[i], oct_quat(i));
+  }
+}
+
+TEST(Conversions, octave_to_quat) {
+  ColumnVector oct_quat(4);
+  oct_quat(0) = 10; oct_quat(1) = 20; oct_quat(2) = 30; oct_quat(3) = 40;
+
+  vw::Quat vw_quat(octave_cast<vw::Quat>(oct_quat));
+
+  for (unsigned i = 0; i < 4; i++) {
+    EXPECT_EQ(vw_quat[i], oct_quat(i));
+  }
+}
+
+TEST(Conversions, octave_to_quat_throws) {
+  EXPECT_THROW(octave_cast<vw::Quat>(ColumnVector(3)), BadCastErr);
+  EXPECT_THROW(octave_cast<vw::Quat>(octave_map()), BadCastErr);
+}

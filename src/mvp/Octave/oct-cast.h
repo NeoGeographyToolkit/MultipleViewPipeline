@@ -11,6 +11,7 @@
 
 #include <vw/Math/Vector.h>
 #include <vw/Math/Matrix.h>
+#include <vw/Math/Quaternion.h>
 
 namespace mvp {
 namespace octave {
@@ -65,6 +66,26 @@ octave_cast(octave_value const& v) {
   }
 
   return vw_vect;
+}
+
+/// vw::quat -> octave
+template <class ToT, class QuaternionT>
+ToT octave_cast(vw::math::QuaternionBase<QuaternionT> const& q) {
+  QuaternionT vw_quat(q.impl());
+  ColumnVector oct_vect(4);
+
+  for (unsigned i = 0; i < 4; i++) {
+    oct_vect(i) = vw_quat[i];
+  }
+
+  return oct_vect;
+}
+
+/// octave -> vw::quat
+template <class QuaternionT>
+typename boost::enable_if<boost::is_base_of<vw::math::QuaternionBase<QuaternionT>, QuaternionT>, QuaternionT>::type
+octave_cast(octave_value const& q) {
+  return QuaternionT(octave_cast<vw::Vector<double, 4> >(q));
 }
 
 }} // namespace octave, mvp
