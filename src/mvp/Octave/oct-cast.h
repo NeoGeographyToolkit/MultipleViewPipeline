@@ -8,10 +8,13 @@
 
 #include <octave/oct.h>
 #include <octave/oct-map.h>
+#include <octave/lo-ieee.h> // octave_NA
 
 #include <vw/Math/Vector.h>
 #include <vw/Math/Matrix.h>
 #include <vw/Math/Quaternion.h>
+#include <vw/Image/ImageView.h>
+#include <vw/Image/PixelMask.h>
 
 namespace mvp {
 namespace octave {
@@ -81,11 +84,61 @@ ToT octave_cast(vw::math::QuaternionBase<QuaternionT> const& q) {
   return oct_vect;
 }
 
-/// octave -> vw::quat
+/// vw::quat -> octave
 template <class QuaternionT>
 typename boost::enable_if<boost::is_base_of<vw::math::QuaternionBase<QuaternionT>, QuaternionT>, QuaternionT>::type
 octave_cast(octave_value const& q) {
   return QuaternionT(octave_cast<vw::Vector<double, 4> >(q));
+}
+
+/// octave -> vw::imageview
+template <class ToT, class ViewT>
+ToT octave_cast(vw::ImageViewBase<ViewT> const& vw_img) {
+  typedef vw::ImageView<vw::PixelMask<double> > RasterT;
+
+  // Rasterize image before copying to octave
+  RasterT rast = vw_img.impl();
+
+  ::Matrix oct_img(rast.rows(), rast.cols());
+
+  typedef RasterT::pixel_accessor AccT;
+  AccT racc = rast.origin();
+
+  for(int row = 0; row < rast.rows(); row++) {
+    AccT cacc = racc;
+    for(int col = 0; col < rast.cols(); col++) {
+      oct_img(row, col) = is_valid(*cacc) ? remove_mask(*cacc) : ::octave_NA;
+      cacc.next_col();
+    }
+    racc.next_row();
+  }
+
+  return oct_img;
+}
+
+/// vw::imageview -> octave
+template <class ViewT>
+typename boost::enable_if<boost::is_base_of<vw::ImageViewBase<ViewT>, ViewT>, ViewT>::type
+octave_to_imageview(octave_value const& v) {
+  VW_ASSERT(v.is_matrix_type(), BadCastErr() << "Not a matrix type");
+  typedef vw::ImageView<vw::PixelMask<double> > RasterT;
+
+  ::Matrix oct_img = v.matrix_value();
+  RasterT rast(oct_img.cols(), oct_img.rows());
+
+  typedef RasterT::pixel_accessor AccT;
+  AccT racc = rast.origin();
+
+  for(int row = 0; row < rast.rows(); row++) {
+    AccT cacc = racc;
+    for(int col = 0; col < rast.cols(); col++) {
+      *cacc = ::xisnan(oct_img(row, col)) ? vw::PixelMask<double>() : vw::PixelMask<double>(oct_img(row, col));
+      cacc.next_col();
+    }
+    racc.next_row();
+  }
+
+  return rast;
 }
 
 }} // namespace octave, mvp

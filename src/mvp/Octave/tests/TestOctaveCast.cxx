@@ -3,7 +3,13 @@
 
 #include <mvp/Octave/oct-cast.h>
 
+#include <boost/random/linear_congruential.hpp>
+#include <octave/oct-rand.h>
+
+#include <vw/Image/UtilityViews.h>
+
 using namespace mvp::octave;
+using namespace vw;
 using namespace vw::test;
 using namespace std;
 
@@ -79,3 +85,81 @@ TEST(Conversions, octave_to_quat_throws) {
   EXPECT_THROW(octave_cast<vw::Quat>(ColumnVector(3)), BadCastErr);
   EXPECT_THROW(octave_cast<vw::Quat>(octave_map()), BadCastErr);
 }
+
+TEST(Conversions, imageview_to_octave) {
+  boost::rand48 gen(10);
+
+  ImageView<float32> vw_img(uniform_noise_view(gen, 20, 10));
+  
+  ::Matrix oct_img(octave_cast< ::Matrix>(vw_img));
+
+  for (int col = 0; col < vw_img.cols(); col++) {
+    for (int row = 0; row < vw_img.rows(); row++) {
+      EXPECT_EQ(vw_img(col, row), oct_img(row, col));
+    }
+  }
+}
+
+/*
+TEST(Conversions, imageview_to_octave_mask) {
+  ImageView<PixelMask<float32> > vw_img(20, 10);
+  
+  ::Matrix oct_img(octave_cast< ::Matrix>(vw_img));
+ 
+  for (int col = 0; col < vw_img.cols(); col++) {
+    for (int row = 0; row < vw_img.rows(); row++) {
+      EXPECT_TRUE(::xisnan(oct_img(row, col)));
+    }
+  }
+}
+
+TEST(Conversions, imageview_to_octave_mask2) {
+  boost::rand48 gen(10);
+
+  ImageView<PixelMask<float32> > vw_img(uniform_noise_view(gen, 10, 10));
+  vw_img(5, 5).invalidate();
+
+  ::Matrix oct_img(octave_cast< ::Matrix>(vw_img));
+
+  ImageView<PixelMask<float32> > vw_img2(octave_cast<ImageView<PixelMask<float32> > >(oct_img));
+
+  for (int col = 0; col < vw_img.cols(); col++) {
+    for (int row = 0; row < vw_img.rows(); row++) {
+      if (is_valid(vw_img(col, row))) {
+        EXPECT_PIXEL_NEAR(vw_img(col, row), vw_img2(col, row), 1e-6);
+      } else {
+        EXPECT_FALSE(is_valid(vw_img2(col, row)));
+      }
+    }
+  }
+}
+
+TEST(Conversions, octave_to_imageview) {
+  ::octave_rand::seed(10);
+
+  ::Matrix oct_img(::octave_rand::matrix(20, 10));
+  ImageView<float32> vw_img(octave_cast<ImageView<float32> >(oct_img));
+
+  for (int col = 0; col < vw_img.cols(); col++) {
+    for (int row = 0; row < vw_img.rows(); row++) {
+      EXPECT_PIXEL_NEAR(vw_img(col, row), oct_img(row, col), 1e-6);
+    }
+  }
+}
+
+TEST(Conversions, octave_to_imageview_mask) {
+  ::octave_rand::seed(10);
+
+  ::Matrix oct_img(::octave_rand::matrix(20, 10));
+  oct_img(0, 0) = ::octave_NA;
+
+  ImageView<PixelMask<float32> > vw_img = octave_cast<ImageView<PixelMask<float32> > >(oct_img);
+
+  EXPECT_FALSE(is_valid(vw_img(0, 0)));
+  for (int col = 1; col < vw_img.cols(); col++) {
+    for (int row = 1; row < vw_img.rows(); row++) {
+      EXPECT_TRUE(is_valid(vw_img(col, row)));
+    }
+  }
+}
+*/
