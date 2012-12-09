@@ -10,7 +10,7 @@ target_link_libraries(vwconvert ${VW_LIBRARIES}
 
 if (VW_CAMERA_FOUND)
   add_executable(print_pinhole print_pinhole.cc)
-  target_link_libraries(print_pinhole ${VW_LIBRARIES})
+  target_link_libraries(print_pinhole ${VW_LIBRARIES} ${Boost_LIBRARIES})
 endif()
 
 if (VW_PLATE_FOUND)
