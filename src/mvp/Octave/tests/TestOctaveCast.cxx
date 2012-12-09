@@ -155,7 +155,6 @@ TEST(Conversions, imageview_to_octave) {
   }
 }
 
-/*
 TEST(Conversions, imageview_to_octave_mask) {
   ImageView<PixelMask<float32> > vw_img(20, 10);
   
@@ -217,4 +216,3 @@ TEST(Conversions, octave_to_imageview_mask) {
     }
   }
 }
-*/
