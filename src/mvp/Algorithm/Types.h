@@ -72,26 +72,25 @@ class AlgorithmVar {
     raw_type m_data;
 };
 
-class PixelResult : public AlgorithmVar {
-  enum {result_numel = 2};
-  typedef vw::Vector<double, result_numel> result_raw_type;
-
-  result_raw_type m_result_data; 
-  bool m_converged;
-
+class PixelResult {
   public:
-    PixelResult() : AlgorithmVar(), m_result_data(), m_converged(false) {}
+    PixelResult() : m_algorithm_var(), m_data(), m_converged(false) {}
 
     PixelResult(AlgorithmVar const& var) : 
-      AlgorithmVar(var), m_result_data(), m_converged(false) {}
+      m_algorithm_var(var), m_data(), m_converged(false) {}
+
+    PixelResult(AlgorithmVar::raw_type const& var) : 
+      m_algorithm_var(var), m_data(), m_converged(false) {}
+
+    AlgorithmVar const& algorithm_var() const {return m_algorithm_var;}
 
     vw::PixelMask<vw::float32> plate_layer(int layer) const {
       vw::PixelMask<vw::float32> result;
       
       if (layer < AlgorithmVar::numel) {
-        result = data()[layer];  
+        result = m_algorithm_var.data()[layer];  
       } else {
-        result = m_result_data[layer - AlgorithmVar::numel];
+        result = m_data[layer - AlgorithmVar::numel];
       }
 
       if (!m_converged) {
@@ -103,26 +102,34 @@ class PixelResult : public AlgorithmVar {
 
     void set_plate_layer(int layer, vw::PixelMask<vw::float32> const& val) {
       if (layer < AlgorithmVar::numel) {
-        data()[layer] = val;
+        m_algorithm_var.data()[layer] = val;
       } else {
-        m_result_data[layer - AlgorithmVar::numel] = val;
+        m_data[layer - AlgorithmVar::numel] = val;
       }
       m_converged = vw::is_valid(val);
     }
 
-    int num_plate_layers() const {return result_numel + AlgorithmVar::numel;}
+    int num_plate_layers() const {return numel + AlgorithmVar::numel;}
 
-    double confidence() const {return m_result_data[0];}
+    double confidence() const {return m_data[0];}
 
-    int overlap() const {return round(m_result_data[1]);}
+    int overlap() const {return round(m_data[1]);}
 
     bool converged() const {return m_converged;}
 
-    void set_confidence(double confidence) {m_result_data[0] = confidence;}
+    void set_confidence(double confidence) {m_data[0] = confidence;}
 
-    void set_overlap(int overlap) {m_result_data[1] = overlap;}
+    void set_overlap(int overlap) {m_data[1] = overlap;}
 
     void set_converged(bool converged) {m_converged = converged;}
+
+  private:
+    enum {numel = 2};
+    typedef vw::Vector<double, numel> raw_type;
+
+    AlgorithmVar m_algorithm_var;
+    raw_type m_data; 
+    bool m_converged;
 };
 
 class TileResult {

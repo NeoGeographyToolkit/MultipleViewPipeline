@@ -7,6 +7,7 @@
 
 #include <mvp/Wrapper/Stepper.h>
 #include <mvp/Wrapper/Dummy.h>
+#include <mvp/Wrapper/Types.h>
 
 namespace mvp {
 namespace octave {
@@ -26,6 +27,8 @@ void register_octave_mvp() {
 
   install_builtin_function(MvpStepper, "MvpStepper", std::string());
   install_builtin_function(MvpDummy, "MvpDummy", std::string());
+  install_builtin_function(AlgorithmVar, "AlgorithmVar", std::string());
+  install_builtin_function(PixelResult, "PixelResult", std::string());
 }
 
 void stop_octave_interpreter() {
