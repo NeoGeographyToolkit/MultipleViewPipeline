@@ -91,6 +91,46 @@ octave_cast(octave_value const& q) {
   return QuaternionT(octave_cast<vw::Vector<double, 4> >(q));
 }
 
+/// vw::Matrix -> octave
+template <class ToT, class MatrixT>
+ToT octave_cast(vw::math::MatrixBase<MatrixT> const& m) {
+  MatrixT vw_mat(m.impl());
+  ::Matrix oct_mat(vw_mat.rows(), vw_mat.cols());
+  
+  for (unsigned col = 0; col < vw_mat.cols(); col++) {
+    for (unsigned row = 0; row < vw_mat.rows(); row++) {
+      oct_mat(row, col) = vw_mat(row, col);
+    }
+  }
+
+  return oct_mat;
+}
+
+/// octave -> vw::Matrix
+template <class MatrixT>
+typename boost::enable_if<boost::is_base_of<vw::math::MatrixBase<MatrixT>, MatrixT>, MatrixT>::type
+octave_cast(octave_value const& m) {
+  VW_ASSERT(m.is_matrix_type(), BadCastErr() << "Not a matrix type");
+
+  MatrixT vw_mat;
+  ::Matrix oct_mat = m.matrix_value();
+
+  if (vw_mat.rows() == 0 || vw_mat.cols() == 0) {
+    vw_mat = MatrixT(oct_mat.rows(), oct_mat.cols());
+  }
+
+  VW_ASSERT(vw_mat.cols() == unsigned(oct_mat.cols()), BadCastErr() << "Bad matrix size");
+  VW_ASSERT(vw_mat.rows() == unsigned(oct_mat.rows()), BadCastErr() << "Bad matrix size");
+
+  for (unsigned col = 0; col < vw_mat.cols(); col++) {
+    for (unsigned row = 0; row < vw_mat.rows(); row++) {
+      vw_mat(row, col) = oct_mat(row, col);
+    }
+  }
+
+  return vw_mat;
+}
+
 /// octave -> vw::imageview
 template <class ToT, class ViewT>
 ToT octave_cast(vw::ImageViewBase<ViewT> const& vw_img) {
@@ -116,10 +156,10 @@ ToT octave_cast(vw::ImageViewBase<ViewT> const& vw_img) {
   return oct_img;
 }
 
-/// vw::imageview -> octave
+/// octave -> vw::imageview
 template <class ViewT>
 typename boost::enable_if<boost::is_base_of<vw::ImageViewBase<ViewT>, ViewT>, ViewT>::type
-octave_to_imageview(octave_value const& v) {
+octave_cast(octave_value const& v) {
   VW_ASSERT(v.is_matrix_type(), BadCastErr() << "Not a matrix type");
   typedef vw::ImageView<vw::PixelMask<double> > RasterT;
 

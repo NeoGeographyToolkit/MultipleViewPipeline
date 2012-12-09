@@ -25,6 +25,8 @@ TEST(Conversions, octave_to_scalar_throws) {
   EXPECT_THROW(octave_cast<int>(octave_map()), BadCastErr);
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////
+
 TEST(Conversions, vector_to_octave) {
   vw::Vector3 vw_vect(10, 20, 30);
   ColumnVector oct_vect(octave_cast<ColumnVector>(vw_vect));
@@ -61,6 +63,8 @@ TEST(Conversions, octave_to_vector_throws) {
   EXPECT_THROW(octave_cast<vw::Vector2>(octave_map()), BadCastErr);
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////
+
 TEST(Conversions, quat_to_octave) {
   vw::Quat vw_quat(10, 20, 30, 40);
   ColumnVector oct_quat(octave_cast<ColumnVector>(vw_quat));
@@ -85,6 +89,57 @@ TEST(Conversions, octave_to_quat_throws) {
   EXPECT_THROW(octave_cast<vw::Quat>(ColumnVector(3)), BadCastErr);
   EXPECT_THROW(octave_cast<vw::Quat>(octave_map()), BadCastErr);
 }
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+TEST(Conversions, matrix_to_octave) {
+  vw::Matrix<double, 2, 3> vw_mat;
+  vw_mat(0, 0) = 10; vw_mat(0, 1) = 20; vw_mat(0, 2) = 30;
+  vw_mat(1, 0) = 40; vw_mat(1, 1) = 30; vw_mat(1, 2) = 40;
+
+  ::Matrix oct_mat(octave_cast< ::Matrix>(vw_mat));
+
+  for (unsigned r = 0; r < vw_mat.rows(); r++) {
+    for (unsigned c = 0; c < vw_mat.cols(); c++) {
+      EXPECT_EQ(vw_mat(r, c), oct_mat(r, c));
+    }
+  }
+}
+
+TEST(Conversions, octave_to_matrix) {
+  ::Matrix oct_mat(2, 3);
+  oct_mat(0, 0) = 10; oct_mat(0, 1) = 20; oct_mat(0, 2) = 30;
+  oct_mat(1, 0) = 40; oct_mat(1, 1) = 30; oct_mat(1, 2) = 40;
+
+  vw::Matrix<double, 2, 3> vw_mat(octave_cast<vw::Matrix<double, 2, 3> >(oct_mat));
+
+  for (unsigned r = 0; r < vw_mat.rows(); r++) {
+    for (unsigned c = 0; c < vw_mat.cols(); c++) {
+      EXPECT_EQ(vw_mat(r, c), oct_mat(r, c));
+    }
+  }
+}
+
+TEST(Conversions, octave_to_matrix0) {
+  ::Matrix oct_mat(2, 3);
+  oct_mat(0, 0) = 10; oct_mat(0, 1) = 20; oct_mat(0, 2) = 30;
+  oct_mat(1, 0) = 40; oct_mat(1, 1) = 30; oct_mat(1, 2) = 40;
+
+  vw::Matrix<double> vw_mat(octave_cast<vw::Matrix<double> >(oct_mat));
+
+  for (unsigned r = 0; r < vw_mat.rows(); r++) {
+    for (unsigned c = 0; c < vw_mat.cols(); c++) {
+      EXPECT_EQ(vw_mat(r, c), oct_mat(r, c));
+    }
+  }
+}
+
+TEST(Conversions, octave_to_matrix_throws) {
+  EXPECT_THROW(octave_cast<vw::Matrix3x3>(::Matrix(3, 2)), BadCastErr);
+  EXPECT_THROW(octave_cast<vw::Matrix3x3>(octave_map()), BadCastErr);
+} 
+
+///////////////////////////////////////////////////////////////////////////////////////////////
 
 TEST(Conversions, imageview_to_octave) {
   boost::rand48 gen(10);
