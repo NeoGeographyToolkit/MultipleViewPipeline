@@ -32,7 +32,7 @@ endfunction
 %!
 %!  b = numvalid && sumvalid < tol;
 %!endfunction
-%!
+
 %!test
 %!  sz = [64, 32];
 %!  imdata = rand(fliplr(sz));
