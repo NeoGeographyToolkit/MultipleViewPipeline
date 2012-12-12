@@ -8,4 +8,4 @@ examples/real/result.plate
 examples/real/internal-result.plate
 *.asv
 
-build
+build*
