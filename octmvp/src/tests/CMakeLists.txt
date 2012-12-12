@@ -1,3 +1,4 @@
+include_directories(${MVP_DIR}/thirdparty/gtest/include)
 include_directories(${MVP_DIR}/thirdparty/gtest)
 add_library(gtest_main gtest_main.cc
                        ${MVP_DIR}/thirdparty/gtest/src/gtest-all.cc)

@@ -43,7 +43,7 @@ DEFUN_DLD(_back_project, args, nargout, "Oct project") {
       if (image_pt(0) < image.cols() && image_pt(1) < image.rows() &&
           image_pt(0) >= 0 && image_pt(1) >= 0) 
       {
-        patch(r, c) = bilinear_interp(image, image_pt(0), image_pt(1));  
+        patch(r, c) = bilinear_interp2(image, image_pt(0), image_pt(1));  
       } else {
         patch(r, c) = ::octave_NA;
       }

@@ -3,7 +3,7 @@
 
 #include <octave/oct.h>
 
-double bilinear_interp(Matrix const& im, double x, double y) {
+double bilinear_interp2(Matrix const& im, double x, double y) {
   // See http://en.wikipedia.org/wiki/Bilinear_interpolation
   double x1 = floor(x), y1 = floor(y);
   double x2 = x1 + 1, y2 = y1 + 1;
