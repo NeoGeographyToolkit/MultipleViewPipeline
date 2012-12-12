@@ -1,0 +1,4 @@
+addpath("@CMAKE_CURRENT_BINARY_DIR@");
+init_mvp;
+
+cellfun(@runtests, mvpdirs);

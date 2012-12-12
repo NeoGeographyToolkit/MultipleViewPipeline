@@ -1,3 +1,13 @@
-addpath("@CMAKE_CURRENT_BINARY_DIR@/src");
-addpath("@CMAKE_CURRENT_SOURCE_DIR@/m");
+mvpdirs = {"@CMAKE_CURRENT_BINARY_DIR@",
+           "@CMAKE_CURRENT_BINARY_DIR@/src",
+           "@CMAKE_CURRENT_SOURCE_DIR@/m",
+           "@CMAKE_SOURCE_DIR@/../src/mvp/Algorithm/Stepper",
+           "@CMAKE_SOURCE_DIR@/../src/mvp/Algorithm/Seeder",
+           "@CMAKE_SOURCE_DIR@/../src/mvp/Algorithm/InitStepper",
+           "@CMAKE_SOURCE_DIR@/../src/mvp/Algorithm/Correlator",
+           "@CMAKE_SOURCE_DIR@/../src/mvp/Algorithm/Lighter",
+           "@CMAKE_SOURCE_DIR@/../src/mvp/Algorithm/Objective"};
+
+cellfun(@addpath, mvpdirs);
+
 _init_mvp;
