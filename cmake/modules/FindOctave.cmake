@@ -3,8 +3,8 @@
 # Note that ALL_CXXFLAGS contains INCFLAGS, CXXFLAGS and XTRA_CXXFLAGS
 #           ALL_LDFLAGS contains LD_STATIC_FLAG, CPICFLAG, and LDFLAGS
 
-macro(ADD_OCTFILE _octfile _sources)
-  add_library(${_octfile} MODULE ${_sources})
+macro(ADD_OCTFILE _octfile)
+  add_library(${_octfile} MODULE ${ARGN})
   target_link_libraries(${_octfile} ${OCTAVE_LIBRARIES})
 
   set_target_properties(${_octfile} PROPERTIES
