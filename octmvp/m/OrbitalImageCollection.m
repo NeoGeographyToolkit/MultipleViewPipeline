@@ -7,6 +7,7 @@ endfunction
 
 function result = back_project(self, xyz, orientation, scale, sz)
   cursor = 1;
+  result = {};
   for j = 1:numel(self.im);
     patch = _back_project(self.im(j).data, self.im(j).camera, xyz, orientation, [scale scale], sz);
     if any(patch(:))
