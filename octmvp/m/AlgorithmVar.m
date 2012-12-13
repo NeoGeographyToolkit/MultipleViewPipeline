@@ -1,12 +1,11 @@
 function self = AlgorithmVar(v)
-  v = v(:);
-  if (any(size(v) != [12 1]))
+  if (numel(v) != 12)
     error("Must construct with vector size 12");
   endif
 
   self = MvpClass();
 
-  self.v = v;  
+  self.v = v(:);
   self.alt = @alt;
   self.orientation = @orientation;
   self.window = @window;

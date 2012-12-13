@@ -13,7 +13,7 @@ function self = PixelResult(algorithm_var, confidence, converged, num_iterations
 endfunction
 
 function a = algorithm_var(self)
-  a = self.algorithm_var;
+  a = self.malgorithm_var;
 endfunction
 
 function c = confidence(self)
