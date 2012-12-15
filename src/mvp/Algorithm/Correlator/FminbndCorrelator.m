@@ -1,9 +1,10 @@
-function self = FminbndCorrelator(oic, datum, lighter)
+function self = FminbndCorrelator(oic, datum, lighter, objective)
   self=MvpClass();
 
   self.oic = oic;
   self.datum = datum;
   self.lighter = lighter;
+  self.objective = objective;
 
   self.correlate = @correlate;
   self.obj_helper = @obj_helper;
@@ -13,21 +14,18 @@ function f = obj_helper(self, post, algovar)
   xyz = self.datum.geodetic_to_cartesian([post; algovar.alt()]);
   raw_patches = self.oic.back_project(xyz, algovar.orientation(), algovar.scale(), algovar.window());
 
-  if (numel(raw_patches) > 1)
-    patches = zeros(algovar.window()(2), algovar.window()(1), numel(raw_patches));
-    weights = ones(algovar.window()(2), algovar.window()(1), numel(raw_patches));
-    for i = 1:numel(raw_patches)
-      patches(:, :, i) = raw_patches{i};    
-    endfor
+  num_patches = numel(raw_patches);
 
-    idx = find(isnan(patches));
-    patches(idx) = 0;
-    weights(idx) = 0;
+  if (num_patches > 1)
+    weighted_patches = weight_patches(raw_patches, algovar.gwindow(), algovar.smooth(), algovar.gsmooth());
 
-    f = self.lighter.light(patches, weights);
+    lighter_result = self.lighter.light(weighted_patches);
+
+    f = self.objective.func(lighter_result);
   else
     f = NA;
   endif
+
 endfunction
 
 function r = status_fcn(x, optv, status)

@@ -3,39 +3,29 @@ function self = NormalizingLighter()
   self.light = @light;
 endfunction
 
-function obj = light(self, patches, weights)
-  prevWarnState = warning("query", "Octave:divide-by-zero");
-  warning("off", "Octave:divide-by-zero");
+function lighter_result = light(self, weighted_patches)
+  dim = size(weighted_patches{1});
+  num_patches = numel(weighted_patches);
 
-  sz = size(patches);
-  dim = sz(1:2);
-  numPatches = sz(3);
+  for i = 1:num_patches
+    swx = sum(weighted_patches{i}(:, :, 1)(:) .* weighted_patches{i}(:, :, 2)(:));
+    swx2 = sum(weighted_patches{i}(:, :, 1)(:) .* weighted_patches{i}(:, :, 1)(:) .* weighted_patches{i}(:, :, 2)(:));
+    sw = sum(weighted_patches{i}(:, :, 2)(:));
 
-  weightSums = sum(sum(weights));
+    a = swx / sw; % mean
+    b = (swx2*sw-swx*swx) / sw / sw; % stddev
+    result_patches{i} = PatchResult(weighted_patches{i}, a, b);
+  endfor
 
-  means = sum(sum(patches .* weights)) ./ weightSums;
-  
-  zmPatches = patches - repmat(means, [dim 1]);
+  patch_sum = zeros(dim(1), dim(2), 2);
+  for i = 1:num_patches
+    patch_sum += result_patches{i}.patch();
+  endfor
 
-  sqDevs = zmPatches .^ 2;
+  albedo = patch_sum(:, :, 1) ./ patch_sum(:, :, 2);
 
-  stddevs = sqrt(sum(sum(sqDevs .* weights)) ./ weightSums);
+  lighter_result = LighterResult(result_patches, albedo, patch_sum);
 
-  normPatches = zmPatches ./ repmat(stddevs, [dim 1]);
-
-  % Catch divide by zero
-  normPatches(find(!isfinite(normPatches))) = 0;
-
-  albedo = sum(normPatches .* weights, 3) ./ sum(weights, 3);
-
-  % Catch divide by zero
-  albedo(find(!isfinite(albedo))) = 0;
-
-  diffs = abs(normPatches - repmat(albedo, [1 1 numPatches])) .* weights;
-
-  obj = sum(diffs(:)) / sum(weightSums(:));
-
-  warning(prevWarnState.state, prevWarnState.identifier);
 endfunction
 
 %!test
