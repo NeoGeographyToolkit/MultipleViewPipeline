@@ -13,14 +13,16 @@ correlator = FminbndCorrelator(oic, datum, lighter);
 post = georef.pixel_to_lonlat([32;32]);
 orientation = datum.tangent_orientation(post);
 
-%curr_result = 1;
-%alts = linspace(-2000, 0, 30);
-%for i = alts
-%  result(curr_result) = correlator.obj_helper(post, [i, orientation', [25,25], [0,0], 0, 0, 80]);
-%  curr_result += 1;
-%endfor
+curr_result = 1;
+alts = linspace(-2000, 0, 30);
+for i = alts
+  seed = AlgorithmVar([i, orientation', [25,25], [0,0], 0, 0, 80]);
+  result(curr_result) = correlator.obj_helper(post, seed);
+  curr_result += 1;
+endfor
 
-d = correlator.correlate(post, AlgorithmVar([-500, orientation', [25,25], [0,0], 0, 0, 80]));
+%seed = AlgorithmVar([-500, orientation', [25,25], [0,0], 0, 0, 80]);
+%d = correlator.correlate(post, seed);
 
 %result = correlator.obj_helper(post, [-1000, orientation', [25,25], [0,0], 0, 0, 80]);
 

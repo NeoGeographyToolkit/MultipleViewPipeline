@@ -10,7 +10,6 @@ function self = FminbndCorrelator(oic, datum, lighter)
 endfunction
 
 function f = obj_helper(self, post, algovar)
-  algovar = AlgorithmVar(algovar);
   xyz = self.datum.geodetic_to_cartesian([post; algovar.alt()]);
   raw_patches = self.oic.back_project(xyz, algovar.orientation(), algovar.scale(), algovar.window());
 
@@ -48,7 +47,7 @@ function result = correlate(self, post, seed)
     altMin = seed.alt() - 2000;
     altMax = seed.alt() + 2000;
 
-    [alt confidence info output] = fminbnd(@(a) obj_helper(self, post, [a; seed.vectorize()(2:end)]), altMin, altMax, opts);
+    [alt confidence info output] = fminbnd(@(a) obj_helper(self, post, AlgorithmVar([a; seed.vectorize()(2:end)])), altMin, altMax, opts);
     converged = (info == 1);
     num_iterations = output.iterations;
 
