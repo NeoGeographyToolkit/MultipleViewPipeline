@@ -1,7 +1,8 @@
-function self = OrbitalImageCollection(im)
+function self = OrbitalImageCollection(_im)
   self = MvpClass();
 
-  self.im = im;
+  self._im = _im;
+
   self.back_project = @back_project;
 endfunction
 
@@ -9,9 +10,9 @@ function result = back_project(self, xyz, orientation, scale, sz)
   morientation = quat2rot(orientation);
   cursor = 1;
   result = {};
-  for j = 1:numel(self.im)
-    homog = self.im(j).camera * [morientation xyz(:); 0 0 0 1] * [1 0 0; 0 1 0; 0 0 0; 0 0 1] * diag([scale scale 1]) * [eye(2) -sz(:)/2; 0 0 1];
-    patch = _do_homog(self.im(j).data, homog, sz);
+  for j = 1:numel(self._im)
+    homog = self._im(j).camera * [morientation xyz(:); 0 0 0 1] * [1 0 0; 0 1 0; 0 0 0; 0 0 1] * diag([scale scale 1]) * [eye(2) -sz(:)/2; 0 0 1];
+    patch = _do_homog(self._im(j).data, homog, sz);
     if any(patch(:))
       result{cursor} = patch;
       cursor += 1;
