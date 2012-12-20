@@ -1,30 +1,11 @@
-function self = FminbndCorrelator(oic, lighter, objective)
+function self = FminbndCorrelator(_oic, _lighter, _objective)
   self=MvpClass();
 
-  self.oic = oic;
-  self.lighter = lighter;
-  self.objective = objective;
+  self._oic = _oic;
+  self._lighter = _lighter;
+  self._objective = _objective;
 
   self.correlate = @correlate;
-  self.obj_helper = @obj_helper;
-endfunction
-
-function f = obj_helper(self, post, algovar)
-  xyz = post * algovar.radius();
-  raw_patches = self.oic.back_project(xyz, algovar.orientation(), algovar.scale(), algovar.window());
-
-  num_patches = numel(raw_patches);
-
-  if (num_patches > 1)
-    weighted_patches = weight_patches(raw_patches, algovar.gwindow(), algovar.smooth(), algovar.gsmooth());
-
-    lighter_result = self.lighter.light(weighted_patches);
-
-    f = self.objective.func(lighter_result);
-  else
-    f = NA;
-  endif
-
 endfunction
 
 function r = status_fcn(x, optv, status)
@@ -44,7 +25,9 @@ function result = correlate(self, post, seed)
     radMin = seed.radius() - 2000;
     radMax = seed.radius() + 2000;
 
-    [radius confidence info output] = fminbnd(@(a) obj_helper(self, post, AlgorithmVar([a; seed.vectorize()(2:end)])), radMin, radMax, opts);
+    helper = ObjectiveHelper(self._oic, self._lighter, self._objective, post);
+
+    [radius confidence info output] = fminbnd(@(a) helper.func(helper, AlgorithmVar([a; seed.vectorize()(2:end)])), radMin, radMax, opts);
     converged = (info == 1);
     num_iterations = output.iterations;
 

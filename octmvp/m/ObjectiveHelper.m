@@ -1,0 +1,51 @@
+function self = ObjectiveHelper(_oic, _lighter, _objective, _post)
+  self = MvpClass();
+
+  self._oic = _oic;
+  self._lighter = _lighter;
+  self._objective = _objective;
+  self._post = _post;
+
+  self._curr_algovar = zeros(12, 1);
+  self._curr_lighter_result = {};
+
+  self.func = @func;
+  self.grad = @grad;
+  self.reproject = @reproject;
+endfunction
+
+function reproject(self, algovar)
+  xyz = self._post * algovar.radius();
+
+  raw_patches = self._oic.back_project(xyz, algovar.orientation(), algovar.scale(), algovar.window());
+  weighted_patches = weight_patches(raw_patches, algovar.gwindow(), algovar.smooth(), algovar.gsmooth());
+
+  self._curr_lighter_result = self._lighter.light(weighted_patches);
+  self._curr_algovar = algovar.vectorize();
+endfunction
+
+function f = func(self, algovar)
+  if (any(self._curr_algovar != algovar.vectorize()))
+    self.reproject(algovar);
+  endif
+
+  if (numel(self._curr_lighter_result.patches()) > 1)
+    f = self._objective.func(self._curr_lighter_result);
+  else
+    f = NA;
+  endif
+endfunction
+
+function g = grad(self, algovar)
+  if (any(self._curr_algovar != algovar.vectorize()))
+    self.reproject(algovar);
+  endif
+
+  if (numel(self._curr_lighter_result.patches()) > 1)
+    g = self_objective.grad(self._curr_lighter_result);
+  else
+    g = NA;
+  endif
+endfunction
+
+% vim:set syntax=octave:
