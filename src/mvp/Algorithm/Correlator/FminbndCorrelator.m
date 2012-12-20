@@ -1,8 +1,7 @@
-function self = FminbndCorrelator(oic, datum, lighter, objective)
+function self = FminbndCorrelator(oic, lighter, objective)
   self=MvpClass();
 
   self.oic = oic;
-  self.datum = datum;
   self.lighter = lighter;
   self.objective = objective;
 
@@ -11,7 +10,7 @@ function self = FminbndCorrelator(oic, datum, lighter, objective)
 endfunction
 
 function f = obj_helper(self, post, algovar)
-  xyz = self.datum.geodetic_to_cartesian([post; algovar.alt()]);
+  xyz = post * algovar.alt();
   raw_patches = self.oic.back_project(xyz, algovar.orientation(), algovar.scale(), algovar.window());
 
   num_patches = numel(raw_patches);

@@ -9,21 +9,21 @@ georef = GeoReference(datum, tile_georef.transform);
 lighter = NormalizingLighter();
 objective = AbsDiffObjective();
 
-correlator = FminbndCorrelator(oic, datum, lighter, objective);
+correlator = FminbndCorrelator(oic, lighter, objective);
 
-post = georef.pixel_to_lonlat([32;32]);
-orientation = datum.tangent_orientation(post);
+post = pixel2post(georef, [32 32]);
+orientation = tanplane(post);
 
 curr_result = 1;
-alts = linspace(-2000, 0, 20);
+alts = datum.semi_major_axis() + linspace(-2000, 0, 20);
 for i = alts
   seed = AlgorithmVar([i, orientation', [25,25], [0,0], 0, 0, 80]);
   result(curr_result) = correlator.obj_helper(post, seed);
   curr_result += 1;
 endfor
 
-%seed = AlgorithmVar([-500, orientation', [25,25], [0,0], 0, 0, 80]);
-%d = correlator.correlate(post, seed);
+seed = AlgorithmVar([datum.semi_major_axis() + -500, orientation', [25,25], [0,0], 0, 0, 80]);
+d = correlator.correlate(post, seed);
 
 %result = correlator.obj_helper(post, [-1000, orientation', [25,25], [0,0], 0, 0, 80]);
 

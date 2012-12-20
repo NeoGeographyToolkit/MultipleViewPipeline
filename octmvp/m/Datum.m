@@ -1,9 +1,10 @@
-function self = Datum(radius)
+function self = Datum(_radius)
   self = MvpClass();
 
-  self.radius = radius;
+  self._radius = _radius;
+
+  self.semi_major_axis = @(self) self._radius;
   self.geodetic_to_cartesian = @geodetic_to_cartesian;
-  self.tangent_orientation = @tangent_orientation;
 endfunction
 
 function xyz = geodetic_to_cartesian(self, lonlatalt)
@@ -13,17 +14,7 @@ function xyz = geodetic_to_cartesian(self, lonlatalt)
   sla = sin(lonlatalt(2));
 
   n = [cla * clo; cla * slo; sla];
-  xyz = n * (lonlatalt(3) + self.radius);
-endfunction
-
-function q = tangent_orientation(self, lonlat)
-  e = self.geodetic_to_cartesian([lonlat;0]);
-  e /= norm(e);
-  ex = [-e(2) e(1) 0]';
-  ex /= norm(ex);
-  ey = -cross(e, ex);
-  R = [ex ey -e];
-  q = rot2quat(R);
+  xyz = n * (lonlatalt(3) + self._radius);
 endfunction
 
 % vim:set syntax=octave:
