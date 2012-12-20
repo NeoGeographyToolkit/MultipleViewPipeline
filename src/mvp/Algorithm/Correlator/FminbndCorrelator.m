@@ -10,7 +10,7 @@ function self = FminbndCorrelator(oic, lighter, objective)
 endfunction
 
 function f = obj_helper(self, post, algovar)
-  xyz = post * algovar.alt();
+  xyz = post * algovar.radius();
   raw_patches = self.oic.back_project(xyz, algovar.orientation(), algovar.scale(), algovar.window());
 
   num_patches = numel(raw_patches);
@@ -41,14 +41,14 @@ function result = correlate(self, post, seed)
 %    opts = optimset("OutputFcn", @status_fcn);
     opts = optimset(opts, "TolX", 1e-2);
 
-    altMin = seed.alt() - 2000;
-    altMax = seed.alt() + 2000;
+    radMin = seed.radius() - 2000;
+    radMax = seed.radius() + 2000;
 
-    [alt confidence info output] = fminbnd(@(a) obj_helper(self, post, AlgorithmVar([a; seed.vectorize()(2:end)])), altMin, altMax, opts);
+    [radius confidence info output] = fminbnd(@(a) obj_helper(self, post, AlgorithmVar([a; seed.vectorize()(2:end)])), radMin, radMax, opts);
     converged = (info == 1);
     num_iterations = output.iterations;
 
-    result = PixelResult(AlgorithmVar([alt; seed.vectorize()(2:end)]), confidence, converged, num_iterations);
+    result = PixelResult(AlgorithmVar([radius; seed.vectorize()(2:end)]), confidence, converged, num_iterations);
   catch
     result = PixelResult(AlgorithmVar(NA(12, 1)), NA, NA, NA, NA);    
   end_try_catch
