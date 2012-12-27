@@ -7,7 +7,7 @@ function self = ObjectiveHelper(_oic, _lighter, _objective, _post)
   self._post = _post;
 
   self._curr_algovar = zeros(12, 1);
-  self._curr_lighter_result = {};
+  self._curr_albedo_box = {};
 
   self.func = @func;
   self.grad = @grad;
@@ -18,9 +18,10 @@ function reproject(self, algovar)
   xyz = self._post * algovar.radius();
 
   raw_patches = self._oic.back_project(xyz, algovar.orientation(), algovar.scale(), algovar.window());
-  weighted_patches = weight_patches(raw_patches, algovar.gwindow(), algovar.smooth(), algovar.gsmooth());
 
-  self._curr_lighter_result = self._lighter.light(weighted_patches);
+  patch_box = PatchBox(raw_patches, algovar.gwindow(), algovar.smooth(), algovar.gsmooth());
+
+  self._curr_albedo_box = self._lighter.light(patch_box);
   self._curr_algovar = algovar.vectorize();
 endfunction
 
@@ -29,8 +30,8 @@ function f = func(self, algovar)
     self.reproject(algovar);
   endif
 
-  if (numel(self._curr_lighter_result.patches()) > 1)
-    f = self._objective.func(self._curr_lighter_result);
+  if (self._curr_albedo_box.depth() > 1)
+    f = self._objective.func(self._curr_albedo_box);
   else
     f = NA;
   endif
@@ -41,8 +42,8 @@ function g = grad(self, algovar)
     self.reproject(algovar);
   endif
 
-  if (numel(self._curr_lighter_result.patches()) > 1)
-    g = self_objective.grad(self._curr_lighter_result);
+  if (self._curr_albedo_box.depth() > 1)
+    g = self_objective.grad(self._curr_albedo_box);
   else
     g = NA;
   endif

@@ -3,29 +3,18 @@ function self = NormalizingLighter()
   self.light = @light;
 endfunction
 
-function lighter_result = light(self, weighted_patches)
-  dim = size(weighted_patches{1});
-  num_patches = numel(weighted_patches);
+function albedo_box = light(self, patch_box)
+  dim = [patch_box.rows() patch_box.cols()];
+  num_patches = patch_box.depth();
 
-  for i = 1:num_patches
-    swx = sum(weighted_patches{i}(:, :, 1)(:) .* weighted_patches{i}(:, :, 2)(:));
-    swx2 = sum(weighted_patches{i}(:, :, 1)(:) .* weighted_patches{i}(:, :, 1)(:) .* weighted_patches{i}(:, :, 2)(:));
-    sw = sum(weighted_patches{i}(:, :, 2)(:));
+  si = sum(sum(patch_box.intensity()))(:);
+  si2 = sum(sum(patch_box.intensity2()))(:);
+  sw = sum(sum(patch_box.weight()))(:);
 
-    a = swx / sw; % mean
-    b = (swx2*sw-swx*swx) / sw / sw; % stddev
-    result_patches{i} = PatchResult(weighted_patches{i}, a, b);
-  endfor
+  a = si ./ sw; % mean
+  b = (si2 .* sw - si .* si) ./ sw ./ sw; % stddev
 
-  patch_sum = zeros(dim(1), dim(2), 2);
-  for i = 1:num_patches
-    patch_sum += result_patches{i}.patch();
-  endfor
-
-  albedo = patch_sum(:, :, 1) ./ patch_sum(:, :, 2);
-
-  lighter_result = LighterResult(result_patches, albedo, patch_sum);
-
+  albedo_box = AlbedoBox(patch_box, a, b);
 endfunction
 
 %!test

@@ -5,17 +5,13 @@ function self = AbsDiffObjective()
   self.grad = @grad; 
 endfunction
 
-function f = func(self, lighter_result)
-    dim = size(lighter_result.patches(){1}.corrected_patch());
-    num_patches = numel(lighter_result.patches());
+function f = func(self, albedo_box)
+    dim = [albedo_box.rows() albedo_box.cols()];
+    num_patches = albedo_box.depth();
 
-    diffs = zeros(dim(1), dim(2));
-    for i = 1:num_patches
-      diffs += abs(lighter_result.patches(){i}.corrected_patch()(:, :, 1) - lighter_result.albedo()) \
-               .* lighter_result.patches(){i}.corrected_patch()(:, :, 2);
-    endfor
+    absdiffs = abs(albedo_box.albedo() - repmat(albedo_box.global_albedo(), [1 1 num_patches]));
 
-    f = sum(diffs(:)) ./ sum(lighter_result.patch_sum()(:, :, 2)(:));
+    f = sum(absdiffs(:)) / sum(albedo_box.weight_sum()(:));
 endfunction
 
 function grad(self)
