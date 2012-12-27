@@ -11,8 +11,18 @@ function albedo_box = light(self, patch_box)
   si2 = sum(sum(patch_box.intensity2()))(:);
   sw = sum(sum(patch_box.weight()))(:);
 
-  a = si ./ sw; % mean
-  b = (si2 .* sw - si .* si) ./ sw ./ sw; % stddev
+  patch_mean = si ./ sw; 
+  patch_stddev = (si2 .* sw - si .* si) ./ sw ./ sw;
+
+  prevWarnState = warning("query", "Octave:divide-by-zero");
+  warning("off", "Octave:divide-by-zero");
+
+  a = 1 ./ patch_stddev;
+  a(isnan(a)) = 0;
+
+  warning(prevWarnState.state, prevWarnState.identifier);
+
+  b = -patch_mean .* a;
 
   albedo_box = AlbedoBox(patch_box, a, b);
 endfunction

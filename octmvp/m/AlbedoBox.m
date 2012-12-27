@@ -7,7 +7,7 @@ function self = AlbedoBox(_patch_box, _a, _b)
   arep = repmat(reshape(_a, [1 1 num_patches]), [dim 1]);
   brep = repmat(reshape(_b, [1 1 num_patches]), [dim 1]);
 
-  self._albedo = (_patch_box.intensity() - arep) ./ brep;
+  self._albedo = _patch_box.intensity() .* arep + brep;
   self._weight = _patch_box.weight();
 
   % self._xgrad_albedo = _patch_box.xgrad_intensity() .* arep;
