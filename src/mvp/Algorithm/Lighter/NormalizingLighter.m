@@ -5,7 +5,7 @@ endfunction
 
 function albedo_box = light(self, patch_box)
   dim = [patch_box.rows() patch_box.cols()];
-  num_patches = patch_box.depth();
+  num_patches = patch_box.planes();
 
   si = sum(sum(patch_box.intensity()))(:);
   si2 = sum(sum(patch_box.intensity2()))(:);

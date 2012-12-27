@@ -2,7 +2,7 @@ function self = AlbedoBox(_patch_box, _a, _b)
   self = MvpClass();
 
   dim = [_patch_box.rows() _patch_box.cols()];
-  num_patches = _patch_box.depth();
+  num_patches = _patch_box.planes();
 
   arep = repmat(reshape(_a, [1 1 num_patches]), [dim 1]);
   brep = repmat(reshape(_b, [1 1 num_patches]), [dim 1]);
@@ -35,7 +35,7 @@ function self = AlbedoBox(_patch_box, _a, _b)
   
   self.rows = @(self) dim(1);
   self.cols = @(self) dim(2);
-  self.depth = @(self) num_patches;
+  self.planes = @(self) num_patches;
 endfunction
 
 % vim:set syntax=octave:

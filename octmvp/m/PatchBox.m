@@ -33,7 +33,7 @@ function self = PatchBox(_patches, _gwindow, _smooth, _gsmooth)
 
   self.rows = @(self) dim(1);
   self.cols = @(self) dim(2);
-  self.depth = @(self) num_patches;
+  self.planes = @(self) num_patches;
 endfunction
 
 % vim:set syntax=octave:

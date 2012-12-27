@@ -7,7 +7,7 @@ endfunction
 
 function f = func(self, albedo_box)
     dim = [albedo_box.rows() albedo_box.cols()];
-    num_patches = albedo_box.depth();
+    num_patches = albedo_box.planes();
 
     absdiffs = abs(albedo_box.albedo() - repmat(albedo_box.global_albedo(), [1 1 num_patches]));
 

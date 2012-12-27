@@ -30,7 +30,7 @@ function f = func(self, algovar)
     self.reproject(algovar);
   endif
 
-  if (self._curr_albedo_box.depth() > 1)
+  if (self._curr_albedo_box.planes() > 1)
     f = self._objective.func(self._curr_albedo_box);
   else
     f = NA;
@@ -42,7 +42,7 @@ function g = grad(self, algovar)
     self.reproject(algovar);
   endif
 
-  if (self._curr_albedo_box.depth() > 1)
+  if (self._curr_albedo_box.planes() > 1)
     g = self_objective.grad(self._curr_albedo_box);
   else
     g = NA;
