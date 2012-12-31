@@ -1,9 +1,9 @@
 function self = AlgorithmVar(_v)
   if (nargin == 0)
-    _v = zeros(12, 1);
+    _v = zeros(globals().ALGORITHMVAR_LENGTH, 1);
   endif
 
-  if (numel(_v) != 12)
+  if (numel(_v) != globals().ALGORITHMVAR_LENGTH)
     error("Must construct with vector size 12");
   endif
 
@@ -11,13 +11,13 @@ function self = AlgorithmVar(_v)
 
   self._v = _v(:);
 
-  self.radius = @(self) self._v(1);
-  self.orientation = @(self) self._v(2:5);
-  self.window = @(self) self._v(6:7);
-  self.gwindow = @(self) self._v(8:9);
-  self.smooth = @(self) self._v(10);
-  self.gsmooth = @(self) self._v(11);
-  self.scale = @(self) self._v(12);
+  self.radius = @(self) self._v(globals().RADIUS_IDX);
+  self.orientation = @(self) self._v(globals().ORIENTATION_IDX);
+  self.window = @(self) self._v(globals().WINDOW_IDX);
+  self.gwindow = @(self) self._v(globals().GWINDOW_IDX);
+  self.smooth = @(self) self._v(globals().SMOOTH_IDX);
+  self.gsmooth = @(self) self._v(globals().GSMOOTH_IDX);
+  self.scale = @(self) self._v(globals().SCALE_IDX);
   self.vectorize = @(self) self._v;
 endfunction
 

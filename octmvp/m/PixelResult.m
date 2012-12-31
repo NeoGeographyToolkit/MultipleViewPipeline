@@ -2,21 +2,18 @@ function self = PixelResult(_algorithm_var, _confidence, _converged, _num_iterat
   self = MvpClass();
 
   if (nargin == 0)
-    _algorithm_var = AlgorithmVar();
-    _confidence = 0;
-    _converged = 0;
-    _num_iterations = 0;
+    self._v = zeros(globals().PIXELRESULT_LENGTH, 1);
+  elseif (nargin == 1)
+    self._v = _algorithm_var(:);
+  else
+    self._v = [_algorithm_var.vectorize(); _confidence; _converged; _num_iterations];
   endif
 
-  self._algorithm_var = _algorithm_var;
-  self._confidence = _confidence;
-  self._converged = _converged;
-  self._num_iterations = _num_iterations;
-
-  self.algorithm_var = @(self) self._algorithm_var;
-  self.confidence = @(self) self._confidence;
-  self.converged = @(self) self._converged;
-  self.num_iterations = @(self) self._num_iterations;
+  self.algorithm_var = @(self) AlgorithmVar(self._v(1:globals().ALGORITHMVAR_LENGTH));
+  self.confidence = @(self) self._v(globals().CONFIDENCE_IDX);
+  self.converged = @(self) self._v(globals().CONVERGED_IDX);
+  self.num_iterations = @(self) self._v(globals().NUM_ITERATIONS_IDX);
+  self.vectorize = @(self) self._v;
 endfunction
 
 % vim:set syntax=octave:
