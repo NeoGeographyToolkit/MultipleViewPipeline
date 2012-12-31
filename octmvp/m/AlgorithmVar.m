@@ -1,4 +1,8 @@
 function self = AlgorithmVar(_v)
+  if (nargin == 0)
+    _v = zeros(12, 1);
+  endif
+
   if (numel(_v) != 12)
     error("Must construct with vector size 12");
   endif
