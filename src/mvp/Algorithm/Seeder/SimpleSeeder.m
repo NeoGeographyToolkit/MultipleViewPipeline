@@ -1,4 +1,5 @@
 function self = SimpleSeeder(_georef, _size)
+  self = MvpClass();
 
   self._georef = _georef;
   self._size = _size;
@@ -14,6 +15,7 @@ function self = SimpleSeeder(_georef, _size)
   self.curr_seed = @(self) self._curr_seed;
   self.done = @(self) self._done; 
   self.result = @(self) self._result;
+  self.update = @update;
 endfunction
 
 function update(self, new_result)
