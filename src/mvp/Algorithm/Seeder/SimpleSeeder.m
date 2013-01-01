@@ -6,8 +6,8 @@ function self = SimpleSeeder(_georef, _size)
 
   self._curr_post = pixel2post(self._georef, (_size - 1) / 2);
   self._curr_seed = AlgorithmVar([-1000+_georef.datum().semi_major_axis();
-                                  tanplane(self._curr_post); [25;25]; [0;0];
-                                  0; 0; 80]);
+                                  tanplane(self._curr_post); [30;30]; [0;0];
+                                  0; 0; 60]);
   self._done = 0;
   self._result = {};
 
