@@ -7,7 +7,7 @@ function self = TileResult(_georef, _size)
   self._data = zeros(_size(2), _size(1), globals().PIXELRESULT_LENGTH);
 
   self.set = @(self, pixel, value) self._data(pixel(2)+1, pixel(1)+1,:) = value.vectorize();
-  self.get = @(self, pixel) PixelResult(self._data(pixel(2)+1,pixel(1),:));
+  self.get = @(self, pixel) PixelResult(self._data(pixel(2)+1,pixel(1)+1,:));
   self.plate_layer = @(self, num) self._data(:,:,num+1);
 
   self.alt = @(self) self._data(:,:,globals().RADIUS_IDX) - self._georef.datum().semi_major_axis(); 
