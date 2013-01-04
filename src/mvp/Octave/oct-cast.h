@@ -1,6 +1,6 @@
 /// \file oct-cast.h
 ///
-/// octave_cast function
+/// octave_as function
 ///
 
 #ifndef __MVP_OCTAVE_OCTCAST_H__
@@ -22,23 +22,23 @@ namespace octave {
 VW_DEFINE_EXCEPTION(BadCastErr, vw::Exception);
 
 /// numeric type -> octave
-template <class ToT, class FromT>
-typename boost::enable_if<boost::is_arithmetic<FromT>, ToT>::type  
-octave_cast(FromT const& v) {
-  return ToT(double(v));
+template <class FromT>
+typename boost::enable_if<boost::is_arithmetic<FromT>, octave_value>::type  
+octave_wrap(FromT const& v) {
+  return double(v);
 }
 
 /// octave -> numeric type
 template <class ToT>
 typename boost::enable_if<boost::is_arithmetic<ToT>, ToT>::type
-octave_cast(octave_value const& v) {
+octave_as(octave_value const& v) {
   VW_ASSERT(v.is_scalar_type(), BadCastErr() << "Not a scalar type");
   return ToT(v.double_value());
 }
 
 /// vw::vector -> octave
-template <class ToT, class VectorT>
-ToT octave_cast(vw::math::VectorBase<VectorT> const& v) {
+template <class VectorT>
+octave_value octave_wrap(vw::math::VectorBase<VectorT> const& v) {
   VectorT vw_vect(v.impl());
   ColumnVector oct_vect(vw_vect.size());
 
@@ -52,7 +52,7 @@ ToT octave_cast(vw::math::VectorBase<VectorT> const& v) {
 /// octave -> vw::vector
 template <class VectorT>
 typename boost::enable_if<boost::is_base_of<vw::math::VectorBase<VectorT>, VectorT>, VectorT>::type
-octave_cast(octave_value const& v) {
+octave_as(octave_value const& v) {
   VW_ASSERT(v.is_matrix_type(), BadCastErr() << "Not a matrix type");
 
   VectorT vw_vect;
@@ -72,8 +72,8 @@ octave_cast(octave_value const& v) {
 }
 
 /// vw::quat -> octave
-template <class ToT, class QuaternionT>
-ToT octave_cast(vw::math::QuaternionBase<QuaternionT> const& q) {
+template <class QuaternionT>
+octave_value octave_wrap(vw::math::QuaternionBase<QuaternionT> const& q) {
   QuaternionT vw_quat(q.impl());
   ColumnVector oct_vect(4);
 
@@ -87,13 +87,13 @@ ToT octave_cast(vw::math::QuaternionBase<QuaternionT> const& q) {
 /// vw::quat -> octave
 template <class QuaternionT>
 typename boost::enable_if<boost::is_base_of<vw::math::QuaternionBase<QuaternionT>, QuaternionT>, QuaternionT>::type
-octave_cast(octave_value const& q) {
-  return QuaternionT(octave_cast<vw::Vector<double, 4> >(q));
+octave_as(octave_value const& q) {
+  return QuaternionT(octave_as<vw::Vector<double, 4> >(q));
 }
 
 /// vw::Matrix -> octave
-template <class ToT, class MatrixT>
-ToT octave_cast(vw::math::MatrixBase<MatrixT> const& m) {
+template <class MatrixT>
+octave_value octave_wrap(vw::math::MatrixBase<MatrixT> const& m) {
   MatrixT vw_mat(m.impl());
   ::Matrix oct_mat(vw_mat.rows(), vw_mat.cols());
   
@@ -109,7 +109,7 @@ ToT octave_cast(vw::math::MatrixBase<MatrixT> const& m) {
 /// octave -> vw::Matrix
 template <class MatrixT>
 typename boost::enable_if<boost::is_base_of<vw::math::MatrixBase<MatrixT>, MatrixT>, MatrixT>::type
-octave_cast(octave_value const& m) {
+octave_as(octave_value const& m) {
   VW_ASSERT(m.is_matrix_type(), BadCastErr() << "Not a matrix type");
 
   MatrixT vw_mat;
@@ -132,8 +132,8 @@ octave_cast(octave_value const& m) {
 }
 
 /// octave -> vw::imageview
-template <class ToT, class ViewT>
-ToT octave_cast(vw::ImageViewBase<ViewT> const& vw_img) {
+template <class ViewT>
+octave_value octave_wrap(vw::ImageViewBase<ViewT> const& vw_img) {
   typedef vw::ImageView<vw::PixelMask<double> > RasterT;
 
   // Rasterize image before copying to octave
@@ -159,7 +159,7 @@ ToT octave_cast(vw::ImageViewBase<ViewT> const& vw_img) {
 /// octave -> vw::imageview
 template <class ViewT>
 typename boost::enable_if<boost::is_base_of<vw::ImageViewBase<ViewT>, ViewT>, ViewT>::type
-octave_cast(octave_value const& v) {
+octave_as(octave_value const& v) {
   VW_ASSERT(v.is_matrix_type(), BadCastErr() << "Not a matrix type");
   typedef vw::ImageView<vw::PixelMask<double> > RasterT;
 
