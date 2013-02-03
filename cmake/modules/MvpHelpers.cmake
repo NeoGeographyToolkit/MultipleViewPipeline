@@ -49,8 +49,8 @@ function(mvp_executable exe sources)
                                mvpPipeline
                                mvpFrontend
                                mvpImage
-                               mvpOctave
-                               mvpWrapper)
+                               mvpAlgorithm
+                               mvpOctave)
 
   if (ENABLE_OCTAVE_SUPPORT)
     target_link_libraries(${exe} ${OCTAVE_LIBRARIES})

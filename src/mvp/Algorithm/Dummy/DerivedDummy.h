@@ -6,7 +6,7 @@
 namespace mvp {
 namespace algorithm {
 
-struct DerivedDummy : public Dummy {
+struct DerivedDummy : public DummyBase {
   int m_x;
   int m_y;
 
@@ -32,6 +32,7 @@ struct DerivedDummy : public Dummy {
 
   int y() { return m_y; }
 
+  vw::Vector2 do_vector(vw::Vector3 const& a) { return vw::math::subvector(a, 0, 2); }
 };
 
 }} // namespace algorithm,mvp

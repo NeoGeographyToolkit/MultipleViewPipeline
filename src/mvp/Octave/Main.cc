@@ -5,9 +5,7 @@
 #include <octave/octave.h>
 #include <octave/toplev.h>
 
-#include <mvp/Wrapper/Stepper.h>
-#include <mvp/Wrapper/Dummy.h>
-#include <mvp/Wrapper/Types.h>
+#include <mvp/Octave/wraps/Dummy.h>
 
 namespace mvp {
 namespace octave {
@@ -23,12 +21,11 @@ void start_octave_interpreter(std::string const& startup_script) {
 }
 
 void register_octave_mvp() {
-  octave_mvpobj_ref::register_type(); 
+  octave_mvpclass_ref::register_type();
 
-  install_builtin_function(MvpStepper, "MvpStepper", std::string());
-  install_builtin_function(MvpDummy, "MvpDummy", std::string());
-  install_builtin_function(AlgorithmVar, "AlgorithmVar", std::string());
-  install_builtin_function(PixelResult, "PixelResult", std::string());
+  install_builtin_function(_new_mvpclass, "mvpclass", std::string());
+
+  install_builtin_function(_create_Dummy, "Dummy", std::string());
 }
 
 void stop_octave_interpreter() {

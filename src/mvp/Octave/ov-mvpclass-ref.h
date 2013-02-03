@@ -1,29 +1,28 @@
-/// \file ov-mvpobj-ref.h
+/// \file ov-mvpclass-ref.h
 ///
-/// mvpobj ref
+/// mvpclass ref
 ///
 
-#ifndef __MVP_OCTAVE_MVPOBJ_REF_H__
-#define __MVP_OCTAVE_MVPOBJ_REF_H__
+#ifndef __MVP_OCTAVE_MVPCLASS_REF_H__
+#define __MVP_OCTAVE_MVPCLASS_REF_H__
 
 #include <octave/ov.h>
+#include <boost/shared_ptr.hpp>
 
-class octave_mvpobj_base;
+class octave_mvpclass_base;
 class octave_typeinfo;
 
-class octave_mvpobj_ref : public octave_base_value {
-  octave_mvpobj_base *m_ptr;
+class octave_mvpclass_ref : public octave_base_value {
+  boost::shared_ptr<octave_mvpclass_base> m_ptr;
 
   public:
-    octave_mvpobj_ref() : m_ptr(NULL) {}
+    octave_mvpclass_ref() : m_ptr() {}
 
-    octave_mvpobj_ref(octave_mvpobj_base *ptr);
+    octave_mvpclass_ref(boost::shared_ptr<octave_mvpclass_base> ptr) : m_ptr(ptr) {}
 
-    ~octave_mvpobj_ref();
+    boost::shared_ptr<octave_mvpclass_base> ptr() { return m_ptr; }
 
-    octave_mvpobj_base *ptr() { return m_ptr; }
-
-    virtual octave_base_value *clone() const { return new octave_mvpobj_ref(m_ptr); }
+    virtual octave_base_value *clone() const { return new octave_mvpclass_ref(m_ptr); }
 
     virtual bool is_defined() const { return true; }
 
@@ -45,8 +44,8 @@ class octave_mvpobj_ref : public octave_base_value {
     DECLARE_OV_TYPEID_FUNCTIONS_AND_DATA;
 
     // Prevent copy construct and assignment
-    octave_mvpobj_ref(octave_mvpobj_ref const&);
-    octave_mvpobj_ref& operator=(octave_mvpobj_ref const&);
+    octave_mvpclass_ref(octave_mvpclass_ref const&);
+    octave_mvpclass_ref& operator=(octave_mvpclass_ref const&);
 };
 
 #endif

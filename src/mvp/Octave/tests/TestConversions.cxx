@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <test/Helpers.h>
 
-#include <mvp/Octave/oct-cast.h>
+#include <mvp/Octave/Conversions.h>
 
 #include <boost/random/linear_congruential.hpp>
 #include <octave/oct-rand.h>
