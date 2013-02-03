@@ -6,7 +6,7 @@
 namespace mvp {
 namespace algorithm {
 
-struct DerivedDummy : public DummyBase {
+struct DerivedDummy : public Dummy {
   int m_x;
   int m_y;
 

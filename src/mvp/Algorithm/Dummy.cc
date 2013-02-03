@@ -2,6 +2,12 @@
 
 #include <mvp/Algorithm/Dummy/DerivedDummy.h>
 
+#define CHECK_IMPL \
+  if (!m_impl) { \
+    vw::vw_throw(vw::LogicErr() << "method not defined"); \
+  } \
+
+
 namespace mvp {
 namespace algorithm {
 
@@ -13,22 +19,22 @@ Dummy::Dummy(std::string const& type) {
   }
 }
 
-void Dummy::void0() {m_impl->void0();}
+void Dummy::void0() {CHECK_IMPL; m_impl->void0();}
 
-void Dummy::void1(int a) {m_impl->void1(a);}
+void Dummy::void1(int a) {CHECK_IMPL; m_impl->void1(a);}
 
-void Dummy::void2(int a, int b) {m_impl->void2(a,b);}
+void Dummy::void2(int a, int b) {CHECK_IMPL; m_impl->void2(a,b);}
 
-int Dummy::function0() {return m_impl->function0();}
+int Dummy::function0() {CHECK_IMPL; return m_impl->function0();}
 
-int Dummy::function1(int a) {return m_impl->function1(a);}
+int Dummy::function1(int a) {CHECK_IMPL; return m_impl->function1(a);}
 
-int Dummy::function2(int a, int b) {return m_impl->function2(a,b);}
+int Dummy::function2(int a, int b) {CHECK_IMPL; return m_impl->function2(a,b);}
 
-int Dummy::x() {return m_impl->x();}
+int Dummy::x() {CHECK_IMPL; return m_impl->x();}
 
-int Dummy::y() {return m_impl->y();}
+int Dummy::y() {CHECK_IMPL; return m_impl->y();}
 
-vw::Vector2 Dummy::do_vector(vw::Vector3 const& a) { return m_impl->do_vector(a); }
+vw::Vector2 Dummy::do_vector(vw::Vector3 const& a) {CHECK_IMPL; return m_impl->do_vector(a); }
 
 }}
