@@ -14,22 +14,25 @@ namespace mvp {
 namespace algorithm {
 
 template <class ConstructT>
-class AlgoBase {
-  typedef typename boost::remove_pointer<typename boost::function_traits<typename boost::remove_pointer<ConstructT>::type>::result_type>::type AlgoT;
+struct AlgoBase {
+  typedef typename boost::remove_pointer<typename boost::function_traits<typename boost::remove_pointer<ConstructT>::type>::result_type>::type algorithm_type;
+
+  private:
 
   static std::map<std::string, boost::function<ConstructT> >& factory_map() {
     static std::map<std::string, boost::function<ConstructT> > map;
     return map; 
   }
 
-  boost::shared_ptr<AlgoT> m_impl;
+  boost::shared_ptr<algorithm_type> m_impl;
+
 
   protected:
     AlgoBase() {}
 
-    AlgoBase(AlgoT *impl) : m_impl(impl) {}
+    AlgoBase(algorithm_type *impl) : m_impl(impl) {}
 
-    boost::shared_ptr<AlgoT> impl() { 
+    boost::shared_ptr<algorithm_type> impl() { 
       if (!m_impl) {
         vw::vw_throw(vw::LogicErr() << "Method not defined in derived algorithm class");
       }

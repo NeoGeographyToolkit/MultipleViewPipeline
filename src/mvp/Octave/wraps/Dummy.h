@@ -16,16 +16,21 @@ octave_value_list _new_mvpclass(octave_value_list const& args, int nargout) {
   return octave_value(new octave_mvpclass_ref(boost::shared_ptr<octave_mvpclass_base>(new octave_mvpclass_impl())));
 }
 
-/*
 
 namespace mvp {
 namespace octave {
 
-/// algorithm::Dummy -> octave
-octave_value octave_wrap(algorithm::Dummy const& v) {
-  boost::shared_ptr<octave_mvpclass_base> ptr(new octave_mvpclass_wrap<algorithm::Dummy>(v));
+/// algorithm -> octave
+template <class ConstructT>
+octave_value octave_wrap(algorithm::AlgoBase<ConstructT> const& v) {
+  typedef typename algorithm::AlgoBase<ConstructT>::algorithm_type AlgoT;
+  boost::shared_ptr<octave_mvpclass_base> ptr(new octave_mvpclass_wrap<AlgoT>(static_cast<AlgoT const&>(v)));
   return octave_value(new octave_mvpclass_ref(ptr));
 }
+
+}}
+
+/*
 
 /// octave -> algorithm::Dummy
 template <class DummyT>
@@ -49,7 +54,6 @@ octave_as(octave_value const& v) {
 template <>
 octave_value mvp_wrapper<mvp::algorithm::Dummy>(mvp::algorithm::Dummy const& impl, std::string const& func, octave_value_list const& args);
 
-
 octave_value_list _create_Dummy(octave_value_list const& args, int nargout) {
   if (args.length() == 0) {
     error("No dummy type specified");
@@ -58,8 +62,7 @@ octave_value_list _create_Dummy(octave_value_list const& args, int nargout) {
 
   std::string name = args(0).string_value();
 
-  boost::shared_ptr<octave_mvpclass_base> ptr(new octave_mvpclass_wrap<mvp::algorithm::Dummy>(mvp::algorithm::Dummy(name, 5, 6)));
-  return octave_value(new octave_mvpclass_ref(ptr));
+  return mvp::octave::octave_wrap(mvp::algorithm::Dummy(name, 5, 6));
 }
 
 template <>
