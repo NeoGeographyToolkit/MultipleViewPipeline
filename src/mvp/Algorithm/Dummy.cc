@@ -1,16 +1,10 @@
 #include <mvp/Algorithm/Dummy.h>
 
-#include <mvp/Algorithm/Dummy/DerivedDummy.h>
-
 namespace mvp {
 namespace algorithm {
 
 Dummy::Dummy(std::string const& type, int x, int y) : 
   AlgoBase<Dummy*(int, int)>(lookup_constructor(type)(x, y)) {}
-
-void Dummy::register_all_algorithms() {
-  register_algorithm<DerivedDummy>("DerivedDummy");
-}
 
 void Dummy::void0() {impl()->void0();}
 

@@ -7,12 +7,10 @@ namespace mvp {
 namespace algorithm {
 
 struct DerivedDummy : public Dummy {
+  REGISTER_ALGORITHM(Dummy, DerivedDummy);
+
   int m_x;
   int m_y;
-
-  DerivedDummy();
-
-  DerivedDummy(int x);
 
   DerivedDummy(int x, int y);
 

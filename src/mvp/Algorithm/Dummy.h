@@ -9,7 +9,6 @@ namespace mvp {
 namespace algorithm {
 
 struct Dummy : public AlgoBase<Dummy*(int, int)> {
-  friend AlgoBase<Dummy*(int,int)>;
 
   Dummy(std::string const& type, int x, int y);
 
@@ -34,8 +33,6 @@ struct Dummy : public AlgoBase<Dummy*(int, int)> {
   protected:
     // Only subclasses can construct without a impl
     Dummy() {}
-
-    static void register_all_algorithms();
 };
 
 }} // namespace algorithm,mvp

@@ -3,9 +3,7 @@
 namespace mvp {
 namespace algorithm {
 
-DerivedDummy::DerivedDummy() : m_x(0), m_y(0) {}
-
-DerivedDummy::DerivedDummy(int x) : m_x(x), m_y(0) {}
+REGISTER_ALGORITHM_IMPL(Dummy, DerivedDummy);
 
 DerivedDummy::DerivedDummy(int x, int y) : m_x(x), m_y(y) {}
 
