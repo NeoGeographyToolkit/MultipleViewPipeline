@@ -6,8 +6,8 @@
 #ifndef __MVP_OCTAVE_DUMMY_H__
 #define __MVP_OCTAVE_DUMMY_H__
 
+#include <mvp/Algorithm/Dummy.h>
 
-#include <mvp/Algorithm/Dummy/DerivedDummy.h>
 #include <mvp/Octave/oct-mvpclass.h>
 
 #include <mvp/Octave/Conversions.h>
