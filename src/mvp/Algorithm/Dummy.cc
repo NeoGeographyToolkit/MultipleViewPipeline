@@ -5,10 +5,11 @@
 namespace mvp {
 namespace algorithm {
 
-Dummy::Dummy(std::string const& type) {
-  register_algorithm<DerivedDummy>("DerivedDummy");
+Dummy::Dummy(std::string const& type, int x, int y) : 
+  AlgoBase<Dummy*(int, int)>(lookup_constructor(type)(x, y)) {}
 
-  set_impl(type);
+void Dummy::register_all_algorithms() {
+  register_algorithm<DerivedDummy>("DerivedDummy");
 }
 
 void Dummy::void0() {impl()->void0();}

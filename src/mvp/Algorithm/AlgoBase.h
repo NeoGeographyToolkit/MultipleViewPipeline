@@ -5,33 +5,43 @@
 #include <boost/functional/factory.hpp>
 #include <boost/function.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/type_traits.hpp>
 
 #include <vw/Core/Exception.h>
 
 namespace mvp {
 namespace algorithm {
 
-template <class AlgoT>
+template <class ConstructT>
 class AlgoBase {
-  static std::map<std::string, boost::function<AlgoT*()> > s_factory;
+  typedef typename boost::remove_pointer<typename boost::function_traits<typename boost::remove_pointer<ConstructT>::type>::result_type>::type AlgoT;
+
+  static std::map<std::string, boost::function<ConstructT> > s_factory;
   static bool s_factory_inited;
   boost::shared_ptr<AlgoT> m_impl;
 
   protected:
+    AlgoBase() {}
+
+    AlgoBase(AlgoT *impl) : m_impl(impl) {}
+
     boost::shared_ptr<AlgoT> impl() { 
       if (!m_impl) {
         vw::vw_throw(vw::LogicErr() << "Method not defined in derived algorithm class");
       }
-
       return m_impl;
     }
-    
-    void set_impl(std::string const& type) {
-      if (s_factory.count(type)) {
-        m_impl.reset(s_factory[type]());
-      } else{  
+
+    static boost::function<ConstructT> lookup_constructor(std::string const& type) {
+      if (!s_factory_inited) {
+        AlgoT::register_all_algorithms();
+        s_factory_inited = true;
+      } 
+
+      if (!s_factory.count(type)) {
         vw::vw_throw(vw::LogicErr() << "Type not found in constructor map");
-      }
+      } 
+      return s_factory[type];
     }
 
   public:
@@ -41,11 +51,11 @@ class AlgoBase {
     }
 };
 
-template <class AlgoT>
-std::map<std::string, boost::function<AlgoT*()> > AlgoBase<AlgoT>::s_factory;
+template <class ConstructT>
+std::map<std::string, boost::function<ConstructT> > AlgoBase<ConstructT>::s_factory;
 
-template <class AlgoT>
-bool AlgoBase<AlgoT>::s_factory_inited = false;
+template <class ConstructT>
+bool AlgoBase<ConstructT>::s_factory_inited = false;
 
 }} // namespace mvp, algorithm
 

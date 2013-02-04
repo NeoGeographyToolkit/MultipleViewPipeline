@@ -58,7 +58,7 @@ octave_value_list _create_Dummy(octave_value_list const& args, int nargout) {
 
   std::string name = args(0).string_value();
 
-  boost::shared_ptr<octave_mvpclass_base> ptr(new octave_mvpclass_wrap<mvp::algorithm::Dummy>(name));
+  boost::shared_ptr<octave_mvpclass_base> ptr(new octave_mvpclass_wrap<mvp::algorithm::Dummy>(mvp::algorithm::Dummy(name, 5, 6)));
   return octave_value(new octave_mvpclass_ref(ptr));
 }
 
