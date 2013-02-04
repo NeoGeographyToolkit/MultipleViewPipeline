@@ -11,10 +11,18 @@
 namespace mvp {
 namespace algorithm {
 
+std::map<std::string, boost::function<Dummy*()> > Dummy::s_factory;
+bool Dummy::s_factory_inited = false;
+
 Dummy::Dummy(std::string const& type) {
-  if (type == "DerivedDummy") {
-    m_impl.reset(new DerivedDummy());
-  } else {
+  if (!s_factory_inited) {
+    s_factory["DerivedDummy"] = boost::factory<DerivedDummy*>();
+    s_factory_inited = true;
+  }
+
+  if (s_factory.count(type)) {
+    m_impl.reset(s_factory[type]());
+  } else{  
     vw::vw_throw(vw::LogicErr() << "Unknown Dummy type");
   }
 }
