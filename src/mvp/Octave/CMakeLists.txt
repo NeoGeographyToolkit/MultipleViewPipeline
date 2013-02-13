@@ -5,7 +5,8 @@ mvp_module(NAME Octave
                 oct-mvpclass.h
                 ov-mvpclass-ref.h
            SRCS Main.cc
-                ov-mvpclass-ref.cc)
+                ov-mvpclass-ref.cc
+                wraps/Dummy.cc)
 
 add_octfile(init_mvp init_mvp.cc)
 target_link_libraries(init_mvp mvpOctave mvpAlgorithm)

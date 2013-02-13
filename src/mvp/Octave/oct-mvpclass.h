@@ -13,7 +13,7 @@
 #include <boost/utility.hpp>
 
 template <class ClassT>
-octave_value mvp_wrapper(ClassT const& impl, std::string const& func, octave_value_list const& args);
+octave_value mvp_wrapper(ClassT *impl, std::string const& func, octave_value_list const& args);
 
 struct octave_mvpclass_base : boost::noncopyable {
   virtual ~octave_mvpclass_base() {}
@@ -109,7 +109,7 @@ class octave_mvpclass_wrap : public octave_mvpclass_base {
         std::string method = idx.front()(0).string_value();
 
         if (idx.size() > 1) {
-          retval(0) = mvp_wrapper(m_impl, method, *(++idx.begin()));
+          retval(0) = mvp_wrapper(&m_impl, method, *(++idx.begin()));
 
           if (idx.size() > 2) {
             retval = retval(0).next_subsref(nargout, type, idx, 2);
