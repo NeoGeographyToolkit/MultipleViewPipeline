@@ -10,6 +10,8 @@
 
 #include <mvp/Octave/Conversions.h>
 #include <mvp/Octave/oct-mvpclass.h>
+#include <boost/preprocessor/repetition/enum_params_with_a_default.hpp>
+#include <boost/preprocessor/control/expr_if.hpp>
 
 #define BEGIN_MVP_WRAPPER(IMPLT) \
 template <> \
@@ -35,6 +37,10 @@ octave_value mvp_wrapper<IMPLT>(IMPLT *impl, std::string const& func, octave_val
 // put defs here
 
 #define MVP_WRAPPER_MAX_ARITY 10
+
+template <class ImplT, class R, BOOST_PP_ENUM_PARAMS_WITH_A_DEFAULT(MVP_WRAPPER_MAX_ARITY, class T, void)>
+struct MvpWrapperHelper;
+
 #define BOOST_PP_ITERATION_LIMITS (0, MVP_WRAPPER_MAX_ARITY)
 #define BOOST_PP_FILENAME_1 <mvp/Octave/MvpWrapper.h>
 #include BOOST_PP_ITERATE()
@@ -44,26 +50,42 @@ octave_value mvp_wrapper<IMPLT>(IMPLT *impl, std::string const& func, octave_val
 #else // BOOST_PP_IS_ITERATING
 
 #define N BOOST_PP_ITERATION()
-#define PARAM_CAST(z, n, T) octave_as<T##n>(args(n))
 
-template <class ImplT, class R BOOST_PP_ENUM_TRAILING_PARAMS(N, class T)>
+//TODO Edit conversions so i don't need to remove CVs?
+#define MVP_WRAPPER_param_cast(z, n, data) octave_as<typename boost::remove_cv<typename boost::remove_reference<T##n>::type>::type>(args(n))
+
+template <class ImplT, class R BOOST_PP_ENUM_TRAILING_PARAMS(N,class T)>
 octave_value mvp_wrap_function(ImplT *impl, R (ImplT::*f)(BOOST_PP_ENUM_PARAMS(N, T)), octave_value_list const& args) {
-  using namespace mvp::octave;
-
   if (args.length() != N) {
     error("invalid number of args");
     return octave_value();
-  }
-
-  /*
-  (impl->*f)(BOOST_PP_ENUM(N, PARAM_CAST, T));
-  return octave_value();
-  */
-
-  return (impl->*f)(BOOST_PP_ENUM(N, PARAM_CAST, T));
+  } 
+  return MvpWrapperHelper<ImplT, R BOOST_PP_ENUM_TRAILING_PARAMS(N,T)>::wrap(impl, f, args);
 }
 
-#undef PARAM_CAST
+template <class ImplT, class R BOOST_PP_ENUM_TRAILING_PARAMS(N,class T)>
+struct MvpWrapperHelper
+#if N != MVP_WRAPPER_MAX_ARITY
+<ImplT,R BOOST_PP_ENUM_TRAILING_PARAMS(N,T)>
+#endif
+{
+  static octave_value wrap(ImplT *impl, R (ImplT::*f)(BOOST_PP_ENUM_PARAMS(N,T)), octave_value_list const& args) {
+    using namespace mvp::octave;
+    return octave_wrap((impl->*f)(BOOST_PP_ENUM(N, MVP_WRAPPER_param_cast, ~)));
+  }
+};
+
+template <class ImplT BOOST_PP_ENUM_TRAILING_PARAMS(N, class T)>
+struct MvpWrapperHelper<ImplT, void BOOST_PP_ENUM_TRAILING_PARAMS(N, T)>
+{
+  static octave_value wrap(ImplT *impl, void (ImplT::*f)(BOOST_PP_ENUM_PARAMS(N, T)), octave_value_list const& args) {
+    using namespace mvp::octave;
+    (impl->*f)(BOOST_PP_ENUM(N, MVP_WRAPPER_param_cast, ~));
+    return octave_value();
+  }
+};
+
+#undef MVP_WRAPPER_param_cast
 #undef N
 
 #endif
