@@ -13,6 +13,29 @@
 #include <boost/preprocessor/repetition/enum_params_with_a_default.hpp>
 #include <boost/preprocessor/control/expr_if.hpp>
 
+class MvpWrapperInstaller {
+  struct OctaveFcnDesc {
+    octave_builtin::fcn f;
+    std::string name;
+    std::string desc; 
+    OctaveFcnDesc(octave_builtin::fcn _f, std::string _name, std::string _desc)
+      : f(_f), name(_name), desc(_desc) {}
+  };
+
+  static std::vector<OctaveFcnDesc>& installer_descs();
+
+  public:
+    static void install_wrappers();
+
+    static void add_fcn_desc(octave_builtin::fcn f, std::string name, std::string desc);
+};
+
+struct MvpWrapperInstallerRegistrar {
+  MvpWrapperInstallerRegistrar(octave_builtin::fcn f, std::string name, std::string desc) {
+    MvpWrapperInstaller::add_fcn_desc(f, name, desc);
+  }
+};
+
 #define BEGIN_MVP_WRAPPER(IMPLT) \
 template <> \
 octave_value mvp_wrapper<IMPLT>(IMPLT *impl, std::string const& func, octave_value_list const& args) { \
@@ -51,7 +74,6 @@ struct MvpWrapperHelper;
 
 #define N BOOST_PP_ITERATION()
 
-//TODO Edit conversions so i don't need to remove CVs?
 #define MVP_WRAPPER_param_cast(z, n, data) octave_as<typename boost::remove_cv<typename boost::remove_reference<T##n>::type>::type>(args(n))
 
 template <class ImplT, class R BOOST_PP_ENUM_TRAILING_PARAMS(N,class T)>

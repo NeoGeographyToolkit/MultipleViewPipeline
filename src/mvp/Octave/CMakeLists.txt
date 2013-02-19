@@ -4,7 +4,9 @@ mvp_module(NAME Octave
            HDRS Main.h
                 oct-mvpclass.h
                 ov-mvpclass-ref.h
+                MvpWrapper.h
            SRCS Main.cc
+                MvpWrapper.cc
                 ov-mvpclass-ref.cc
                 wraps/Dummy.cc)
 
