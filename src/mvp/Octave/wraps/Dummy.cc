@@ -1,19 +1,6 @@
 #include <mvp/Octave/MvpWrapper.h>
 #include <mvp/Algorithm/Dummy.h>
 
-namespace mvp {
-namespace octave {
-
-/// algorithm -> octave
-template <class ConstructT>
-octave_value octave_wrap(algorithm::AlgoBase<ConstructT> const& v) {
-  typedef typename algorithm::AlgoBase<ConstructT>::algorithm_type AlgoT;
-  boost::shared_ptr<octave_mvpclass_base> ptr(new octave_mvpclass_wrap<AlgoT>(static_cast<AlgoT const&>(v)));
-  return octave_value(new octave_mvpclass_ref(ptr));
-}
-
-}}
-
 /*
 
 /// octave -> algorithm::Dummy
@@ -46,11 +33,11 @@ octave_value_list _new_Dummy(octave_value_list const& args, int nargout) {
   return mvp::octave::octave_wrap(mvp::algorithm::Dummy(name, 5, 6));
 }
 
-class _Helper {
+class k_Helper {
   static MvpWrapperInstallerRegistrar reg;
 };
 
-MvpWrapperInstallerRegistrar _Helper::reg(_new_Dummy, "Dummy", std::string());
+MvpWrapperInstallerRegistrar k_Helper::reg(_new_Dummy, "Dummy", std::string());
 
 BEGIN_MVP_WRAPPER(mvp::algorithm::Dummy)
   MVP_WRAP(void0)
@@ -59,5 +46,5 @@ BEGIN_MVP_WRAPPER(mvp::algorithm::Dummy)
   MVP_WRAP(function0)
   MVP_WRAP(function1)
   MVP_WRAP(function2)
-  MVP_WRAP(do_vector)
+//  MVP_WRAP(do_vector)
 END_MVP_WRAPPER()

@@ -10,8 +10,14 @@
 
 #include <mvp/Octave/Conversions.h>
 #include <mvp/Octave/oct-mvpclass.h>
-#include <boost/preprocessor/repetition/enum_params_with_a_default.hpp>
 #include <boost/preprocessor/control/expr_if.hpp>
+#include <boost/preprocessor/iteration/iterate.hpp>
+#include <boost/preprocessor/repetition/enum.hpp>
+#include <boost/preprocessor/repetition/enum_params.hpp>
+#include <boost/preprocessor/repetition/enum_params_with_a_default.hpp>
+#include <boost/preprocessor/repetition/enum_trailing_params.hpp>
+
+#include <boost/type_traits/remove_cv.hpp>
 
 class MvpWrapperInstaller {
   struct OctaveFcnDesc {

@@ -1,11 +1,10 @@
 #include <mvp/Octave/Main.h>
 
-#include <octave/oct.h>
+#include <mvp/Octave/MvpWrapper.h>
+
 #include <octave/parse.h>
 #include <octave/octave.h>
 #include <octave/toplev.h>
-
-#include <mvp/Octave/MvpWrapper.h>
 
 namespace mvp {
 namespace octave {

@@ -6,6 +6,8 @@
 #ifndef __MVP_OCTAVE_MVPCLASS_H__
 #define __MVP_OCTAVE_MVPCLASS_H__
 
+#include <octave/oct.h> // TODO: remove?
+
 #include <mvp/Octave/ov-mvpclass-ref.h>
 
 #include <octave/oct-map.h>
