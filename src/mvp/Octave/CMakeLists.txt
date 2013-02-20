@@ -7,7 +7,6 @@ mvp_module(NAME Octave
                 MvpWrapper.h
            SRCS Main.cc
                 MvpWrapper.cc
-                Conversions.cc
                 ov-mvpclass-ref.cc
                 wraps/Dummy.cc)
 
