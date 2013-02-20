@@ -4,8 +4,6 @@ namespace mvp {
 namespace algorithm {
 
 struct DerivedDummy : public Dummy {
-  REGISTER_ALGORITHM(Dummy, DerivedDummy);
-
   int m_x;
   int m_y;
 
@@ -30,6 +28,6 @@ struct DerivedDummy : public Dummy {
   vw::Vector2 do_vector(vw::Vector3 const& a) { return vw::math::subvector(a, 0, 2); }
 };
 
-REGISTER_ALGORITHM_IMPL(Dummy, DerivedDummy);
+REGISTER_ALGORITHM(Dummy, DerivedDummy);
 
 }} // namespace algorithm,mvp

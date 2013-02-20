@@ -62,10 +62,12 @@ struct AlgoRegistrar {
 };
 
 #define REGISTER_ALGORITHM(Base, Derived) \
-  static AlgoRegistrar<Base, Derived> s_reg;
-
-#define REGISTER_ALGORITHM_IMPL(Base, Derived)\
-  AlgoRegistrar<Base, Derived> Derived::s_reg(#Derived);
+namespace { \
+class _Helper { \
+  static AlgoRegistrar<Base, Derived> s_reg; \
+}; \
+AlgoRegistrar<Base, Derived> _Helper::s_reg(#Derived); \
+}
 
 }} // namespace mvp, algorithm
 
