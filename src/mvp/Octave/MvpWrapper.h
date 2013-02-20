@@ -9,7 +9,6 @@
 #define __MVP_OCTAVE_MVPWRAPPER_H__
 
 #include <mvp/Octave/Conversions.h>
-#include <mvp/Octave/oct-mvpclass.h>
 #include <boost/preprocessor/control/expr_if.hpp>
 #include <boost/preprocessor/iteration/iterate.hpp>
 #include <boost/preprocessor/repetition/enum.hpp>
