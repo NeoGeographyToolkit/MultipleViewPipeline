@@ -12,11 +12,13 @@ octave_value_list _new_Dummy(octave_value_list const& args, int nargout) {
   return mvp::octave::octave_wrap(mvp::algorithm::Dummy(name, 5, 6));
 }
 
-class k_Helper {
+namespace {
+class _Helper {
   static MvpWrapperInstallerRegistrar reg;
 };
+MvpWrapperInstallerRegistrar _Helper::reg(_new_Dummy, "Dummy", std::string());
+}
 
-MvpWrapperInstallerRegistrar k_Helper::reg(_new_Dummy, "Dummy", std::string());
 
 BEGIN_MVP_WRAPPER(mvp::algorithm::Dummy)
   MVP_WRAP(void0)

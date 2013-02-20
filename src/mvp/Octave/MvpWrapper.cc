@@ -20,8 +20,10 @@ static octave_value_list _new_mvpclass(octave_value_list const& args, int nargou
   return octave_value(new octave_mvpclass_ref(boost::shared_ptr<octave_mvpclass_base>(new octave_mvpclass_impl())));
 }
 
+namespace {
 class _Helper {
   static MvpWrapperInstallerRegistrar reg;
 };
-
 MvpWrapperInstallerRegistrar _Helper::reg(_new_mvpclass, "mvpclass", std::string());
+}
+
