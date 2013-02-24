@@ -35,21 +35,36 @@ class MvpWrapperInstaller {
     static void add_fcn_desc(octave_builtin::fcn f, std::string name, std::string desc);
 };
 
-struct MvpWrapperInstallerRegistrar {
-  MvpWrapperInstallerRegistrar(octave_builtin::fcn f, std::string name, std::string desc) {
-    MvpWrapperInstaller::add_fcn_desc(f, name, desc);
+template <class ImplT>
+class MvpWrapperInstallerRegistrar {
+  static MvpWrapperInstallerRegistrar<ImplT> reg;
+  static octave_value_list construct_fcn(octave_value_list const& args, int nargout) {
+    return mvp_wrapper<ImplT>(NULL, "", args);
   }
+  public:
+    MvpWrapperInstallerRegistrar(std::string name, std::string desc) {
+      MvpWrapperInstaller::add_fcn_desc(construct_fcn, name, desc);
+    }
 };
 
-#define BEGIN_MVP_WRAPPER(IMPLT) \
+#define BEGIN_MVP_WRAPPER(NAME, IMPLT) \
+template <> MvpWrapperInstallerRegistrar<IMPLT> MvpWrapperInstallerRegistrar<IMPLT>::reg(#NAME, std::string()); \
 template <> \
 octave_value mvp_wrapper<IMPLT>(IMPLT *impl, std::string const& func, octave_value_list const& args) { \
   using namespace mvp::octave; \
   typedef IMPLT ImplT; \
   try {
 
+#define MVP_WRAP_construct_args(r, x, n, t) BOOST_PP_COMMA_IF(n) octave_as<t>(args(n))
+
+#define MVP_WRAP_CONSTRUCTOR(SIG) \
+  if (!impl && args.length() == BOOST_PP_SEQ_SIZE(SIG)) { \
+    return octave_wrap(ImplT(BOOST_PP_SEQ_FOR_EACH_I(MVP_WRAP_construct_args, ~, SIG))); \
+  }
+
 #define MVP_WRAP(FUNC) \
   if (func == #FUNC) { \
+    VW_ASSERT(impl, vw::LogicErr() << "impl not defined!"); \
     return mvp_wrap_function(impl, &ImplT::FUNC, args); \
   }
 
@@ -58,7 +73,11 @@ octave_value mvp_wrapper<IMPLT>(IMPLT *impl, std::string const& func, octave_val
     error("error calling function: %s", e.what()); \
     return octave_value(); \
   } \
-  error("function %s not defined", func.c_str()); \
+  if (impl) { \
+    error("function %s not defined", func.c_str()); \
+  } else { \
+    error("wrong number of args in constructor"); \
+  } \
   return octave_value(); \
 }
 

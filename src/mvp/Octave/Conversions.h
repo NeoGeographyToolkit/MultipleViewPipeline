@@ -49,6 +49,17 @@ T octave_as(octave_value const& v) {
 
 /// Specializations...
 
+/// String <-> Octave
+template <class T>
+struct octave_wrap_helper<T, typename boost::enable_if<boost::is_same<T, std::string> >::type > {
+  static octave_value wrap(T const& v) {
+    return octave_value(v);
+  }
+  static T as(octave_value const& v) {
+    return v.string_value();
+  }
+};
+
 /// Algorithm <-> Octave
 template <class T>
 struct octave_wrap_helper<T, typename boost::enable_if<boost::is_class<typename T::algorithm_type> >::type > {
