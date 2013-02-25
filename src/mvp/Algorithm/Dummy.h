@@ -30,6 +30,8 @@ struct Dummy : public AlgoBase<Dummy*(int, int)> {
 
   virtual vw::Vector2 do_vector(vw::Vector3 const& a);
 
+  virtual vw::Vector2 do_vector(vw::Vector2 const& a);
+
   protected:
     // Only subclasses can construct without a impl
     Dummy() {}

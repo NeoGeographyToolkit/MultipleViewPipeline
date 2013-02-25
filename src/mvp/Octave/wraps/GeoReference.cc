@@ -3,6 +3,6 @@
 
 BEGIN_MVP_WRAPPER(GeoReference, vw::cartography::GeoReference)
   MVP_WRAP_CONSTRUCTOR((vw::cartography::Datum))
-  MVP_WRAP(lonlat_to_pixel)
-  MVP_WRAP(pixel_to_lonlat)
+  MVP_WRAP_FUNCTION(lonlat_to_pixel, (vw::Vector2))
+  MVP_WRAP_FUNCTION(pixel_to_lonlat, (vw::Vector2))
 END_MVP_WRAPPER()

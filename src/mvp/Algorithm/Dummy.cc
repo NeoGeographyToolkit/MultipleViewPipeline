@@ -24,4 +24,6 @@ int Dummy::y() const {return impl()->y();}
 
 vw::Vector2 Dummy::do_vector(vw::Vector3 const& a) {return impl()->do_vector(a); }
 
+vw::Vector2 Dummy::do_vector(vw::Vector2 const& a) {return impl()->do_vector(a); }
+
 }}

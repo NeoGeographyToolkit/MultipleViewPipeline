@@ -26,6 +26,8 @@ struct DerivedDummy : public Dummy {
   int y() const { return m_y; }
 
   vw::Vector2 do_vector(vw::Vector3 const& a) { return vw::math::subvector(a, 0, 2); }
+
+  vw::Vector2 do_vector(vw::Vector2 const& a) { return a; }
 };
 
 REGISTER_ALGORITHM(Dummy, DerivedDummy);
