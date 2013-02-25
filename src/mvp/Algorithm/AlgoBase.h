@@ -26,13 +26,19 @@ struct AlgoBase {
 
   boost::shared_ptr<algorithm_type> m_impl;
 
-
   protected:
     AlgoBase() {}
 
     AlgoBase(algorithm_type *impl) : m_impl(impl) {}
 
     boost::shared_ptr<algorithm_type> impl() { 
+      if (!m_impl) {
+        vw::vw_throw(vw::LogicErr() << "Method not defined in derived algorithm class");
+      }
+      return m_impl;
+    }
+
+    boost::shared_ptr<algorithm_type> impl() const { 
       if (!m_impl) {
         vw::vw_throw(vw::LogicErr() << "Method not defined in derived algorithm class");
       }

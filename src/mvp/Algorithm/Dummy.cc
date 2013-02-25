@@ -18,9 +18,9 @@ int Dummy::function1(int a) {return impl()->function1(a);}
 
 int Dummy::function2(int a, int b) {return impl()->function2(a,b);}
 
-int Dummy::x() {return impl()->x();}
+int Dummy::x() const {return impl()->x();}
 
-int Dummy::y() {return impl()->y();}
+int Dummy::y() const {return impl()->y();}
 
 vw::Vector2 Dummy::do_vector(vw::Vector3 const& a) {return impl()->do_vector(a); }
 

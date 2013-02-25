@@ -21,9 +21,9 @@ struct DerivedDummy : public Dummy {
 
   int function2(int a, int b) { return a + b; }
 
-  int x() { return m_x; }
+  int x() const { return m_x; }
 
-  int y() { return m_y; }
+  int y() const { return m_y; }
 
   vw::Vector2 do_vector(vw::Vector3 const& a) { return vw::math::subvector(a, 0, 2); }
 };

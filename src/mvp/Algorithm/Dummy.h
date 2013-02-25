@@ -24,9 +24,9 @@ struct Dummy : public AlgoBase<Dummy*(int, int)> {
 
   virtual int function2(int a, int b);
 
-  virtual int x();
+  virtual int x() const;
 
-  virtual int y();
+  virtual int y() const;
 
   virtual vw::Vector2 do_vector(vw::Vector3 const& a);
 
