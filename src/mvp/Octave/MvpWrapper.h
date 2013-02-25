@@ -100,26 +100,26 @@ struct MvpWrapperHelper;
 
 #define MVP_WRAPPER_param_cast(z, n, data) octave_as<typename boost::remove_cv<typename boost::remove_reference<T##n>::type>::type>(args(n))
 
-template <class ImplT, class R BOOST_PP_ENUM_TRAILING_PARAMS(N,class T)>
+template <class ImplT, class ImplBT, class R BOOST_PP_ENUM_TRAILING_PARAMS(N,class T)>
 octave_value mvp_wrap_function(ImplT *impl, 
-                               R (ImplT::*f)(BOOST_PP_ENUM_PARAMS(N, T)),
+                               R (ImplBT::*f)(BOOST_PP_ENUM_PARAMS(N, T)),
                                octave_value_list const& args) {
   if (args.length() != N) {
     error("invalid number of args");
     return octave_value();
   } 
-  return MvpWrapperHelper<ImplT, R BOOST_PP_ENUM_TRAILING_PARAMS(N,T)>::wrap(impl, f, args);
+  return MvpWrapperHelper<ImplBT, R BOOST_PP_ENUM_TRAILING_PARAMS(N,T)>::wrap(static_cast<ImplBT*>(impl), f, args);
 }
 
-template <class ImplT, class R BOOST_PP_ENUM_TRAILING_PARAMS(N,class T)>
+template <class ImplT, class ImplBT, class R BOOST_PP_ENUM_TRAILING_PARAMS(N,class T)>
 octave_value mvp_wrap_function(ImplT *impl, 
-                               R (ImplT::*f)(BOOST_PP_ENUM_PARAMS(N, T)) const,
+                               R (ImplBT::*f)(BOOST_PP_ENUM_PARAMS(N, T)) const,
                                octave_value_list const& args) {
   if (args.length() != N) {
     error("invalid number of args");
     return octave_value();
   } 
-  return MvpWrapperHelper<ImplT, R BOOST_PP_ENUM_TRAILING_PARAMS(N,T)>::wrap(impl, f, args);
+  return MvpWrapperHelper<ImplBT, R BOOST_PP_ENUM_TRAILING_PARAMS(N,T)>::wrap(static_cast<ImplBT*>(impl), f, args);
 }
 
 template <class ImplT, class R BOOST_PP_ENUM_TRAILING_PARAMS(N,class T)>

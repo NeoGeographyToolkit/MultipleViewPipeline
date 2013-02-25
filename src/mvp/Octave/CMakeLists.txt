@@ -9,7 +9,8 @@ mvp_module(NAME Octave
                 MvpWrapper.cc
                 ov-mvpclass-ref.cc
                 wraps/Dummy.cc
-                wraps/Datum.cc)
+                wraps/Datum.cc
+                wraps/GeoReference.cc)
 
 add_octfile(init_mvp init_mvp.cc)
 target_link_libraries(init_mvp mvpOctave mvpAlgorithm)
