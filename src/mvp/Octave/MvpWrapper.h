@@ -7,7 +7,8 @@
 #define __MVP_OCTAVE_MVPWRAPPER_H__
 
 #include <mvp/Octave/Conversions.h>
-#include <boost/preprocessor/facilities/overload.hpp>
+#include <boost/preprocessor/variadic/size.hpp>
+#include <boost/preprocessor/control/expr_if.hpp>
 
 class MvpWrapperInstaller {
   struct OctaveFcnDesc {
@@ -46,49 +47,40 @@ octave_value mvp_wrapper<IMPLT>(IMPLT *impl, std::string const& func, octave_val
   typedef IMPLT ImplT; \
   try {
 
-#define MVP_WRAP_args(r, x, n, t) BOOST_PP_COMMA_IF(n) octave_as<t>(args(n))
+#define MVP_WRAP_args_helper(r, x, n, t) BOOST_PP_COMMA_IF(n) octave_as<t>(args(n))
+#define MVP_WRAP_args(SIG) BOOST_PP_SEQ_FOR_EACH_I(MVP_WRAP_args_helper, ~, SIG)
 
-#define MVP_WRAP_CONSTRUCTOR_0() \
-  if (!impl && args.length() == 0) { \
-    return octave_wrap(ImplT()); \
+#define MVP_WRAP_CONSTRUCTOR_IMPL(SIG, HAS_ARGS) \
+  if (!impl && args.length() == BOOST_PP_IF(HAS_ARGS, BOOST_PP_SEQ_SIZE(SIG), 0)) { \
+    return octave_wrap(ImplT(BOOST_PP_EXPR_IF(HAS_ARGS, MVP_WRAP_args)(SIG))); \
   }
 
-#define MVP_WRAP_CONSTRUCTOR_1(SIG) \
-  if (!impl && args.length() == BOOST_PP_SEQ_SIZE(SIG)) { \
-    return octave_wrap(ImplT(BOOST_PP_SEQ_FOR_EACH_I(MVP_WRAP_args, ~, SIG))); \
-  }
+#define MVP_WRAP_CONSTRUCTOR(...) \
+  MVP_WRAP_CONSTRUCTOR_IMPL(BOOST_PP_IF(BOOST_PP_VARIADIC_SIZE(__VA_ARGS__), __VA_ARGS__, ~), \
+                            BOOST_PP_VARIADIC_SIZE(__VA_ARGS__))
 
-#define MVP_WRAP_CONSTRUCTOR(...) BOOST_PP_OVERLOAD(MVP_WRAP_CONSTRUCTOR_, __VA_ARGS__)(__VA_ARGS__)
-
-#define MVP_WRAP_FUNCTION_0(FUNC) \
-  if (func == #FUNC && args.length() == 0) { \
+#define MVP_WRAP_FUNCTION_IMPL(FUNC, SIG, HAS_ARGS) \
+  if (func == #FUNC && args.length() == BOOST_PP_IF(HAS_ARGS, BOOST_PP_SEQ_SIZE(SIG), 0)) { \
     VW_ASSERT(impl, vw::LogicErr() << "impl not defined!"); \
-    return octave_wrap(impl->FUNC()); \
+    return octave_wrap(impl->FUNC(BOOST_PP_EXPR_IF(HAS_ARGS, MVP_WRAP_args)(SIG))); \
   }
 
-#define MVP_WRAP_FUNCTION_1(FUNC, SIG) \
-  if (func == #FUNC && args.length() == BOOST_PP_SEQ_SIZE(SIG)) { \
-    VW_ASSERT(impl, vw::LogicErr() << "impl not defined!"); \
-    return octave_wrap(impl->FUNC(BOOST_PP_SEQ_FOR_EACH_I(MVP_WRAP_args, ~, SIG))); \
-  }
+#define MVP_WRAP_FUNCTION(FUNC, ...) \
+  MVP_WRAP_FUNCTION_IMPL(FUNC, \
+                         BOOST_PP_IF(BOOST_PP_VARIADIC_SIZE(__VA_ARGS__), __VA_ARGS__, ~), \
+                         BOOST_PP_VARIADIC_SIZE(__VA_ARGS__))
 
-#define MVP_WRAP_FUNCTION(FUNC, ...) BOOST_PP_OVERLOAD(MVP_WRAP_FUNCTION_, __VA_ARGS__)(FUNC, __VA_ARGS__)
-
-#define MVP_WRAP_VOID_0(FUNC) \
-  if (func == #FUNC && args.length() == 0) { \
+#define MVP_WRAP_VOID_IMPL(FUNC, SIG, HAS_ARGS) \
+  if (func == #FUNC && args.length() == BOOST_PP_IF(HAS_ARGS, BOOST_PP_SEQ_SIZE(SIG), 0)) { \
     VW_ASSERT(impl, vw::LogicErr() << "impl not defined!"); \
-    impl->FUNC(); \
+    impl->FUNC(BOOST_PP_EXPR_IF(HAS_ARGS, MVP_WRAP_args)(SIG)); \
     return octave_value(); \
   }
 
-#define MVP_WRAP_VOID_1(FUNC, SIG) \
-  if (func == #FUNC && args.length() == BOOST_PP_SEQ_SIZE(SIG)) { \
-    VW_ASSERT(impl, vw::LogicErr() << "impl not defined!"); \
-    impl->FUNC(BOOST_PP_SEQ_FOR_EACH_I(MVP_WRAP_args, ~, SIG)); \
-    return octave_value(); \
-  }
-
-#define MVP_WRAP_VOID(FUNC, ...) BOOST_PP_OVERLOAD(MVP_WRAP_VOID_, __VA_ARGS__)(FUNC, __VA_ARGS__)
+#define MVP_WRAP_VOID(FUNC, ...) \
+  MVP_WRAP_VOID_IMPL(FUNC, \
+                     BOOST_PP_IF(BOOST_PP_VARIADIC_SIZE(__VA_ARGS__), __VA_ARGS__, ~), \
+                     BOOST_PP_VARIADIC_SIZE(__VA_ARGS__))
 
 #define END_MVP_WRAPPER() \
   } catch (vw::Exception &e) { \
