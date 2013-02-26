@@ -72,11 +72,11 @@ octave_value mvp_wrapper<IMPLT>(IMPLT *impl, std::string const& func, octave_val
 
 #define END_MVP_WRAPPER() \
   } catch (vw::Exception &e) { \
-    error("error calling function: %s", e.what()); \
+    error("calling function %s: %s", func.c_str(), e.what()); \
     return octave_value(); \
   } \
   if (impl) { \
-    error("function %s not defined", func.c_str()); \
+    error("function %s not defined, or wrong number of args", func.c_str()); \
   } else { \
     error("wrong number of args in constructor"); \
   } \
