@@ -4,7 +4,7 @@ namespace mvp {
 namespace algorithm {
 
 Dummy::Dummy(std::string const& type, int x, int y) : 
-  AlgoBase<Dummy*(int, int)>(lookup_constructor(type)(x, y)) {}
+  AlgoBase<Dummy(int, int)>(type, true, x, y) {}
 
 void Dummy::void0() {impl()->void0();}
 

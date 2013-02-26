@@ -8,7 +8,7 @@
 namespace mvp {
 namespace algorithm {
 
-struct Dummy : public AlgoBase<Dummy*(int, int)> {
+struct Dummy : public AlgoBase<Dummy(int, int)> {
 
   Dummy(std::string const& type, int x, int y);
 

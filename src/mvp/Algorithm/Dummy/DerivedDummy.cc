@@ -30,6 +30,6 @@ struct DerivedDummy : public Dummy {
   vw::Vector2 do_vector(vw::Vector2 const& a) { return a; }
 };
 
-REGISTER_ALGORITHM(Dummy, DerivedDummy);
+REGISTER_ALGORITHM(DerivedDummy);
 
 }} // namespace algorithm,mvp
