@@ -49,6 +49,17 @@ T octave_as(octave_value const& v) {
 
 /// Specializations...
 
+/// Enum <-> Octave
+template <class T>
+struct octave_wrap_helper<T, typename boost::enable_if<boost::is_enum<T> >::type> {
+  static octave_value wrap(T const& v) {
+    return octave_value(static_cast<int>(v));
+  }
+  static T as(octave_value const& v) {
+    return static_cast<T>(v.int_value());
+  }
+};
+
 /// String <-> Octave
 template <class T>
 struct octave_wrap_helper<T, typename boost::enable_if<boost::is_same<T, std::string> >::type > {
