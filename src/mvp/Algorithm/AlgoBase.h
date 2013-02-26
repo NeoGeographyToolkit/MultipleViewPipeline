@@ -62,18 +62,14 @@ struct AlgoBase {
 
 template <class BaseT, class DerivedT>
 struct AlgoRegistrar {
+  static AlgoRegistrar<BaseT, DerivedT> reg;
   AlgoRegistrar(std::string const& name) {
     BaseT::template register_algorithm<DerivedT>(name);
   } 
 };
 
 #define REGISTER_ALGORITHM(Base, Derived) \
-namespace { \
-class _Helper { \
-  static AlgoRegistrar<Base, Derived> s_reg; \
-}; \
-AlgoRegistrar<Base, Derived> _Helper::s_reg(#Derived); \
-}
+  template <> AlgoRegistrar<Base, Derived> AlgoRegistrar<Base, Derived>::reg(#Derived); \
 
 }} // namespace mvp, algorithm
 
