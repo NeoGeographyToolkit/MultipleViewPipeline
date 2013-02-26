@@ -26,15 +26,14 @@ class MvpWrapperInstaller {
 };
 
 template <class ImplT>
-class MvpWrapperInstallerRegistrar {
+struct MvpWrapperInstallerRegistrar {
   static MvpWrapperInstallerRegistrar<ImplT> reg;
   static octave_value_list construct_fcn(octave_value_list const& args, int nargout) {
     return mvp_wrapper<ImplT>(NULL, "", args);
   }
-  public:
-    MvpWrapperInstallerRegistrar(std::string name, std::string desc) {
-      MvpWrapperInstaller::add_fcn_desc(construct_fcn, name, desc);
-    }
+  MvpWrapperInstallerRegistrar(std::string name, std::string desc) {
+    MvpWrapperInstaller::add_fcn_desc(construct_fcn, name, desc);
+  }
 };
 
 #define BEGIN_MVP_WRAPPER(NAME, IMPLT) \
