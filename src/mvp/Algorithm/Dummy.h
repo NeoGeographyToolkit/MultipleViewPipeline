@@ -10,27 +10,28 @@ namespace algorithm {
 
 struct Dummy : public AlgoBase<Dummy(int, int)> {
 
-  Dummy(std::string const& type, int x, int y);
+  Dummy(std::string const& type, int x, int y) : 
+    AlgoBase<Dummy(int, int)>(type, true, x, y) {}
 
-  virtual void void0();
+  virtual void void0() {impl()->void0();}
 
-  virtual void void1(int a);
+  virtual void void1(int a) {impl()->void1(a);}
 
-  virtual void void2(int a, int b);
+  virtual void void2(int a, int b) {impl()->void2(a,b);}
 
-  virtual int function0();
+  virtual int function0() {return impl()->function0();}
 
-  virtual int function1(int a);
+  virtual int function1(int a) {return impl()->function1(a);}
 
-  virtual int function2(int a, int b);
+  virtual int function2(int a, int b) {return impl()->function2(a,b);}
 
-  virtual int x() const;
+  virtual int x() const {return impl()->x();}
 
-  virtual int y() const;
+  virtual int y() const {return impl()->y();}
 
-  virtual vw::Vector2 do_vector(vw::Vector3 const& a);
+  virtual vw::Vector2 do_vector(vw::Vector3 const& a) {return impl()->do_vector(a); }
 
-  virtual vw::Vector2 do_vector(vw::Vector2 const& a);
+  virtual vw::Vector2 do_vector(vw::Vector2 const& a) {return impl()->do_vector(a); }
 
   protected:
     // Only subclasses can construct without a impl
