@@ -10,8 +10,8 @@ namespace algorithm {
 
 struct Dummy : public AlgoBase<Dummy(int, int)> {
 
-  Dummy(std::string const& type, int x, int y) : 
-    AlgoBase<Dummy(int, int)>(type, false, x, y) {}
+  Dummy(std::string const& type, bool use_octave, int x, int y) : 
+    AlgoBase<Dummy(int, int)>(type, use_octave, x, y) {}
 
   virtual void void0() {impl()->void0();}
 

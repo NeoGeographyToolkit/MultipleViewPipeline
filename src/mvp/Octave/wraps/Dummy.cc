@@ -35,7 +35,7 @@ REGISTER_OCTAVE_ALGORITHMS(OctaveDummy)
 }} // namespace algorithm,mvp
 
 BEGIN_MVP_WRAPPER(Dummy, mvp::algorithm::Dummy)
-  MVP_WRAP_CONSTRUCTOR((std::string)(int)(int))
+  MVP_WRAP_CONSTRUCTOR((std::string)(bool)(int)(int))
   MVP_WRAP_VOID((void0))
   MVP_WRAP_VOID((void1)(int))
   MVP_WRAP_VOID((void2)(int)(int))
