@@ -5,8 +5,10 @@ mvp_module(NAME Octave
                 oct-mvpclass.h
                 ov-mvpclass-ref.h
                 MvpWrapper.h
+                OctaveWrapper.h
            SRCS Main.cc
                 MvpWrapper.cc
+                OctaveWrapper.cc
                 ov-mvpclass-ref.cc
                 wraps/Dummy.cc
                 wraps/Datum.cc

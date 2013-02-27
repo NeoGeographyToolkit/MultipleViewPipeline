@@ -1,5 +1,5 @@
 function self = DerivedDummy(x, y)
-  self = MvpDummy();
+  self = mvpclass();
 
   self.m_x = 0;
   self.m_y = 0;
@@ -23,6 +23,7 @@ function self = DerivedDummy(x, y)
 endfunction
 
 function void0(self)
+  disp("ASDFASDF");
 endfunction
 
 function void1(self)

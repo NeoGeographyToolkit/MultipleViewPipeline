@@ -1,38 +1,43 @@
 #include <mvp/Octave/MvpWrapper.h>
 #include <mvp/Algorithm/Dummy.h>
+#include <mvp/Octave/OctaveWrapper.h>
+
+namespace mvp {
+namespace octave {
+
+struct OctaveDummy : public mvp::algorithm::Dummy {
+  mutable OctaveWrapperImpl m_octave_impl;
+
+  OctaveDummy(std::string const& type, int x, int y) : m_octave_impl(type, x, y) {}
+
+  void void0() { m_octave_impl.wrap_function("void0"); }
+
+  void void1(int a) { m_octave_impl.wrap_function("void1", a); }
+
+  void void2(int a, int b) { m_octave_impl.wrap_function("void2", a, b); }
+
+  int function0() { return octave_as<int>(m_octave_impl.wrap_function("function0")); }
+
+  int function1(int a) { return octave_as<int>(m_octave_impl.wrap_function("function1", a)); }
+
+  int function2(int a, int b) { return octave_as<int>(m_octave_impl.wrap_function("function2", a, b)); }
+
+  int x() const { return octave_as<int>(m_octave_impl.wrap_function("x")); }
+
+  int y() const { return octave_as<int>(m_octave_impl.wrap_function("y")); }
+
+  vw::Vector2 do_vector(vw::Vector3 const& a) { return octave_as<vw::Vector2>(m_octave_impl.wrap_function("do_vector")); }
+  
+  vw::Vector2 do_vector(vw::Vector2 const& a) { return octave_as<vw::Vector2>(m_octave_impl.wrap_function("do_vector")); }
+};
+
+
+}} // namespace octave,mvp
 
 namespace mvp {
 namespace algorithm {
-struct OctaveDummy : public Dummy {
-  int m_x;
-  int m_y;
-
-  OctaveDummy(std::string const& type, int x, int y) : m_x(x), m_y(y) {}
-
-  void void0() {std::cout << "in octave!" << std::endl;}
-
-  void void1(int a) {}
-
-  void void2(int a, int b) {}
-
-  int function0() { return 0; }
-
-  int function1(int a) { return a; }
-
-  int function2(int a, int b) { return a + b; }
-
-  int x() const { return m_x; }
-
-  int y() const { return m_y; }
-
-  vw::Vector2 do_vector(vw::Vector3 const& a) { return vw::math::subvector(a, 0, 2); }
-
-  vw::Vector2 do_vector(vw::Vector2 const& a) { return a; }
-};
-
-REGISTER_OCTAVE_ALGORITHMS(OctaveDummy)
-
-}} // namespace algorithm,mvp
+REGISTER_OCTAVE_ALGORITHMS(octave::OctaveDummy)
+}}
 
 BEGIN_MVP_WRAPPER(Dummy, mvp::algorithm::Dummy)
   MVP_WRAP_CONSTRUCTOR((std::string)(bool)(int)(int))
