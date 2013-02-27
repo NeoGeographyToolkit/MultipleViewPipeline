@@ -11,7 +11,7 @@ namespace algorithm {
 struct Dummy : public AlgoBase<Dummy(int, int)> {
 
   Dummy(std::string const& type, int x, int y) : 
-    AlgoBase<Dummy(int, int)>(type, true, x, y) {}
+    AlgoBase<Dummy(int, int)>(type, false, x, y) {}
 
   virtual void void0() {impl()->void0();}
 
@@ -35,7 +35,7 @@ struct Dummy : public AlgoBase<Dummy(int, int)> {
 
   protected:
     // Only subclasses can construct without a impl
-    Dummy() {}
+    Dummy();
 };
 
 }} // namespace algorithm,mvp
