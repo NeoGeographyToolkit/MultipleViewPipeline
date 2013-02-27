@@ -84,7 +84,7 @@ struct AlgoBase<AlgoT(BOOST_PP_ENUM_PARAMS(N, T))> {
         VW_ASSERT(octave_factory(), vw::LogicErr() << "No octave impl factory registered");
         m_impl.reset(octave_factory()(algo_name BOOST_PP_ENUM_TRAILING_PARAMS(N, a)));
       } else {
-        VW_ASSERT(factory_map().count(algo_name), vw::ArgumentErr() << "Type not found in constructor map");
+        VW_ASSERT(factory_map().count(algo_name), vw::ArgumentErr() << algo_name << " not found in constructor map");
         m_impl.reset(factory_map()[algo_name](BOOST_PP_ENUM_PARAMS(N, a)));
       }        
     }
