@@ -10,6 +10,8 @@
 #ifndef __MVP_OCTAVE_WRAP_H__
 #define __MVP_OCTAVE_WRAP_H__
 
+#include <vw/Core/Exception.h>
+
 #define DECLARE_MVP_WRAPPER(IMPLT) template <> \
   octave_value mvp_wrapper<IMPLT>(IMPLT *impl, std::string const& func, octave_value_list const& args);
 
@@ -17,11 +19,14 @@
   IMPLT octave_wrapper<IMPLT>(octave_value const& impl);
 
 template <class ImplT>
-octave_value mvp_wrapper(ImplT *impl, std::string const& func, octave_value_list const& args);
+octave_value mvp_wrapper(ImplT *impl, std::string const& func, octave_value_list const& args) {
+  vw::vw_throw(vw::LogicErr() << "No mvp wrap defined for type");
+}
 
 template <class ImplT>
-ImplT octave_wrapper(octave_value const& impl);
-
+ImplT octave_wrapper(octave_value const& impl) {
+  vw::vw_throw(vw::LogicErr() << "No octave wrap defined for type");
+}
 
 /// Forward declarations
 

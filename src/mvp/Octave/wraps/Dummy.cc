@@ -10,6 +10,8 @@ struct OctaveDummy : public mvp::algorithm::Dummy {
 
   OctaveDummy(std::string const& type, int x, int y) : m_octave_impl(type, x, y) {}
 
+  OctaveDummy(octave_value const& impl) : m_octave_impl(impl) {}
+
   void void0() { m_octave_impl.wrap_function("void0"); }
 
   void void1(int a) { m_octave_impl.wrap_function("void1", a); }
@@ -30,14 +32,16 @@ struct OctaveDummy : public mvp::algorithm::Dummy {
   
   vw::Vector2 do_vector(vw::Vector2 const& a) { return octave_as<vw::Vector2>(m_octave_impl.wrap_function("do_vector")); }
 };
-
-
 }} // namespace octave,mvp
-
+template <>
+mvp::algorithm::Dummy octave_wrapper<mvp::algorithm::Dummy>(octave_value const& impl) {
+  return mvp::octave::OctaveDummy(impl);
+}
 namespace mvp {
 namespace algorithm {
 REGISTER_OCTAVE_ALGORITHMS(octave::OctaveDummy)
 }}
+ 
 
 BEGIN_MVP_WRAPPER(Dummy, mvp::algorithm::Dummy)
   MVP_WRAP_CONSTRUCTOR((std::string)(bool)(int)(int))

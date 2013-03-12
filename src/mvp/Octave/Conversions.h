@@ -32,8 +32,11 @@ struct octave_wrap_helper {
     octave_mvpclass_ref *ref = dynamic_cast<octave_mvpclass_ref*>(v.internal_rep());
     VW_ASSERT(ref, BadCastErr() << "Not an mvpclass");
     boost::shared_ptr<octave_mvpclass_wrap<T> > wrap = boost::dynamic_pointer_cast<octave_mvpclass_wrap<T> >(ref->ptr());
-    VW_ASSERT(wrap, BadCastErr() << "No OctaveWrapper for type");
-    return wrap->impl();
+    if (wrap) {
+      return wrap->impl();
+    } else {
+      return octave_wrapper<T>(v);
+    }
   }
 };
 
@@ -68,26 +71,6 @@ struct octave_wrap_helper<T, typename boost::enable_if<boost::is_same<T, std::st
   }
   static T as(octave_value const& v) {
     return v.string_value();
-  }
-};
-
-/// Algorithm <-> Octave
-template <class T>
-struct octave_wrap_helper<T, typename boost::enable_if<boost::is_class<typename T::algorithm_type> >::type > {
-  static octave_value wrap(T const& v) {
-    boost::shared_ptr<octave_mvpclass_base> ptr(new octave_mvpclass_wrap<T>(v));
-    return octave_value(new octave_mvpclass_ref(ptr));
-  }
-  static T as(octave_value const& v) {
-    octave_mvpclass_ref *ref = dynamic_cast<octave_mvpclass_ref*>(v.internal_rep());
-    VW_ASSERT(ref, BadCastErr() << "Not an mvpclass");
-    boost::shared_ptr<octave_mvpclass_wrap<T> > wrap = boost::dynamic_pointer_cast<octave_mvpclass_wrap<T> >(ref->ptr());
-    if (wrap) {
-      return wrap->impl();
-    } else {
-      // TODO: return an OctaveWrap of the class
-      return T();
-    }
   }
 };
 
