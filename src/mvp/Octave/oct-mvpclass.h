@@ -8,14 +8,12 @@
 
 #include <octave/oct.h> // TODO: remove?
 
+#include <mvp/Octave/wrap.h>
 #include <mvp/Octave/ov-mvpclass-ref.h>
 
 #include <octave/oct-map.h>
 
 #include <boost/utility.hpp>
-
-template <class ClassT>
-octave_value mvp_wrapper(ClassT *impl, std::string const& func, octave_value_list const& args);
 
 struct octave_mvpclass_base : boost::noncopyable {
   virtual ~octave_mvpclass_base() {}
