@@ -135,7 +135,7 @@ class octave_mvpclass_wrap : public octave_mvpclass_base {
       os << "<<mvpclass_wrap>>" << std::endl;
     }
 
-    ClassT impl() {
+    ClassT& impl() {
       return m_impl;
     } 
 };
