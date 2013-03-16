@@ -1,5 +1,6 @@
 mvp_module(NAME Octave
            DEPS mvpCore
+                mvpAlgorithm
                 ${OCTAVE_LIBRARIES}
            HDRS Main.h
                 oct-mvpclass.h
