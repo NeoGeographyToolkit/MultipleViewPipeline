@@ -16,7 +16,6 @@
 #include <vw/Image/ImageView.h>
 #include <vw/Image/PixelMask.h>
 
-
 namespace mvp {
 namespace octave {
 
@@ -47,6 +46,7 @@ octave_value octave_wrap(T const& v) {
 
 template <class T>
 T octave_as(octave_value const& v) {
+  VW_ASSERT(!boost::is_reference<T>::value, vw::LogicErr() << "It would be unsafe to return a reference here");
   return octave_wrap_helper<T>::as(v);
 }
 

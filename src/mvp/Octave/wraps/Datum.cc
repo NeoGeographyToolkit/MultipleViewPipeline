@@ -4,6 +4,6 @@
 BEGIN_MVP_WRAPPER(Datum, vw::cartography::Datum)
   MVP_WRAP_CONSTRUCTOR()
   MVP_WRAP_CONSTRUCTOR((std::string))
-  MVP_WRAP_FUNCTION((semi_major_axis))
-  MVP_WRAP_FUNCTION((semi_minor_axis))
+  MVP_WRAP(semi_major_axis, (double))
+  MVP_WRAP(semi_minor_axis, (double))
 END_MVP_WRAPPER()
