@@ -12,6 +12,7 @@
 #include <mvp/Octave/Conversions.h>
 
 #include <boost/preprocessor/repetition/enum_trailing_binary_params.hpp>
+#include <boost/preprocessor/control/expr_if.hpp>
 
 #define OCTAVE_WRAPPER_MAX_ARITY 10
 

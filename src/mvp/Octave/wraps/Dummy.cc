@@ -2,8 +2,6 @@
 #include <mvp/Algorithm/Dummy.h>
 #include <mvp/Octave/OctaveWrapper.h>
 
-#include <boost/preprocessor/control/expr_if.hpp>
-
 BEGIN_OCTAVE_WRAPPER(Dummy, mvp::algorithm::Dummy)
   OCTAVE_WRAP_CONSTRUCTOR((int)(int))
   OCTAVE_WRAP(void0, (void))
