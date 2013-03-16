@@ -64,14 +64,14 @@ octave_value mvp_wrapper<IMPLT>(IMPLT *impl, std::string const& func, octave_val
     return octave_wrap(ImplT(BOOST_PP_SEQ_FOR_EACH_I(MVP_WRAP_args_helper, ~, ARGS))); \
   }
 
-#define MVP_WRAP(FUNC, ARGS) \
+#define MVP_WRAP(FUNC, SIG) \
   if (func == BOOST_PP_STRINGIZE(FUNC) && \
-      args.length() == BOOST_PP_SUB(BOOST_PP_SEQ_SIZE(ARGS), 1)) {\
+      args.length() == BOOST_PP_SUB(BOOST_PP_SEQ_SIZE(SIG), 1)) {\
     VW_ASSERT(impl, vw::LogicErr() << "impl not defined!"); \
-    return mvp_wrapper_helper<ImplT, BOOST_PP_SEQ_ENUM(ARGS)>::wrap(impl, &ImplT::FUNC, args); \
+    return mvp_wrapper_helper<ImplT, BOOST_PP_SEQ_ENUM(SIG)>::wrap(impl, &ImplT::FUNC, args); \
   }
 
-#define MVP_WRAP_C(FUNC, ARGS) MVP_WRAP(FUNC, ARGS)
+#define MVP_WRAP_C(FUNC, SIG) MVP_WRAP(FUNC, SIG)
 
 #define END_MVP_WRAPPER() \
   } catch (vw::Exception &e) { \
