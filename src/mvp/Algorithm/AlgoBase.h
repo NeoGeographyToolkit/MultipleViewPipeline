@@ -48,7 +48,7 @@ struct OctaveAlgoRegistrar {
 };
 
 #define REGISTER_OCTAVE_ALGORITHMS(Factory) \
-  template <> OctaveAlgoRegistrar<Factory> OctaveAlgoRegistrar<Factory>::reg(1);
+  template <> mvp::algorithm::OctaveAlgoRegistrar<Factory> mvp::algorithm::OctaveAlgoRegistrar<Factory>::reg(1);
 
 }} // namespace mvp, algorithm
 

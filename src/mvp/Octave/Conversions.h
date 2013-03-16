@@ -52,6 +52,12 @@ T octave_as(octave_value const& v) {
 
 /// Specializations...
 
+/// allow void wrap for OctaveAlgorithms
+template <>
+struct octave_wrap_helper<void> {
+  static void as(octave_value const& v) {}
+};
+
 /// Enum <-> Octave
 template <class T>
 struct octave_wrap_helper<T, typename boost::enable_if<boost::is_enum<T> >::type> {
