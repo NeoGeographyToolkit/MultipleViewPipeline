@@ -8,10 +8,12 @@
 namespace mvp {
 namespace algorithm {
 
-struct Dummy : public AlgoBase<Dummy(int, int)> {
-
-  Dummy(std::string const& type, bool use_octave, int x, int y) : 
-    AlgoBase<Dummy(int, int)>(type, use_octave, x, y) {}
+struct Dummy : public AlgoBase<Dummy, int, int> {
+  protected:
+    Dummy();
+  public:
+    Dummy(std::string const& type, bool use_octave, int x, int y) : 
+      AlgoBase<Dummy, int, int>(type, use_octave, x, y) {}
 
   virtual void void0() {return impl()->void0();}
 
@@ -33,9 +35,6 @@ struct Dummy : public AlgoBase<Dummy(int, int)> {
 
   virtual vw::Vector2 do_vector(vw::Vector2 const& a) {return impl()->do_vector(a); }
 
-  protected:
-    // Only subclasses can construct without a impl
-    Dummy();
 };
 
 }} // namespace algorithm,mvp

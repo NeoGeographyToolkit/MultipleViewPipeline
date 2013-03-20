@@ -12,15 +12,18 @@
 #include <boost/preprocessor/repetition/enum_trailing_params.hpp>
 #include <boost/preprocessor/repetition/enum_params.hpp>
 #include <boost/preprocessor/repetition/enum_trailing_binary_params.hpp>
+#include <boost/preprocessor/repetition/enum_params_with_a_default.hpp>
 
 #include <vw/Core/Exception.h>
 
 namespace mvp {
 namespace algorithm {
 
-template <class ConstructT> struct AlgoBase;
 
 #define MVP_ALGORITHM_MAX_ARITY 10
+
+template <class AlgoT, BOOST_PP_ENUM_PARAMS_WITH_A_DEFAULT(MVP_ALGORITHM_MAX_ARITY, class T, void)>
+struct AlgoBase;
 
 #define BOOST_PP_ITERATION_LIMITS (0, MVP_ALGORITHM_MAX_ARITY)
 #define BOOST_PP_FILENAME_1 <mvp/Algorithm/AlgoBase.h>
@@ -59,7 +62,11 @@ struct OctaveAlgoRegistrar {
 #define N BOOST_PP_ITERATION()
 
 template <class AlgoT BOOST_PP_ENUM_TRAILING_PARAMS(N, class T)>
-struct AlgoBase<AlgoT(BOOST_PP_ENUM_PARAMS(N, T))> {
+struct AlgoBase
+#if N != MVP_ALGORITHM_MAX_ARITY
+<AlgoT BOOST_PP_ENUM_TRAILING_PARAMS(N, T)>
+#endif
+{
   typedef AlgoT algorithm_type;
 
   private:
