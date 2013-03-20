@@ -8,6 +8,9 @@
 
 #include <mvp/Octave/oct-mvpclass.h>
 
+#include <google/protobuf/message.h>
+#include <google/protobuf/descriptor.h>
+
 #include <octave/lo-ieee.h> // octave_NA
 
 #include <vw/Math/Vector.h>
@@ -15,6 +18,8 @@
 #include <vw/Math/Quaternion.h>
 #include <vw/Image/ImageView.h>
 #include <vw/Image/PixelMask.h>
+
+#include <boost/preprocessor/seq/for_each.hpp>
 
 namespace mvp {
 namespace octave {
@@ -228,6 +233,103 @@ struct ConversionHelper<T, typename boost::enable_if<boost::is_base_of<vw::Image
     return rast;
   }
 };
+
+/// Protobuffers <-> Octave
+
+// Everything except Enum and Message
+#define OCTAVE_CONV_protolist \
+  ((CPPTYPE_INT32, Int32, int32)) \
+  ((CPPTYPE_INT64, Int64, int64)) \
+  ((CPPTYPE_UINT32, UInt32, uint32)) \
+  ((CPPTYPE_UINT64, UInt64, uint64)) \
+  ((CPPTYPE_DOUBLE, Double, double)) \
+  ((CPPTYPE_FLOAT, Float, float)) \
+  ((CPPTYPE_BOOL, Bool, bool)) \
+  ((CPPTYPE_STRING, String, std::string)) 
+
+#define OCTAVE_CONV_proto_to_octave(FTYPE, GETTER, TYPE) \
+  case FieldDescriptor::FTYPE: \
+    result.setfield(field_name, ConversionHelper<TYPE>::to_octave(reflection->Get##GETTER(v, field))); \
+    break;
+
+#define OCTAVE_CONV_proto_from_octave(FTYPE, SETTER, TYPE) \
+  case FieldDescriptor::FTYPE: \
+    if (vmap.contains(field_name)) { \
+      reflection->Set##SETTER(m, field, ConversionHelper<TYPE>::from_octave(vmap.getfield(field_name))); \
+    } else { \
+      VW_ASSERT(!field->is_required(), BadCastErr() << "Missing required field in protobuf"); \
+    } \
+    break;
+
+#define OCTAVE_CONV_protolist_iterator(r, d, i) OCTAVE_CONV_proto_##d i
+
+template <class T>
+struct ConversionHelper<T, typename boost::enable_if<boost::is_base_of<google::protobuf::Message, T> >::type> {
+  static octave_value to_octave(T const& v) {
+    using namespace google::protobuf;
+
+    octave_scalar_map result;
+
+    const Descriptor *descriptor = v.GetDescriptor();
+    const Reflection *reflection = v.GetReflection();
+
+    for (int i = 0; i < descriptor->field_count(); i++) {
+      const FieldDescriptor *field = descriptor->field(i);
+
+      const std::string field_name(field->name());
+
+      switch(field->cpp_type()) {
+        BOOST_PP_SEQ_FOR_EACH(OCTAVE_CONV_protolist_iterator, to_octave, OCTAVE_CONV_protolist)
+        OCTAVE_CONV_proto_to_octave(CPPTYPE_MESSAGE, Message, Message)
+        default:
+          vw::vw_throw(vw::NoImplErr() << "Not a supported field type to convert to octave");
+      }
+    }
+
+    return result;
+  }
+
+  static void from_octave_helper(octave_value const& v, google::protobuf::Message *m) {
+    using namespace google::protobuf;
+
+    octave_scalar_map vmap(v.scalar_map_value());
+
+    const Descriptor *descriptor = m->GetDescriptor();
+    const Reflection *reflection = m->GetReflection();
+
+    for (int i = 0; i < descriptor->field_count(); i++) {
+      const FieldDescriptor *field = descriptor->field(i);
+
+      const std::string field_name(field->name());
+
+      switch(field->cpp_type()) {
+        BOOST_PP_SEQ_FOR_EACH(OCTAVE_CONV_protolist_iterator, from_octave, OCTAVE_CONV_protolist)
+        case FieldDescriptor::CPPTYPE_MESSAGE:
+          if (vmap.contains(field_name)) {
+            from_octave_helper(vmap.getfield(field_name), reflection->MutableMessage(m, field));
+          } else {
+            VW_ASSERT(!field->is_required(), BadCastErr() << "Missing required field in protobuf");
+          }
+          break;
+        default:
+          vw::vw_throw(vw::NoImplErr() << "Not a supported field type to convert from octave");
+      }
+    }
+  }
+
+  static T from_octave(octave_value const& v) {
+    T result;
+    from_octave_helper(v, &result);
+    return result;
+  } 
+};
+
+#undef OCTAVE_CONV_protolist
+#undef OCTAVE_CONV_proto_to_octave
+#undef OCTAVE_CONV_proto_from_octave
+#undef OCTAVE_CONV_protolist_iterator
+
+
 
 }} // namespace octave, mvp
 

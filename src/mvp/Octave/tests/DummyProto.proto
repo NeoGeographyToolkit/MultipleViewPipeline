@@ -1,0 +1,13 @@
+message DummyProto {
+  message InnerMessage {
+    required int32 field = 1;
+  }
+
+  required double double_field = 1;
+  required float float_field = 2;
+  required int32 int32_field = 3;
+  required bool bool_field = 4;
+  required string string_field = 5;
+  optional int32 empty_field = 6;
+  required InnerMessage message_field = 7;
+}
