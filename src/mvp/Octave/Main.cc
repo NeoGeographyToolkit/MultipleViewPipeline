@@ -1,5 +1,7 @@
 #include <mvp/Octave/Main.h>
 
+#include <mvp/Core/Settings.h>
+
 #include <mvp/Octave/MvpWrapper.h>
 
 #include <octave/parse.h>
@@ -19,9 +21,19 @@ void start_octave_interpreter(std::string const& startup_script) {
   register_octave_mvp();
 }
 
+namespace {
+  octave_value_list do_mvp_settings(octave_value_list const& args, int nargout) {
+    if (args.length() > 0) {
+      mvp_settings() = from_octave<mvp::core::GlobalSettings>(args(0));
+    }
+    return to_octave(mvp_settings());
+  }
+}
+
 void register_octave_mvp() {
   octave_mvpclass_ref::register_type();
   MvpWrapperInstaller::install_wrappers();
+  install_builtin_function(do_mvp_settings, "mvp_settings", "");
 }
 
 void stop_octave_interpreter() {
