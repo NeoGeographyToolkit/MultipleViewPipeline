@@ -54,8 +54,8 @@ struct OctaveWrapper : public ImplT { \
 #define OCTAVE_WRAP_helper(FUNC, RET, ARGS, CONST) \
   RET FUNC(BOOST_PP_SEQ_FOR_EACH_I(OCTAVE_WRAP_args_helper, ~, ARGS)) BOOST_PP_EXPR_IF(CONST, const) { \
     using namespace mvp::octave; \
-    return octave_as<RET>(m_octave_impl.wrap_function(BOOST_PP_STRINGIZE(FUNC) \
-                                                      BOOST_PP_ENUM_TRAILING_PARAMS(BOOST_PP_SEQ_SIZE(ARGS), A) )); \
+    return from_octave<RET>(m_octave_impl.wrap_function(BOOST_PP_STRINGIZE(FUNC) \
+                                                        BOOST_PP_ENUM_TRAILING_PARAMS(BOOST_PP_SEQ_SIZE(ARGS), A) )); \
   }
 
 #define OCTAVE_WRAP(FUNC, SIG) OCTAVE_WRAP_helper(FUNC, BOOST_PP_SEQ_HEAD(SIG), BOOST_PP_SEQ_TAIL(SIG), 0)
@@ -75,7 +75,7 @@ REGISTER_OCTAVE_ALGORITHMS(OctaveWrapper)
 #else // BOOST_PP_IS_ITERATING
 
 #define N BOOST_PP_ITERATION()
-#define OCTAVE_WRAPPER_arg_helper(z, n, data) args.append(octave_wrap(BOOST_PP_CAT(A, n)))
+#define OCTAVE_WRAPPER_arg_helper(z, n, data) args.append(to_octave(BOOST_PP_CAT(A, n)))
 
 #if N
 template <BOOST_PP_ENUM_PARAMS(N, class T)>

@@ -1,6 +1,6 @@
 /// \file oct-cast.h
 ///
-/// octave_as function
+/// Conversions to/from octave
 ///
 
 #ifndef __MVP_OCTAVE_OCTCAST_H__
@@ -22,12 +22,12 @@ namespace octave {
 VW_DEFINE_EXCEPTION(BadCastErr, vw::Exception);
 
 template <class T, class Enable=void>
-struct octave_wrap_helper {
-  static octave_value wrap(T const& v) {
+struct ConversionHelper {
+  static octave_value to_octave(T const& v) {
     boost::shared_ptr<octave_mvpclass_base> ptr(new octave_mvpclass_wrap<T>(v));
     return octave_value(new octave_mvpclass_ref(ptr));
   }
-  static T as(octave_value const& v) {
+  static T from_octave(octave_value const& v) {
     octave_mvpclass_ref *ref = dynamic_cast<octave_mvpclass_ref*>(v.internal_rep());
     VW_ASSERT(ref, BadCastErr() << "Not an mvpclass");
     boost::shared_ptr<octave_mvpclass_wrap<T> > wrap = boost::dynamic_pointer_cast<octave_mvpclass_wrap<T> >(ref->ptr());
@@ -40,53 +40,53 @@ struct octave_wrap_helper {
 };
 
 template <class T>
-octave_value octave_wrap(T const& v) {
-  return octave_wrap_helper<T>::wrap(v);
+octave_value to_octave(T const& v) {
+  return ConversionHelper<T>::to_octave(v);
 }
 
 template <class T>
-T octave_as(octave_value const& v) {
+T from_octave(octave_value const& v) {
   VW_ASSERT(!boost::is_reference<T>::value, vw::LogicErr() << "It would be unsafe to return a reference here");
-  return octave_wrap_helper<T>::as(v);
+  return ConversionHelper<T>::from_octave(v);
 }
 
 /// Specializations...
 
-/// allow void wrap for OctaveAlgorithms
+/// allow void to_octave for OctaveAlgorithms
 template <>
-struct octave_wrap_helper<void> {
-  static void as(octave_value const& v) {}
+struct ConversionHelper<void> {
+  static void from_octave(octave_value const& v) {}
 };
 
 /// Enum <-> Octave
 template <class T>
-struct octave_wrap_helper<T, typename boost::enable_if<boost::is_enum<T> >::type> {
-  static octave_value wrap(T const& v) {
+struct ConversionHelper<T, typename boost::enable_if<boost::is_enum<T> >::type> {
+  static octave_value to_octave(T const& v) {
     return octave_value(static_cast<int>(v));
   }
-  static T as(octave_value const& v) {
+  static T from_octave(octave_value const& v) {
     return static_cast<T>(v.int_value());
   }
 };
 
 /// String <-> Octave
 template <class T>
-struct octave_wrap_helper<T, typename boost::enable_if<boost::is_same<T, std::string> >::type > {
-  static octave_value wrap(T const& v) {
+struct ConversionHelper<T, typename boost::enable_if<boost::is_same<T, std::string> >::type > {
+  static octave_value to_octave(T const& v) {
     return octave_value(v);
   }
-  static T as(octave_value const& v) {
+  static T from_octave(octave_value const& v) {
     return v.string_value();
   }
 };
 
 /// Number <-> Octave
 template <class T>
-struct octave_wrap_helper<T, typename boost::enable_if<boost::is_arithmetic<T> >::type> {
-  static octave_value wrap(T const& v) {
+struct ConversionHelper<T, typename boost::enable_if<boost::is_arithmetic<T> >::type> {
+  static octave_value to_octave(T const& v) {
     return double(v);
   }
-  static T as(octave_value const& v) {
+  static T from_octave(octave_value const& v) {
     VW_ASSERT(v.is_scalar_type(), BadCastErr() << "Not a scalar type");
     return T(v.double_value());
   }
@@ -94,8 +94,8 @@ struct octave_wrap_helper<T, typename boost::enable_if<boost::is_arithmetic<T> >
 
 /// vw::Vector <-> Octave
 template <class T>
-struct octave_wrap_helper<T, typename boost::enable_if<boost::is_base_of<vw::math::VectorBase<T>, T> >::type> {
-  static octave_value wrap(T const& v) {
+struct ConversionHelper<T, typename boost::enable_if<boost::is_base_of<vw::math::VectorBase<T>, T> >::type> {
+  static octave_value to_octave(T const& v) {
     T vw_vect(v.impl());
     ColumnVector oct_vect(vw_vect.size());
 
@@ -105,7 +105,7 @@ struct octave_wrap_helper<T, typename boost::enable_if<boost::is_base_of<vw::mat
 
     return oct_vect;
   }
-  static T as(octave_value const& v) {
+  static T from_octave(octave_value const& v) {
     VW_ASSERT(v.is_matrix_type(), BadCastErr() << "Not a matrix type");
 
     T vw_vect;
@@ -127,8 +127,8 @@ struct octave_wrap_helper<T, typename boost::enable_if<boost::is_base_of<vw::mat
 
 /// vw::Quat <-> octave
 template <class T>
-struct octave_wrap_helper<T, typename boost::enable_if<boost::is_base_of<vw::math::QuaternionBase<T>, T> >::type> {
-  static octave_value wrap(T const& v) {
+struct ConversionHelper<T, typename boost::enable_if<boost::is_base_of<vw::math::QuaternionBase<T>, T> >::type> {
+  static octave_value to_octave(T const& v) {
     T vw_quat(v.impl());
     ColumnVector oct_vect(4);
 
@@ -138,15 +138,15 @@ struct octave_wrap_helper<T, typename boost::enable_if<boost::is_base_of<vw::mat
 
     return oct_vect;
   }
-  static T as(octave_value const& v) {
-    return T(octave_as<vw::Vector<double, 4> >(v));
+  static T from_octave(octave_value const& v) {
+    return T(ConversionHelper<vw::Vector<double, 4> >::from_octave(v));
   }
 };
 
 /// vw::Matrix <-> Octave
 template <class T>
-struct octave_wrap_helper<T, typename boost::enable_if<boost::is_base_of<vw::math::MatrixBase<T>, T> >::type> {
-  static octave_value wrap(T const& v) {
+struct ConversionHelper<T, typename boost::enable_if<boost::is_base_of<vw::math::MatrixBase<T>, T> >::type> {
+  static octave_value to_octave(T const& v) {
     T vw_mat(v.impl());
     ::Matrix oct_mat(vw_mat.rows(), vw_mat.cols());
     
@@ -158,7 +158,7 @@ struct octave_wrap_helper<T, typename boost::enable_if<boost::is_base_of<vw::mat
 
     return oct_mat;
   }
-  static T as(octave_value const& v) {
+  static T from_octave(octave_value const& v) {
     VW_ASSERT(v.is_matrix_type(), BadCastErr() << "Not a matrix type");
 
     T vw_mat;
@@ -183,8 +183,8 @@ struct octave_wrap_helper<T, typename boost::enable_if<boost::is_base_of<vw::mat
 
 /// vw::imageview <-> octave
 template <class T>
-struct octave_wrap_helper<T, typename boost::enable_if<boost::is_base_of<vw::ImageViewBase<T>, T> >::type> {
-  static octave_value wrap(T const& v) {
+struct ConversionHelper<T, typename boost::enable_if<boost::is_base_of<vw::ImageViewBase<T>, T> >::type> {
+  static octave_value to_octave(T const& v) {
     typedef vw::ImageView<vw::PixelMask<double> > RasterT;
 
     // Rasterize image before copying to octave
@@ -206,7 +206,7 @@ struct octave_wrap_helper<T, typename boost::enable_if<boost::is_base_of<vw::Ima
 
     return oct_img;
   }
-  static T as(octave_value const& v) {
+  static T from_octave(octave_value const& v) {
     VW_ASSERT(v.is_matrix_type(), BadCastErr() << "Not a matrix type");
     typedef vw::ImageView<vw::PixelMask<double> > RasterT;
 

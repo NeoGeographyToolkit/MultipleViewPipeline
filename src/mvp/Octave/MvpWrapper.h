@@ -57,11 +57,11 @@ octave_value mvp_wrapper<IMPLT>(IMPLT *impl, std::string const& func, octave_val
   typedef IMPLT ImplT; \
   try {
 
-#define MVP_WRAP_args_helper(r, x, n, t) BOOST_PP_COMMA_IF(n) octave_as<t>(args(n))
+#define MVP_WRAP_args_helper(r, x, n, t) BOOST_PP_COMMA_IF(n) from_octave<t>(args(n))
 
 #define MVP_WRAP_CONSTRUCTOR(ARGS) \
   if (!impl && args.length() == BOOST_PP_SEQ_SIZE(ARGS)) { \
-    return octave_wrap(ImplT(BOOST_PP_SEQ_FOR_EACH_I(MVP_WRAP_args_helper, ~, ARGS))); \
+    return to_octave(ImplT(BOOST_PP_SEQ_FOR_EACH_I(MVP_WRAP_args_helper, ~, ARGS))); \
   }
 
 #define MVP_WRAP(FUNC, SIG) \
@@ -91,7 +91,7 @@ octave_value mvp_wrapper<IMPLT>(IMPLT *impl, std::string const& func, octave_val
 #else // BOOST_PP_IS_ITERATING
 
 #define N BOOST_PP_ITERATION()
-#define MVP_WRAP_args_helper2(r, n, data) mvp::octave::octave_as<typename boost::remove_reference<BOOST_PP_CAT(T, n)>::type>(args(n))
+#define MVP_WRAP_args_helper2(r, n, data) mvp::octave::from_octave<typename boost::remove_reference<BOOST_PP_CAT(T, n)>::type>(args(n))
 
 template <class ImplT, class R BOOST_PP_ENUM_TRAILING_PARAMS(N, class T)>
 struct mvp_wrapper_helper
@@ -104,14 +104,14 @@ struct mvp_wrapper_helper
                            R (ImplBaseT::*fcn)(BOOST_PP_ENUM_PARAMS(N, T)), 
                            octave_value_list const& args) {
     VW_ASSERT(args.length() == 0, vw::LogicErr() << "Unexpected number of args");
-    return mvp::octave::octave_wrap((impl->*fcn)(BOOST_PP_ENUM(N, MVP_WRAP_args_helper2, ~)));
+    return mvp::octave::to_octave((impl->*fcn)(BOOST_PP_ENUM(N, MVP_WRAP_args_helper2, ~)));
   }
   template <class ImplBaseT>
   static octave_value wrap(ImplT *impl, 
                            R (ImplBaseT::*fcn)(BOOST_PP_ENUM_PARAMS(N, T)) const,
                            octave_value_list const& args) {
     VW_ASSERT(args.length() == 0, vw::LogicErr() << "Unexpected number of args");
-    return mvp::octave::octave_wrap((impl->*fcn)(BOOST_PP_ENUM(N, MVP_WRAP_args_helper2, ~)));
+    return mvp::octave::to_octave((impl->*fcn)(BOOST_PP_ENUM(N, MVP_WRAP_args_helper2, ~)));
   }
 };
 
