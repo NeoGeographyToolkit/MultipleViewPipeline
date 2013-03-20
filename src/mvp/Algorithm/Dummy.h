@@ -13,11 +13,11 @@ struct Dummy : public AlgoBase<Dummy(int, int)> {
   Dummy(std::string const& type, bool use_octave, int x, int y) : 
     AlgoBase<Dummy(int, int)>(type, use_octave, x, y) {}
 
-  virtual void void0() {impl()->void0();}
+  virtual void void0() {return impl()->void0();}
 
-  virtual void void1(int a) {impl()->void1(a);}
+  virtual void void1(int a) {return impl()->void1(a);}
 
-  virtual void void2(int a, int b) {impl()->void2(a,b);}
+  virtual void void2(int a, int b) {return impl()->void2(a,b);}
 
   virtual int function0() {return impl()->function0();}
 
