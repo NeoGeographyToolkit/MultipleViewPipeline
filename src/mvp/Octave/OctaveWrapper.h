@@ -37,28 +37,29 @@ class OctaveWrapperImpl {
 
 }} // namespace octave, mvp
 
-#define BEGIN_OCTAVE_WRAPPER(NAME, IMPLT) \
+#define BEGIN_OCTAVE_WRAPPER(NAME, IMPLT, ARGS) \
 namespace { \
 typedef IMPLT ImplT; \
 struct OctaveWrapper : public ImplT { \
   mutable mvp::octave::OctaveWrapperImpl m_octave_impl; \
-  OctaveWrapper(octave_value const& impl) : m_octave_impl(impl) {}
+  OctaveWrapper(octave_value const& impl) : m_octave_impl(impl) {} \
+  OCTAVE_WRAPPER_CONSTRUCTOR(ARGS)
 
-#define OCTAVE_WRAP_args_helper(r, x, n, t) BOOST_PP_COMMA_IF(n) t BOOST_PP_CAT(a, n)
+#define OCTAVE_WRAPPER_args_helper(r, x, n, t) BOOST_PP_COMMA_IF(n) t BOOST_PP_CAT(a, n)
 
-#define OCTAVE_WRAP_CONSTRUCTOR(ARGS) \
-  OctaveWrapper(BOOST_PP_SEQ_FOR_EACH_I(OCTAVE_WRAP_args_helper, ~, ARGS)) : \
+#define OCTAVE_WRAPPER_CONSTRUCTOR(ARGS) \
+  OctaveWrapper(BOOST_PP_SEQ_FOR_EACH_I(OCTAVE_WRAPPER_args_helper, ~, ARGS)) : \
     m_octave_impl(BOOST_PP_ENUM_PARAMS(BOOST_PP_SEQ_SIZE(ARGS), a)) {}
 
-#define OCTAVE_WRAP_helper(FUNC, RET, ARGS, CONST) \
-  RET FUNC(BOOST_PP_SEQ_FOR_EACH_I(OCTAVE_WRAP_args_helper, ~, ARGS)) BOOST_PP_EXPR_IF(CONST, const) { \
+#define OCTAVE_WRAPPER_helper(FUNC, RET, ARGS, CONST) \
+  RET FUNC(BOOST_PP_SEQ_FOR_EACH_I(OCTAVE_WRAPPER_args_helper, ~, ARGS)) BOOST_PP_EXPR_IF(CONST, const) { \
     using namespace mvp::octave; \
     return from_octave<RET>(m_octave_impl.wrap_function(BOOST_PP_STRINGIZE(FUNC) \
                                                         BOOST_PP_ENUM_TRAILING_PARAMS(BOOST_PP_SEQ_SIZE(ARGS), a) )); \
   }
 
-#define OCTAVE_WRAP(FUNC, SIG) OCTAVE_WRAP_helper(FUNC, BOOST_PP_SEQ_HEAD(SIG), BOOST_PP_SEQ_TAIL(SIG), 0)
-#define OCTAVE_WRAP_C(FUNC, SIG) OCTAVE_WRAP_helper(FUNC, BOOST_PP_SEQ_HEAD(SIG), BOOST_PP_SEQ_TAIL(SIG), 1)
+#define OCTAVE_WRAPPER(FUNC, SIG) OCTAVE_WRAPPER_helper(FUNC, BOOST_PP_SEQ_HEAD(SIG), BOOST_PP_SEQ_TAIL(SIG), 0)
+#define OCTAVE_WRAPPER_C(FUNC, SIG) OCTAVE_WRAPPER_helper(FUNC, BOOST_PP_SEQ_HEAD(SIG), BOOST_PP_SEQ_TAIL(SIG), 1)
 
 #define END_OCTAVE_WRAPPER() \
 }; \
@@ -96,6 +97,6 @@ octave_value wrap_function(std::string const& func BOOST_PP_ENUM_TRAILING_BINARY
 }
 
 #undef N
-#undef OCTAVE_WRAP_args_helper
+#undef OCTAVE_WRAPPER_args_helper
 
 #endif // BOOST_PP_IS_ITERATING
