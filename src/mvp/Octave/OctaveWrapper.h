@@ -68,7 +68,7 @@ template <> \
 ImplT octave_wrapper<ImplT>(octave_value const& impl) { \
   return OctaveWrapper(impl); \
 } \
-REGISTER_OCTAVE_ALGORITHMS(OctaveWrapper)
+REGISTER_OCTAVE_ALGORITHM_OBJECTS(OctaveWrapper)
 
 #endif
 

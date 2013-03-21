@@ -1,19 +1,19 @@
 #ifndef __MVP_ALGORITHM_DUMMY_H__
 #define __MVP_ALGORITHM_DUMMY_H__
 
-#include <mvp/Algorithm/AlgoBase.h>
+#include <mvp/Algorithm/ObjectBase.h>
 
 #include <vw/Math/Vector.h>
 
 namespace mvp {
 namespace algorithm {
 
-struct Dummy : public AlgoBase<Dummy, int, int> {
+struct Dummy : public ObjectBase<Dummy, int, int> {
   protected:
     Dummy();
   public:
     Dummy(std::string const& type, bool use_octave, int x, int y) : 
-      AlgoBase<Dummy, int, int>(type, use_octave, x, y) {}
+      ObjectBase<Dummy, int, int>(type, use_octave, x, y) {}
 
   virtual void void0() {return impl()->void0();}
 

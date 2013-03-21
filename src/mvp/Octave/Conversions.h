@@ -57,7 +57,7 @@ T from_octave(octave_value const& v) {
 
 /// Specializations...
 
-/// allow void to_octave for OctaveAlgorithms
+/// allow void to_octave for OctaveWrappers
 template <>
 struct ConversionHelper<void> {
   static void from_octave(octave_value const& v) {}
