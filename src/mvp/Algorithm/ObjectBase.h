@@ -13,6 +13,10 @@
 #include <boost/preprocessor/repetition/enum_params.hpp>
 #include <boost/preprocessor/repetition/enum_trailing_binary_params.hpp>
 #include <boost/preprocessor/repetition/enum_params_with_a_default.hpp>
+#include <boost/preprocessor/seq/seq.hpp>
+#include <boost/preprocessor/seq/for_each_i.hpp>
+#include <boost/preprocessor/seq/enum.hpp>
+#include <boost/preprocessor/control/expr_if.hpp>
 
 #include <vw/Core/Exception.h>
 
@@ -38,7 +42,7 @@ struct ObjectRegistrar {
 };
 
 #define REGISTER_ALGORITHM_OBJECT(Derived) \
-  template <> ObjectRegistrar<Derived> ObjectRegistrar<Derived>::reg(#Derived);
+  template <> mvp::algorithm::ObjectRegistrar<Derived> ObjectRegistrar<Derived>::reg(#Derived);
 
 template <class FactoryT>
 struct OctaveObjectRegistrar {
@@ -54,6 +58,28 @@ struct OctaveObjectRegistrar {
   template <> mvp::algorithm::OctaveObjectRegistrar<Factory> mvp::algorithm::OctaveObjectRegistrar<Factory>::reg(1);
 
 }} // namespace mvp, algorithm
+
+#define ALGORITHM_OBJECT_arg_helper(r, x, n, t) BOOST_PP_COMMA_IF(n) t BOOST_PP_CAT(a, n)
+
+#define BEGIN_ALGORITHM_OBJECT(NAME, D, ARGS) \
+namespace mvp { \
+namespace algorithm { \
+struct NAME : public ObjectBase<NAME, BOOST_PP_SEQ_ENUM(ARGS)> { \
+  protected: \
+    NAME(); \
+  public: \
+    NAME(BOOST_PP_SEQ_FOR_EACH_I(ALGORITHM_OBJECT_arg_helper, ~, ARGS)) : \
+      ObjectBase<NAME, BOOST_PP_SEQ_ENUM(ARGS)>(BOOST_PP_ENUM_PARAMS(BOOST_PP_SEQ_SIZE(ARGS), a)) {}
+
+#define ALGORITHM_OBJECT_helper(FUNC, RET, ARGS, CONST) \
+  virtual RET FUNC(BOOST_PP_SEQ_FOR_EACH_I(ALGORITHM_OBJECT_arg_helper, ~, ARGS)) BOOST_PP_EXPR_IF(CONST, const) { \
+    return impl()->FUNC(BOOST_PP_ENUM_PARAMS(BOOST_PP_SEQ_SIZE(ARGS), a)); \
+  }
+
+#define ALGORITHM_OBJECT(FUNC, SIG) ALGORITHM_OBJECT_helper(FUNC, BOOST_PP_SEQ_HEAD(SIG), BOOST_PP_SEQ_TAIL(SIG), 0)
+#define ALGORITHM_OBJECT_C(FUNC, SIG) ALGORITHM_OBJECT_helper(FUNC, BOOST_PP_SEQ_HEAD(SIG), BOOST_PP_SEQ_TAIL(SIG), 1)
+
+#define END_ALGORITHM_OBJECT() }; }}
 
 #endif
 

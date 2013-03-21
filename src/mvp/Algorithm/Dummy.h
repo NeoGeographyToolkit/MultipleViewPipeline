@@ -7,38 +7,17 @@
 
 #include <vw/Math/Vector.h>
 
-namespace mvp {
-namespace algorithm {
-
-struct Dummy : public ObjectBase<Dummy, int, int, DummySettings const&> {
-  protected:
-    Dummy();
-  public:
-    Dummy(int a0, int a1, DummySettings const& a2) : 
-      ObjectBase<Dummy, int, int, DummySettings const&>(a0, a1, a2) {}
-
-  virtual void void0() {return impl()->void0();}
-
-  virtual void void1(int a) {return impl()->void1(a);}
-
-  virtual void void2(int a, int b) {return impl()->void2(a,b);}
-
-  virtual int function0() {return impl()->function0();}
-
-  virtual int function1(int a) {return impl()->function1(a);}
-
-  virtual int function2(int a, int b) {return impl()->function2(a,b);}
-
-  virtual int x() const {return impl()->x();}
-
-  virtual int y() const {return impl()->y();}
-
-  virtual vw::Vector2 do_vector(vw::Vector3 const& a) {return impl()->do_vector(a); }
-
-  virtual vw::Vector2 do_vector(vw::Vector2 const& a) {return impl()->do_vector(a); }
-
-};
-
-}} // namespace algorithm,mvp
+BEGIN_ALGORITHM_OBJECT(Dummy, mvp::algorithm::Dummy, (int)(int)(DummySettings const&))
+  ALGORITHM_OBJECT(void0, (void))
+  ALGORITHM_OBJECT(void1, (void)(int))
+  ALGORITHM_OBJECT(void2, (void)(int)(int))
+  ALGORITHM_OBJECT(function0, (int))
+  ALGORITHM_OBJECT(function1, (int)(int))
+  ALGORITHM_OBJECT(function2, (int)(int)(int))
+  ALGORITHM_OBJECT_C(x, (int))
+  ALGORITHM_OBJECT_C(y, (int))
+  ALGORITHM_OBJECT(do_vector, (vw::Vector2)(vw::Vector3 const&))
+  ALGORITHM_OBJECT(do_vector, (vw::Vector2)(vw::Vector2 const&))
+END_ALGORITHM_OBJECT()
 
 #endif
