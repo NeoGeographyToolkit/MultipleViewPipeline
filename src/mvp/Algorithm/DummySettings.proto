@@ -1,0 +1,6 @@
+package mvp.algorithm;
+
+message DummySettings {
+  optional string impl_name = 1 [default="DerivedDummy"];
+  optional bool use_octave = 2;
+}

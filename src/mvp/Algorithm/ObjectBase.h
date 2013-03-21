@@ -25,7 +25,7 @@ namespace algorithm {
 template <class ImplT, BOOST_PP_ENUM_PARAMS_WITH_A_DEFAULT(MVP_ALGORITHM_MAX_ARITY, class T, void)>
 class ObjectBase;
 
-#define BOOST_PP_ITERATION_LIMITS (0, MVP_ALGORITHM_MAX_ARITY)
+#define BOOST_PP_ITERATION_LIMITS (1, MVP_ALGORITHM_MAX_ARITY)
 #define BOOST_PP_FILENAME_1 <mvp/Algorithm/ObjectBase.h>
 #include BOOST_PP_ITERATE()
 
@@ -72,8 +72,8 @@ class ObjectBase
     return map; 
   }
 
-  static boost::function<ImplT*(std::string const& BOOST_PP_ENUM_TRAILING_PARAMS(N, T))>& octave_factory() {
-    static boost::function<ImplT*(std::string const& BOOST_PP_ENUM_TRAILING_PARAMS(N, T))> factory;
+  static boost::function<ImplT*(BOOST_PP_ENUM_PARAMS(N, T))>& octave_factory() {
+    static boost::function<ImplT*(BOOST_PP_ENUM_PARAMS(N, T))> factory;
     return factory;
   }
 
@@ -82,13 +82,15 @@ class ObjectBase
   protected:
     ObjectBase() {}
 
-    ObjectBase(std::string const& obj_name, bool use_octave BOOST_PP_ENUM_TRAILING_BINARY_PARAMS(N, T, a)) {
+    ObjectBase(BOOST_PP_ENUM_BINARY_PARAMS(N, T, a)) {
+      std::string impl_name = BOOST_PP_CAT(a, BOOST_PP_SUB(N, 1)).impl_name();
+      bool use_octave = BOOST_PP_CAT(a, BOOST_PP_SUB(N, 1)).use_octave();
       if (use_octave) {
         VW_ASSERT(octave_factory(), vw::LogicErr() << "No octave impl factory registered");
-        m_impl.reset(octave_factory()(obj_name BOOST_PP_ENUM_TRAILING_PARAMS(N, a)));
+        m_impl.reset(octave_factory()(BOOST_PP_ENUM_PARAMS(N, a)));
       } else {
-        VW_ASSERT(factory_map().count(obj_name), vw::ArgumentErr() << obj_name << " not found in constructor map");
-        m_impl.reset(factory_map()[obj_name](BOOST_PP_ENUM_PARAMS(N, a)));
+        VW_ASSERT(factory_map().count(impl_name), vw::ArgumentErr() << impl_name << " not found in constructor map");
+        m_impl.reset(factory_map()[impl_name](BOOST_PP_ENUM_PARAMS(N, a)));
       }        
     }
 

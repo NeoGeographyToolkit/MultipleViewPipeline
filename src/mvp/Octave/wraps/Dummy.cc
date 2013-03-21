@@ -3,7 +3,7 @@
 #include <mvp/Octave/OctaveWrapper.h>
 
 BEGIN_OCTAVE_WRAPPER(Dummy, mvp::algorithm::Dummy)
-  OCTAVE_WRAP_CONSTRUCTOR((int)(int))
+  OCTAVE_WRAP_CONSTRUCTOR((int)(int)(mvp::algorithm::DummySettings const&))
   OCTAVE_WRAP(void0, (void))
   OCTAVE_WRAP(void1, (void)(int))
   OCTAVE_WRAP(void2, (void)(int)(int))
@@ -16,7 +16,7 @@ BEGIN_OCTAVE_WRAPPER(Dummy, mvp::algorithm::Dummy)
 END_OCTAVE_WRAPPER()
 
 BEGIN_MVP_WRAPPER(Dummy, mvp::algorithm::Dummy)
-  MVP_WRAP_CONSTRUCTOR((std::string)(bool)(int)(int))
+  MVP_WRAP_CONSTRUCTOR((int)(int)(mvp::algorithm::DummySettings const&))
   MVP_WRAP(void0, (void))
   MVP_WRAP(void1, (void)(int))
   MVP_WRAP(void2, (void)(int)(int))

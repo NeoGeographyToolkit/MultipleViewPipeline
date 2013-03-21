@@ -3,17 +3,19 @@
 
 #include <mvp/Algorithm/ObjectBase.h>
 
+#include <mvp/Algorithm/DummySettings.pb.h>
+
 #include <vw/Math/Vector.h>
 
 namespace mvp {
 namespace algorithm {
 
-struct Dummy : public ObjectBase<Dummy, int, int> {
+struct Dummy : public ObjectBase<Dummy, int, int, DummySettings const&> {
   protected:
     Dummy();
   public:
-    Dummy(std::string const& type, bool use_octave, int x, int y) : 
-      ObjectBase<Dummy, int, int>(type, use_octave, x, y) {}
+    Dummy(int a0, int a1, DummySettings const& a2) : 
+      ObjectBase<Dummy, int, int, DummySettings const&>(a0, a1, a2) {}
 
   virtual void void0() {return impl()->void0();}
 

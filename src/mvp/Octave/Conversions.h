@@ -51,8 +51,8 @@ octave_value to_octave(T const& v) {
 
 template <class T>
 T from_octave(octave_value const& v) {
-  VW_ASSERT(!boost::is_reference<T>::value, vw::LogicErr() << "It would be unsafe to return a reference here");
-  return ConversionHelper<T>::from_octave(v);
+  typedef typename boost::remove_cv<typename boost::remove_reference<T>::type>::type T_stripped;
+  return ConversionHelper<T_stripped>::from_octave(v);
 }
 
 /// Specializations...
