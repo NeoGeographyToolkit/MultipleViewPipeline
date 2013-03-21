@@ -81,6 +81,11 @@ struct NAME : public ObjectBase<NAME, BOOST_PP_SEQ_ENUM(ARGS)> { \
 
 #define END_ALGORITHM_OBJECT() }; }}
 
+// This defines the protected constructor for the Algorithm Object in a cpp file
+// Which makes sure that the ObjectBase is not inlined. If the ObjectBase was inlined,
+// The ObjectBase factory map would have a different instance for each compilation unit!
+#define ALGORITHM_OBJECT_CPP(NAME) mvp::algorithm::NAME::NAME() {}
+
 #endif
 
 #else // BOOST_PP_IS_ITERATING

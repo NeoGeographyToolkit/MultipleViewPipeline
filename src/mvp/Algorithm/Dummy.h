@@ -7,17 +7,20 @@
 
 #include <vw/Math/Vector.h>
 
-BEGIN_ALGORITHM_OBJECT(Dummy, mvp::algorithm::Dummy, (int)(int)(DummySettings const&))
-  ALGORITHM_OBJECT(void0, (void))
-  ALGORITHM_OBJECT(void1, (void)(int))
-  ALGORITHM_OBJECT(void2, (void)(int)(int))
-  ALGORITHM_OBJECT(function0, (int))
-  ALGORITHM_OBJECT(function1, (int)(int))
-  ALGORITHM_OBJECT(function2, (int)(int)(int))
-  ALGORITHM_OBJECT_C(x, (int))
-  ALGORITHM_OBJECT_C(y, (int))
-  ALGORITHM_OBJECT(do_vector, (vw::Vector2)(vw::Vector3 const&))
-  ALGORITHM_OBJECT(do_vector, (vw::Vector2)(vw::Vector2 const&))
-END_ALGORITHM_OBJECT()
+#define EMIT_ALGORITHM_OBJECT_DUMMY(T) \
+BEGIN_##T(Dummy, mvp::algorithm::Dummy, (int)(int)(mvp::algorithm::DummySettings const&)) \
+  T(void0, (void)) \
+  T(void1, (void)(int)) \
+  T(void2, (void)(int)(int)) \
+  T(function0, (int)) \
+  T(function1, (int)(int)) \
+  T(function2, (int)(int)(int)) \
+  T##_C(x, (int)) \
+  T##_C(y, (int)) \
+  T(do_vector, (vw::Vector2)(vw::Vector3 const&)) \
+  T(do_vector, (vw::Vector2)(vw::Vector2 const&)) \
+END_##T()
+
+EMIT_ALGORITHM_OBJECT_DUMMY(ALGORITHM_OBJECT)
 
 #endif
