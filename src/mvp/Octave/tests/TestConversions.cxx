@@ -146,13 +146,15 @@ TEST(from_octave, matrix_throws) {
 TEST(to_octave, imageview) {
   boost::rand48 gen(10);
 
-  ImageView<float32> vw_img(uniform_noise_view(gen, 20, 10));
+  ImageView<float32> vw_img(uniform_noise_view(gen, 20, 10, 5));
   
-  ::Matrix oct_img(to_octave(vw_img).matrix_value());
+  NDArray oct_img(to_octave(vw_img).array_value());
 
-  for (int col = 0; col < vw_img.cols(); col++) {
-    for (int row = 0; row < vw_img.rows(); row++) {
-      EXPECT_EQ(vw_img(col, row), oct_img(row, col));
+  for (int plane = 0; plane < vw_img.planes(); plane++) {
+    for (int col = 0; col < vw_img.cols(); col++) {
+      for (int row = 0; row < vw_img.rows(); row++) {
+        EXPECT_EQ(vw_img(col, row, plane), oct_img(row, col, plane));
+      }
     }
   }
 }
@@ -193,12 +195,14 @@ TEST(to_octave, imageview_mask2) {
 TEST(from_octave, imageview) {
   ::octave_rand::seed(10);
 
-  ::Matrix oct_img(::octave_rand::matrix(20, 10));
+  NDArray oct_img(::octave_rand::nd_array(dim_vector(20, 10, 5)));
   ImageView<float32> vw_img(from_octave<ImageView<float32> >(oct_img));
 
-  for (int col = 0; col < vw_img.cols(); col++) {
-    for (int row = 0; row < vw_img.rows(); row++) {
-      EXPECT_PIXEL_NEAR(vw_img(col, row), oct_img(row, col), 1e-6);
+  for (int plane = 0; plane < vw_img.planes(); plane++) {
+    for (int col = 0; col < vw_img.cols(); col++) {
+      for (int row = 0; row < vw_img.rows(); row++) {
+        EXPECT_PIXEL_NEAR(vw_img(col, row, plane), oct_img(row, col, plane), 1e-6);
+      }
     }
   }
 }

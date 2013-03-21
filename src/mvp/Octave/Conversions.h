@@ -195,18 +195,22 @@ struct ConversionHelper<T, typename boost::enable_if<boost::is_base_of<vw::Image
     // Rasterize image before copying to octave
     RasterT rast = v.impl();
 
-    ::Matrix oct_img(rast.rows(), rast.cols());
+    NDArray oct_img(dim_vector(rast.rows(), rast.cols(), rast.planes()));
 
     typedef RasterT::pixel_accessor AccT;
-    AccT racc = rast.origin();
+    AccT pacc = rast.origin();
 
-    for(int row = 0; row < rast.rows(); row++) {
-      AccT cacc = racc;
-      for(int col = 0; col < rast.cols(); col++) {
-        oct_img(row, col) = is_valid(*cacc) ? remove_mask(*cacc) : ::octave_NA;
-        cacc.next_col();
+    for (int plane = 0; plane < rast.planes(); plane++) {
+      AccT racc = pacc;
+      for(int row = 0; row < rast.rows(); row++) {
+        AccT cacc = racc;
+        for(int col = 0; col < rast.cols(); col++) {
+          oct_img(row, col, plane) = is_valid(*cacc) ? remove_mask(*cacc) : ::octave_NA;
+          cacc.next_col();
+        }
+        racc.next_row();
       }
-      racc.next_row();
+      pacc.next_plane();
     }
 
     return oct_img;
@@ -215,19 +219,31 @@ struct ConversionHelper<T, typename boost::enable_if<boost::is_base_of<vw::Image
     VW_ASSERT(v.is_matrix_type(), BadCastErr() << "Not a matrix type");
     typedef vw::ImageView<vw::PixelMask<double> > RasterT;
 
-    ::Matrix oct_img = v.matrix_value();
-    RasterT rast(oct_img.cols(), oct_img.rows());
+    NDArray oct_img = v.array_value();
+    RasterT rast;
+  
+    
+    if (oct_img.dims().length() < 3) {
+      rast = RasterT(oct_img.cols(), oct_img.rows());
+    } else {
+      rast = RasterT(oct_img.cols(), oct_img.rows(), oct_img.dim3());
+    }
 
     typedef RasterT::pixel_accessor AccT;
-    AccT racc = rast.origin();
+    AccT pacc = rast.origin();
 
-    for(int row = 0; row < rast.rows(); row++) {
-      AccT cacc = racc;
-      for(int col = 0; col < rast.cols(); col++) {
-        *cacc = ::xisnan(oct_img(row, col)) ? vw::PixelMask<double>() : vw::PixelMask<double>(oct_img(row, col));
-        cacc.next_col();
+    for (int plane = 0; plane < rast.planes(); plane++) {
+      AccT racc = pacc;
+      for(int row = 0; row < rast.rows(); row++) {
+        AccT cacc = racc;
+        for(int col = 0; col < rast.cols(); col++) {
+          *cacc = ::xisnan(oct_img(row, col, plane)) 
+            ? vw::PixelMask<double>() : vw::PixelMask<double>(oct_img(row, col, plane));
+          cacc.next_col();
+        }
+        racc.next_row();
       }
-      racc.next_row();
+      pacc.next_plane();
     }
 
     return rast;
