@@ -76,7 +76,11 @@ octave_value mvp_wrapper<IMPLT>(IMPLT *impl, std::string const& func, octave_val
 
 #define END_MVP_WRAPPER() \
   } catch (vw::Exception &e) { \
-    error("calling function %s: %s", func.c_str(), e.what()); \
+    if (impl) { \
+      error("calling function %s: %s", func.c_str(), e.what()); \
+    } else { \
+      error("calling constructor: %s", e.what()); \
+    } \
     return octave_value(); \
   } \
   if (impl) { \
