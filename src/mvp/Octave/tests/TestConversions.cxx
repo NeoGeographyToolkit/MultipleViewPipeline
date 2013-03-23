@@ -317,3 +317,7 @@ TEST(from_octave, protobuffer) {
   EXPECT_EQ(oct_map.getfield("message_field").scalar_map_value().getfield("field").int_value(),
             message.message_field().field());
 }
+
+TEST(from_octave, protobuffer_throw) {
+  EXPECT_THROW(from_octave<DummyProto>(octave_value(5)), BadCastErr);
+}

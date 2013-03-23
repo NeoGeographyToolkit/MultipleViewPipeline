@@ -361,6 +361,7 @@ struct ConversionHelper<T, typename boost::enable_if<boost::is_base_of<google::p
   }
 
   static T from_octave(octave_value const& v) {
+    VW_ASSERT(v.is_map(), BadCastErr() << "Not a map type");
     T result;
     from_octave_helper(v, &result);
     return result;
