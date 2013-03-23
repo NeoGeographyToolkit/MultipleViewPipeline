@@ -89,17 +89,6 @@ struct ConversionHelper<void> {
   static void from_octave(octave_value const& v) {}
 };
 
-/// Enum <-> Octave
-template <class T>
-struct ConversionHelper<T, typename boost::enable_if<boost::is_enum<T> >::type> {
-  static octave_value to_octave(T const& v) {
-    return octave_value(static_cast<int>(v));
-  }
-  static T from_octave(octave_value const& v) {
-    return static_cast<T>(v.int_value());
-  }
-};
-
 /// String <-> Octave
 template <class T>
 struct ConversionHelper<T, typename boost::enable_if<boost::is_same<T, std::string> >::type > {
@@ -112,15 +101,38 @@ struct ConversionHelper<T, typename boost::enable_if<boost::is_same<T, std::stri
   }
 };
 
-/// Number <-> Octave
+/// Floating point <-> Octave
 template <class T>
-struct ConversionHelper<T, typename boost::enable_if<boost::is_arithmetic<T> >::type> {
+struct ConversionHelper<T, typename boost::enable_if<boost::is_floating_point<T> >::type> {
   static octave_value to_octave(T const& v) {
     return double(v);
   }
   static T from_octave(octave_value const& v) {
     VW_ASSERT(v.is_scalar_type(), BadCastErr() << "Not a scalar type");
     return T(v.double_value());
+  }
+};
+
+/// Integral <-> Octave
+template <class T>
+struct ConversionHelper<T, typename boost::enable_if<boost::is_integral<T> >::type> {
+  static octave_value to_octave(T const& v) {
+    return double(v);
+  }
+  static T from_octave(octave_value const& v) {
+    VW_ASSERT(v.is_scalar_type(), BadCastErr() << "Not a scalar type");
+    return T(round(v.double_value()));
+  }
+};
+
+/// Enum <-> Octave
+template <class T>
+struct ConversionHelper<T, typename boost::enable_if<boost::is_enum<T> >::type> {
+  static octave_value to_octave(T const& v) {
+    return octave_value(static_cast<int>(v));
+  }
+  static T from_octave(octave_value const& v) {
+    return static_cast<T>(ConversionHelper<int>::from_octave(v));
   }
 };
 

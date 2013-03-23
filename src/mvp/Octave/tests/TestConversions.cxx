@@ -46,16 +46,34 @@ TEST(from_octave, stdvector) {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
-TEST(to_octave, scalar) {
+TEST(to_octave, integral) {
   EXPECT_TRUE((to_octave(5) == octave_value(5)).bool_value());
 }
 
-TEST(from_octave, scalar) {
+TEST(from_octave, integral) {
   EXPECT_EQ(from_octave<int>(octave_value(5)), 5);
 }
 
-TEST(from_octave, scalar_throws) {
+TEST(from_octave, integral_rounds) {
+  EXPECT_EQ(from_octave<int>(octave_value(5.6)), 6);
+}
+
+TEST(from_octave, integral_throws) {
   EXPECT_THROW(from_octave<int>(octave_map()), BadCastErr);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+TEST(to_octave, floating_point) {
+  EXPECT_TRUE((to_octave(5.5) == octave_value(5.5)).bool_value());
+}
+
+TEST(from_octave, floating_point) {
+  EXPECT_EQ(from_octave<double>(octave_value(5.5)), 5.5);
+}
+
+TEST(from_octave, floating_point_throws) {
+  EXPECT_THROW(from_octave<double>(octave_map()), BadCastErr);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -74,7 +92,6 @@ TEST(from_octave, string_throws) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
-
 
 TEST(to_octave, vector) {
   vw::Vector3 vw_vect(10, 20, 30);
@@ -285,11 +302,11 @@ TEST(to_octave, protobuffer) {
 
   EXPECT_EQ(oct_map.getfield("double_field").double_value(), message.double_field());
   EXPECT_EQ(oct_map.getfield("float_field").float_value(), message.float_field());
-  EXPECT_EQ(oct_map.getfield("int32_field").int_value(), message.int32_field());
+  EXPECT_EQ(oct_map.getfield("int32_field").double_value(), message.int32_field());
   EXPECT_EQ(oct_map.getfield("bool_field").bool_value(), message.bool_field());
   EXPECT_EQ(oct_map.getfield("string_field").string_value(), message.string_field());
-  EXPECT_EQ(oct_map.getfield("empty_field").int_value(), message.empty_field());
-  EXPECT_EQ(oct_map.getfield("message_field").scalar_map_value().getfield("field").int_value(),
+  EXPECT_EQ(oct_map.getfield("empty_field").double_value(), message.empty_field());
+  EXPECT_EQ(oct_map.getfield("message_field").scalar_map_value().getfield("field").double_value(),
             message.message_field().field());
 }
 
@@ -311,10 +328,10 @@ TEST(from_octave, protobuffer) {
 
   EXPECT_EQ(oct_map.getfield("double_field").double_value(), message.double_field());
   EXPECT_EQ(oct_map.getfield("float_field").float_value(), message.float_field());
-  EXPECT_EQ(oct_map.getfield("int32_field").int_value(), message.int32_field());
+  EXPECT_EQ(oct_map.getfield("int32_field").double_value(), message.int32_field());
   EXPECT_EQ(oct_map.getfield("bool_field").bool_value(), message.bool_field());
   EXPECT_EQ(oct_map.getfield("string_field").string_value(), message.string_field());
-  EXPECT_EQ(oct_map.getfield("message_field").scalar_map_value().getfield("field").int_value(),
+  EXPECT_EQ(oct_map.getfield("message_field").scalar_map_value().getfield("field").double_value(),
             message.message_field().field());
 }
 
