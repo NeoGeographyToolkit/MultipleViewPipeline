@@ -15,6 +15,37 @@ using namespace vw;
 using namespace vw::test;
 using namespace std;
 
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+TEST(to_octave, stdvector) {
+  double data[] = {1.0, 2.0, 3.0, 4.0};
+  vector<double> v(data, data + 4);
+
+  Cell oct_cell = to_octave(v).cell_value();
+
+  for (unsigned i = 0; i < v.size(); i++) {
+    EXPECT_EQ(v[i], oct_cell(i).double_value());
+  }
+}
+
+TEST(from_octave, stdvector) {
+  octave_value_list data;
+  data.append(1.0);
+  data.append(2.0);
+  data.append(3.0);
+  data.append(4.0);
+
+  Cell oct_cell(data);
+
+  vector<double> v(from_octave<vector<double> >(oct_cell));
+
+  for (int i = 0; i < oct_cell.numel(); i++) {
+    EXPECT_EQ(v[i], oct_cell(i).double_value());
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+
 TEST(to_octave, scalar) {
   EXPECT_TRUE((to_octave(5) == octave_value(5)).bool_value());
 }

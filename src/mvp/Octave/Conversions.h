@@ -57,6 +57,32 @@ T from_octave(octave_value const& v) {
 
 /// Specializations...
 
+/// std::vector <-> Octave
+template <class T>
+struct ConversionHelper<std::vector<T> > {
+  static octave_value to_octave(std::vector<T> const& v) {
+    octave_value_list result;
+
+    for (unsigned i = 0; i < v.size(); i++) {
+      result.append(ConversionHelper<T>::to_octave(v[i]));
+    }
+
+    return octave_value(Cell(result));
+  }
+  static std::vector<T> from_octave(octave_value const& v) {
+    VW_ASSERT(v.is_cell(), BadCastErr() << "Not a cell array");
+    Cell oct_cell = v.cell_value();
+
+    std::vector<T> result(oct_cell.numel());
+
+    for (int i = 0; i < oct_cell.numel(); i++) {
+      result[i] = ConversionHelper<T>::from_octave(oct_cell(i));
+    }
+
+    return result;
+  }
+};
+
 /// allow void to_octave for OctaveWrappers
 template <>
 struct ConversionHelper<void> {
