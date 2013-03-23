@@ -60,6 +60,22 @@ TEST(from_octave, scalar_throws) {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
+TEST(to_octave, string) {
+  // Can't figure out a concise way to determine entire equality, so just check first letter
+  EXPECT_TRUE((to_octave(std::string("Hello")) == octave_value("Hello")).matrix_value()(0));
+}
+
+TEST(from_octave, string) {
+  EXPECT_EQ(from_octave<string>(octave_value("Hello")), string("Hello"));
+}
+
+TEST(from_octave, string_throws) {
+  EXPECT_THROW(from_octave<string>(octave_map()), BadCastErr);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+
 TEST(to_octave, vector) {
   vw::Vector3 vw_vect(10, 20, 30);
   ColumnVector oct_vect(to_octave(vw_vect).column_vector_value());

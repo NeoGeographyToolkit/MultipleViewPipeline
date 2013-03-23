@@ -107,6 +107,7 @@ struct ConversionHelper<T, typename boost::enable_if<boost::is_same<T, std::stri
     return octave_value(v);
   }
   static T from_octave(octave_value const& v) {
+    VW_ASSERT(v.is_string(), BadCastErr() << "Not a string type");
     return v.string_value();
   }
 };
