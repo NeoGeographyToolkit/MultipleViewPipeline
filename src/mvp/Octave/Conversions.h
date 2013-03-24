@@ -26,7 +26,7 @@ namespace octave {
 
 VW_DEFINE_EXCEPTION(BadCastErr, vw::Exception);
 
-template <class T, class Enable=void>
+template <class T, class Enable=void, class Disable=void>
 struct ConversionHelper {
   static octave_value to_octave(T const& v) {
     boost::shared_ptr<octave_mvpclass_base> ptr(new octave_mvpclass_wrap<T>(v));
@@ -44,6 +44,12 @@ struct ConversionHelper {
   }
 };
 
+/// allow void to_octave for OctaveWrappers
+template <>
+struct ConversionHelper<void> {
+  static void from_octave(octave_value const& v) {}
+};
+
 template <class T>
 octave_value to_octave(T const& v) {
   return ConversionHelper<T>::to_octave(v);
@@ -57,36 +63,52 @@ T from_octave(octave_value const& v) {
 
 /// Specializations...
 
-/// std::vector <-> Octave
+/// Floating point <-> Octave
 template <class T>
-struct ConversionHelper<std::vector<T> > {
-  static octave_value to_octave(std::vector<T> const& v) {
-    octave_value_list result;
-
-    for (unsigned i = 0; i < v.size(); i++) {
-      result.append(ConversionHelper<T>::to_octave(v[i]));
-    }
-
-    return octave_value(Cell(result));
+struct ConversionHelper<T, typename boost::enable_if<boost::is_floating_point<T> >::type> {
+  static octave_value to_octave(T const& v) {
+    return v;
   }
-  static std::vector<T> from_octave(octave_value const& v) {
-    VW_ASSERT(v.is_cell(), BadCastErr() << "Not a cell array");
-    Cell oct_cell = v.cell_value();
-
-    std::vector<T> result(oct_cell.numel());
-
-    for (int i = 0; i < oct_cell.numel(); i++) {
-      result[i] = ConversionHelper<T>::from_octave(oct_cell(i));
-    }
-
-    return result;
+  static T from_octave(octave_value const& v) {
+    VW_ASSERT(v.is_scalar_type(), BadCastErr() << "Not a scalar type");
+    return octave_value_extract<T>(v);
   }
 };
 
-/// allow void to_octave for OctaveWrappers
+/// Integral <-> Octave
+template <class T>
+struct ConversionHelper<T, typename boost::enable_if<boost::is_integral<T> >::type,
+                           typename boost::disable_if<boost::is_same<T, bool> >::type> {
+  static octave_value to_octave(T const& v) {
+    return octave_int<T>(v);
+  }
+  static T from_octave(octave_value const& v) {
+    VW_ASSERT(v.is_scalar_type(), BadCastErr() << "Not a scalar type");
+    return octave_value_extract<octave_int<T> >(v);
+  }
+};
+
+/// bool <-> Octave
 template <>
-struct ConversionHelper<void> {
-  static void from_octave(octave_value const& v) {}
+struct ConversionHelper<bool> {
+  static octave_value to_octave(bool const& v) {
+    return v;
+  }
+  static bool from_octave(octave_value const& v) {
+    VW_ASSERT(v.is_scalar_type(), BadCastErr() << "Not a scalar type");
+    return octave_value_extract<bool>(v);
+  }
+};
+
+/// Enum <-> Octave
+template <class T>
+struct ConversionHelper<T, typename boost::enable_if<boost::is_enum<T> >::type> {
+  static octave_value to_octave(T const& v) {
+    return octave_value(ConversionHelper<int>::to_octave(static_cast<int>(v)));
+  }
+  static T from_octave(octave_value const& v) {
+    return static_cast<T>(ConversionHelper<int>::from_octave(v));
+  }
 };
 
 /// String <-> Octave
@@ -98,41 +120,6 @@ struct ConversionHelper<T, typename boost::enable_if<boost::is_same<T, std::stri
   static T from_octave(octave_value const& v) {
     VW_ASSERT(v.is_string(), BadCastErr() << "Not a string type");
     return v.string_value();
-  }
-};
-
-/// Floating point <-> Octave
-template <class T>
-struct ConversionHelper<T, typename boost::enable_if<boost::is_floating_point<T> >::type> {
-  static octave_value to_octave(T const& v) {
-    return double(v);
-  }
-  static T from_octave(octave_value const& v) {
-    VW_ASSERT(v.is_scalar_type(), BadCastErr() << "Not a scalar type");
-    return T(v.double_value());
-  }
-};
-
-/// Integral <-> Octave
-template <class T>
-struct ConversionHelper<T, typename boost::enable_if<boost::is_integral<T> >::type> {
-  static octave_value to_octave(T const& v) {
-    return double(v);
-  }
-  static T from_octave(octave_value const& v) {
-    VW_ASSERT(v.is_scalar_type(), BadCastErr() << "Not a scalar type");
-    return T(round(v.double_value()));
-  }
-};
-
-/// Enum <-> Octave
-template <class T>
-struct ConversionHelper<T, typename boost::enable_if<boost::is_enum<T> >::type> {
-  static octave_value to_octave(T const& v) {
-    return octave_value(static_cast<int>(v));
-  }
-  static T from_octave(octave_value const& v) {
-    return static_cast<T>(ConversionHelper<int>::from_octave(v));
   }
 };
 
@@ -286,6 +273,32 @@ struct ConversionHelper<T, typename boost::enable_if<boost::is_base_of<vw::Image
     }
 
     return rast;
+  }
+};
+
+/// std::vector <-> Octave
+template <class T>
+struct ConversionHelper<std::vector<T> > {
+  static octave_value to_octave(std::vector<T> const& v) {
+    octave_value_list result;
+
+    for (unsigned i = 0; i < v.size(); i++) {
+      result.append(ConversionHelper<T>::to_octave(v[i]));
+    }
+
+    return octave_value(Cell(result));
+  }
+  static std::vector<T> from_octave(octave_value const& v) {
+    VW_ASSERT(v.is_cell(), BadCastErr() << "Not a cell array");
+    Cell oct_cell = v.cell_value();
+
+    std::vector<T> result(oct_cell.numel());
+
+    for (int i = 0; i < oct_cell.numel(); i++) {
+      result[i] = ConversionHelper<T>::from_octave(oct_cell(i));
+    }
+
+    return result;
   }
 };
 
