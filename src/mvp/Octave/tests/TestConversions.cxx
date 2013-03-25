@@ -239,13 +239,14 @@ TEST(from_octave, matrix_throws) {
 } 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
-/*
+
 TEST(to_octave, imageview) {
   boost::rand48 gen(10);
 
   ImageView<float32> vw_img(uniform_noise_view(gen, 20, 10, 5));
+  EXPECT_TRUE(to_octave(vw_img).is_float_type());
   
-  NDArray oct_img(to_octave(vw_img).array_value());
+  FloatNDArray oct_img(to_octave(vw_img).float_array_value());
 
   for (int plane = 0; plane < vw_img.planes(); plane++) {
     for (int col = 0; col < vw_img.cols(); col++) {
@@ -256,14 +257,25 @@ TEST(to_octave, imageview) {
   }
 }
 
+TEST(to_octave, imageview_uint8) {
+  EXPECT_TRUE(to_octave(ImageView<uint8>()).is_uint8_type());
+}
+
+TEST(to_octave, imageview_multichannelplane) {
+  ImageView<PixelMask<float32> > vw_img(20, 10, 5);
+  EXPECT_THROW(to_octave(vw_img), BadCastErr);
+}
+
 TEST(to_octave, imageview_mask) {
   ImageView<PixelMask<float32> > vw_img(20, 10);
-  
-  ::Matrix oct_img(to_octave(vw_img).matrix_value());
- 
+  FloatNDArray oct_img(to_octave(vw_img).float_array_value());
+
+  EXPECT_EQ(oct_img.dim3(), 2);
+
   for (int col = 0; col < vw_img.cols(); col++) {
     for (int row = 0; row < vw_img.rows(); row++) {
-      EXPECT_TRUE(::xisnan(oct_img(row, col)));
+      EXPECT_EQ(vw_img(col, row).child(), oct_img(row, col, 0));
+      EXPECT_FALSE(oct_img(row, col, 1));
     }
   }
 }
@@ -274,17 +286,13 @@ TEST(to_octave, imageview_mask2) {
   ImageView<PixelMask<float32> > vw_img(uniform_noise_view(gen, 10, 10));
   vw_img(5, 5).invalidate();
 
-  ::Matrix oct_img(to_octave(vw_img).matrix_value());
+  FloatNDArray oct_img(to_octave(vw_img).float_array_value());
 
   ImageView<PixelMask<float32> > vw_img2(from_octave<ImageView<PixelMask<float32> > >(oct_img));
 
   for (int col = 0; col < vw_img.cols(); col++) {
     for (int row = 0; row < vw_img.rows(); row++) {
-      if (is_valid(vw_img(col, row))) {
-        EXPECT_PIXEL_NEAR(vw_img(col, row), vw_img2(col, row), 1e-6);
-      } else {
-        EXPECT_FALSE(is_valid(vw_img2(col, row)));
-      }
+      EXPECT_PIXEL_EQ(vw_img(col, row), vw_img2(col, row));
     }
   }
 }
@@ -293,29 +301,13 @@ TEST(from_octave, imageview) {
   ::octave_rand::seed(10);
 
   NDArray oct_img(::octave_rand::nd_array(dim_vector(20, 10, 5)));
-  ImageView<float32> vw_img(from_octave<ImageView<float32> >(oct_img));
+  ImageView<double> vw_img(from_octave<ImageView<double> >(oct_img));
 
   for (int plane = 0; plane < vw_img.planes(); plane++) {
     for (int col = 0; col < vw_img.cols(); col++) {
       for (int row = 0; row < vw_img.rows(); row++) {
-        EXPECT_PIXEL_NEAR(vw_img(col, row, plane), oct_img(row, col, plane), 1e-6);
+        EXPECT_PIXEL_EQ(vw_img(col, row, plane), oct_img(row, col, plane));
       }
-    }
-  }
-}
-
-TEST(from_octave, imageview_mask) {
-  ::octave_rand::seed(10);
-
-  ::Matrix oct_img(::octave_rand::matrix(20, 10));
-  oct_img(0, 0) = ::octave_NA;
-
-  ImageView<PixelMask<float32> > vw_img = from_octave<ImageView<PixelMask<float32> > >(oct_img);
-
-  EXPECT_FALSE(is_valid(vw_img(0, 0)));
-  for (int col = 1; col < vw_img.cols(); col++) {
-    for (int row = 1; row < vw_img.rows(); row++) {
-      EXPECT_TRUE(is_valid(vw_img(col, row)));
     }
   }
 }
@@ -348,7 +340,7 @@ TEST(from_octave, stdvector) {
     EXPECT_EQ(v[i], oct_cell(i).double_value());
   }
 }
-
+/*
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
 TEST(to_octave, protobuffer) {

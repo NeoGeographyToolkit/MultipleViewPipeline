@@ -12,12 +12,11 @@
 #include <google/protobuf/message.h>
 #include <google/protobuf/descriptor.h>
 
-#include <octave/lo-ieee.h> // octave_NA
-
 #include <vw/Math/Vector.h>
 #include <vw/Math/Matrix.h>
 #include <vw/Math/Quaternion.h>
 #include <vw/Image/ImageView.h>
+#include <vw/Image/Manipulation.h>
 #include <vw/Image/PixelMask.h>
 
 #include <boost/preprocessor/seq/for_each.hpp>
@@ -219,64 +218,48 @@ struct ConversionHelper<T, typename boost::enable_if<boost::is_base_of<vw::math:
 /// vw::imageview <-> octave
 template <class T>
 struct ConversionHelper<T, typename boost::enable_if<boost::is_base_of<vw::ImageViewBase<T>, T> >::type> {
+  typedef typename vw::CompoundChannelType<typename T::pixel_type>::type VT;
+  typedef typename octave_array_type<VT>::type AT;
+  typedef typename octave_array_type<VT>::value_type AVT;
+  const static int num_channels = vw::CompoundNumChannels<typename T::pixel_type>::value;
+
   static octave_value to_octave(T const& v) {
-    typedef vw::ImageView<vw::PixelMask<double> > RasterT;
+    VW_ASSERT(num_channels == 1 || v.planes() == 1, 
+      BadCastErr() << "Cannot convert multi-channel-multi-plane image");
+
+    vw::ImageView<VT> vw_img;
 
     // Rasterize image before copying to octave
-    RasterT rast = v.impl();
-
-    NDArray oct_img(dim_vector(rast.rows(), rast.cols(), rast.planes()));
-
-    typedef RasterT::pixel_accessor AccT;
-    AccT pacc = rast.origin();
-
-    for (int plane = 0; plane < rast.planes(); plane++) {
-      AccT racc = pacc;
-      for(int row = 0; row < rast.rows(); row++) {
-        AccT cacc = racc;
-        for(int col = 0; col < rast.cols(); col++) {
-          oct_img(row, col, plane) = is_valid(*cacc) ? remove_mask(*cacc) : ::octave_NA;
-          cacc.next_col();
-        }
-        racc.next_row();
-      }
-      pacc.next_plane();
+    if (num_channels == 1) {
+      vw_img = vw::pixel_cast<VT>(v);
+    } else {
+      vw_img = vw::pixel_cast<VT>(vw::channels_to_planes(v));
     }
+
+    AT oct_img(dim_vector(vw_img.rows(), vw_img.cols(), vw_img.planes()));
+
+    vw::TransposeView<vw::ImageView<VT> > vw_img_trans(vw_img);
+    std::copy(vw_img_trans.begin(), vw_img_trans.end(), const_cast<AVT*>(oct_img.data()));
 
     return oct_img;
   }
+
   static T from_octave(octave_value const& v) {
     VW_ASSERT(v.is_matrix_type(), BadCastErr() << "Not a matrix type");
-    typedef vw::ImageView<vw::PixelMask<double> > RasterT;
 
-    NDArray oct_img = v.array_value();
-    RasterT rast;
-  
+    AT oct_img = octave_value_extract<AT>(v);
     
-    if (oct_img.dims().length() < 3) {
-      rast = RasterT(oct_img.cols(), oct_img.rows());
+    vw::ImageView<VT> vw_img(oct_img.cols(), oct_img.rows(),
+                             oct_img.dims().length() < 3 ? 1 : oct_img.dim3());
+
+    vw::TransposeView<vw::ImageView<VT> > vw_img_trans(vw_img);
+    std::copy(oct_img.data(), oct_img.data() + oct_img.numel(), vw_img_trans.begin());
+
+    if (num_channels == 1) {
+      return vw::pixel_cast<typename T::pixel_type>(vw_img);
     } else {
-      rast = RasterT(oct_img.cols(), oct_img.rows(), oct_img.dim3());
+      return vw::planes_to_channels<typename T::pixel_type>(vw_img);
     }
-
-    typedef RasterT::pixel_accessor AccT;
-    AccT pacc = rast.origin();
-
-    for (int plane = 0; plane < rast.planes(); plane++) {
-      AccT racc = pacc;
-      for(int row = 0; row < rast.rows(); row++) {
-        AccT cacc = racc;
-        for(int col = 0; col < rast.cols(); col++) {
-          *cacc = ::xisnan(oct_img(row, col, plane)) 
-            ? vw::PixelMask<double>() : vw::PixelMask<double>(oct_img(row, col, plane));
-          cacc.next_col();
-        }
-        racc.next_row();
-      }
-      pacc.next_plane();
-    }
-
-    return rast;
   }
 };
 
