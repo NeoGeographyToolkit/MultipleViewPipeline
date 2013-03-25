@@ -1,6 +1,7 @@
 mvp_module(NAME Octave
            DEPS mvpCore
                 mvpAlgorithm
+                mvpImage
                 ${OCTAVE_LIBRARIES}
            HDRS Main.h
                 oct-mvpclass.h
@@ -14,6 +15,7 @@ mvp_module(NAME Octave
                 wraps/Dummy.cc
                 wraps/Datum.cc
                 wraps/GeoReference.cc
+                wraps/OrbitalImageCollection.cc
            )
 
 add_octfile(init_mvp init_mvp.cc)

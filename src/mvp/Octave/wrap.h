@@ -36,6 +36,9 @@ namespace mvp {
     class Stepper;
     class Seeder;
   }
+  namespace image {
+    class OrbitalImageCollection;
+  }
 }
 
 namespace vw {
@@ -48,6 +51,7 @@ namespace vw {
 /// Wrapper declarations
 
 DECLARE_MVP_WRAPPER(mvp::algorithm::Dummy)
+DECLARE_MVP_WRAPPER(mvp::image::OrbitalImageCollection)
 DECLARE_MVP_WRAPPER(vw::cartography::Datum)
 DECLARE_MVP_WRAPPER(vw::cartography::GeoReference)
 
