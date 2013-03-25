@@ -32,6 +32,7 @@ struct ConversionHelper {
     boost::shared_ptr<octave_mvpclass_base> ptr(new octave_mvpclass_wrap<T>(v));
     return octave_value(new octave_mvpclass_ref(ptr));
   }
+
   static T from_octave(octave_value const& v) {
     octave_mvpclass_ref *ref = dynamic_cast<octave_mvpclass_ref*>(v.internal_rep());
     VW_ASSERT(ref, BadCastErr() << "Not an mvpclass");
@@ -69,6 +70,7 @@ struct ConversionHelper<T, typename boost::enable_if<boost::is_floating_point<T>
   static octave_value to_octave(T const& v) {
     return v;
   }
+
   static T from_octave(octave_value const& v) {
     VW_ASSERT(v.is_scalar_type(), BadCastErr() << "Not a scalar type");
     return octave_value_extract<T>(v);
@@ -82,6 +84,7 @@ struct ConversionHelper<T, typename boost::enable_if<boost::is_integral<T> >::ty
   static octave_value to_octave(T const& v) {
     return octave_int<T>(v);
   }
+
   static T from_octave(octave_value const& v) {
     VW_ASSERT(v.is_scalar_type(), BadCastErr() << "Not a scalar type");
     return octave_value_extract<octave_int<T> >(v);
@@ -94,6 +97,7 @@ struct ConversionHelper<bool> {
   static octave_value to_octave(bool const& v) {
     return v;
   }
+
   static bool from_octave(octave_value const& v) {
     VW_ASSERT(v.is_scalar_type(), BadCastErr() << "Not a scalar type");
     return octave_value_extract<bool>(v);
@@ -106,6 +110,7 @@ struct ConversionHelper<T, typename boost::enable_if<boost::is_enum<T> >::type> 
   static octave_value to_octave(T const& v) {
     return octave_value(ConversionHelper<int>::to_octave(static_cast<int>(v)));
   }
+
   static T from_octave(octave_value const& v) {
     return static_cast<T>(ConversionHelper<int>::from_octave(v));
   }
@@ -117,6 +122,7 @@ struct ConversionHelper<T, typename boost::enable_if<boost::is_same<T, std::stri
   static octave_value to_octave(T const& v) {
     return octave_value(v);
   }
+
   static T from_octave(octave_value const& v) {
     VW_ASSERT(v.is_string(), BadCastErr() << "Not a string type");
     return v.string_value();
@@ -131,11 +137,10 @@ struct ConversionHelper<T, typename boost::enable_if<boost::is_base_of<vw::math:
   typedef typename octave_array_type<VT>::type AT;
   typedef typename octave_array_type<VT>::value_type AVT;
 
-  static octave_value to_octave(T const& v) {
-    T vw_vect(v.impl());
+  static octave_value to_octave(T const& vw_vect) {
     AT oct_vect(dim_vector(vw_vect.size(), 1));
 
-    std::copy(v.begin(), v.end(), const_cast<AVT*>(oct_vect.data()));
+    std::copy(vw_vect.begin(), vw_vect.end(), const_cast<AVT*>(oct_vect.data()));
 
     return oct_vect;
   }
@@ -164,8 +169,7 @@ struct ConversionHelper<T, typename boost::enable_if<boost::is_base_of<vw::math:
   typedef typename T::value_type VT;
   typedef typename octave_array_type<VT>::type AT;
 
-  static octave_value to_octave(T const& v) {
-    T vw_quat(v.impl());
+  static octave_value to_octave(T const& vw_quat) {
     AT oct_vect(dim_vector(4, 1));
 
     for (unsigned i = 0; i < 4; i++) {
@@ -174,6 +178,7 @@ struct ConversionHelper<T, typename boost::enable_if<boost::is_base_of<vw::math:
 
     return oct_vect;
   }
+
   static T from_octave(octave_value const& v) {
     return T(ConversionHelper<vw::Vector<VT, 4> >::from_octave(v));
   }
@@ -187,7 +192,7 @@ struct ConversionHelper<T, typename boost::enable_if<boost::is_base_of<vw::math:
   typedef typename octave_array_type<VT>::value_type AVT;
 
   static octave_value to_octave(T const& v) {
-    T vw_mat(v.impl());
+    T vw_mat(v);
     AT oct_mat(dim_vector(vw_mat.rows(), vw_mat.cols()));
 
     vw::math::MatrixTranspose<T> vw_mat_trans(vw_mat);
@@ -195,6 +200,7 @@ struct ConversionHelper<T, typename boost::enable_if<boost::is_base_of<vw::math:
     
     return oct_mat;
   }
+  
   static T from_octave(octave_value const& v) {
     VW_ASSERT(v.is_matrix_type(), BadCastErr() << "Not a matrix type");
 
@@ -275,6 +281,7 @@ struct ConversionHelper<std::vector<T> > {
 
     return octave_value(Cell(result));
   }
+
   static std::vector<T> from_octave(octave_value const& v) {
     VW_ASSERT(v.is_cell(), BadCastErr() << "Not a cell array");
     Cell oct_cell = v.cell_value();
