@@ -111,14 +111,14 @@ struct mvp_wrapper_helper
   static octave_value wrap(ImplT *impl, 
                            R (ImplBaseT::*fcn)(BOOST_PP_ENUM_PARAMS(N, T)), 
                            octave_value_list const& args) {
-    VW_ASSERT(args.length() == 0, vw::LogicErr() << "Unexpected number of args");
+    VW_ASSERT(args.length() == N, vw::LogicErr() << "Unexpected number of args");
     return mvp::octave::to_octave((impl->*fcn)(BOOST_PP_ENUM(N, MVP_WRAPPER_args_helper2, ~)));
   }
   template <class ImplBaseT>
   static octave_value wrap(ImplT *impl, 
                            R (ImplBaseT::*fcn)(BOOST_PP_ENUM_PARAMS(N, T)) const,
                            octave_value_list const& args) {
-    VW_ASSERT(args.length() == 0, vw::LogicErr() << "Unexpected number of args");
+    VW_ASSERT(args.length() == N, vw::LogicErr() << "Unexpected number of args");
     return mvp::octave::to_octave((impl->*fcn)(BOOST_PP_ENUM(N, MVP_WRAPPER_args_helper2, ~)));
   }
 };
@@ -129,13 +129,13 @@ struct mvp_wrapper_helper<ImplT, void BOOST_PP_ENUM_TRAILING_PARAMS(N, T)> {
   static octave_value wrap(ImplT *impl,
                            void (ImplBaseT::*fcn)(BOOST_PP_ENUM_PARAMS(N, T)),
                            octave_value_list const& args) {
-    VW_ASSERT(args.length() == 0, vw::LogicErr() << "Unexpected number of args");
+    VW_ASSERT(args.length() == N, vw::LogicErr() << "Unexpected number of args");
     (impl->*fcn)(BOOST_PP_ENUM(N, MVP_WRAPPER_args_helper2, ~));
     return octave_value();
   }
   template <class ImplBaseT>
   static octave_value wrap(ImplT *impl, void (ImplT::*fcn)(BOOST_PP_ENUM_PARAMS(N, T)) const, octave_value_list const& args) {
-    VW_ASSERT(args.length() == 0, vw::LogicErr() << "Unexpected number of args");
+    VW_ASSERT(args.length() == N, vw::LogicErr() << "Unexpected number of args");
     (impl->*fcn)(BOOST_PP_ENUM(N, MVP_WRAPPER_args_helper2, ~));
     return octave_value();
   }
