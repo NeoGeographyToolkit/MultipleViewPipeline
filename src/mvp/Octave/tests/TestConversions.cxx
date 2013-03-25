@@ -340,7 +340,7 @@ TEST(from_octave, stdvector) {
     EXPECT_EQ(v[i], oct_cell(i).double_value());
   }
 }
-/*
+
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
 TEST(to_octave, protobuffer) {
@@ -356,11 +356,11 @@ TEST(to_octave, protobuffer) {
 
   EXPECT_EQ(oct_map.getfield("double_field").double_value(), message.double_field());
   EXPECT_EQ(oct_map.getfield("float_field").float_value(), message.float_field());
-  EXPECT_EQ(oct_map.getfield("int32_field").double_value(), message.int32_field());
+  EXPECT_EQ(int(oct_map.getfield("int32_field").int32_scalar_value()), message.int32_field());
   EXPECT_EQ(oct_map.getfield("bool_field").bool_value(), message.bool_field());
   EXPECT_EQ(oct_map.getfield("string_field").string_value(), message.string_field());
-  EXPECT_EQ(oct_map.getfield("empty_field").double_value(), message.empty_field());
-  EXPECT_EQ(oct_map.getfield("message_field").scalar_map_value().getfield("field").double_value(),
+  EXPECT_EQ(int(oct_map.getfield("empty_field").int32_scalar_value()), message.empty_field());
+  EXPECT_EQ(int(oct_map.getfield("message_field").scalar_map_value().getfield("field").int32_scalar_value()),
             message.message_field().field());
 }
 
@@ -382,15 +382,13 @@ TEST(from_octave, protobuffer) {
 
   EXPECT_EQ(oct_map.getfield("double_field").double_value(), message.double_field());
   EXPECT_EQ(oct_map.getfield("float_field").float_value(), message.float_field());
-  EXPECT_EQ(oct_map.getfield("int32_field").double_value(), message.int32_field());
+  EXPECT_EQ(int(oct_map.getfield("int32_field").int32_scalar_value()), message.int32_field());
   EXPECT_EQ(oct_map.getfield("bool_field").bool_value(), message.bool_field());
   EXPECT_EQ(oct_map.getfield("string_field").string_value(), message.string_field());
-  EXPECT_EQ(oct_map.getfield("message_field").scalar_map_value().getfield("field").double_value(),
+  EXPECT_EQ(int(oct_map.getfield("message_field").scalar_map_value().getfield("field").int32_scalar_value()),
             message.message_field().field());
 }
 
 TEST(from_octave, protobuffer_throw) {
   EXPECT_THROW(from_octave<DummyProto>(octave_value(5)), BadCastErr);
 }
-
-*/
