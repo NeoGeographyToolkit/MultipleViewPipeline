@@ -1,5 +1,6 @@
 mvp_module(NAME Algorithm
            DEPS mvpCore
+                mvpImage
            HDRS Dummy.h
            SRCS Dummy.cc
                 Dummy/DerivedDummy.cc
