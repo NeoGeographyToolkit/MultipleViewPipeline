@@ -14,6 +14,9 @@ TEST(Session, session_desc) {
   SessionDesc session_desc;
   load_settings(&session_desc, SrcName("test.mvp"));
 
+  session_desc.mutable_input()->set_image_pattern(DataName("synth\\.\\d*\\.tif"));
+  session_desc.mutable_input()->set_camera_pattern(DataName("synth\\.\\d*\\.pinhole"));
+
   Session session(session_desc);
 
   EXPECT_TRUE(session.has_next_job());

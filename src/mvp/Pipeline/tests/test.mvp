@@ -1,5 +1,6 @@
 input {
-  image_pattern: ".\\.tif"
+  image_pattern: ""
+  camera_pattern: ""
 }
 
 render {
@@ -9,7 +10,6 @@ render {
 
 output {
   result: "zmq://localhost:5566/result.plate"
-  internal_result: "zmq://localhost:5566/internal_result.plate"
   datum: "D_MOON"
 }
 
