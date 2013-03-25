@@ -7,6 +7,7 @@
 #define __MVP_OCTAVE_OCTCAST_H__
 
 #include <mvp/Octave/oct-mvpclass.h>
+#include <mvp/Octave/oct-typetraits.h>
 
 #include <google/protobuf/message.h>
 #include <google/protobuf/descriptor.h>
@@ -123,24 +124,28 @@ struct ConversionHelper<T, typename boost::enable_if<boost::is_same<T, std::stri
   }
 };
 
+
 /// vw::Vector <-> Octave
 template <class T>
 struct ConversionHelper<T, typename boost::enable_if<boost::is_base_of<vw::math::VectorBase<T>, T> >::type> {
+  typedef typename T::value_type VT;
+  typedef typename octave_array_type<VT>::type AT;
+  typedef typename octave_array_type<VT>::value_type AVT;
+
   static octave_value to_octave(T const& v) {
     T vw_vect(v.impl());
-    ColumnVector oct_vect(vw_vect.size());
+    AT oct_vect(dim_vector(vw_vect.size(), 1));
 
-    for (unsigned i = 0; i < vw_vect.size(); i++) {
-      oct_vect(i) = vw_vect[i];
-    }
+    std::copy(v.begin(), v.end(), const_cast<AVT*>(oct_vect.data()));
 
     return oct_vect;
   }
+
   static T from_octave(octave_value const& v) {
     VW_ASSERT(v.is_matrix_type(), BadCastErr() << "Not a matrix type");
 
     T vw_vect;
-    ColumnVector oct_vect = v.column_vector_value();
+    AT oct_vect = octave_value_extract<AT>(v);
 
     if (vw_vect.size() == 0) {
       vw_vect = T(oct_vect.length());
@@ -148,9 +153,7 @@ struct ConversionHelper<T, typename boost::enable_if<boost::is_base_of<vw::math:
 
     VW_ASSERT(vw_vect.size() == unsigned(oct_vect.length()), BadCastErr() << "Bad vector size");
 
-    for (int i = 0; i < oct_vect.length(); i++) {
-      vw_vect[i] = oct_vect(i);
-    }
+    std::copy(oct_vect.data(), oct_vect.data() + oct_vect.numel(), vw_vect.begin());
 
     return vw_vect;
   }
@@ -159,9 +162,12 @@ struct ConversionHelper<T, typename boost::enable_if<boost::is_base_of<vw::math:
 /// vw::Quat <-> octave
 template <class T>
 struct ConversionHelper<T, typename boost::enable_if<boost::is_base_of<vw::math::QuaternionBase<T>, T> >::type> {
+  typedef typename T::value_type VT;
+  typedef typename octave_array_type<VT>::type AT;
+
   static octave_value to_octave(T const& v) {
     T vw_quat(v.impl());
-    ColumnVector oct_vect(4);
+    AT oct_vect(dim_vector(4, 1));
 
     for (unsigned i = 0; i < 4; i++) {
       oct_vect(i) = vw_quat[i];
@@ -170,7 +176,7 @@ struct ConversionHelper<T, typename boost::enable_if<boost::is_base_of<vw::math:
     return oct_vect;
   }
   static T from_octave(octave_value const& v) {
-    return T(ConversionHelper<vw::Vector<double, 4> >::from_octave(v));
+    return T(ConversionHelper<vw::Vector<VT, 4> >::from_octave(v));
   }
 };
 

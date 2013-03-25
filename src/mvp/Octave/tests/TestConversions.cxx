@@ -83,9 +83,24 @@ TEST(from_octave, string_throws) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
-/*
+
 TEST(to_octave, vector) {
   vw::Vector3 vw_vect(10, 20, 30);
+  EXPECT_TRUE(to_octave(vw_vect).is_real_matrix());
+  EXPECT_TRUE(to_octave(vw_vect).is_double_type());
+  
+  ColumnVector oct_vect(to_octave(vw_vect).column_vector_value());
+
+  for (unsigned i = 0; i < vw_vect.size(); i++) {
+    EXPECT_EQ(vw_vect[i], oct_vect(i));
+  }
+}
+
+TEST(to_octave, vectorint) {
+  vw::Vector3i vw_vect(10, 20, 30);
+  EXPECT_TRUE(to_octave(vw_vect).is_int32_type());
+  EXPECT_FALSE(to_octave(vw_vect).is_real_matrix());
+  
   ColumnVector oct_vect(to_octave(vw_vect).column_vector_value());
 
   for (unsigned i = 0; i < vw_vect.size(); i++) {
@@ -124,6 +139,17 @@ TEST(from_octave, vector_throws) {
 
 TEST(to_octave, quaternion) {
   vw::Quat vw_quat(10, 20, 30, 40);
+  EXPECT_TRUE(to_octave(vw_quat).is_double_type());
+  ColumnVector oct_quat(to_octave(vw_quat).column_vector_value());
+
+  for (unsigned i = 0; i < 4; i++) {
+    EXPECT_EQ(vw_quat[i], oct_quat(i));
+  }
+}
+
+TEST(to_octave, quaternion_float) {
+  vw::Quatf vw_quat(10, 20, 30, 40);
+  EXPECT_TRUE(to_octave(vw_quat).is_single_type());
   ColumnVector oct_quat(to_octave(vw_quat).column_vector_value());
 
   for (unsigned i = 0; i < 4; i++) {
@@ -148,7 +174,7 @@ TEST(from_octave, quaternion_throws) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
-
+/*
 TEST(to_octave, matrix) {
   vw::Matrix<double, 2, 3> vw_mat;
   vw_mat(0, 0) = 10; vw_mat(0, 1) = 20; vw_mat(0, 2) = 30;
