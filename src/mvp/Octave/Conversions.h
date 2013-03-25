@@ -237,7 +237,7 @@ struct ConversionHelper<T, typename boost::enable_if<boost::is_base_of<vw::Image
 
     // Rasterize image before copying to octave
     if (num_channels == 1) {
-      vw_img = vw::pixel_cast<VT>(v);
+      vw_img = vw::pixel_cast<VT>(select_channel(v, 0));
     } else {
       vw_img = vw::pixel_cast<VT>(vw::channels_to_planes(v));
     }
