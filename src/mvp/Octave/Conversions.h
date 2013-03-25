@@ -183,23 +183,24 @@ struct ConversionHelper<T, typename boost::enable_if<boost::is_base_of<vw::math:
 /// vw::Matrix <-> Octave
 template <class T>
 struct ConversionHelper<T, typename boost::enable_if<boost::is_base_of<vw::math::MatrixBase<T>, T> >::type> {
+  typedef typename T::value_type VT;
+  typedef typename octave_array_type<VT>::type AT;
+  typedef typename octave_array_type<VT>::value_type AVT;
+
   static octave_value to_octave(T const& v) {
     T vw_mat(v.impl());
-    ::Matrix oct_mat(vw_mat.rows(), vw_mat.cols());
-    
-    for (unsigned col = 0; col < vw_mat.cols(); col++) {
-      for (unsigned row = 0; row < vw_mat.rows(); row++) {
-        oct_mat(row, col) = vw_mat(row, col);
-      }
-    }
+    AT oct_mat(dim_vector(vw_mat.rows(), vw_mat.cols()));
 
+    vw::math::MatrixTranspose<T> vw_mat_trans(vw_mat);
+    std::copy(vw_mat_trans.begin(), vw_mat_trans.end(), const_cast<AVT*>(oct_mat.data()));
+    
     return oct_mat;
   }
   static T from_octave(octave_value const& v) {
     VW_ASSERT(v.is_matrix_type(), BadCastErr() << "Not a matrix type");
 
     T vw_mat;
-    ::Matrix oct_mat = v.matrix_value();
+    AT oct_mat = octave_value_extract<AT>(v);
 
     if (vw_mat.rows() == 0 || vw_mat.cols() == 0) {
       vw_mat = T(oct_mat.rows(), oct_mat.cols());
@@ -208,11 +209,8 @@ struct ConversionHelper<T, typename boost::enable_if<boost::is_base_of<vw::math:
     VW_ASSERT(vw_mat.cols() == unsigned(oct_mat.cols()), BadCastErr() << "Bad matrix size");
     VW_ASSERT(vw_mat.rows() == unsigned(oct_mat.rows()), BadCastErr() << "Bad matrix size");
 
-    for (unsigned col = 0; col < vw_mat.cols(); col++) {
-      for (unsigned row = 0; row < vw_mat.rows(); row++) {
-        vw_mat(row, col) = oct_mat(row, col);
-      }
-    }
+    vw::math::MatrixTranspose<T> vw_mat_trans(vw_mat);
+    std::copy(oct_mat.data(), oct_mat.data() + oct_mat.numel(), vw_mat_trans.begin());
 
     return vw_mat;
   }

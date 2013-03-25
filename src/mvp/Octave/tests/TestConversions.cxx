@@ -174,11 +174,27 @@ TEST(from_octave, quaternion_throws) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
-/*
+
 TEST(to_octave, matrix) {
   vw::Matrix<double, 2, 3> vw_mat;
   vw_mat(0, 0) = 10; vw_mat(0, 1) = 20; vw_mat(0, 2) = 30;
   vw_mat(1, 0) = 40; vw_mat(1, 1) = 30; vw_mat(1, 2) = 40;
+  EXPECT_TRUE(to_octave(vw_mat).is_double_type());
+
+  ::Matrix oct_mat(to_octave(vw_mat).matrix_value());
+
+  for (unsigned r = 0; r < vw_mat.rows(); r++) {
+    for (unsigned c = 0; c < vw_mat.cols(); c++) {
+      EXPECT_EQ(vw_mat(r, c), oct_mat(r, c));
+    }
+  }
+}
+
+TEST(to_octave, matrix_int) {
+  vw::Matrix<int, 2, 3> vw_mat;
+  vw_mat(0, 0) = 10; vw_mat(0, 1) = 20; vw_mat(0, 2) = 30;
+  vw_mat(1, 0) = 40; vw_mat(1, 1) = 30; vw_mat(1, 2) = 40;
+  EXPECT_TRUE(to_octave(vw_mat).is_int32_type());
 
   ::Matrix oct_mat(to_octave(vw_mat).matrix_value());
 
@@ -223,7 +239,7 @@ TEST(from_octave, matrix_throws) {
 } 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
-
+/*
 TEST(to_octave, imageview) {
   boost::rand48 gen(10);
 
