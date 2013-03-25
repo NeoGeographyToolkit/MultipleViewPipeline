@@ -12,24 +12,11 @@
 namespace mvp {
 namespace image {
 
-static vw::ImageViewRef<OrbitalImagePixel> rsrc_helper(boost::shared_ptr<vw::DiskImageResource> rsrc) {
-  switch(rsrc->format().pixel_format) {
-    case vw::VW_PIXEL_GRAYA:
-      return vw::DiskImageView<OrbitalImagePixel>(rsrc);
-      break;
-    case vw::VW_PIXEL_GRAY:
-      return vw::pixel_cast<OrbitalImagePixel>(vw::DiskImageView<vw::PixelGray<vw::float32> >(rsrc));
-      break;
-    default:
-      vw::vw_throw(vw::ArgumentErr() << "Unsupported orbital image pixel format: " << vw::pixel_format_name(rsrc->format().pixel_format));
-  }
-}
-
 OrbitalImage::OrbitalImage(OrbitalImageDesc const& desc) {
   vw::BBox2i cropbox(desc.minx(), desc.miny(), desc.width(), desc.height());
 
-  boost::shared_ptr<vw::DiskImageResource> rsrc(vw::DiskImageResource::open(desc.image_path()));
-  m_image = vw::crop(rsrc_helper(rsrc), cropbox);
+  vw::DiskImageView<OrbitalImagePixel> rsrc(desc.image_path());
+  m_image = vw::crop(rsrc, cropbox);
 
   m_camera = vw::camera::crop(vw::camera::PinholeModel(desc.camera_path()), cropbox);
 }

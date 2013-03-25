@@ -12,7 +12,6 @@
 
 #include <vw/Image/ImageView.h>
 #include <vw/Image/PixelTypes.h>
-#include <vw/Image/PixelMask.h>
 
 #include <vw/Camera/CameraModel.h>
 
@@ -21,7 +20,7 @@
 namespace mvp {
 namespace image {
 
-typedef vw::PixelMask<vw::PixelGray<vw::float32> > OrbitalImagePixel;
+typedef vw::PixelGrayA<vw::float64> OrbitalImagePixel;
 
 class OrbitalImage {
   vw::ImageView<OrbitalImagePixel> m_image;

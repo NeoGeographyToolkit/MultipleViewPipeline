@@ -19,9 +19,8 @@ using namespace mvp::image;
 
 template <class Image1T, class Image2T>
 bool is_image_valid_eq(ImageViewBase<Image1T> const& img1, ImageViewBase<Image2T> const& img2, double tol) {
-  double diff = double(sum_of_channel_values(apply_mask(abs(img1.impl() - img2.impl()))));
-  int nvalid = sum_of_channel_values(apply_mask(copy_mask(constant_view<int>(1, img1.impl()), img1.impl() - img2.impl())));
-  return nvalid && diff < tol; 
+  double diff = sum_of_channel_values(abs(img1.impl() - img2.impl()));
+  return !is_transparent(img1) && !is_transparent(img2) && diff < tol; 
 }
 
 OrbitalImage synth_orbit(Vector3 const& camera_center, Vector3 const& axis_angle, 
@@ -31,7 +30,8 @@ OrbitalImage synth_orbit(Vector3 const& camera_center, Vector3 const& axis_angle
   PinholeModel camera(camera_center, axis_angle_to_matrix(axis_angle), 
                       focus.x(), focus.y(), size.x() / 2.0, size.y() / 2.0);
 
-  OrbitalImage orbital_image(gaussian_filter(uniform_noise_view(gen, size.x(), size.y()), 1.5), camera);
+  ImageView<OrbitalImagePixel> img = pixel_cast<OrbitalImagePixel>(gaussian_filter(uniform_noise_view(gen, size.x(), size.y()), 1.5));
+  OrbitalImage orbital_image(img, camera);
   return orbital_image; 
 }
 
