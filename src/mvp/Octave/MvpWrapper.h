@@ -94,6 +94,8 @@ octave_value mvp_wrapper<IMPLT>(IMPLT *impl, std::string const& func, octave_val
 
 #define MVP_WRAPPER_NO_ARGS
 
+#define EMIT_ALGORITHM_MVP_WRAPPER(T) ALGORITHM_OBJECT_##T(MVP_WRAPPER)
+
 #endif
 
 #else // BOOST_PP_IS_ITERATING

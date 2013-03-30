@@ -70,6 +70,8 @@ ImplT octave_wrapper<ImplT>(octave_value const& impl) { \
 } \
 REGISTER_OCTAVE_ALGORITHM_OBJECTS(OctaveWrapper)
 
+#define EMIT_ALGORITHM_OCTAVE_WRAPPER(T) ALGORITHM_OBJECT_##T(OCTAVE_WRAPPER)
+
 #endif
 
 #else // BOOST_PP_IS_ITERATING

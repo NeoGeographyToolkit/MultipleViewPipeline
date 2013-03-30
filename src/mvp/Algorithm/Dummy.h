@@ -7,7 +7,7 @@
 
 #include <vw/Math/Vector.h>
 
-#define EMIT_ALGORITHM_OBJECT_DUMMY(T) \
+#define ALGORITHM_OBJECT_Dummy(T) \
 BEGIN_##T(Dummy, mvp::algorithm::Dummy, (int)(int)(mvp::algorithm::DummySettings const&)) \
   T(void0, (void)) \
   T(void1, (void)(int)) \
@@ -21,6 +21,6 @@ BEGIN_##T(Dummy, mvp::algorithm::Dummy, (int)(int)(mvp::algorithm::DummySettings
   T(do_vector, (vw::Vector2)(vw::Vector2 const&)) \
 END_##T()
 
-EMIT_ALGORITHM_OBJECT_DUMMY(ALGORITHM_OBJECT)
+EMIT_ALGORITHM_OBJECT(Dummy)
 
 #endif

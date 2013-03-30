@@ -1,3 +1,3 @@
 #include <mvp/Algorithm/Dummy.h>
 
-ALGORITHM_OBJECT_CPP(Dummy)
+EMIT_ALGORITHM_OBJECT_CPP(Dummy)
