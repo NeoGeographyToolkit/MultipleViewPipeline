@@ -16,6 +16,7 @@ mvp_module(NAME Octave
                 wraps/Datum.cc
                 wraps/GeoReference.cc
                 wraps/OrbitalImageCollection.cc
+                wraps/AlgorithmVar.cc
            )
 
 add_octfile(init_mvp init_mvp.cc)

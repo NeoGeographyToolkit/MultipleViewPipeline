@@ -35,6 +35,7 @@ namespace mvp {
     class Dummy;
     class Stepper;
     class Seeder;
+    class AlgorithmVar;
   }
   namespace image {
     class OrbitalImageCollection;
@@ -51,10 +52,12 @@ namespace vw {
 /// Wrapper declarations
 
 DECLARE_MVP_WRAPPER(mvp::algorithm::Dummy)
+DECLARE_MVP_WRAPPER(mvp::algorithm::AlgorithmVar)
 DECLARE_MVP_WRAPPER(mvp::image::OrbitalImageCollection)
 DECLARE_MVP_WRAPPER(vw::cartography::Datum)
 DECLARE_MVP_WRAPPER(vw::cartography::GeoReference)
 
 DECLARE_OCTAVE_WRAPPER(mvp::algorithm::Dummy)
+DECLARE_OCTAVE_WRAPPER(mvp::algorithm::AlgorithmVar)
 
 #endif

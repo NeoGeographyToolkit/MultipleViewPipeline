@@ -4,6 +4,7 @@ mvp_module(NAME Algorithm
            HDRS Dummy.h
            SRCS Dummy.cc
                 Dummy/DerivedDummy.cc
+                AlgorithmVar.cc
            PROTOS DummySettings.proto)
 
 #if (BUILD_TESTS)
