@@ -17,9 +17,14 @@ message GlobalSettings {
     optional string impl_name = 1 [default="DefaultAlgorithmVar"];
     optional bool use_octave = 2 [default=true];
   }
+  message PixelResultSettings {
+    optional string impl_name = 1 [default="DefaultPixelResult"];
+    optional bool use_octave = 2 [default=true];
+  }
 
   required Ports ports = 1;
   required Timeouts timeouts = 2;
   required Render render = 3;
   required AlgorithmVarSettings algorithm_var_settings = 4;
+  required PixelResultSettings pixel_result_settings = 5;
 }

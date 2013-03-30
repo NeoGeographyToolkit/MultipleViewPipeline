@@ -5,6 +5,7 @@ mvp_module(NAME Algorithm
            SRCS Dummy.cc
                 Dummy/DerivedDummy.cc
                 AlgorithmVar.cc
+                PixelResult.cc
            PROTOS DummySettings.proto)
 
 #if (BUILD_TESTS)
