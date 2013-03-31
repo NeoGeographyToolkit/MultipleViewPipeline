@@ -8,6 +8,7 @@ mvp_module(NAME Algorithm
                 PixelResult.cc
                 Seed.cc
                 TileResult.cc
+                PatchBox.cc
            PROTOS DummySettings.proto)
 
 #if (BUILD_TESTS)

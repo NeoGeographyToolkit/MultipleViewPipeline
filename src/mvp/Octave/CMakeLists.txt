@@ -20,6 +20,7 @@ mvp_module(NAME Octave
                 wraps/PixelResult.cc
                 wraps/Seed.cc
                 wraps/TileResult.cc
+                wraps/PatchBox.cc
            )
 
 add_octfile(init_mvp init_mvp.cc)
