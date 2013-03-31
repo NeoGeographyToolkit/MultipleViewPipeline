@@ -13,6 +13,8 @@ namespace algorithm {
 typedef vw::Vector<double, 12> AlgorithmVarVector;
 }}
 
+ALGORITHM_SETTINGS_GLOBAL_DEFAULTER(AlgorithmVarSettings, algorithm_var_settings)
+
 #define ALGORITHM_OBJECT_AlgorithmVar(T) \
 BEGIN_##T(AlgorithmVar, mvp::algorithm::AlgorithmVar, \
           (mvp::algorithm::AlgorithmVarVector const&)(mvp::core::GlobalSettings::AlgorithmVarSettings const&)) \

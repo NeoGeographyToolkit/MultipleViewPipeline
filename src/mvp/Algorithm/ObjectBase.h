@@ -5,6 +5,8 @@
 
 #include <map>
 
+#include <mvp/Core/Settings.h>
+
 #include <boost/functional/factory.hpp>
 #include <boost/function.hpp>
 #include <boost/shared_ptr.hpp>
@@ -14,6 +16,7 @@
 #include <boost/preprocessor/repetition/enum_trailing_binary_params.hpp>
 #include <boost/preprocessor/repetition/enum_params_with_a_default.hpp>
 #include <boost/preprocessor/seq/seq.hpp>
+#include <boost/preprocessor/seq/reverse.hpp>
 #include <boost/preprocessor/seq/for_each_i.hpp>
 #include <boost/preprocessor/seq/enum.hpp>
 #include <boost/preprocessor/control/expr_if.hpp>
@@ -57,19 +60,36 @@ struct OctaveObjectRegistrar {
 #define REGISTER_OCTAVE_ALGORITHM_OBJECTS(Factory) \
   template <> mvp::algorithm::OctaveObjectRegistrar<Factory> mvp::algorithm::OctaveObjectRegistrar<Factory>::reg(1);
 
+template <class SetT>
+struct SettingsDefaulter : public SetT {
+  SettingsDefaulter() {}
+};
+
 }} // namespace mvp, algorithm
+
+#define ALGORITHM_SETTINGS_GLOBAL_DEFAULTER(SETT, MEM) \
+namespace mvp { \
+namespace algorithm { \
+template <> \
+inline mvp::algorithm::SettingsDefaulter<mvp::core::GlobalSettings::SETT>::SettingsDefaulter() : \
+  mvp::core::GlobalSettings::SETT(mvp_settings().MEM()) {} \
+}}
 
 #define ALGORITHM_OBJECT_arg_helper(r, x, n, t) BOOST_PP_COMMA_IF(n) t BOOST_PP_CAT(a, n)
 
-#define BEGIN_ALGORITHM_OBJECT(NAME, D, ARGS) \
+#define BEGIN_ALGORITHM_OBJECT_IMPL(NAME, D, ARGS, SET) \
 namespace mvp { \
 namespace algorithm { \
-struct NAME : public ObjectBase<NAME, BOOST_PP_SEQ_ENUM(ARGS)> { \
+class NAME : public ObjectBase<NAME, BOOST_PP_SEQ_ENUM(ARGS)> { \
+  typedef typename boost::remove_reference<typename boost::remove_cv<SET>::type>::type SetT; \
   protected: \
     NAME(); \
   public: \
-    NAME(BOOST_PP_SEQ_FOR_EACH_I(ALGORITHM_OBJECT_arg_helper, ~, ARGS)) : \
+    NAME(BOOST_PP_SEQ_FOR_EACH_I(ALGORITHM_OBJECT_arg_helper, ~, ARGS) = SettingsDefaulter<SetT>()) : \
       ObjectBase<NAME, BOOST_PP_SEQ_ENUM(ARGS)>(BOOST_PP_ENUM_PARAMS(BOOST_PP_SEQ_SIZE(ARGS), a)) {}
+
+#define BEGIN_ALGORITHM_OBJECT(NAME, D, ARGS) \
+  BEGIN_ALGORITHM_OBJECT_IMPL(NAME, D, ARGS, BOOST_PP_SEQ_HEAD(BOOST_PP_SEQ_REVERSE(ARGS)))
 
 #define ALGORITHM_OBJECT_helper(FUNC, RET, ARGS, CONST) \
   virtual RET FUNC(BOOST_PP_SEQ_FOR_EACH_I(ALGORITHM_OBJECT_arg_helper, ~, ARGS)) BOOST_PP_EXPR_IF(CONST, const) { \

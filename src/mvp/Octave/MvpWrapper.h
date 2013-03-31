@@ -56,7 +56,8 @@ octave_value mvp_wrapper<IMPLT>(IMPLT *impl, std::string const& func, octave_val
   using namespace mvp::octave; \
   typedef IMPLT ImplT; \
   try { \
-  MVP_WRAPPER_CONSTRUCTOR(ARGS)
+  MVP_WRAPPER_CONSTRUCTOR(ARGS) \
+  MVP_WRAPPER_CONSTRUCTOR(BOOST_PP_SEQ_POP_BACK(ARGS))
 
 #define MVP_WRAPPER_args_helper(r, x, n, t) \
   BOOST_PP_COMMA_IF(n) from_octave<typename boost::remove_reference<t>::type >(args(n))
