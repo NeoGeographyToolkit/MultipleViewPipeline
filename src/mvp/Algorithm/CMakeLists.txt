@@ -6,6 +6,7 @@ mvp_module(NAME Algorithm
                 Dummy/DerivedDummy.cc
                 AlgorithmVar.cc
                 PixelResult.cc
+                Seed.cc
            PROTOS DummySettings.proto)
 
 #if (BUILD_TESTS)

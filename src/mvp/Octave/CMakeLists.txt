@@ -18,6 +18,7 @@ mvp_module(NAME Octave
                 wraps/OrbitalImageCollection.cc
                 wraps/AlgorithmVar.cc
                 wraps/PixelResult.cc
+                wraps/Seed.cc
            )
 
 add_octfile(init_mvp init_mvp.cc)
