@@ -14,11 +14,13 @@ mvp_module(NAME Algorithm
                 Objective.cc
                 Stepper.cc
                 Seeder.cc
+                Correlator.cc
            PROTOS DummySettings.proto
                   LighterSettings.proto
                   ObjectiveSettings.proto
                   StepperSettings.proto
                   SeederSettings.proto
+                  CorrelatorSettings.proto
            )
 
 #if (BUILD_TESTS)

@@ -26,6 +26,7 @@ mvp_module(NAME Octave
                 wraps/Objective.cc
                 wraps/Stepper.cc
                 wraps/Seeder.cc
+                wraps/Correlator.cc
            )
 
 add_octfile(init_mvp init_mvp.cc)
