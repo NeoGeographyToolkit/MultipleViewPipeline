@@ -1,0 +1,6 @@
+package mvp.algorithm;
+
+message StepperSettings {
+  optional string impl_name = 1 [default="SimpleStepper"];
+  optional bool use_octave = 2 [default=true];
+}

@@ -41,6 +41,7 @@ namespace mvp {
     class AlbedoBox;
     class Lighter;
     class Objective;
+    class Stepper;
   }
   namespace image {
     class OrbitalImageCollection;
@@ -65,6 +66,7 @@ DECLARE_MVP_WRAPPER(mvp::algorithm::PatchBox)
 DECLARE_MVP_WRAPPER(mvp::algorithm::AlbedoBox)
 DECLARE_MVP_WRAPPER(mvp::algorithm::Lighter)
 DECLARE_MVP_WRAPPER(mvp::algorithm::Objective)
+DECLARE_MVP_WRAPPER(mvp::algorithm::Stepper)
 
 DECLARE_OCTAVE_WRAPPER(mvp::algorithm::Dummy)
 DECLARE_OCTAVE_WRAPPER(mvp::algorithm::AlgorithmVar)
@@ -74,6 +76,7 @@ DECLARE_OCTAVE_WRAPPER(mvp::algorithm::PatchBox)
 DECLARE_OCTAVE_WRAPPER(mvp::algorithm::AlbedoBox)
 DECLARE_OCTAVE_WRAPPER(mvp::algorithm::Lighter)
 DECLARE_OCTAVE_WRAPPER(mvp::algorithm::Objective)
+DECLARE_OCTAVE_WRAPPER(mvp::algorithm::Stepper)
 
 /// Other Wrapper declarations
 

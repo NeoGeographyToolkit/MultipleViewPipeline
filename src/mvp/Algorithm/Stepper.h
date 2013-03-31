@@ -1,24 +1,23 @@
-/// \file Stepper.h
-///
-/// Defines mvp Stepper interface
-///
-/// TODO: Write something here
-///
-
 #ifndef __MVP_ALGORITHM_STEPPER_H__
 #define __MVP_ALGORITHM_STEPPER_H__
 
-namespace mvp {
-namespace algorithm {
+#include <mvp/Algorithm/ObjectBase.h>
+#include <mvp/Algorithm/Seed.h>
+#include <mvp/Algorithm/TileResult.h>
 
-class Stepper {
+#include <mvp/Algorithm/StepperSettings.pb.h>
 
-  public:
-    virtual ~Stepper() {}
-    virtual void zing(int, int) = 0;
-    virtual int zap(int) = 0;
-};
+#define ALGORITHM_OBJECT_Stepper(T) \
+BEGIN_##T(Stepper, mvp::algorithm::Stepper, (vw::cartography::GeoReference const&)(vw::Vector2i) \
+          (mvp::algorithm::StepperSettings const&)) \
+  T##_C(curr_pixel, (vw::Vector2i)) \
+  T##_C(curr_post, (vw::Vector3)) \
+  T##_C(curr_seed, (mvp::algorithm::Seed)) \
+  T##_C(done, (bool)) \
+  T##_C(result, (mvp::algorithm::TileResult)) \
+  T(update, (void)(mvp::algorithm::PixelResult const&)) \
+END_##T()
 
-}}
+EMIT_ALGORITHM_OBJECT(Stepper)
 
 #endif

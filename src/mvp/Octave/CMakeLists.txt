@@ -24,6 +24,7 @@ mvp_module(NAME Octave
                 wraps/AlbedoBox.cc
                 wraps/Lighter.cc
                 wraps/Objective.cc
+                wraps/Stepper.cc
            )
 
 add_octfile(init_mvp init_mvp.cc)
