@@ -286,10 +286,11 @@ struct ConversionHelper<std::vector<T> > {
     VW_ASSERT(v.is_cell(), BadCastErr() << "Not a cell array");
     Cell oct_cell = v.cell_value();
 
-    std::vector<T> result(oct_cell.numel());
+    std::vector<T> result;
+    result.reserve(oct_cell.numel());
 
     for (int i = 0; i < oct_cell.numel(); i++) {
-      result[i] = ConversionHelper<T>::from_octave(oct_cell(i));
+      result.push_back(ConversionHelper<T>::from_octave(oct_cell(i)));
     }
 
     return result;
