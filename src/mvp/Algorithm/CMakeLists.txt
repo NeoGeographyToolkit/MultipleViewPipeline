@@ -9,6 +9,7 @@ mvp_module(NAME Algorithm
                 Seed.cc
                 TileResult.cc
                 PatchBox.cc
+                AlbedoBox.cc
            PROTOS DummySettings.proto)
 
 #if (BUILD_TESTS)
