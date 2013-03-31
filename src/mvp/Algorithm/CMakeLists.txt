@@ -15,6 +15,7 @@ mvp_module(NAME Algorithm
                 Stepper.cc
                 Seeder.cc
                 Correlator.cc
+                ObjectiveHelper.cc
            PROTOS DummySettings.proto
                   LighterSettings.proto
                   ObjectiveSettings.proto

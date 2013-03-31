@@ -44,6 +44,7 @@ namespace mvp {
     class Stepper;
     class Seeder;
     class Correlator;
+    class ObjectiveHelper;
   }
   namespace image {
     class OrbitalImageCollection;
@@ -71,6 +72,7 @@ DECLARE_MVP_WRAPPER(mvp::algorithm::Objective)
 DECLARE_MVP_WRAPPER(mvp::algorithm::Stepper)
 DECLARE_MVP_WRAPPER(mvp::algorithm::Seeder)
 DECLARE_MVP_WRAPPER(mvp::algorithm::Correlator)
+DECLARE_MVP_WRAPPER(mvp::algorithm::ObjectiveHelper)
 
 DECLARE_OCTAVE_WRAPPER(mvp::algorithm::Dummy)
 DECLARE_OCTAVE_WRAPPER(mvp::algorithm::AlgorithmVar)
@@ -83,6 +85,7 @@ DECLARE_OCTAVE_WRAPPER(mvp::algorithm::Objective)
 DECLARE_OCTAVE_WRAPPER(mvp::algorithm::Stepper)
 DECLARE_OCTAVE_WRAPPER(mvp::algorithm::Seeder)
 DECLARE_OCTAVE_WRAPPER(mvp::algorithm::Correlator)
+DECLARE_OCTAVE_WRAPPER(mvp::algorithm::ObjectiveHelper)
 
 /// Other Wrapper declarations
 

@@ -37,6 +37,10 @@ message GlobalSettings {
     optional string impl_name = 1 [default="DefaultAlbedoBox"];
     optional bool use_octave = 2 [default=true];
   }
+  message ObjectiveHelperSettings {
+    optional string impl_name = 1 [default="DefaultObjectiveHelper"];
+    optional bool use_octave = 2 [default=true];
+  }
 
   required Ports ports = 1;
   required Timeouts timeouts = 2;
@@ -47,4 +51,5 @@ message GlobalSettings {
   required TileResultSettings tile_result_settings = 7;
   required PatchBoxSettings patch_box_settings = 8;
   required AlbedoBoxSettings albedo_box_settings = 9;
+  required ObjectiveHelperSettings objective_helper_settings = 10;
 }
