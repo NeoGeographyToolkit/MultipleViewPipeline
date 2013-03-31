@@ -13,10 +13,13 @@ mvp_module(NAME Algorithm
                 Lighter.cc
                 Objective.cc
                 Stepper.cc
+                Seeder.cc
            PROTOS DummySettings.proto
                   LighterSettings.proto
                   ObjectiveSettings.proto
-                  StepperSettings.proto)
+                  StepperSettings.proto
+                  SeederSettings.proto
+           )
 
 #if (BUILD_TESTS)
 #  add_subdirectory(tests)
