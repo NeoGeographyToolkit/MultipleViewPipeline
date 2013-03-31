@@ -42,14 +42,14 @@ namespace { \
 typedef IMPLT ImplT; \
 struct OctaveWrapper : public ImplT { \
   mutable mvp::octave::OctaveWrapperImpl m_octave_impl; \
-  OctaveWrapper(octave_value const& impl) : m_octave_impl(impl) {} \
+  OctaveWrapper(octave_value const& impl) : ImplT(mvp::algorithm::NO_OBJECT_IMPL()), m_octave_impl(impl) {} \
   OCTAVE_WRAPPER_CONSTRUCTOR(ARGS)
 
 #define OCTAVE_WRAPPER_args_helper(r, x, n, t) BOOST_PP_COMMA_IF(n) t BOOST_PP_CAT(a, n)
 
 #define OCTAVE_WRAPPER_CONSTRUCTOR(ARGS) \
   OctaveWrapper(BOOST_PP_SEQ_FOR_EACH_I(OCTAVE_WRAPPER_args_helper, ~, ARGS)) : \
-    m_octave_impl(BOOST_PP_ENUM_PARAMS(BOOST_PP_SEQ_SIZE(ARGS), a)) {}
+    ImplT(mvp::algorithm::NO_OBJECT_IMPL()), m_octave_impl(BOOST_PP_ENUM_PARAMS(BOOST_PP_SEQ_SIZE(ARGS), a)) {}
 
 #define OCTAVE_WRAPPER_helper(FUNC, RET, ARGS, CONST) \
   RET FUNC(BOOST_PP_SEQ_FOR_EACH_I(OCTAVE_WRAPPER_args_helper, ~, ARGS)) BOOST_PP_EXPR_IF(CONST, const) { \

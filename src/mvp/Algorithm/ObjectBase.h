@@ -65,6 +65,8 @@ struct SettingsDefaulter : public SetT {
   SettingsDefaulter() {}
 };
 
+struct NO_OBJECT_IMPL {};
+
 }} // namespace mvp, algorithm
 
 #define ALGORITHM_SETTINGS_GLOBAL_DEFAULTER(SETT, MEM) \
@@ -83,7 +85,7 @@ namespace algorithm { \
 class NAME : public ObjectBase<NAME, BOOST_PP_SEQ_ENUM(ARGS)> { \
   typedef typename boost::remove_reference<typename boost::remove_cv<SET>::type>::type SetT; \
   protected: \
-    NAME(); \
+    NAME(NO_OBJECT_IMPL); \
   public: \
     NAME(BOOST_PP_SEQ_FOR_EACH_I(ALGORITHM_OBJECT_arg_helper, ~, ARGS) = SettingsDefaulter<SetT>()) : \
       ObjectBase<NAME, BOOST_PP_SEQ_ENUM(ARGS)>(BOOST_PP_ENUM_PARAMS(BOOST_PP_SEQ_SIZE(ARGS), a)) {}
@@ -104,7 +106,7 @@ class NAME : public ObjectBase<NAME, BOOST_PP_SEQ_ENUM(ARGS)> { \
 // This defines the protected constructor for the Algorithm Object in a cpp file
 // Which makes sure that the ObjectBase is not inlined. If the ObjectBase was inlined,
 // The ObjectBase factory map would have a different instance for each compilation unit!
-#define EMIT_ALGORITHM_OBJECT_CPP(NAME) mvp::algorithm::NAME::NAME() {}
+#define EMIT_ALGORITHM_OBJECT_CPP(NAME) mvp::algorithm::NAME::NAME(NO_OBJECT_IMPL) {}
 
 #define EMIT_ALGORITHM_OBJECT(T) ALGORITHM_OBJECT_##T(ALGORITHM_OBJECT)
 

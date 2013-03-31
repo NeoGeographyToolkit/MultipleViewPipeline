@@ -10,7 +10,9 @@ mvp_module(NAME Algorithm
                 TileResult.cc
                 PatchBox.cc
                 AlbedoBox.cc
-           PROTOS DummySettings.proto)
+                Lighter.cc
+           PROTOS DummySettings.proto
+                  LighterSettings.proto)
 
 #if (BUILD_TESTS)
 #  add_subdirectory(tests)

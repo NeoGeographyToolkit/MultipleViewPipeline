@@ -7,7 +7,7 @@ struct DerivedDummy : public Dummy {
   int m_x;
   int m_y;
 
-  DerivedDummy(int x, int y, DummySettings const& settings) : m_x(x), m_y(y) {}
+  DerivedDummy(int x, int y, DummySettings const& settings) : Dummy(NO_OBJECT_IMPL()), m_x(x), m_y(y) {}
 
   void void0() {}
 

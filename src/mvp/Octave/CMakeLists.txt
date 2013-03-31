@@ -22,6 +22,7 @@ mvp_module(NAME Octave
                 wraps/TileResult.cc
                 wraps/PatchBox.cc
                 wraps/AlbedoBox.cc
+                wraps/Lighter.cc
            )
 
 add_octfile(init_mvp init_mvp.cc)
