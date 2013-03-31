@@ -19,6 +19,7 @@ mvp_module(NAME Octave
                 wraps/AlgorithmVar.cc
                 wraps/PixelResult.cc
                 wraps/Seed.cc
+                wraps/TileResult.cc
            )
 
 add_octfile(init_mvp init_mvp.cc)

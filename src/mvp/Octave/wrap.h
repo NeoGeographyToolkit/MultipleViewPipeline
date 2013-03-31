@@ -38,6 +38,7 @@ namespace mvp {
     class AlgorithmVar;
     class PixelResult;
     class Seed;
+    class TileResult;
   }
   namespace image {
     class OrbitalImageCollection;
@@ -57,10 +58,12 @@ DECLARE_MVP_WRAPPER(mvp::algorithm::Dummy)
 DECLARE_MVP_WRAPPER(mvp::algorithm::AlgorithmVar)
 DECLARE_MVP_WRAPPER(mvp::algorithm::PixelResult)
 DECLARE_MVP_WRAPPER(mvp::algorithm::Seed)
+DECLARE_MVP_WRAPPER(mvp::algorithm::TileResult)
 
 DECLARE_OCTAVE_WRAPPER(mvp::algorithm::Dummy)
 DECLARE_OCTAVE_WRAPPER(mvp::algorithm::AlgorithmVar)
 DECLARE_OCTAVE_WRAPPER(mvp::algorithm::PixelResult)
+DECLARE_OCTAVE_WRAPPER(mvp::algorithm::TileResult)
 
 /// Other Wrapper declarations
 

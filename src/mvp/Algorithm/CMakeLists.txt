@@ -7,6 +7,7 @@ mvp_module(NAME Algorithm
                 AlgorithmVar.cc
                 PixelResult.cc
                 Seed.cc
+                TileResult.cc
            PROTOS DummySettings.proto)
 
 #if (BUILD_TESTS)
