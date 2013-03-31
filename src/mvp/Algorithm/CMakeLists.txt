@@ -11,8 +11,10 @@ mvp_module(NAME Algorithm
                 PatchBox.cc
                 AlbedoBox.cc
                 Lighter.cc
+                Objective.cc
            PROTOS DummySettings.proto
-                  LighterSettings.proto)
+                  LighterSettings.proto
+                  ObjectiveSettings.proto)
 
 #if (BUILD_TESTS)
 #  add_subdirectory(tests)
