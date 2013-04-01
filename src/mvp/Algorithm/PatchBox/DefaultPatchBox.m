@@ -1,17 +1,16 @@
 function self = DefaultPatchBox(_patches, _gwindow, _smooth, _gsmooth)
   self = mvpclass();
 
-  dim = size(_patches{1});
+  dim = size(_patches{1})(1:2);
   num_patches = numel(_patches);
 
   self._intensity = zeros(dim(1), dim(2), num_patches);
-  for i = 1:num_patches
-    self._intensity(:, :, i) = _patches{i};
-  endfor
+  self._weight = zeros(dim(1), dim(2), num_patches);
 
-  idx = isna(self._intensity);
-  self._weight = !idx;
-  self._intensity(idx) = 0;
+  for i = 1:num_patches
+    self._intensity(:, :, i) = _patches{i}(:, :, 1);
+    self._weight(:, :, i) = _patches{i}(:, :, 2);
+  endfor
 
   self._intensity2 = self._intensity .* self._intensity;
 
