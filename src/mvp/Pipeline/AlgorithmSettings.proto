@@ -1,11 +1,19 @@
 package mvp.pipeline;
 
+import "mvp/Algorithm/CorrelatorSettings.proto";
+import "mvp/Algorithm/LighterSettings.proto";
+import "mvp/Algorithm/ObjectiveSettings.proto";
+import "mvp/Algorithm/SeederSettings.proto";
+import "mvp/Algorithm/StepperSettings.proto";
+
 message AlgorithmSettings {
   required double alt_min = 1;
   required double alt_max = 2;
-  required double alt_search_range = 3;
 
-  optional double seed_window_smooth_size = 4 [default=8];
-  optional double window_size = 5 [default=32];
-  optional double window_smooth_size = 6 [default=8];
+  optional algorithm.CorrelatorSettings correlator0_settings = 3;
+  optional algorithm.SeederSettings seeder_settings = 4;
+  optional algorithm.StepperSettings stepper_settings = 5;
+  optional algorithm.CorrelatorSettings correlator_settings = 6;
+  optional algorithm.LighterSettings lighter_settings = 7;
+  optional algorithm.ObjectiveSettings objective_settings = 8;
 }

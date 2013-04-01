@@ -13,8 +13,10 @@ void Session::reset(SessionDesc const& session_desc) {
 
   vw::cartography::Datum datum(session_desc.output().datum());
 
-  m_catalog.reset(new image::OrbitalImageCatalog(datum, vw::Vector2(session_desc.algorithm_settings().alt_min(), 
-                                                                    session_desc.algorithm_settings().alt_max())));
+  vw::Vector2 alt_limits(session_desc.algorithm_settings().alt_min(),
+                         session_desc.algorithm_settings().alt_max());
+
+  m_catalog.reset(new image::OrbitalImageCatalog(datum, alt_limits));
   m_catalog->add_image_pattern(session_desc.input().image_pattern(), session_desc.input().camera_pattern());
 
   vw::platefile::PlateGeoReference plate_georef(datum, 

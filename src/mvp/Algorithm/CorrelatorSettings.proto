@@ -3,4 +3,8 @@ package mvp.algorithm;
 message CorrelatorSettings {
   optional string impl_name = 1 [default="FminbndCorrelator"];
   optional bool use_octave = 2 [default=true];
+
+  optional double alt_min = 3;
+  optional double alt_max = 4;
+  optional double alt_search_range = 5;
 }

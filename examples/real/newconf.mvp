@@ -18,9 +18,9 @@ output {
 algorithm_settings {
   alt_min: -6000
   alt_max: 2000
-  seed_window_smooth_size: 8
 
-  window_size: 32
-  window_smooth_size: 8
-  alt_search_range: 600
+  correlator0_settings {
+    alt_min: -6000
+    alt_max: 2000
+  }
 }
