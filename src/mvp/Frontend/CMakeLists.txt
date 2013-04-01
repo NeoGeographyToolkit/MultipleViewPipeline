@@ -12,10 +12,8 @@ mvp_module(NAME Frontend
                 ZmqServerHelper.cc
            PROTOS Messages.proto)
 
-#TODO: This can be removed when include <test/Helpers.h> is removed from mvpworker.cc
-add_definitions(-DTEST_SRCDIR=\"${CMAKE_CURRENT_SOURCE_DIR}\")
-add_definitions(-DTEST_OBJDIR=\"${CMAKE_CURRENT_BINARY_DIR}\")
-add_definitions(-DTEST_DATADIR=\"${CMAKE_SOURCE_DIR}/src/test/data\")
+#TODO: This can be removed when it is removed from mvpworker.cc
+add_definitions(-DLOADTESTENV_M=\"${CMAKE_BINARY_DIR}/src/test/loadtestenv.m\")
 ###### end
 
 mvp_executable(mvpd mvpd.cc)

@@ -1,10 +1,15 @@
 #include <iostream>
 #include <csignal>
 
+#include <mvp/Config.h>
+
+#if MVP_ENABLE_OCTAVE_SUPPORT
+#include <mvp/Octave/Main.h>
+#endif
+
 #include <mvp/Pipeline/Job.h>
 #include <mvp/Frontend/ZmqWorkerHelper.h>
 
-#include <vw/Octave/Main.h>
 #include <vw/Core/Log.h>
 #include <vw/Core/Exception.h>
 
@@ -21,7 +26,7 @@ void exit_cleanup(){
   vw_out(vw::InfoMessage, "mvpworker") << "Shutting Down" << endl;
 
   #if MVP_ENABLE_OCTAVE_SUPPORT
-  do_octave_atexit();
+  octave::stop_octave_interpreter();
   #endif
 }
 
@@ -71,13 +76,11 @@ void handle_arguments(int argc, char* argv[], Options *opts) {
   notify(vm);
 }
 
-//TODO: This is for loadtestenv... remove me
-#include <test/Helpers.h>
-
 int main(int argc, char* argv[]) {
   #if MVP_ENABLE_OCTAVE_SUPPORT
+  octave::start_octave_interpreter(LOADTESTENV_M);
+  // TODO: instead
   //octave::start_octave_interpreter();
-  octave::start_octave_interpreter(vw::test::BinName("loadtestenv.m"));
   #endif
 
   register_signals();
@@ -94,6 +97,7 @@ int main(int argc, char* argv[]) {
   if (!opts.job_file.empty()) {
     pipeline::Job job(opts.job_file);
     algorithm::TileResult result = job.process_tile(TerminalProgressCallback("mvp", "Processing tile: "));
+    // TODO: write me
     return 0;
   }
 
