@@ -33,6 +33,9 @@ mvp_module(NAME Octave
 add_octfile(init_mvp init_mvp.cc)
 target_link_libraries(init_mvp mvpOctave mvpAlgorithm)
 
+add_octfile(imread_vw imread_vw.cc)
+target_link_libraries(imread_vw mvpOctave)
+
 if (BUILD_TESTS)
   add_subdirectory(tests)
 endif()
