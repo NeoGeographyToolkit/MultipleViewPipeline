@@ -137,6 +137,8 @@ class ObjectBase
   protected:
     ObjectBase() {}
 
+    virtual ~ObjectBase() {}
+
     ObjectBase(BOOST_PP_ENUM_BINARY_PARAMS(N, T, a)) {
       std::string impl_name = BOOST_PP_CAT(a, BOOST_PP_SUB(N, 1)).impl_name();
       bool use_octave = BOOST_PP_CAT(a, BOOST_PP_SUB(N, 1)).use_octave();
