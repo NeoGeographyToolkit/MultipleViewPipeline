@@ -1,4 +1,4 @@
-function self = TileResult(_georef, _size)
+function self = DefaultTileResult(_georef, _size)
   self = mvpclass();
 
   self._georef = _georef;

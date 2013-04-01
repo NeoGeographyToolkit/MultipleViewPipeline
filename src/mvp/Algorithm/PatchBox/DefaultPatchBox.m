@@ -1,4 +1,4 @@
-function self = PatchBox(_patches, _gwindow, _smooth, _gsmooth)
+function self = DefaultPatchBox(_patches, _gwindow, _smooth, _gsmooth)
   self = mvpclass();
 
   dim = size(_patches{1});

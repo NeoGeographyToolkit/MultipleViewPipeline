@@ -1,4 +1,4 @@
-function self = AlgorithmVar(_v)
+function self = DefaultAlgorithmVar(_v)
   if (nargin == 0)
     _v = zeros(globals().ALGORITHMVAR_LENGTH, 1);
   endif

@@ -1,4 +1,4 @@
-function self = PixelResult(_algorithm_var, _confidence, _converged, _num_iterations)
+function self = DefaultPixelResult(_algorithm_var, _confidence, _converged, _num_iterations)
   self = mvpclass();
 
   if (nargin == 0)

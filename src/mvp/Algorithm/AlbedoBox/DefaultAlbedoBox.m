@@ -1,4 +1,4 @@
-function self = AlbedoBox(_patch_box, _a, _b)
+function self = DefaultAlbedoBox(_patch_box, _a, _b)
   self = mvpclass();
 
   dim = [_patch_box.rows() _patch_box.cols()];

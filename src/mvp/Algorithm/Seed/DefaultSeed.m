@@ -1,4 +1,4 @@
-function self = Seed(_lonlat, _value)
+function self = DefaultSeed(_lonlat, _value)
   self = mvpclass();
   
   self._lonlat = _lonlat;

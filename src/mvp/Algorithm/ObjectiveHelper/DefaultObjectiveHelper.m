@@ -1,4 +1,4 @@
-function self = ObjectiveHelper(_oic, _lighter, _objective, _post)
+function self = DefaultObjectiveHelper(_oic, _lighter, _objective, _post)
   self = mvpclass();
 
   self._oic = _oic;
