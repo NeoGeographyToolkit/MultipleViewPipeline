@@ -97,7 +97,16 @@ int main(int argc, char* argv[]) {
   if (!opts.job_file.empty()) {
     pipeline::Job job(opts.job_file);
     algorithm::TileResult result = job.process_tile(TerminalProgressCallback("mvp", "Processing tile: "));
-    // TODO: write me
+
+    ImageView<double> alt = result.alt();
+    ImageView<bool> converged = result.converged();
+
+    ImageView<PixelGrayA<double> > out(alt.cols(), alt.rows());
+
+    select_channel(out, 0) = alt;
+    select_channel(out, 1) = converged;
+
+    write_image("out.tif", out);
     return 0;
   }
 
