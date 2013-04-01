@@ -7,8 +7,8 @@
 #define __MVP_PIPELINE_JOB_H__
 
 #include <mvp/Pipeline/JobDesc.pb.h>
-#include <mvp/Algorithm/Types.h>
 #include <mvp/Image/OrbitalImageCollection.h>
+#include <mvp/Algorithm/TileResult.h>
 
 #include <vw/Cartography/GeoReference.h>
 

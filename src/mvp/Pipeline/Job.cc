@@ -1,5 +1,12 @@
 #include <mvp/Pipeline/Job.h>
 
+#include <mvp/Algorithm/PixelResult.h>
+#include <mvp/Algorithm/Lighter.h>
+#include <mvp/Algorithm/Stepper.h>
+#include <mvp/Algorithm/Seeder.h>
+#include <mvp/Algorithm/Objective.h>
+#include <mvp/Algorithm/Correlator.h>
+
 #include <vw/Plate/PlateGeoReference.h>
 
 #include <boost/filesystem.hpp>
@@ -31,20 +38,41 @@ Job::Job(std::string const& job_file) {
 algorithm::TileResult Job::process_tile(vw::ProgressCallback const& progress) const {
   using namespace algorithm;
 
-  TileResult result(m_job_desc.output().result(), 
-                    m_job_desc.render().col(), 
-                    m_job_desc.render().row(), 
-                    m_job_desc.render().level(),
-                    m_job_desc.output().plate_georef().tile_size()); 
+  Objective objective(m_job_desc.algorithm_settings().objective_settings());
+  Lighter lighter(m_job_desc.algorithm_settings().lighter_settings());
 
-  for (int i = 0; i < 100; i++) {
-    usleep(1000000);
-    progress.report_fractional_progress(i, 100);
+  Correlator correlator0(m_orbital_images, lighter, objective,
+                         m_job_desc.algorithm_settings().correlator0_settings());
+
+  Correlator correlator(m_orbital_images, lighter, objective,
+                        m_job_desc.algorithm_settings().correlator_settings());
+
+  Seeder seeder(georef(), tile_size());
+
+
+  while (!seeder.done()) {
+    PixelResult result = correlator.correlate(seeder.curr_post(), seeder.curr_seed());
+    seeder.update(result);
+  }
+
+  std::cout << "Seeder result: " << seeder.result()[0].value().algorithm_var().radius() -
+                                    georef().datum().semi_major_axis() << std::endl;
+
+  Stepper stepper(georef(), tile_size(), seeder.result(), m_job_desc.algorithm_settings().stepper_settings());
+
+  int cursor = 1;
+  int total = tile_size()[0] * tile_size()[1];
+
+  while (!stepper.done()) {
+    progress.report_fractional_progress(cursor, total);
+    PixelResult result = correlator.correlate(stepper.curr_post(), stepper.curr_seed());
+    stepper.update(result);
+    cursor += 1;
   }
 
   progress.report_finished();
 
-  return result;
+  return stepper.result();
 }
 
 std::string Job::save_job_file(std::string const& out_dir) const {

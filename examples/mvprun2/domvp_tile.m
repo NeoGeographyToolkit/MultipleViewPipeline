@@ -21,7 +21,7 @@ endwhile
 disp(["Seeder result: " num2str(seeder.result(){1}.value().algorithm_var().radius() - 
                                 job.georef.datum().semi_major_axis())]);
 
-stepper = SimpleStepper(job.georef, job.tile_size, seeder.result());
+stepper = Stepper(job.georef, job.tile_size, seeder.result());
 
 tic;
 
