@@ -37,7 +37,7 @@ function result = correlate(self, post, seed)
 
     result = PixelResult(AlgorithmVar([radius; seed.vectorize()(2:end)]), confidence, converged, num_iterations);
   catch
-    result = PixelResult(AlgorithmVar(NA(12, 1)), NA, NA, NA);
+    result = PixelResult(AlgorithmVar(zeros(12, 1)), 0, 0, 0);
   end_try_catch
 
 endfunction
