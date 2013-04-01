@@ -15,7 +15,7 @@ output {
   tile_size: 64  
 }
 
-algorithm {
+algorithm_settings {
   alt_min: -6000
   alt_max: 2000
   seed_window_smooth_size: 8
