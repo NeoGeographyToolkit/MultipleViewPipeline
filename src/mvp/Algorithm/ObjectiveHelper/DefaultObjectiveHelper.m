@@ -1,5 +1,5 @@
 function self = ObjectiveHelper(_oic, _lighter, _objective, _post)
-  self = MvpClass();
+  self = mvpclass();
 
   self._oic = _oic;
   self._lighter = _lighter;

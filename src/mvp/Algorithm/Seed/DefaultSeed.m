@@ -1,5 +1,5 @@
 function self = Seed(_lonlat, _value)
-  self = MvpClass();
+  self = mvpclass();
   
   self._lonlat = _lonlat;
   self._value = _value;

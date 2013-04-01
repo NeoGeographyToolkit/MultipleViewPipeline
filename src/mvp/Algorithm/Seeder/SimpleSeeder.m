@@ -1,5 +1,5 @@
 function self = SimpleSeeder(_georef, _size)
-  self = MvpClass();
+  self = mvpclass();
 
   self._georef = _georef;
   self._size = _size;

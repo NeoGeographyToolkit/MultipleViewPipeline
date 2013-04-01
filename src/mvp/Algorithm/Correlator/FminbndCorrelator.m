@@ -1,5 +1,5 @@
 function self = FminbndCorrelator(_oic, _lighter, _objective)
-  self=MvpClass();
+  self = mvpclass();
 
   self._oic = _oic;
   self._lighter = _lighter;

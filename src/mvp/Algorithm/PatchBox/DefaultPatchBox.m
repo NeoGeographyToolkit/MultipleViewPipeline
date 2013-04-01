@@ -1,5 +1,5 @@
 function self = PatchBox(_patches, _gwindow, _smooth, _gsmooth)
-  self = MvpClass();
+  self = mvpclass();
 
   dim = size(_patches{1});
   num_patches = numel(_patches);

@@ -1,5 +1,5 @@
 function self = AlbedoBox(_patch_box, _a, _b)
-  self = MvpClass();
+  self = mvpclass();
 
   dim = [_patch_box.rows() _patch_box.cols()];
   num_patches = _patch_box.planes();

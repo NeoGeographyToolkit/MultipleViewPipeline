@@ -7,7 +7,7 @@ function self = AlgorithmVar(_v)
     error("Must construct with vector size 12");
   endif
 
-  self = MvpClass();
+  self = mvpclass();
 
   self._v = _v(:);
 

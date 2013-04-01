@@ -1,5 +1,5 @@
 function self = AbsDiffObjective()
-  self = MvpClass();
+  self = mvpclass();
  
   self.func = @func;
   self.grad = @grad; 

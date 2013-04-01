@@ -1,5 +1,5 @@
 function self = PixelResult(_algorithm_var, _confidence, _converged, _num_iterations)
-  self = MvpClass();
+  self = mvpclass();
 
   if (nargin == 0)
     self._v = zeros(globals().PIXELRESULT_LENGTH, 1);

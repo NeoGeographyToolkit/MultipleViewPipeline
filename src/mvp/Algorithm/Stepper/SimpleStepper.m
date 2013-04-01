@@ -1,5 +1,5 @@
 function self = SimpleStepper(_georef, _size, _seed_list)
-  self = MvpClass();
+  self = mvpclass();
 
   if (_size(1) != _size(2))
     error("SimpleStepper only works on square tiles");

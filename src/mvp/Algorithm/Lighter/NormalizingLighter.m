@@ -1,5 +1,5 @@
 function self = NormalizingLighter()
-  self = MvpClass();
+  self = mvpclass();
   self.light = @light;
 endfunction
 
