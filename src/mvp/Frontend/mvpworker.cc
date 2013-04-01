@@ -2,7 +2,6 @@
 #include <csignal>
 
 #include <mvp/Pipeline/Job.h>
-#include <mvp/Algorithm/Types.h>
 #include <mvp/Frontend/ZmqWorkerHelper.h>
 
 #include <vw/Octave/Main.h>
@@ -72,9 +71,13 @@ void handle_arguments(int argc, char* argv[], Options *opts) {
   notify(vm);
 }
 
+//TODO: This is for loadtestenv... remove me
+#include <test/Helpers.h>
+
 int main(int argc, char* argv[]) {
   #if MVP_ENABLE_OCTAVE_SUPPORT
-  octave::start_octave_interpreter();
+  //octave::start_octave_interpreter();
+  octave::start_octave_interpreter(vw::test::BinName("loadtestenv.m"));
   #endif
 
   register_signals();
@@ -90,7 +93,7 @@ int main(int argc, char* argv[]) {
 
   if (!opts.job_file.empty()) {
     pipeline::Job job(opts.job_file);
-    job.process_tile(TerminalProgressCallback("mvp", "Processing tile: ")).debug_write(opts.job_file);
+    algorithm::TileResult result = job.process_tile(TerminalProgressCallback("mvp", "Processing tile: "));
     return 0;
   }
 
@@ -110,7 +113,9 @@ int main(int argc, char* argv[]) {
             vw_out(vw::InfoMessage, "mvpworker") << "Working on job ID = " << reply.job().id() << endl;
             try {
               pipeline::Job job(reply.job());
-              job.process_tile(ZmqWorkerHelper::ProgressCallback(helper, reply.job().id())).write();
+              algorithm::TileResult result = 
+                job.process_tile(ZmqWorkerHelper::ProgressCallback(helper, reply.job().id()));
+              // TODO: write to platefile
             } catch (vw::Aborted &e) {
               vw_out(vw::InfoMessage, "mvpworker") << "Aborted job ID = " << reply.job().id() << endl;
               break;
