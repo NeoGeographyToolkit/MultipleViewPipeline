@@ -1,12 +1,4 @@
 function self = DefaultAlgorithmVar(_v)
-  if (nargin == 0)
-    _v = zeros(globals().ALGORITHMVAR_LENGTH, 1);
-  endif
-
-  if (numel(_v) != globals().ALGORITHMVAR_LENGTH)
-    error("Must construct with vector size 12");
-  endif
-
   self = mvpclass();
 
   self._v = _v(:);

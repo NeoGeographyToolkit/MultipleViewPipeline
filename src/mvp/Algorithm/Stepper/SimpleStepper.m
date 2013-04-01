@@ -57,7 +57,7 @@ function update(self, new_result)
 
   % if not done, update curr_seed
   if (!self._done)
-    varsum = AlgorithmVar().vectorize();
+    varsum = zeros(globals().ALGORITHMVAR_LENGTH, 1);
     num = 0;
     for row = (-1:1) + self._curr_pixel(2)
       for col = (-1:1) + self._curr_pixel(1)

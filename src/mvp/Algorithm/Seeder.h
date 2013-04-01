@@ -13,7 +13,7 @@
 BEGIN_##T(Seeder, mvp::algorithm::Seeder, (vw::cartography::GeoReference const&)(vw::Vector2i) \
           (mvp::algorithm::SeederSettings const&)) \
   T##_C(curr_post, (vw::Vector3)) \
-  T##_C(curr_seed, (mvp::algorithm::Seed)) \
+  T##_C(curr_seed, (mvp::algorithm::AlgorithmVar)) \
   T##_C(done, (bool)) \
   T##_C(result, (std::vector<mvp::algorithm::Seed>)) \
   T(update, (void)(mvp::algorithm::PixelResult)) \

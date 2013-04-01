@@ -15,7 +15,7 @@ ALGORITHM_SETTINGS_GLOBAL_DEFAULTER(PixelResultSettings, pixel_result_settings)
 
 #define ALGORITHM_OBJECT_PixelResult(T) \
 BEGIN_##T(PixelResult, mvp::algorithm::PixelResult, \
-          (mvp::algorithm::AlgorithmVar)(double)(bool)(int)(mvp::core::GlobalSettings::PixelResultSettings const&)) \
+          (mvp::algorithm::PixelResultVector const&)(mvp::core::GlobalSettings::PixelResultSettings const&)) \
   T##_C(algorithm_var, (mvp::algorithm::AlgorithmVar)) \
   T##_C(confidence, (double)) \
   T##_C(converged, (bool)) \

@@ -1,13 +1,7 @@
-function self = DefaultPixelResult(_algorithm_var, _confidence, _converged, _num_iterations)
+function self = DefaultPixelResult(v)
   self = mvpclass();
 
-  if (nargin == 0)
-    self._v = zeros(globals().PIXELRESULT_LENGTH, 1);
-  elseif (nargin == 1)
-    self._v = _algorithm_var(:);
-  else
-    self._v = [_algorithm_var.vectorize(); _confidence; _converged; _num_iterations];
-  endif
+  self._v = v;
 
   self.algorithm_var = @(self) AlgorithmVar(self._v(1:globals().ALGORITHMVAR_LENGTH));
   self.confidence = @(self) self._v(globals().CONFIDENCE_IDX);

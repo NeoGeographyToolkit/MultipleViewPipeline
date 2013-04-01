@@ -4,7 +4,10 @@ function self = SimpleSeeder(_georef, _size)
   self._georef = _georef;
   self._size = _size;
 
-  self._curr_post = pixel2post(self._georef, (_size - 1) / 2);
+  center_pixel = (_size - 1) / 2;
+
+  self._curr_lonlat = self._georef.pixel_to_lonlat(center_pixel);
+  self._curr_post = pixel2post(self._georef, center_pixel);
   self._curr_seed = AlgorithmVar([-1000+_georef.datum().semi_major_axis();
                                   tanplane(self._curr_post); [30;30]; [0;0];
                                   0; 0; 60]);
@@ -19,7 +22,7 @@ function self = SimpleSeeder(_georef, _size)
 endfunction
 
 function update(self, new_result)
-  self._result = {Seed(self._curr_post, new_result)};
+  self._result = {Seed(self._curr_lonlat, new_result)};
   self._done = 1;
 endfunction
 

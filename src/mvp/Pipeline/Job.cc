@@ -98,7 +98,7 @@ vw::cartography::GeoReference Job::georef() const {
 
 vw::Vector2i Job::tile_size() const {
   vw::platefile::PlateGeoReference plate_georef(m_job_desc.output().plate_georef());
-  return plate_georef.tile_size();
+  return vw::Vector2i(plate_georef.tile_size(), plate_georef.tile_size());
 }
 
 }} // namespace pipeline,mvp
