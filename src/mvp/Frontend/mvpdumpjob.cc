@@ -12,6 +12,11 @@ using namespace mvp;
 
 int main(int argc, char *argv[]) {
 
+  if (argc != 5) {
+    cout << "Usage: mvpdumpjob jobfile col row level" << endl;
+    return 1;
+  }
+
   pipeline::SessionDesc session_desc;
 
   core::load_settings(&session_desc, argv[1]);
