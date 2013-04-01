@@ -73,6 +73,12 @@ std::string Job::save_job_file(std::string const& out_dir) const {
 
   std::copy(saved_orbital_images.begin(), saved_orbital_images.end(), RepeatedFieldBackInserter(job_desc_mod.mutable_input()->mutable_orbital_images()));
 
+  // Use relative paths
+  BOOST_FOREACH(image::OrbitalImageDesc &o, *job_desc_mod.mutable_input()->mutable_orbital_images()) {
+    o.set_image_path(fs::path(o.image_path()).filename().string());
+    o.set_camera_path(fs::path(o.camera_path()).filename().string());
+  }
+
   {
     std::fstream output((job_filename + "/job").c_str(), std::ios::out | std::ios::trunc | std::ios::binary);
     if (!job_desc_mod.SerializeToOstream(&output)) {
