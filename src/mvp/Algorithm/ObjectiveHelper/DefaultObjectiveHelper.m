@@ -17,7 +17,7 @@ endfunction
 function reproject(self, algovar)
   xyz = self._post * algovar.radius();
 
-  raw_patches = self._oic.back_project(xyz, algovar.orientation(), algovar.scale(), algovar.window());
+  raw_patches = self._oic.back_project(xyz, algovar.orientation(), [algovar.scale() algovar.scale()], algovar.window());
 
   patch_box = PatchBox(raw_patches, algovar.gwindow(), algovar.smooth(), algovar.gsmooth());
 
