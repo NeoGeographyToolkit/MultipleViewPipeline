@@ -15,11 +15,15 @@ function r = status_fcn(x, optv, status)
   r = 0;
 endfunction
 
+function f = hack(helper, var)
+  f = helper.func(var);
+endfunction
+
 function result = correlate(self, post, seed)
 
   try
     opts = optimset("MaxIter", 80, "FunValCheck", "on");
-%    opts = optimset("OutputFcn", @status_fcn);
+    opts = optimset("OutputFcn", @status_fcn);
     opts = optimset(opts, "TolX", 1e-2);
 
     radMin = seed.radius() - 2000;
@@ -27,13 +31,13 @@ function result = correlate(self, post, seed)
 
     helper = ObjectiveHelper(self._oic, self._lighter, self._objective, post);
 
-    [radius confidence info output] = fminbnd(@(a) helper.func(helper, AlgorithmVar([a; seed.vectorize()(2:end)])), radMin, radMax, opts);
+    [radius confidence info output] = fminbnd(@(a) hack(helper, AlgorithmVar([a; seed.vectorize()(2:end)])), radMin, radMax, opts);
     converged = (info == 1);
     num_iterations = output.iterations;
 
     result = PixelResult(AlgorithmVar([radius; seed.vectorize()(2:end)]), confidence, converged, num_iterations);
   catch
-    result = PixelResult(AlgorithmVar(NA(12, 1)), NA, NA, NA, NA);    
+    result = PixelResult(AlgorithmVar(NA(12, 1)), NA, NA, NA);
   end_try_catch
 
 endfunction
