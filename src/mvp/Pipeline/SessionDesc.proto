@@ -23,5 +23,5 @@ message SessionDesc {
   required Input input = 1;
   required Render render = 2;
   required Output output = 3;
-  required AlgorithmSettings algorithm = 4;
+  required AlgorithmSettings algorithm_settings = 4;
 }

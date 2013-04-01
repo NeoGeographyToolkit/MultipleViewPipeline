@@ -1,5 +1,7 @@
 #include <mvp/Pipeline/Job.h>
 
+#include <vw/Plate/PlateGeoReference.h>
+
 #include <boost/filesystem.hpp>
 
 #include <unistd.h> // usleep
@@ -79,6 +81,18 @@ std::string Job::save_job_file(std::string const& out_dir) const {
   }
 
   return job_filename;
+}
+
+vw::cartography::GeoReference Job::georef() const {
+  vw::platefile::PlateGeoReference plate_georef(m_job_desc.output().plate_georef());
+  return plate_georef.tile_georef(m_job_desc.render().col(), 
+                                  m_job_desc.render().row(),
+                                  m_job_desc.render().level());
+}
+
+vw::Vector2i Job::tile_size() const {
+  vw::platefile::PlateGeoReference plate_georef(m_job_desc.output().plate_georef());
+  return plate_georef.tile_size();
 }
 
 }} // namespace pipeline,mvp

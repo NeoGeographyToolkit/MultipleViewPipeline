@@ -13,8 +13,8 @@ void Session::reset(SessionDesc const& session_desc) {
 
   vw::cartography::Datum datum(session_desc.output().datum());
 
-  m_catalog.reset(new image::OrbitalImageCatalog(datum, vw::Vector2(session_desc.algorithm().alt_min(), 
-                                                                    session_desc.algorithm().alt_max())));
+  m_catalog.reset(new image::OrbitalImageCatalog(datum, vw::Vector2(session_desc.algorithm_settings().alt_min(), 
+                                                                    session_desc.algorithm_settings().alt_max())));
   m_catalog->add_image_pattern(session_desc.input().image_pattern(), session_desc.input().camera_pattern());
 
   vw::platefile::PlateGeoReference plate_georef(datum, 
@@ -58,7 +58,7 @@ pipeline::JobDesc Session::job(int col, int row, int level) {
   *job_desc.mutable_input() = input;
   *job_desc.mutable_render() = render;
   *job_desc.mutable_output() = output;
-  *job_desc.mutable_algorithm() = m_session_desc.algorithm();
+  *job_desc.mutable_algorithm_settings() = m_session_desc.algorithm_settings();
 
   if (!job_desc.IsInitialized()) {
     vw::vw_throw(vw::LogicErr() << "JobDesc missing fields");

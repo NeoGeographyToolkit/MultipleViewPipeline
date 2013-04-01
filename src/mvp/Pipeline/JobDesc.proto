@@ -25,5 +25,5 @@ message JobDesc {
   required Input input = 2;
   required Render render = 3;
   required Output output = 4;
-  required AlgorithmSettings algorithm = 5;
+  required AlgorithmSettings algorithm_settings = 5;
 }

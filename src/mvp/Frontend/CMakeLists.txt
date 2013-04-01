@@ -16,6 +16,9 @@ mvp_executable(mvpd mvpd.cc)
 mvp_executable(mvpworker mvpworker.cc)
 mvp_executable(mvpdumpjob mvpdumpjob.cc)
 
+add_octfile(loadjobfile loadjobfile.cc)
+target_link_libraries(loadjobfile mvpOctave mvpAlgorithm mvpPipeline)
+
 install(TARGETS mvpd mvpworker DESTINATION bin)
 
 if (BUILD_TESTS)

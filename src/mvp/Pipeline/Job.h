@@ -10,6 +10,8 @@
 #include <mvp/Algorithm/Types.h>
 #include <mvp/Image/OrbitalImageCollection.h>
 
+#include <vw/Cartography/GeoReference.h>
+
 namespace mvp {
 namespace pipeline {
 
@@ -25,6 +27,14 @@ class Job {
     algorithm::TileResult process_tile(vw::ProgressCallback const& progress = vw::ProgressCallback::dummy_instance()) const;
 
     std::string save_job_file(std::string const& out_dir = ".") const;
+
+    image::OrbitalImageCollection orbital_images() const { return m_orbital_images; }
+
+    AlgorithmSettings algorithm_settings() const { return m_job_desc.algorithm_settings(); }
+
+    vw::cartography::GeoReference georef() const;
+
+    vw::Vector2i tile_size() const;
 };
 
 }} // pipeline,mvp
