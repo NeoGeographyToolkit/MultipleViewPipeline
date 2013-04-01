@@ -8,7 +8,7 @@
 
 #define ALGORITHM_OBJECT_Objective(T) \
 BEGIN_##T(Objective, mvp::algorithm::Objective, (mvp::algorithm::ObjectiveSettings const&)) \
-  T##_C(f, (double)(mvp::algorithm::AlbedoBox const&)) \
+  T##_C(func, (double)(mvp::algorithm::AlbedoBox const&)) \
   T##_C(grad, (vw::Matrix<double>)(mvp::algorithm::AlbedoBox const&)) \
 END_##T()
 
