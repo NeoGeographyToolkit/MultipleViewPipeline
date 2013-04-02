@@ -1,5 +1,5 @@
 function self = GeoReference(_datum, _transform)
-  self = MvpClass();
+  self = mvpclass();
 
   self._datum = _datum;
   self._transform = _transform;

@@ -8,7 +8,11 @@
 
 #include <octave/oct.h> // TODO: remove?
 
+// Inhibit this file when building octmvp (octave-only mvp)
+#ifndef OCTMVP
 #include <mvp/Octave/wrap.h>
+#endif
+
 #include <mvp/Octave/ov-mvpclass-ref.h>
 
 #include <octave/oct-map.h>

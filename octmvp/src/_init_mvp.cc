@@ -1,17 +1,12 @@
 #include <octave/oct.h>
-#include <mvp/Octave/oct-mvpobj.h>
+#include <mvp/Octave/oct-mvpclass.h>
 
 octave_value_list mvp_class(octave_value_list const& args, int nargout) {
-
-  return octave_value(new octave_mvpobj_ref(new octave_mvpobj_impl<void>()));
+  return octave_value(new octave_mvpclass_ref(boost::shared_ptr<octave_mvpclass_base>(new octave_mvpclass_impl())));
 }
 
 DEFUN_DLD(_init_mvp, args, nargout, "register mvp classes") {
-  octave_mvpobj_ref::register_type(); 
-
-  install_builtin_function(mvp_class, "Stepper", std::string());
-  install_builtin_function(mvp_class, "Seeder", std::string());
-  install_builtin_function(mvp_class, "Correlator", std::string());
-  install_builtin_function(mvp_class, "MvpClass", std::string());
+  octave_mvpclass_ref::register_type(); 
+  install_builtin_function(mvp_class, "mvpclass", std::string());
   return octave_value();
 }

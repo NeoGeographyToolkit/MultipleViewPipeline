@@ -6,8 +6,8 @@ load tile_georef.mat;
 oic = OrbitalImageCollection(im);
 datum = Datum(tile_georef.datum.semi_major_axis);
 georef = GeoReference(datum, tile_georef.transform);
-lighter = NormalizingLighter();
-objective = AbsDiffObjective();
+lighter = Lighter();
+objective = Objective();
 
 
 post = pixel2post(georef, [32 32]);
@@ -27,9 +27,10 @@ endfor
 
 %%%%%%%%%%%%%%%%%%
 
-correlator = FminbndCorrelator(oic, lighter, objective);
+correlator = Correlator(oic, lighter, objective);
 
-%seed = AlgorithmVar([datum.semi_major_axis() + -500, orientation', [25,25], [0,0], 0, 0, 80]);
-%d = correlator.correlate(post, seed);
-
+seed = AlgorithmVar([datum.semi_major_axis() + -500, orientation', [25,25], [0,0], 0, 0, 80]);
+tic
+d = correlator.correlate(post, seed);
+toc
 % vim:set syntax=octave:

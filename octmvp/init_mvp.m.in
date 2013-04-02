@@ -1,12 +1,22 @@
 mvpdirs = {"@CMAKE_CURRENT_BINARY_DIR@",
            "@CMAKE_CURRENT_BINARY_DIR@/src",
            "@CMAKE_CURRENT_SOURCE_DIR@/m",
-           "@CMAKE_SOURCE_DIR@/../src/mvp/Algorithm/Stepper",
-           "@CMAKE_SOURCE_DIR@/../src/mvp/Algorithm/Seeder",
-           "@CMAKE_SOURCE_DIR@/../src/mvp/Algorithm/InitStepper",
+           "@CMAKE_CURRENT_SOURCE_DIR@/wrap",
+           "@CMAKE_SOURCE_DIR@/../src/mvp/Algorithm/AlbedoBox",
+           "@CMAKE_SOURCE_DIR@/../src/mvp/Algorithm/AlgorithmVar",
            "@CMAKE_SOURCE_DIR@/../src/mvp/Algorithm/Correlator",
+           "@CMAKE_SOURCE_DIR@/../src/mvp/Algorithm/Dummy",
            "@CMAKE_SOURCE_DIR@/../src/mvp/Algorithm/Lighter",
-           "@CMAKE_SOURCE_DIR@/../src/mvp/Algorithm/Objective"};
+           "@CMAKE_SOURCE_DIR@/../src/mvp/Algorithm/Objective",
+           "@CMAKE_SOURCE_DIR@/../src/mvp/Algorithm/ObjectiveHelper",
+           "@CMAKE_SOURCE_DIR@/../src/mvp/Algorithm/PatchBox",
+           "@CMAKE_SOURCE_DIR@/../src/mvp/Algorithm/PixelResult",
+           "@CMAKE_SOURCE_DIR@/../src/mvp/Algorithm/Seed",
+           "@CMAKE_SOURCE_DIR@/../src/mvp/Algorithm/Seeder",
+           "@CMAKE_SOURCE_DIR@/../src/mvp/Algorithm/Stepper",
+           "@CMAKE_SOURCE_DIR@/../src/mvp/Algorithm/TileResult",
+           "@CMAKE_SOURCE_DIR@/../src/mvp/Algorithm/Support"
+};
 
 cellfun(@addpath, mvpdirs);
 

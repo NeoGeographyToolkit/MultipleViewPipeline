@@ -1,5 +1,5 @@
 function self = Datum(_radius)
-  self = MvpClass();
+  self = mvpclass();
 
   self._radius = _radius;
 

@@ -27,6 +27,7 @@ endfor
 correlator = Correlator(job.orbital_images, lighter, objective);
 
 seed = AlgorithmVar([job.georef.datum().semi_major_axis() + -500, orientation', [25,25], [0,0], 0, 0, 80]);
+tic
 d = correlator.correlate(post, seed);
-
+toc
 % vim:set syntax=octave:

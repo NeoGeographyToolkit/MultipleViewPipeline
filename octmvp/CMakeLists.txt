@@ -13,6 +13,8 @@ link_directories(${OCTAVE_LIBRARY_DIRS})
 configure_file(init_mvp.m.in init_mvp.m)
 configure_file(test_mvp.m.in test_mvp.m)
 
+add_definitions(-DOCTMVP)
+
 add_subdirectory(src)
 
 enable_testing()
