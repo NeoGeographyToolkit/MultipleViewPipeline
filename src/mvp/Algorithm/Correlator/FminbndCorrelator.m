@@ -23,7 +23,7 @@ function result = correlate(self, post, seed)
 
   try
     opts = optimset("MaxIter", 80, "FunValCheck", "on");
-    opts = optimset("OutputFcn", @status_fcn);
+    %opts = optimset(opts, "OutputFcn", @status_fcn);
     opts = optimset(opts, "TolX", 1e-2);
 
     radMin = seed.radius() - 2000;
