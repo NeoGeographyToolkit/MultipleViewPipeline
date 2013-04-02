@@ -6,7 +6,7 @@ function self = DefaultObjectiveHelper(_oic, _lighter, _objective, _post)
   self._objective = _objective;
   self._post = _post;
 
-  self._curr_algovar = zeros(12, 1);
+  self._curr_algovar = zeros(globals().ALGORITHMVAR_LENGTH, 1);
   self._curr_albedo_box = {};
 
   self.func = @func;
@@ -17,7 +17,7 @@ endfunction
 function reproject(self, algovar)
   xyz = self._post * algovar.radius();
 
-  raw_patches = self._oic.back_project(xyz, algovar.orientation(), [algovar.scale() algovar.scale()], algovar.window());
+  raw_patches = self._oic.back_project(xyz, algovar.orientation(), [algovar.scale();algovar.scale()], algovar.window());
 
   patch_box = PatchBox(raw_patches, algovar.gwindow(), algovar.smooth(), algovar.gsmooth());
 
