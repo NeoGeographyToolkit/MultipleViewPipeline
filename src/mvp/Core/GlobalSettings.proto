@@ -12,6 +12,7 @@ message GlobalSettings {
   }
   message Render {
     optional bool use_octave = 1 [default=true];
+    optional bool no_orbital_image_cropping = 2 [default=true];
   }
   message AlgorithmVarSettings {
     optional string impl_name = 1 [default="DefaultAlgorithmVar"];

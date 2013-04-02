@@ -1,5 +1,7 @@
 #include <mvp/Image/OrbitalImageCatalog.h>
 
+#include <mvp/Core/Settings.h>
+
 #include <vw/FileIO/DiskImageResource.h>
 #include <vw/Camera/PinholeModel.h>
 
@@ -89,10 +91,17 @@ std::vector<OrbitalImageDesc> OrbitalImageCatalog::images_in_region(ConvexPolygo
         OrbitalImageDesc i;
         i.set_image_path(e.image_path);
         i.set_camera_path(e.camera_path);
-        i.set_minx(cropbox.min().x());
-        i.set_miny(cropbox.min().y());
-        i.set_width(cropbox.width());
-        i.set_height(cropbox.height());
+        if (mvp_settings().render().no_orbital_image_cropping()) {
+          i.set_minx(0);
+          i.set_miny(0);
+          i.set_width(e.image_bbox.width());
+          i.set_height(e.image_bbox.height());
+        } else {
+          i.set_minx(cropbox.min().x());
+          i.set_miny(cropbox.min().y());
+          i.set_width(cropbox.width());
+          i.set_height(cropbox.height());
+        }
         result.push_back(i);
       }
     }
