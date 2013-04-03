@@ -9,11 +9,13 @@ import "mvp/Algorithm/StepperSettings.proto";
 message AlgorithmSettings {
   required double alt_min = 1;
   required double alt_max = 2;
+  required double orbital_image_padding_x = 3;
+  required double orbital_image_padding_y = 4;
 
-  optional algorithm.CorrelatorSettings correlator0_settings = 3;
-  optional algorithm.SeederSettings seeder_settings = 4;
-  optional algorithm.StepperSettings stepper_settings = 5;
-  optional algorithm.CorrelatorSettings correlator_settings = 6;
-  optional algorithm.LighterSettings lighter_settings = 7;
-  optional algorithm.ObjectiveSettings objective_settings = 8;
+  optional algorithm.CorrelatorSettings correlator0_settings = 5;
+  optional algorithm.SeederSettings seeder_settings = 6;
+  optional algorithm.StepperSettings stepper_settings = 7;
+  optional algorithm.CorrelatorSettings correlator_settings = 8;
+  optional algorithm.LighterSettings lighter_settings = 9;
+  optional algorithm.ObjectiveSettings objective_settings = 10;
 }

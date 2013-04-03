@@ -18,6 +18,8 @@ output {
 algorithm_settings {
   alt_min: -6000
   alt_max: 2000
+  orbital_image_padding_x: 30
+  orbital_image_padding_y: 30
 
   correlator0_settings {
     alt_min: -6000

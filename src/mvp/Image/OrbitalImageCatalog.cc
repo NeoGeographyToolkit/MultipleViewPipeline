@@ -78,13 +78,16 @@ ConvexPolygon OrbitalImageCatalog::find_image_roi(ConvexPolygon const& map_roi,
   return ConvexPolygon(result);
 }
 
-std::vector<OrbitalImageDesc> OrbitalImageCatalog::images_in_region(ConvexPolygon const& map_roi) const {
+std::vector<OrbitalImageDesc> OrbitalImageCatalog::images_in_region(ConvexPolygon const& map_roi, 
+                                                                    vw::Vector2i const& padding) const {
   std::vector<OrbitalImageDesc> result;
   BOOST_FOREACH(CatalogEntry const& e, m_entries) {
     ConvexPolygon image_roi = find_image_roi(map_roi, *e.camera, m_datum, m_alt_limits);
 
     if (image_roi.intersects(ConvexPolygon(e.image_bbox))) {
       vw::BBox2i cropbox = vw::grow_bbox_to_int(image_roi.bounding_box());
+      cropbox.min() = cropbox.min() - padding;
+      cropbox.max() = cropbox.max() + padding;
       cropbox.crop(e.image_bbox);
 
       if (!cropbox.empty()) {
