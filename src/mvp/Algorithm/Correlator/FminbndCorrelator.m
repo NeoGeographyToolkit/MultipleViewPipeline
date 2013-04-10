@@ -1,9 +1,10 @@
-function self = FminbndCorrelator(_oic, _lighter, _objective)
+function self = FminbndCorrelator(_oic, _lighter, _objective, _settings)
   self = mvpclass();
 
   self._oic = _oic;
   self._lighter = _lighter;
   self._objective = _objective;
+  self._settings = _settings;
 
   self.correlate = @correlate;
 endfunction
@@ -22,12 +23,13 @@ endfunction
 function result = correlate(self, post, seed)
 
   try
-    opts = optimset("MaxIter", 80, "FunValCheck", "on");
+    opts = optimset("FunValCheck", "on");
+    opts = optimset(opts, "MaxIter", self._settings.max_iter);
+    opts = optimset(opts, "TolX", self._settings.tol);
     %opts = optimset(opts, "OutputFcn", @status_fcn);
-    opts = optimset(opts, "TolX", 1e-2);
 
-    radMin = seed.radius() - 2000;
-    radMax = seed.radius() + 2000;
+    radMin = seed.radius() - self._settings.alt_search_range;
+    radMax = seed.radius() + self._settings.alt_search_range;
 
     helper = ObjectiveHelper(self._oic, self._lighter, self._objective, post);
 

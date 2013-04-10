@@ -3,4 +3,22 @@ package mvp.algorithm;
 message SeederSettings {
   optional string impl_name = 1 [default="SimpleSeeder"];
   optional bool use_octave = 2 [default=true];
+
+  optional double alt = 3;
+
+  optional double window_x = 4;
+  optional double window_y = 5;
+  optional double gwindow_x = 6;
+  optional double gwindow_y = 7;
+  optional double smooth = 8;
+  optional double gsmooth = 9;
+  optional double scale = 10;
+
+  optional double out_window_x = 11;
+  optional double out_window_y = 12;
+  optional double out_gwindow_x = 13;
+  optional double out_gwindow_y = 14;
+  optional double out_smooth = 15;
+  optional double out_gsmooth = 16;
+  optional double out_scale = 17;
 }

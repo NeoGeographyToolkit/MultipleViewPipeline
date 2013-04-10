@@ -8,7 +8,7 @@ correlator = Correlator(job.orbital_images, lighter, objective, job.algorithm_se
 seeder = Seeder(job.georef, job.tile_size, job.algorithm_settings.seeder_settings);
 
 while (!seeder.done())
-  result = correlator.correlate(seeder.curr_post(), seeder.curr_seed());
+  result = correlator0.correlate(seeder.curr_post(), seeder.curr_seed());
   seeder.update(result);
 endwhile
 

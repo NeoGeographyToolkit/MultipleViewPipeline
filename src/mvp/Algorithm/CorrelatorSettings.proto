@@ -4,7 +4,9 @@ message CorrelatorSettings {
   optional string impl_name = 1 [default="FminbndCorrelator"];
   optional bool use_octave = 2 [default=true];
 
-  optional double alt_min = 3;
-  optional double alt_max = 4;
-  optional double alt_search_range = 5;
+  optional int32 max_iter = 3 [default=80];
+  optional double tol = 4 [default=1e-2];
+  optional double alt_min = 5;
+  optional double alt_max = 6;
+  optional double alt_search_range = 7;
 }
