@@ -16,7 +16,7 @@ BEGIN_##T(TileResult, mvp::algorithm::TileResult, (vw::cartography::GeoReference
           (mvp::core::GlobalSettings::TileResultSettings const&)) \
   T(set, (void)(vw::Vector2i const&)(mvp::algorithm::PixelResult const&)) \
   T##_C(get, (mvp::algorithm::PixelResult)(vw::Vector2i const&)) \
-  T##_C(plate_layer, (vw::ImageView<double>)(vw::Vector2i const&)) \
+  T##_C(plate_layer, (vw::ImageView<double>)(double)) \
   T##_C(alt, (vw::ImageView<double>)) \
   T##_C(converged, (vw::ImageView<bool>)) \
 END_##T()
