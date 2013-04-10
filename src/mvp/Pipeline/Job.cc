@@ -57,7 +57,7 @@ algorithm::TileResult Job::process_tile(vw::ProgressCallback const& progress) co
   Correlator correlator(m_orbital_images, lighter, objective,
                         m_job_desc.algorithm_settings().correlator_settings());
 
-  Seeder seeder(georef(), tile_size());
+  Seeder seeder(georef(), tile_size(), m_job_desc.algorithm_settings().seeder_settings());
 
 
   while (!seeder.done()) {
