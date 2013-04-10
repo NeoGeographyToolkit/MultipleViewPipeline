@@ -1,10 +1,11 @@
-lighter = Lighter();
-objective = Objective();
-correlator = Correlator(job.orbital_images, lighter, objective);
+lighter = Lighter(job.algorithm_settings.lighter_settings);
+objective = Objective(job.algorithm_settings.objective_settings);
+correlator0 = Correlator(job.orbital_images, lighter, objective, job.algorithm_settings.correlator0_settings);
+correlator = Correlator(job.orbital_images, lighter, objective, job.algorithm_settings.correlator_settings);
 
 %%%%%%%%%%%%%%%%%%
 
-seeder = Seeder(job.georef, job.tile_size);
+seeder = Seeder(job.georef, job.tile_size, job.algorithm_settings.seeder_settings);
 
 while (!seeder.done())
   result = correlator.correlate(seeder.curr_post(), seeder.curr_seed());
@@ -14,7 +15,7 @@ endwhile
 disp(["Seeder result: " num2str(seeder.result(){1}.value().algorithm_var().radius() - 
                                 job.georef.datum().semi_major_axis())]);
 
-stepper = Stepper(job.georef, job.tile_size, seeder.result());
+stepper = Stepper(job.georef, job.tile_size, seeder.result(), job.algorithm_settings.stepper_settings);
 
 tic;
 

@@ -1,9 +1,8 @@
-lighter = Lighter();
-objective = Objective();
+lighter = Lighter(job.algorithm_settings.lighter_settings);
+objective = Objective(job.algorithm_settings.objective_settings);
 
 post = pixel2post(job.georef, [32 32]);
 orientation = tanplane(post);
-
 
 %%%%%%%%%%%%%%%%%%%
 
@@ -19,7 +18,7 @@ endfor
 
 %%%%%%%%%%%%%%%%%%
 
-correlator = Correlator(job.orbital_images, lighter, objective);
+correlator = Correlator(job.orbital_images, lighter, objective, job.algorithm_settings.correlator0_settings);
 
 seed = AlgorithmVar([job.georef.datum().semi_major_axis() + -500, orientation', [25,25], [0,0], 0, 0, 80]);
 tic
