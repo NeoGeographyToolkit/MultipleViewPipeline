@@ -4,6 +4,7 @@
 #include <mvp/Core/Settings.h> //parse_bbox_string
 
 #include <vw/Plate/PlateGeoReference.h>
+#include <vw/Plate/PlateFile.h>
 
 namespace mvp {
 namespace pipeline {
@@ -30,6 +31,11 @@ void Session::reset(SessionDesc const& session_desc) {
 
   // Init cursor
   m_cursor = m_render_bbox.min();
+
+  // Init platefile
+  boost::scoped_ptr<vw::platefile::PlateFile> pf(new vw::platefile::PlateFile(session_desc.output().platefile(),
+    session_desc.output().map_projection(), "MVP Result Plate", session_desc.output().tile_size(), "tif",
+    vw::VW_PIXEL_GRAYA, vw::VW_CHANNEL_FLOAT32));    
 }
 
 pipeline::JobDesc Session::job(int col, int row, int level) {
@@ -55,7 +61,7 @@ pipeline::JobDesc Session::job(int col, int row, int level) {
   render.set_level(level);
 
   JobDesc::Output output;
-  output.set_result(m_session_desc.output().result());
+  output.set_platefile(m_session_desc.output().platefile());
   *output.mutable_plate_georef() = m_plate_georef_desc;
 
   JobDesc job_desc;

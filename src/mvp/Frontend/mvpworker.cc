@@ -128,7 +128,7 @@ int main(int argc, char* argv[]) {
               pipeline::Job job(reply.job());
               algorithm::TileResult result = 
                 job.process_tile(ZmqWorkerHelper::ProgressCallback(helper, reply.job().id()));
-              // TODO: write to platefile
+              job.update_platefile(result);
             } catch (vw::Aborted &e) {
               vw_out(vw::InfoMessage, "mvpworker") << "Aborted job ID = " << reply.job().id() << endl;
               break;

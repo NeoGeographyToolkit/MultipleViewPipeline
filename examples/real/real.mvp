@@ -9,7 +9,8 @@ render {
 }
 
 output {
-  result: "zmq://localhost:5566/result.plate"
+#  platefile: "zmq://localhost:5566/result.plate"
+  platefile: "/home/khusmann/result.plate"
   datum: "D_MOON"
   map_projection: "equi"
   tile_size: 64  

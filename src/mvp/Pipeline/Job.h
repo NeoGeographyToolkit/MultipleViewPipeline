@@ -27,6 +27,7 @@ class Job {
     Job(std::string const& job_file);
 
     algorithm::TileResult process_tile(vw::ProgressCallback const& progress = vw::ProgressCallback::dummy_instance()) const;
+    void update_platefile(algorithm::TileResult const& result) const;
 
     std::string save_job_file(std::string const& out_dir = ".") const;
 

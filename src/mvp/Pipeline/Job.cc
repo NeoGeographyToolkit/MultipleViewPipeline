@@ -8,6 +8,7 @@
 #include <mvp/Algorithm/Correlator.h>
 
 #include <vw/Plate/PlateGeoReference.h>
+#include <vw/Plate/PlateFile.h>
 #include <vw/Camera/PinholeModel.h>
 
 #include <boost/filesystem.hpp>
@@ -77,11 +78,32 @@ algorithm::TileResult Job::process_tile(vw::ProgressCallback const& progress) co
     PixelResult result = correlator.correlate(stepper.curr_post(), stepper.curr_seed());
     stepper.update(result);
     cursor += 1;
+
+    // TODO: make an option in global settings
+    if (cursor % 100) {
+      update_platefile(stepper.result());
+    }
   }
 
   progress.report_finished();
 
   return stepper.result();
+}
+
+void Job::update_platefile(algorithm::TileResult const& result) const {
+  using namespace vw;
+
+  boost::scoped_ptr<platefile::PlateFile> pf(new platefile::PlateFile(m_job_desc.output().platefile()));
+
+  pf->transaction_begin("", 1);
+  pf->write_request();
+  ImageView<PixelGrayA<float32> > raster = pixel_cast<PixelGrayA<float32> >(result.plate_layer(1));
+  pf->write_update(raster, m_job_desc.render().col(), 
+                           m_job_desc.render().row(), 
+                           m_job_desc.render().level());
+  pf->sync();
+  pf->write_complete();
+  pf->transaction_end(true);
 }
 
 std::string Job::save_job_file(std::string const& out_dir) const {
