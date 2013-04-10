@@ -80,7 +80,7 @@ algorithm::TileResult Job::process_tile(vw::ProgressCallback const& progress) co
     cursor += 1;
 
     // TODO: make an option in global settings
-    if (cursor % 100) {
+    if (!(cursor % 100)) {
       update_platefile(stepper.result());
     }
   }
