@@ -8,10 +8,19 @@
 #include <mvp/Algorithm/Correlator.h>
 
 #include <vw/Plate/PlateGeoReference.h>
+#include <vw/Camera/PinholeModel.h>
 
 #include <boost/filesystem.hpp>
 
 #include <unistd.h> // usleep
+
+#if MVP_ENABLE_OCTAVE_SUPPORT
+#include <mvp/Octave/Conversions.h>
+
+#include <octave/symtab.h>
+#include <octave/load-save.h>
+#endif
+
 
 namespace mvp {
 namespace pipeline {
@@ -116,6 +125,58 @@ std::string Job::save_job_file(std::string const& out_dir) const {
 
   return job_filename;
 }
+
+#if MVP_ENABLE_OCTAVE_SUPPORT
+
+std::string Job::save_job_file_octave(std::string const& out_dir) const {
+  namespace fs = boost::filesystem;
+
+  std::string job_filename;
+
+  {
+    std::stringstream stream;
+    stream << out_dir << "/" << m_job_desc.render().col() << "_" << m_job_desc.render().row()<< "_" << m_job_desc.render().level() << ".job.mat";
+    job_filename = stream.str();
+  }
+
+  octave_scalar_map oct_datum;
+  oct_datum.setfield("semi_major_axis", georef().datum().semi_major_axis());
+  oct_datum.setfield("semi_minor_axis", georef().datum().semi_major_axis());
+
+  octave_scalar_map oct_georef;
+  oct_georef.setfield("datum", oct_datum);
+  oct_georef.setfield("transform", octave::to_octave(georef().transform()));
+
+  octave_value_list oct_images;
+  octave_value_list oct_cameras;
+  BOOST_FOREACH(image::OrbitalImage const& o, m_orbital_images) {
+    oct_images.append(octave::to_octave(o.image()));
+    oct_cameras.append(octave::to_octave(o.camera().to_pinhole().camera_matrix()));
+  }
+
+  octave_map oct_orbital_images;
+  oct_orbital_images.setfield("data", oct_images);
+  oct_orbital_images.setfield("camera", oct_cameras);
+
+  octave_scalar_map result;
+  result.setfield("georef", oct_georef);
+  result.setfield("algorithm_settings", octave::to_octave(m_job_desc.algorithm_settings()));
+  result.setfield("orbital_images", oct_orbital_images);
+  result.setfield("tile_size", octave::to_octave(tile_size()));
+
+  std::ofstream os(job_filename.c_str(), std::ios::binary);
+
+  symbol_table::symbol_record varname("job", result);
+  load_save_format format = LS_MAT5_BINARY;
+  bool save_as_floats = false;
+
+  write_header(os, format);
+  do_save(os, varname, format, save_as_floats);
+
+  return job_filename;
+}
+
+#endif
 
 vw::cartography::GeoReference Job::georef() const {
   vw::platefile::PlateGeoReference plate_georef(m_job_desc.output().plate_georef());

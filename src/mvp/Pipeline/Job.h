@@ -6,6 +6,8 @@
 #ifndef __MVP_PIPELINE_JOB_H__
 #define __MVP_PIPELINE_JOB_H__
 
+#include <mvp/Config.h>
+
 #include <mvp/Pipeline/JobDesc.pb.h>
 #include <mvp/Image/OrbitalImageCollection.h>
 #include <mvp/Algorithm/TileResult.h>
@@ -27,6 +29,10 @@ class Job {
     algorithm::TileResult process_tile(vw::ProgressCallback const& progress = vw::ProgressCallback::dummy_instance()) const;
 
     std::string save_job_file(std::string const& out_dir = ".") const;
+
+#if MVP_ENABLE_OCTAVE_SUPPORT    
+    std::string save_job_file_octave(std::string const& out_dir = ".") const;
+#endif
 
     image::OrbitalImageCollection orbital_images() const { return m_orbital_images; }
 

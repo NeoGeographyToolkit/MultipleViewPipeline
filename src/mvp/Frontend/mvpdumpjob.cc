@@ -1,5 +1,11 @@
 #include <iostream>
 
+#include <mvp/Config.h>
+
+#if MVP_ENABLE_OCTAVE_SUPPORT
+#include <mvp/Octave/Main.h>
+#endif
+
 #include <mvp/Pipeline/Session.h>
 #include <mvp/Pipeline/Job.h>
 #include <mvp/Core/Settings.h>
@@ -30,6 +36,16 @@ int main(int argc, char *argv[]) {
   pipeline::Job job(session.job(col, row, level));
 
   job.save_job_file();
+
+  #if MVP_ENABLE_OCTAVE_SUPPORT
+  octave::start_octave_interpreter(LOADTESTENV_M);
+  // TODO: instead
+  //octave::start_octave_interpreter();
+
+  job.save_job_file_octave();
+
+  octave::stop_octave_interpreter();
+  #endif
 
   return 0;
 }
