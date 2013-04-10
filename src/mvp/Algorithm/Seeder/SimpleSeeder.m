@@ -2,9 +2,12 @@ function self = SimpleSeeder(_georef, _size)
   self = mvpclass();
 
   self._georef = _georef;
-  self._size = _size;
+  % IMPORTANT:
+  % Size comes in as a Vector2i, turn into double
+  % so operations work as expected (like center pixel)
+  self._size = double(_size);
 
-  center_pixel = (_size - 1) / 2;
+  center_pixel = (self._size - 1) / 2;
 
   self._curr_lonlat = self._georef.pixel_to_lonlat(center_pixel);
   self._curr_post = pixel2post(self._georef, center_pixel);

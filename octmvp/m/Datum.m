@@ -8,6 +8,8 @@ function self = Datum(_radius)
 endfunction
 
 function xyz = geodetic_to_cartesian(self, lonlatalt)
+  lonlatalt(1:2) *= pi / 180;
+
   clo = cos(lonlatalt(1));
   slo = sin(lonlatalt(1));
   cla = cos(lonlatalt(2));

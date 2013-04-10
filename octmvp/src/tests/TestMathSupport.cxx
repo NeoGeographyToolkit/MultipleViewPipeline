@@ -14,6 +14,9 @@ TEST(bilinear_interp2, calculate) {
   EXPECT_EQ(bilinear_interp2(im, 0.5, 0.5), (1 + 2 + 3 + 4) / 4.0);
 
   EXPECT_EQ(bilinear_interp2(im, 0.25, 0.25), 1.75);
+
+  EXPECT_EQ(bilinear_interp2(im, -0.5, -0.5), 0.25);
+  EXPECT_EQ(bilinear_interp2(im, 1.5, 1.5), 1);
 }
 
 TEST(quat2rot, calculate) {

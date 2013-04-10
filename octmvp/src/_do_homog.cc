@@ -30,9 +30,6 @@ DEFUN_DLD(_do_homog, args, nargout, "Oct project") {
   double rows = sz(1);
   double cols = sz(0);
 
-  double imrows = image.rows();
-  double imcols = image.cols();
-
   Matrix patch(rows, cols);
   for (int r = 0; r < rows; r++) {
     for (int c = 0; c < cols; c++) {
@@ -41,11 +38,7 @@ DEFUN_DLD(_do_homog, args, nargout, "Oct project") {
       double w = h[2][0] * c + h[2][1] * r + h[2][2];
       x /= w;
       y /= w;
-      if (x < imcols && y < imrows && x >= 0 && y >= 0) {
-        patch(r, c) = bilinear_interp2(image, x, y);
-      } else {
-        patch(r, c) = ::octave_NA;
-      }
+      patch(r, c) = bilinear_interp2(image, x, y);
     }
   }
 

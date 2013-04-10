@@ -9,6 +9,7 @@ function self = GeoReference(_datum, _transform)
 endfunction
 
 function lonlat = pixel_to_lonlat(self, pixel)
+  pixel = double(pixel);
   lonlat = self._transform * [pixel(:); 1];
   lonlat /= lonlat(3);
   lonlat = lonlat(1:2);

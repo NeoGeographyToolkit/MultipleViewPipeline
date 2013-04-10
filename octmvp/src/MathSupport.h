@@ -3,7 +3,21 @@
 
 #include <octave/oct.h>
 
-double bilinear_interp2(Matrix const& im, double x, double y) {
+struct MatrixZeroPadder {
+  Matrix const& m_mat;
+
+  MatrixZeroPadder(Matrix const& mat) : m_mat(mat) {}
+
+  double operator()(int r, int c) const {
+    if (c < m_mat.cols() && r < m_mat.rows() && c >= 0 && r >= 0) {
+      return m_mat(r, c);
+    } else {
+      return 0;
+    }
+  }
+};
+
+double bilinear_interp2(MatrixZeroPadder const& im, double x, double y) {
   // See http://en.wikipedia.org/wiki/Bilinear_interpolation
   double x1 = floor(x), y1 = floor(y);
   double x2 = x1 + 1, y2 = y1 + 1;
