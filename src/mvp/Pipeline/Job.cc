@@ -93,6 +93,11 @@ algorithm::TileResult Job::process_tile(vw::ProgressCallback const& progress) co
 void Job::update_platefile(algorithm::TileResult const& result) const {
   using namespace vw;
 
+//  boost::scoped_ptr<vw::platefile::PlateFile> pf(new vw::platefile::PlateFile(m_job_desc.output().platefile(),
+//    m_job_desc.output().plate_georef().map_proj(), "MVP Result Plate", 
+//    m_job_desc.output().plate_georef().tile_size(), "tif",
+//    vw::VW_PIXEL_GRAYA, vw::VW_CHANNEL_FLOAT32));    
+
   boost::scoped_ptr<platefile::PlateFile> pf(new platefile::PlateFile(m_job_desc.output().platefile()));
 
   pf->transaction_begin("", 1);
