@@ -8,7 +8,7 @@ function self = DefaultTileResult(_georef, _size)
 
   self.set = @(self, pixel, value) self._data(pixel(2)+1, pixel(1)+1,:) = value.vectorize();
   self.get = @(self, pixel) PixelResult(self._data(pixel(2)+1,pixel(1)+1,:));
-  self.plate_layer = @(self, num) self._data(:,:,num+1);
+  self.plate_layer = @(self, num) self._data(:,:,num);
 
   self.alt = @(self) self._data(:,:,globals().RADIUS_IDX) - self._georef.datum().semi_major_axis(); 
   self.orientation = @(self) self._data(:,:,globals().ORIENTATION_IDX); 
