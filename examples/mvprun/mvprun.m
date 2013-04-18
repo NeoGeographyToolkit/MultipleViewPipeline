@@ -10,6 +10,7 @@ obj_helper = ObjectiveHelper(job.orbital_images, lighter, objective, post);
 
 curr_result = 1;
 alts = job.georef.datum().semi_major_axis() + linspace(-2000, 0, 20);
+result = {};
 for i = alts
   seed = AlgorithmVar([i, orientation', [25,25], [0,0], 0, 0, 80]);
   result(curr_result) = obj_helper.func(seed);
