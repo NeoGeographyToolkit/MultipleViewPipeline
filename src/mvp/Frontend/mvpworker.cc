@@ -98,6 +98,14 @@ int main(int argc, char* argv[]) {
     pipeline::Job job(opts.job_file);
     algorithm::TileResult result = job.process_tile(TerminalProgressCallback("mvp", "Processing tile: "));
 
+    std::string out_filename;
+
+    {
+      std::stringstream stream;
+      stream << job.plate_col() << "_" << job.plate_row()<< "_" << job.plate_level() << ".tif";
+      out_filename = stream.str();
+    }
+
     ImageView<double> alt = result.alt();
     ImageView<bool> converged = result.converged();
 
@@ -106,7 +114,7 @@ int main(int argc, char* argv[]) {
     select_channel(out, 0) = alt;
     select_channel(out, 1) = converged;
 
-    write_image("out.tif", out);
+    write_image(out_filename, out);
     return 0;
   }
 

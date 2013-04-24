@@ -93,11 +93,7 @@ algorithm::TileResult Job::process_tile(vw::ProgressCallback const& progress) co
 void Job::update_platefile(algorithm::TileResult const& result) const {
   using namespace vw;
 
-//  boost::scoped_ptr<vw::platefile::PlateFile> pf(new vw::platefile::PlateFile(m_job_desc.output().platefile(),
-//    m_job_desc.output().plate_georef().map_proj(), "MVP Result Plate", 
-//    m_job_desc.output().plate_georef().tile_size(), "tif",
-//    vw::VW_PIXEL_GRAYA, vw::VW_CHANNEL_FLOAT32));    
-
+  /* TODO
   boost::scoped_ptr<platefile::PlateFile> pf(new platefile::PlateFile(m_job_desc.output().platefile()));
 
   pf->transaction_begin("", 1);
@@ -109,6 +105,25 @@ void Job::update_platefile(algorithm::TileResult const& result) const {
   pf->sync();
   pf->write_complete();
   pf->transaction_end(true);
+  */
+
+  std::string out_filename;
+
+  {
+    std::stringstream stream;
+    stream << plate_col() << "_" << plate_row()<< "_" << plate_level() << ".tif";
+    out_filename = stream.str();
+  }
+
+  ImageView<double> alt = result.alt();
+  ImageView<bool> converged = result.converged();
+
+  ImageView<PixelGrayA<double> > out(alt.cols(), alt.rows());
+
+  select_channel(out, 0) = alt;
+  select_channel(out, 1) = converged;
+
+  write_image(out_filename, out);
 }
 
 std::string Job::save_job_file(std::string const& out_dir) const {
@@ -118,7 +133,7 @@ std::string Job::save_job_file(std::string const& out_dir) const {
 
   {
     std::stringstream stream;
-    stream << out_dir << "/" << m_job_desc.render().col() << "_" << m_job_desc.render().row()<< "_" << m_job_desc.render().level() << ".job";
+    stream << out_dir << "/" << plate_col() << "_" << plate_row()<< "_" << plate_level() << ".job";
     job_filename = stream.str();
   }
 

@@ -33,9 +33,11 @@ void Session::reset(SessionDesc const& session_desc) {
   m_cursor = m_render_bbox.min();
 
   // Init platefile
+  /* TODO
   boost::scoped_ptr<vw::platefile::PlateFile> pf(new vw::platefile::PlateFile(session_desc.output().platefile(),
     session_desc.output().map_projection(), "MVP Result Plate", session_desc.output().tile_size(), "tif",
-    vw::VW_PIXEL_GRAYA, vw::VW_CHANNEL_FLOAT32));    
+    vw::VW_PIXEL_GRAYA, vw::VW_CHANNEL_FLOAT32));
+  */
 }
 
 pipeline::JobDesc Session::job(int col, int row, int level) {

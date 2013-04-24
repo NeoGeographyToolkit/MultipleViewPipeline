@@ -42,6 +42,12 @@ class Job {
     vw::cartography::GeoReference georef() const;
 
     vw::Vector2i tile_size() const;
+
+    int plate_col() const { return m_job_desc.render().col(); }
+
+    int plate_row() const { return m_job_desc.render().row(); }
+
+    int plate_level() const { return m_job_desc.render().level(); }
 };
 
 }} // pipeline,mvp
