@@ -1,10 +1,80 @@
-The Ames Multiple-View Pipeline
+************************************************************************
+1. INTRODUCTION
 
-The Ames Multiple-View Pipeline (AMVP) will model the entire image 
+A. Neo-Geography Toolkit
+
+The Neo-Geography Toolkit (NGT) is a collection of tools for automated
+processing of geospatial data, including images and maps. It is capable
+of processing raw raster data from remote sensing instruments and
+transforming it into useful cartographic products, such as visible image
+base maps, topographic models, etc. Additionally, components of the NGT
+can perform data processing on extremely large geospatial data sets (up
+to several tens of terabytes) via parallel processing pipelines.
+Finally, it can also transform raw metadata (i.e.  SPICE kernels and PDS
+image labels), vector data (e.g., 2D/3D shape files), and geo-tagged
+data sets into standard NeoGeography data formats, such as KML.  NGT is
+an evolving collection of loosely connected open-source modules designed
+by the NASA Ames Intelligent Robotics Group. Modules of the NGT will be
+released one at a time, as they reach maturity. To date, we have
+completed only one module: the NASA Ames Stereo Pipeline, but more will
+soon follow. Check this website for the latest updates.
+
+B. Multiple View Pipeline
+
+The NASA Multiple View Pipeline (MVP) is a suite of automated geodesy &
+stereogrammetry tools designed for processing planetary imagery captured
+from orbiting and landed robotic explorers on other planets. It was
+designed to process stereo imagery captured by NASA spacecraft and
+produce cartographic products including digital elevation models (DEMs),
+ortho-projected imagery, and 3D models. These data products are suitable
+for science analysis, mission planning, and public outreach.
+
+This software differentiates itself from another NGT product, Ames
+Stereo Pipeline, in this software novel technique to utilize multiple
+views to construct elevation. This provides better resolved terrain
+and robustness against image noise.
+
+The Multiple-View Pipeline (AMVP) models the entire image 
 formation process and find the optimal height for each DEM post given 
 every available orbital image. Complex terrain and reflectance models 
 are simplified by assuming planar terrain and a linear reflectance model 
 on a small patch around a given DEM post. 
+
+************************************************************************
+2. LICENSE (see COPYING for the full text)
+
+A. Copyright and License Summary
+
+Copyright (c) 2009-2013, United States Government as represented by the
+Administrator of the National Aeronautics and Space Administration. All
+rights reserved.
+
+The NGT platform (of which MVP is a part of) is licensed under the
+Apache License, Version 2.0 (the "License"); you may not use this file
+except in compliance with the License. You may obtain a copy of the
+License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+B. Third-Party Libraries
+
+This distribution may include some bundled third-party software as a
+convenience to the user.  This software, located in the "thirdparty/"
+directory of the source code release, is not covered by the
+above-mentioned distribution agreement or copyright. Binary releases
+distribute third party software in both the "bin" and "lib"
+directories. See the included documentation for detailed copyright
+and license information for any third-party software or check the
+THIRDPARTYLICENSES file.  In addition, various pieces of the NGT
+depend on additional third-party libraries that the user is expected
+to have installed.
+
+************************************************************************
+3. DOCUMENTATION
 
 Building Instructions:
 ----------------------
@@ -18,3 +88,21 @@ Running Instructions:
 ---------------------
 build/src/gen_synth_scene - generate a synthetic scene
 mvpgui/mvpgui - an objective function explorer
+
+************************************************************************
+4. CONTACTS & CREDITS
+
+A. Mailing List
+
+A mailing list has not yet been setup. Please contact the authors
+throught Github.
+
+B. Credits
+
+The NGT was developed within the Autonomous Systems and
+Robotics area of the Intelligent Systems Division at NASA's Ames
+Research Center. It leverages the Intelligent Robotics Group's (IRG)
+extensive experience developing surface reconstruction and tools for
+planetary exploration.
+
+See the AUTHORS file for a complete list of developers.

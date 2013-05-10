@@ -1,0 +1,13 @@
+This open source version of the Multiple View Pipeline (MVP) was
+developed by the Intelligent Robotics Group (IRG), in the Intelligent
+Systems Division at NASA Ames Research Center in Moffett Field, CA. It
+builds on over ten years of IRG experience developing surface
+reconstruction tools for terrestrial robotic field tests and planetary
+exploration.
+
+Credit and thanks go to the following developers for contributing time
+and energy to this effort.
+
+Taemin Kim (NASA/SGT) - Principal Investigator
+Kyle Husmann (EAP/CalPoly) - Lead Developer
+Terry Fong (CS) - Project Manager
