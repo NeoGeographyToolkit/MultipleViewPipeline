@@ -15,9 +15,7 @@ image labels), vector data (e.g., 2D/3D shape files), and geo-tagged
 data sets into standard NeoGeography data formats, such as KML.  NGT is
 an evolving collection of loosely connected open-source modules designed
 by the NASA Ames Intelligent Robotics Group. Modules of the NGT will be
-released one at a time, as they reach maturity. To date, we have
-completed only one module: the NASA Ames Stereo Pipeline, but more will
-soon follow. Check this website for the latest updates.
+released one at a time, as they reach maturity.
 
 B. Multiple View Pipeline
 
