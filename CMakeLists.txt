@@ -17,7 +17,7 @@ endif()
 ### Find Packages
 ###
 find_package(VW REQUIRED COMPONENTS Cartography Camera Plate Image Math FileIO Core)
-find_package(Boost REQUIRED COMPONENTS program_options regex)
+find_package(Boost REQUIRED COMPONENTS program_options regex filesystem system thread)
 find_package(Protobuf REQUIRED)
 find_package(ZeroMQ REQUIRED)
 find_package(Octave)
