@@ -328,7 +328,7 @@ struct ConversionHelper<std::vector<T> > {
 
 template <class T>
 struct ConversionHelper<T, typename boost::enable_if<boost::is_base_of<google::protobuf::Message, T> >::type> {
-  static octave_value to_octave(T const& v) {
+  static octave_value to_octave(google::protobuf::Message const& v) {
     using namespace google::protobuf;
 
     octave_scalar_map result;
@@ -343,7 +343,7 @@ struct ConversionHelper<T, typename boost::enable_if<boost::is_base_of<google::p
 
       switch(field->cpp_type()) {
         BOOST_PP_SEQ_FOR_EACH(OCTAVE_CONV_protolist_iterator, to_octave, OCTAVE_CONV_protolist)
-        OCTAVE_CONV_proto_to_octave(CPPTYPE_MESSAGE, Message, Message)
+        OCTAVE_CONV_proto_to_octave(CPPTYPE_MESSAGE, Message, T)
         default:
           vw::vw_throw(vw::NoImplErr() << "Not a supported field type to convert to octave");
       }
