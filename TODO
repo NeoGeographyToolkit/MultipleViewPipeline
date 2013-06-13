@@ -1,0 +1,54 @@
+Problems we ran into:
+
+- I wasn't really impressed at Octave under the hood. It's kind of sketchy.
+
+- The C++/Octave bridge ended up taking way too many resources, and didn't even turn out to be
+  that great. Plus, the only part that really needs to be low-level is the map projection.
+
+- The platefile system has been a little bit abandoned, and also doesn't completely fit our needs
+  for storage. (Non-spheriod datums).
+
+- Vision Workbench doesn't have very flexible support of reading/writing different types of camera
+  models and storing metadata like that in images
+
+Next time, on the MVP:
+
+- Use a different vision toolkit, that supports polymorphism in its camera models and has a standard
+  way of embedding them into images along with other metadata like crops, etc.
+
+- Don't create a C++/Octave bridge. Instead, optimize projection in C/C++, but do everything
+  else in a high level language. (I would choose numpy over R, because python is supported
+  in things like google app engine)
+
+- We need our own "platefile" system, because we need features like non-spheroid datums. 
+  Because data-storage is hard, can we decouple the map projection from the database?
+  So we have Request -> our software -> Generic datastore
+
+- Use the Middleburry datasets as test data.
+
+Maybe use google app engine... Write everything in numpy python, all interfaces in web, and 
+map projection in Go?
+
+BIG PICTURE:
+
+You start with a folder full of images with camera models attached. You go into the mvp web interface,
+and point it to this folder. You create a session that includes the min, max height of your datum, etc.
+and then press "Go"
+
+Then it's broken up into jobs that are run by multiple cores on multiple machines. Status can be viewed
+on the web interface, along with previews of the entire map as it is being assembled.
+
+At any point, you can click on a tile to view it in 3D, as well as view other attributes like it's
+confidence bars, number of iterations and other important statistics. (You can also look at global
+statistics as well)
+
+If you identify problem areas where the algorithm fails, you can click a button to wrap up that tile
+into a single file that can be sent to the developers. That single file can then be run by the developers
+to exactly replicate the user's results. The developers can experiment with different settings, or
+try different algorithm techniques to get it working. This tile will then be added to the developers
+collection of "difficult tiles" and every time the algorithm is updated and tests are run, this tile
+is tested to see if the results improve (or regress).
+
+Because of how it's set up, if the power goes out, or the user decides to pause the process. the system
+can be resumed at no cost (except maybe current tiles being worked on have to be restarted). Basically,
+no penalty for interrupting!
