@@ -1,3 +1,42 @@
+#### OSX INSTALL #####
+On OSX, octave does not play nicely with C++ because it is compiled with the macports compiler instead of the stock mac gcc. So, if you
+try to link to C++ libraries (that use a mix of header and compiled
+logic), you start getting segfaults in weird places.
+
+However, you can run the algorithms in the MVP as octave-only. To do
+so, you must build the files in octmvp. The following assumes you have
+octave installed through macports (must be >3.6, right now is called octave-devel)
+
+(Starting in the root project dir):
+
+$ mkdir build2
+$ cd build2
+$ cmake ../octmvp
+$ make
+
+(to run tests, run make test, as usual)
+
+After this is completed, you can run the algorithms in src/mvp/Algorithm
+on a matlab job file. Grab 2682_1937_12.job.mat from the example mvp data. 
+
+(in the examples/mvprun dir):
+
+$ octave
+$ start_octmvp
+$ mvprun_tile
+$ imagesc(result)
+
+To mvprun_tile instead. If you have the C++ mvp compiled
+you could have run start_mvp (instead of start_octmvp), and it would have run
+the algorithms using the C++ infastructure instead.
+
+For some reason, the MVP runs super fast (by an order of 10) on OSX as compared 
+to my linux machine... Could it be that the "accelerate" framework speeds it up? 
+
+######################
+
+###### Linux Instructions ############
+
 #
 # Configure the MVP
 #
